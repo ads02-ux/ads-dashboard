@@ -374,6 +374,50 @@ canvas{filter:none}
 .comm-edit{background:transparent;border:none;border-bottom:1.5px dashed rgba(21,101,192,.25);color:var(--text2);font-family:Inter,sans-serif;font-size:.76rem;text-align:right;width:82px;padding:2px 4px;outline:none;border-radius:0;transition:border-color .15s,background .15s}
 .comm-edit:focus{border-bottom-color:var(--cyan);background:rgba(21,101,192,.06);border-radius:3px 3px 0 0}
 .comm-edit::placeholder{color:var(--text3);opacity:.5}
+/* === BENCHMARK PAGE === */
+.bm-wrap{padding:0 0 40px}
+.bm-topbar{display:flex;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+.bm-title{font-size:1.25rem;font-weight:700;color:var(--text);margin-right:auto}
+.bm-tab{padding:6px 18px;border-radius:20px;border:1.5px solid var(--panel-border);background:#fff;font-size:.8rem;font-weight:600;cursor:pointer;color:var(--text3);transition:all .2s}
+.bm-tab.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+.bm-filter-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.bm-prod-btn{padding:5px 14px;border-radius:16px;border:1.5px solid var(--panel-border);background:#fff;font-size:.75rem;font-weight:600;cursor:pointer;color:var(--text3);transition:all .15s}
+.bm-prod-btn.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+.bm-date-btn{padding:5px 12px;border-radius:12px;border:1.5px solid var(--panel-border);background:#fff;font-size:.75rem;font-weight:600;cursor:pointer;color:var(--text3);transition:all .15s}
+.bm-date-btn.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+.bm-charts{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px}
+.bm-chart-card{background:#fff;border:1.5px solid var(--panel-border);border-radius:14px;padding:18px}
+.bm-chart-title{font-size:.72rem;font-weight:700;color:var(--text3);letter-spacing:.5px;margin-bottom:4px}
+.bm-chart-sub{font-size:.68rem;color:var(--text3);margin-bottom:12px}
+.bm-tier-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:18px}
+.bm-tier{border-radius:14px;border:2px solid;padding:20px 22px}
+.bm-tier.top{border-color:#10b981;background:#f0fdf4}
+.bm-tier.mid{border-color:#f59e0b;background:#fffbeb}
+.bm-tier.low{border-color:#ef4444;background:#fef2f2}
+.bm-tier-label{font-size:.65rem;font-weight:800;letter-spacing:1.5px;margin-bottom:6px}
+.bm-tier.top .bm-tier-label{color:#059669}
+.bm-tier.mid .bm-tier-label{color:#d97706}
+.bm-tier.low .bm-tier-label{color:#dc2626}
+.bm-tier-num{font-size:2.8rem;font-weight:800;line-height:1;margin-bottom:6px}
+.bm-tier.top .bm-tier-num{color:#059669}
+.bm-tier.mid .bm-tier-num{color:#d97706}
+.bm-tier.low .bm-tier-num{color:#dc2626}
+.bm-tier-desc{font-size:.72rem;color:var(--text3)}
+.bm-table-wrap{background:#fff;border:1.5px solid var(--panel-border);border-radius:14px;overflow:hidden}
+.bm-table-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--panel-border)}
+.bm-table-label{font-size:.8rem;font-weight:700;color:var(--text)}
+.bm-table{width:100%;border-collapse:collapse;font-size:.78rem}
+.bm-table th{padding:10px 14px;text-align:left;font-size:.68rem;font-weight:700;color:var(--text3);letter-spacing:.5px;border-bottom:1px solid var(--panel-border);white-space:nowrap}
+.bm-table th.r{text-align:right}
+.bm-table td{padding:9px 14px;border-bottom:1px solid #f1f5f9;color:var(--text2)}
+.bm-table td.r{text-align:right;font-variant-numeric:tabular-nums}
+.bm-table tr:last-child td{border-bottom:none}
+.bm-table tr:hover td{background:#f8faff}
+.bm-tier-badge{display:inline-block;padding:2px 8px;border-radius:8px;font-size:.65rem;font-weight:700}
+.bm-tier-badge.top{background:#d1fae5;color:#059669}
+.bm-tier-badge.mid{background:#fef3c7;color:#d97706}
+.bm-tier-badge.low{background:#fee2e2;color:#dc2626}
+
 .comm-mo-div td{background:rgba(25,118,210,.06);color:var(--blue);font-size:.7rem;font-weight:700;text-align:left;padding:5px 10px;letter-spacing:1.5px;text-transform:uppercase;border-top:1px solid rgba(25,118,210,.15)}
 .comm-pct-bad{color:#ff5252!important}
 .comm-pct-warn{color:#fb923c!important}
@@ -468,37 +512,7 @@ canvas{filter:none}
 }
 </style>
 </head>
-<body><style>
-#pw-gate{position:fixed;inset:0;background:#f0f4ff;display:flex;align-items:center;justify-content:center;z-index:99999;font-family:Inter,sans-serif}
-#pw-box{background:#fff;border-radius:16px;padding:40px 36px;box-shadow:0 8px 40px rgba(21,101,192,.15);text-align:center;width:320px}
-#pw-logo{font-size:2.2rem;margin-bottom:8px}
-#pw-title{font-size:1.1rem;font-weight:700;color:#1565c0;margin-bottom:4px}
-#pw-sub{font-size:.8rem;color:#888;margin-bottom:24px}
-#pw-input{width:100%;box-sizing:border-box;padding:10px 14px;border:1.5px solid #dde3f0;border-radius:8px;font-size:.95rem;outline:none;text-align:center;letter-spacing:.15em;margin-bottom:12px;transition:border-color .2s}
-#pw-input:focus{border-color:#1565c0}
-#pw-btn{width:100%;padding:11px;background:#1565c0;color:#fff;border:none;border-radius:8px;font-size:.95rem;font-weight:600;cursor:pointer;transition:background .2s}
-#pw-btn:hover{background:#1976d2}
-#pw-err{color:#e53935;font-size:.8rem;margin-top:8px;min-height:18px}
-</style>
-<div id="pw-gate">
-  <div id="pw-box">
-    <div id="pw-logo">⚔️</div>
-    <div id="pw-title">ADS MISSION DASHBOARD</div>
-    <div id="pw-sub">Rich Biotech · Hunter System</div>
-    <input id="pw-input" type="password" placeholder="รหัสผ่าน" onkeydown="if(event.key==='Enter')pwCheck()">
-    <button id="pw-btn" onclick="pwCheck()">เข้าสู่ระบบ</button>
-    <div id="pw-err"></div>
-  </div>
-</div>
-<script>
-(function(){if(sessionStorage.getItem('rb_auth')==='1'){document.getElementById('pw-gate').style.display='none';}})();
-function pwCheck(){
-  var v=document.getElementById('pw-input').value;
-  if(v==='rich01'){sessionStorage.setItem('rb_auth','1');document.getElementById('pw-gate').style.display='none';}
-  else{document.getElementById('pw-err').textContent='รหัสผ่านไม่ถูกต้อง';document.getElementById('pw-input').value='';document.getElementById('pw-input').focus();}
-}
-</script>
-
+<body>
 <button class="sb-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰</button>
 <div class="sidebar" id="sidebar">
   <div class="sb-logo">
@@ -518,8 +532,8 @@ function pwCheck(){
     <div class="sb-item" style="opacity:.45;cursor:not-allowed">
       <span class="sb-icon">🤖</span><span>AI แนะนำ</span><span class="sb-badge" style="margin-left:auto">Soon</span>
     </div>
-    <div class="sb-item" style="opacity:.45;cursor:not-allowed">
-      <span class="sb-icon">📐</span><span>BenchMark มาตรวัดแอด</span><span class="sb-badge" style="margin-left:auto">Soon</span>
+    <div class="sb-item" id="sb-benchmark" onclick="switchView('benchmark',this)">
+      <span class="sb-icon">📐</span><span>BenchMark มาตรวัดแอด</span>
     </div>
     <div class="sb-sep"></div>
     <div class="sb-section">Hunter<span style="display:block;font-size:.6rem;font-weight:400;opacity:.55;margin-top:1px;letter-spacing:.02em">ดึงข้อมูลจาก Google Sheets</span></div>
@@ -703,6 +717,7 @@ function pwCheck(){
 <div id="cohortView" style="display:none"><div class="page" id="cohortViewInner"></div></div>
 <div id="commissionView" style="display:none"><div class="page" id="commissionViewInner"></div></div>
 <div id="fbView"><div class="page" id="fbViewInner"></div></div>
+<div id="benchmarkView" style="display:none"><div class="page" id="benchmarkViewInner"></div></div>
 
 <script>
 var SHEET_ID='1Qs57OO-tDRAsikHulJSKw6S0tfbMqgUuNbmiRHN1POI',GID_S1='997286503',GID_S2='1472268717',GID_COMM='1688902080',GID_CONFIG='388205387',REFRESH=300;
@@ -1445,6 +1460,186 @@ function commCalc(sp,rv,prod){
   return{com:row.r[idx],pct:pct};
 }
 function commLive(aid,dkc,pi,p){var spEl=document.getElementById('csp_'+aid+'_'+dkc+'_'+pi);var rvEl=document.getElementById('crv_'+aid+'_'+dkc+'_'+pi);if(!spEl||!rvEl)return;var sp=parseFloat((spEl.value||'').replace(/[,\s]/g,''))||0;var rv=parseFloat((rvEl.value||'').replace(/[,\s]/g,''))||0;var res=commCalc(sp,rv,p);var pctEl=document.getElementById('cpct_'+aid+'_'+dkc+'_'+pi);var comEl=document.getElementById('ccom_'+aid+'_'+dkc+'_'+pi);if(pctEl)pctEl.innerHTML=(sp>0||rv>0)?'<span class="comm-pct-lbl '+commPctCls(res.pct)+'">'+res.pct.toFixed(2)+'%<\/span>':'<span class="comm-dash">—<\/span>';if(comEl)comEl.innerHTML=(sp>0||rv>0)?(res.com>0?'<span class="comm-com-val">'+res.com+'<\/span>':'<span class="comm-com-zero">0<\/span>'):'<span class="comm-dash">—<\/span>';}
+
+// ─── BENCHMARK: มาตรวัดแอด ───────────────────────────────────────────
+var _bmMode='msg', _bmDays=30, _bmProd='all';
+var _bmDonut=null, _bmBar=null;
+
+function renderBenchmark(){
+  var el=document.getElementById('benchmarkViewInner');
+  if(!el)return;
+
+  // Gather all rows from fbDataMap filtered by product
+  var accNames=[];
+  FB_HIERARCHY.forEach(function(p){
+    if(_bmProd!=='all'&&p.product!==_bmProd)return;
+    p.pages.forEach(function(pg){
+      pg.accounts.forEach(function(ac){
+        (ac.adAccounts||[]).forEach(function(a){if(accNames.indexOf(a)<0)accNames.push(a);});
+      });
+    });
+  });
+
+  // Date cutoff
+  var now=new Date();
+  var cutoff=new Date(now);cutoff.setDate(now.getDate()-_bmDays+1);
+  cutoff.setHours(0,0,0,0);
+
+  // Gather & filter rows
+  var allRows=[];
+  accNames.forEach(function(n){if(fbDataMap[n])allRows=allRows.concat(fbDataMap[n]);});
+  if(!accNames.length){
+    // all accounts
+    Object.keys(fbDataMap).forEach(function(n){allRows=allRows.concat(fbDataMap[n]);});
+  }
+  allRows=allRows.filter(function(r){return new Date(r.date)>=cutoff;});
+
+  // Aggregate by adset
+  var adsetMap={};
+  allRows.forEach(function(r){
+    if(!adsetMap[r.adset])adsetMap[r.adset]={adset:r.adset,campaign:r.campaign,spend:0,impressions:0,clicks:0,purchases:0,revenue:0,conversations:0};
+    var a=adsetMap[r.adset];
+    a.spend+=r.spend;a.impressions+=r.impressions;a.clicks+=r.clicks;
+    a.purchases+=r.purchases;a.revenue+=r.revenue;a.conversations+=r.conversations;
+  });
+
+  var adsets=Object.values(adsetMap).filter(function(a){return a.spend>0;});
+  adsets.forEach(function(a){
+    a.ctr=a.impressions>0?a.clicks/a.impressions*100:0;
+    a.cpm=a.impressions>0?a.spend/a.impressions*1000:0;
+    a.roas=a.spend>0&&a.revenue>0?a.revenue/a.spend:0;
+    a.costPerConv=a.conversations>0?a.spend/a.conversations:0;
+    a.costPerBuy=a.purchases>0?a.spend/a.purchases:0;
+    // Tier based on mode
+    if(_bmMode==='msg'){
+      if(a.costPerConv>0&&a.costPerConv<=50)a.tier='top';
+      else if(a.costPerConv>50&&a.costPerConv<=100)a.tier='mid';
+      else a.tier='low';
+    } else {
+      if(a.roas>=2)a.tier='top';
+      else if(a.roas>=1)a.tier='mid';
+      else a.tier='low';
+    }
+  });
+  adsets.sort(function(a,b){return b.spend-a.spend;});
+
+  var top10=adsets.slice(0,10);
+  var tierTop=adsets.filter(function(a){return a.tier==='top';}).length;
+  var tierMid=adsets.filter(function(a){return a.tier==='mid';}).length;
+  var tierLow=adsets.filter(function(a){return a.tier==='low';}).length;
+  var totalSpend=adsets.reduce(function(s,a){return s+a.spend;},0);
+
+  // Tier descriptions
+  var tierDesc=_bmMode==='msg'
+    ?{top:'Cost/Msg ≤ $50',mid:'Cost/Msg $50–$100',low:'Cost/Msg > $100'}
+    :{top:'ROAS ≥ 2.0x',mid:'ROAS 1.0–2.0x',low:'ROAS < 1.0x'};
+
+  // Build HTML
+  var prodList=[{k:'all',label:'ทั้งหมด'}];
+  FB_HIERARCHY.forEach(function(p){prodList.push({k:p.product,label:p.product,icon:p.icon});});
+
+  var h='<div class="bm-wrap">';
+  h+='<div class="bm-topbar">';
+  h+='<div class="bm-title">📐 BenchMark มาตรวัดแอด<span style="font-size:.75rem;font-weight:400;color:var(--text3);margin-left:10px">เปรียบเทียบประสิทธิภาพ Adset</span></div>';
+  h+='<button class="bm-tab'+((_bmMode==='msg')?' active':'')+'" onclick="_bmMode=\'msg\';renderBenchmark()">Messaging</button>';
+  h+='<button class="bm-tab'+((_bmMode==='purchase')?' active':'')+'" onclick="_bmMode=\'purchase\';renderBenchmark()">Purchase</button>';
+  h+='</div>';
+
+  // Date filter
+  var dates=[{d:1,l:'วันนี้'},{d:2,l:'เมื่อวาน'},{d:3,l:'3 วัน'},{d:7,l:'7 วัน'},{d:14,l:'14 วัน'},{d:30,l:'30 วัน'}];
+  h+='<div class="bm-filter-row">';
+  dates.forEach(function(x){h+='<button class="bm-date-btn'+(_bmDays===x.d?' active':'')+'" onclick="_bmDays='+x.d+';renderBenchmark()">'+x.l+'</button>';});
+  h+='</div>';
+
+  // Product filter
+  h+='<div class="bm-filter-row" style="margin-bottom:18px">';
+  prodList.forEach(function(x){
+    var lbl=(x.icon?x.icon+' ':'')+x.label;
+    h+='<button class="bm-prod-btn'+(_bmProd===x.k?' active':'')+'" onclick="_bmProd=\''+x.k.replace(/'/g,"\\'").replace(/\+/g,'\\+')+'\';renderBenchmark()">'+lbl+'</button>';
+  });
+  h+='</div>';
+
+  // Charts
+  h+='<div class="bm-charts">';
+  h+='<div class="bm-chart-card"><div class="bm-chart-title">สัดส่วน SPEND ของ Top 10</div>';
+  h+='<div class="bm-chart-sub">จาก Spend รวม $'+fmt(totalSpend,0)+'</div>';
+  h+='<canvas id="bmDonut" style="max-height:220px"></canvas></div>';
+  h+='<div class="bm-chart-card"><div class="bm-chart-title">CTR / CPM ของ Top 10</div>';
+  h+='<div class="bm-chart-sub">เรียงจากทักมากสุด</div>';
+  h+='<canvas id="bmBar" style="max-height:220px"></canvas></div>';
+  h+='</div>';
+
+  // Tier cards
+  h+='<div class="bm-tier-row">';
+  h+='<div class="bm-tier top"><div class="bm-tier-label">TOP TIER</div><div class="bm-tier-num">'+tierTop+'</div><div class="bm-tier-desc">'+tierDesc.top+'</div></div>';
+  h+='<div class="bm-tier mid"><div class="bm-tier-label">MID TIER</div><div class="bm-tier-num">'+tierMid+'</div><div class="bm-tier-desc">'+tierDesc.mid+'</div></div>';
+  h+='<div class="bm-tier low"><div class="bm-tier-label">LOW TIER</div><div class="bm-tier-num">'+tierLow+'</div><div class="bm-tier-desc">'+tierDesc.low+'</div></div>';
+  h+='</div>';
+
+  // Table
+  var colLabel=_bmMode==='msg'?'ทัก':'Purchases';
+  var costLabel=_bmMode==='msg'?'Cost/Msg':'Cost/Buy';
+  var perfLabel=_bmMode==='msg'?'Conversations':'ROAS';
+  h+='<div class="bm-table-wrap">';
+  h+='<div class="bm-table-header"><span class="bm-table-label">รายการ Adset ทั้งหมด ('+adsets.length+' รายการ)</span></div>';
+  h+='<table class="bm-table"><thead><tr>';
+  h+='<th>Adset</th><th class="r">Spend</th><th class="r">'+colLabel+'</th><th class="r">'+costLabel+'</th><th class="r">CTR</th><th class="r">ROAS</th><th class="r">Tier</th>';
+  h+='</tr></thead><tbody>';
+  adsets.forEach(function(a){
+    var perf=_bmMode==='msg'?a.conversations:a.purchases;
+    var cost=_bmMode==='msg'?a.costPerConv:a.costPerBuy;
+    var name=a.adset.length>55?a.adset.slice(0,55)+'...':a.adset;
+    h+='<tr>';
+    h+='<td title="'+a.adset+'">'+name+'</td>';
+    h+='<td class="r">$'+fmt(a.spend,0)+'</td>';
+    h+='<td class="r">'+fmt(perf,0)+'</td>';
+    h+='<td class="r">'+(cost>0?'$'+fmt(cost,0):'—')+'</td>';
+    h+='<td class="r">'+a.ctr.toFixed(2)+'%</td>';
+    h+='<td class="r">'+(a.roas>0?a.roas.toFixed(2)+'x':'—')+'</td>';
+    h+='<td class="r"><span class="bm-tier-badge '+a.tier+'">'+(a.tier==='top'?'TOP':a.tier==='mid'?'MID':'LOW')+'</span></td>';
+    h+='</tr>';
+  });
+  h+='</tbody></table></div></div>';
+
+  el.innerHTML=h;
+
+  // Draw charts
+  setTimeout(function(){
+    var colors10=['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#f97316','#ec4899','#84cc16','#6366f1'];
+    var labels=top10.map(function(a){return a.adset.length>20?a.adset.slice(0,20)+'...':a.adset;});
+
+    // Donut
+    var dCtx=document.getElementById('bmDonut');
+    if(dCtx){
+      if(_bmDonut){try{_bmDonut.destroy();}catch(e){}}
+      _bmDonut=new Chart(dCtx,{
+        type:'doughnut',
+        data:{labels:labels,datasets:[{data:top10.map(function(a){return a.spend;}),backgroundColor:colors10,borderWidth:2,borderColor:'#fff'}]},
+        options:{responsive:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){var pct=(c.parsed/totalSpend*100).toFixed(1);return c.label+': $'+fmt(c.parsed,0)+' ('+pct+'%)';}}}}}
+      });
+    }
+
+    // Bar CTR/CPM
+    var bCtx=document.getElementById('bmBar');
+    var sorted=[].concat(top10).sort(function(a,b){return b.conversations-a.conversations;});
+    var bLabels=sorted.map(function(a){return a.adset.length>12?a.adset.slice(0,12)+'..':a.adset;});
+    if(bCtx){
+      if(_bmBar){try{_bmBar.destroy();}catch(e){}}
+      _bmBar=new Chart(bCtx,{
+        type:'bar',
+        data:{labels:bLabels,datasets:[
+          {label:'CTR %',data:sorted.map(function(a){return a.ctr.toFixed(2);}),backgroundColor:'rgba(59,130,246,.8)',yAxisID:'y'},
+          {label:'CPM',data:sorted.map(function(a){return a.cpm.toFixed(0);}),backgroundColor:'rgba(245,158,11,.8)',yAxisID:'y2'}
+        ]},
+        options:{responsive:true,plugins:{legend:{labels:{font:{size:10}}}},scales:{
+          y:{type:'linear',position:'left',title:{display:true,text:'CTR %',font:{size:9}}},
+          y2:{type:'linear',position:'right',grid:{drawOnChartArea:false},title:{display:true,text:'CPM',font:{size:9}}}
+        }}
+      });
+    }
+  },100);
+}
+
 function commPctCls(pct){
   if(!pct)return '';
   if(pct>=70)return 'comm-pct-bad';
@@ -1858,14 +2053,17 @@ function switchView(view,el){
   if(el)el.classList.add('active');
   var mv=document.getElementById('mainView'),cv=document.getElementById('cohortView'),cmv=document.getElementById('commissionView'),fbv=document.getElementById('fbView');
   if(view==='cohort'){
-    mv.style.display='none';cv.style.display='block';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';
+    mv.style.display='none';cv.style.display='block';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';
     renderCohort();window.scrollTo({top:0,behavior:'smooth'});
   } else if(view==='commission'){
-    mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='block';if(fbv)fbv.style.display='none';
+    mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='block';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';
     renderCommission();window.scrollTo({top:0,behavior:'smooth'});
   } else if(view==='fb'){
-    mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='block';
+    mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='block';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';
     renderFB();window.scrollTo({top:0,behavior:'smooth'});
+  } else if(view==='benchmark'){
+    mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='block';
+    renderBenchmark();window.scrollTo({top:0,behavior:'smooth'});
   } else {
     mv.style.display='block';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';
     if(view!=='top')setTimeout(function(){var t=document.getElementById(view);if(t){var y=t.getBoundingClientRect().top+window.scrollY-100;window.scrollTo({top:y,behavior:'smooth'});}},50);
