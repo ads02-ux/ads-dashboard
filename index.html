@@ -4872,9 +4872,9 @@ function _renderLeave(el){
       dates.forEach(function(dt){var t=ad[dt.dateStr]||'';if(t==='หยุด')lc++;else if(t==='WFH')wc++;else if(t==='ออกกอง')oc++;});
       h+='<div style="font-size:.68rem;color:#475569;display:flex;gap:6px;align-items:center">';
       h+='<b style="color:#334155">'+an+'</b>';
-      h+='<span style="background:'+(lc>_LEAVE_QUOTA?'#fee2e2':'#f1f5f9')+';color:'+(lc>_LEAVE_QUOTA?'#dc2626':'#475569')+';border-radius:20px;padding:1px 7px;font-weight:700">ห '+lc+'/'+_LEAVE_QUOTA+'</span>';
-      h+='<span style="background:'+(wc>_WFH_QUOTA?'#fee2e2':'#eff6ff')+';color:'+(wc>_WFH_QUOTA?'#dc2626':'#1e40af')+';border-radius:20px;padding:1px 7px;font-weight:700">W '+wc+'/'+_WFH_QUOTA+'</span>';
-      if(oc>0)h+='<span style="background:#fffbeb;color:#d97706;border-radius:20px;padding:1px 7px;font-weight:700">อก '+oc+'</span>';
+      h+='<span style="background:'+(lc>_LEAVE_QUOTA?'#fee2e2':'#f1f5f9')+';color:'+(lc>_LEAVE_QUOTA?'#dc2626':'#475569')+';border-radius:20px;padding:1px 7px;font-weight:700">หยุด '+lc+'/'+_LEAVE_QUOTA+'</span>';
+      h+='<span style="background:'+(wc>_WFH_QUOTA?'#fee2e2':'#eff6ff')+';color:'+(wc>_WFH_QUOTA?'#dc2626':'#1e40af')+';border-radius:20px;padding:1px 7px;font-weight:700">WFH '+wc+'/'+_WFH_QUOTA+'</span>';
+      if(oc>0)h+='<span style="background:#fffbeb;color:#d97706;border-radius:20px;padding:1px 7px;font-weight:700">ออกกอง '+oc+'</span>';
       h+='</div>';
     });
     h+='</div>';
