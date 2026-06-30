@@ -4466,11 +4466,133 @@ function _adsaiCalcBudget(){
     h2+='<div style="font-size:.68rem;color:#16a34a;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:8px 12px">✅ ปิด '+closing.length+' แคมเปญขาดทุน ประหยัด ~'+_aiFmtB(saved)+' นำไปเสริมแคมเปญที่ดี</div>';
   }
 
-  resEl.innerHTML=h2;
+  // ── บันทึกแผนวันนี้ลง localStorage ──
+  var todayKey='adsai_plan_'+new Date().toISOString().slice(0,10);
+  var planData={date:new Date().toISOString().slice(0,10),totalBudget:totalBudget,predictedRoas:expRoas,predictedRevenue:Math.round(expRev),
+    campaigns:active.map(function(c){return{name:c.campaign,alloc:c._alloc,expectedRoas:Math.round(c.avg*100)/100,action:c.avg>=2?'เพิ่มงบ':c.avg>=1.5?'คง':'ปรับ Creative'};})
+  };
+  try{localStorage.setItem(todayKey,JSON.stringify(planData));}catch(e){}
+
+  // ── ปุ่มบันทึก + retro panel ──
+  var hRetro='';
+  hRetro+='<div style="margin-top:10px;display:flex;gap:8px;align-items:center">';
+  hRetro+='<span style="font-size:.68rem;color:#16a34a">✅ บันทึกแผนวันนี้อัตโนมัติแล้ว</span>';
+  hRetro+='</div>';
+
+  // ── ดึงแผนเมื่อวานมาเปรียบเทียบ ──
+  var yd=new Date();yd.setDate(yd.getDate()-1);
+  var ydKey='adsai_plan_'+yd.toISOString().slice(0,10);
+  var ydPlan=null;
+  try{var raw=localStorage.getItem(ydKey);if(raw)ydPlan=JSON.parse(raw);}catch(e){}
+
+  if(ydPlan){
+    hRetro+='<div id="adsai-retro-box" style="margin-top:12px;background:#faf5ff;border:1.5px solid #d8b4fe;border-radius:12px;padding:14px 16px">';
+    hRetro+='<div style="font-size:.78rem;font-weight:700;color:#7c3aed;margin-bottom:10px">🔍 เปรียบเทียบผลลัพธ์จริง vs แผนเมื่อวาน ('+ydPlan.date+')</div>';
+    hRetro+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">';
+    hRetro+='<div style="background:#fff;border:1px solid #e9d5ff;border-radius:8px;padding:10px 12px">';
+    hRetro+='<div style="font-size:.62rem;color:#7c3aed;font-weight:700;margin-bottom:4px">📋 แผนเมื่อวาน</div>';
+    hRetro+='<div style="font-size:.72rem;color:#334155">งบ: <b>'+_aiFmtB(ydPlan.totalBudget)+'</b></div>';
+    hRetro+='<div style="font-size:.72rem;color:#334155">คาด ROAS: <b style="color:#7c3aed">'+ydPlan.predictedRoas.toFixed(2)+'×</b></div>';
+    hRetro+='<div style="font-size:.72rem;color:#334155">คาด Revenue: <b>'+_aiFmtB(ydPlan.predictedRevenue)+'</b></div>';
+    hRetro+='</div>';
+    hRetro+='<div style="background:#fff;border:1px solid #e9d5ff;border-radius:8px;padding:10px 12px">';
+    hRetro+='<div style="font-size:.62rem;color:#0369a1;font-weight:700;margin-bottom:4px">📊 ผลลัพธ์จริง (กรอกได้เลย)</div>';
+    hRetro+='<div style="font-size:.72rem;color:#334155;margin-bottom:4px">งบจริง (฿): <input id="retro-spend" type="number" placeholder="เช่น 12000" style="width:100%;border:1px solid #bae6fd;border-radius:5px;padding:3px 6px;font-size:.72rem;margin-top:2px;box-sizing:border-box"></div>';
+    hRetro+='<div style="font-size:.72rem;color:#334155">Revenue จริง (฿): <input id="retro-rev" type="number" placeholder="เช่น 28000" style="width:100%;border:1px solid #bae6fd;border-radius:5px;padding:3px 6px;font-size:.72rem;margin-top:2px;box-sizing:border-box"></div>';
+    hRetro+='</div></div>';
+    hRetro+='<button onclick="_adsaiRetroAnalyze()" style="background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:.75rem;font-weight:700;cursor:pointer;width:100%;font-family:inherit">🤖 วิเคราะห์ว่าทำไมผลต่างจากที่คาด</button>';
+    hRetro+='<div id="adsai-retro-result" style="margin-top:10px"></div>';
+    hRetro+='</div>';
+    // Store ydPlan for analysis function
+    window._adsaiYdPlan=ydPlan;
+  }
+
+  resEl.innerHTML=h2+hRetro;
   }catch(err){
     if(resEl) resEl.innerHTML='<div style="color:#dc2626;padding:8px;font-size:.75rem;background:#fef2f2;border-radius:6px">❌ Error: '+err.message+'</div>';
     console.error('_adsaiCalcBudget:',err);
   }
+}
+// ═══ Retrospective Analysis ══════════════════════════════════════════════════
+function _adsaiRetroAnalyze(){
+  var el=document.getElementById('adsai-retro-result');
+  if(!el) return;
+  var spendEl=document.getElementById('retro-spend');
+  var revEl=document.getElementById('retro-rev');
+  if(!spendEl||!revEl) return;
+  var actualSpend=parseFloat(spendEl.value)||0;
+  var actualRev=parseFloat(revEl.value)||0;
+  if(actualSpend<=0||actualRev<=0){
+    el.innerHTML='<div style="color:#dc2626;font-size:.72rem">กรุณาใส่ข้อมูลทั้งสองช่อง</div>';return;
+  }
+  var plan=window._adsaiYdPlan||{};
+  var actualRoas=Math.round(actualRev/actualSpend*100)/100;
+  var predRoas=plan.predictedRoas||0;
+  var predRev=plan.predictedRevenue||0;
+  var roasDiff=actualRoas-predRoas;
+  var roasDiffPct=predRoas>0?Math.round(roasDiff/predRoas*100):0;
+  var spendDiff=actualSpend-(plan.totalBudget||0);
+  var revDiff=actualRev-predRev;
+
+  var h='<div style="margin-top:2px">';
+  // Header
+  var isGood=actualRoas>=predRoas*0.9;
+  h+='<div style="background:'+(isGood?'#f0fdf4':'#fef2f2')+';border:1.5px solid '+(isGood?'#86efac':'#fecaca')+';border-radius:10px;padding:11px 14px;margin-bottom:10px">';
+  h+='<div style="font-size:.75rem;font-weight:800;color:'+(isGood?'#16a34a':'#dc2626')+';margin-bottom:6px">'+(isGood?'✅ ผลลัพธ์อยู่ในเกณฑ์ดี':'⚠️ ผลลัพธ์ต่ำกว่าที่คาด')+'</div>';
+  h+='<div style="display:flex;gap:20px;flex-wrap:wrap">';
+  [{l:'ROAS จริง',v:actualRoas.toFixed(2)+'×',c:actualRoas>=2?'#16a34a':actualRoas>=1?'#d97706':'#dc2626'},
+   {l:'ROAS คาด',v:predRoas.toFixed(2)+'×',c:'#7c3aed'},
+   {l:'ส่วนต่าง',v:(roasDiff>=0?'+':'')+roasDiff.toFixed(2)+'× ('+roasDiffPct+'%)',c:roasDiff>=0?'#16a34a':'#dc2626'}
+  ].forEach(function(s){
+    h+='<div><div style="font-size:.6rem;color:#64748b">'+s.l+'</div><div style="font-size:.88rem;font-weight:800;color:'+s.c+';font-family:Rajdhani,sans-serif">'+s.v+'</div></div>';
+  });
+  h+='</div></div>';
+
+  // Analysis
+  var reasons=[];
+  if(Math.abs(spendDiff)>plan.totalBudget*0.1)
+    reasons.push({icon:'💰',col:'#0369a1',bg:'#eff6ff',bd:'#bfdbfe',
+      title:'งบที่ใช้จริง '+(spendDiff>0?'สูงกว่า':'ต่ำกว่า')+'แผน '+_aiFmtB(Math.abs(spendDiff)),
+      desc:spendDiff>0?'Facebook ใช้งบเกินเพราะ Lifetime Budget ปรับเองตาม Auction — อาจทำให้ ROAS เจือจาง':'งบที่ใช้จริงน้อยกว่าแผน อาจเพราะแคมเปญ Delivery ต่ำหรือ Audience แคบ'});
+  if(actualRoas<predRoas*0.85)
+    reasons.push({icon:'📉',col:'#dc2626',bg:'#fef2f2',bd:'#fecaca',
+      title:'ROAS ต่ำกว่าคาด '+Math.abs(roasDiffPct)+'%',
+      desc:'สาเหตุหลักที่พบบ่อย: Creative เริ่มเบื่อ (Ad Fatigue), Audience Overlap สูง, หรือราคา Conversion เพิ่มจาก Competition'});
+  if(actualRoas>=predRoas*1.1)
+    reasons.push({icon:'🚀',col:'#16a34a',bg:'#f0fdf4',bd:'#bbf7d0',
+      title:'ROAS สูงกว่าคาด +'+Math.abs(roasDiffPct)+'%',
+      desc:'แคมเปญทำงานดีกว่าโมเดล — อาจมีโปรโมชัน/Event หรือ Creative ที่โดนใจ Audience พิเศษ'});
+  if(revDiff<-predRev*0.15)
+    reasons.push({icon:'🛒',col:'#d97706',bg:'#fffbeb',bd:'#fde68a',
+      title:'Revenue ต่ำกว่าคาด '+_aiFmtB(Math.abs(revDiff)),
+      desc:'ลูกค้าคลิกแต่ไม่ซื้อ — ลองดู Landing Page, ราคา, หรือ Checkout Process ว่ามีปัญหาไหม'});
+  if(!reasons.length)
+    reasons.push({icon:'👍',col:'#16a34a',bg:'#f0fdf4',bd:'#bbf7d0',
+      title:'ผลลัพธ์ตรงตามโมเดล',desc:'AI วิเคราะห์ถูกต้อง — ทิศทางการจัดงบถูกแล้ว ทำต่อได้เลย'});
+
+  h+='<div style="font-size:.72rem;font-weight:700;color:#0f172a;margin-bottom:6px">🔍 วิเคราะห์สาเหตุ</div>';
+  h+='<div style="display:flex;flex-direction:column;gap:7px">';
+  reasons.forEach(function(r){
+    h+='<div style="background:'+r.bg+';border:1px solid '+r.bd+';border-radius:8px;padding:9px 12px;display:flex;gap:9px">';
+    h+='<span style="font-size:1rem">'+r.icon+'</span>';
+    h+='<div><div style="font-size:.73rem;font-weight:700;color:'+r.col+';margin-bottom:2px">'+r.title+'</div>';
+    h+='<div style="font-size:.68rem;color:#475569;line-height:1.5">'+r.desc+'</div></div></div>';
+  });
+  h+='</div>';
+
+  // Recommendation for today
+  h+='<div style="margin-top:10px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:9px 12px">';
+  h+='<div style="font-size:.7rem;font-weight:700;color:#0f172a;margin-bottom:4px">💡 ปรับแผนวันนี้</div>';
+  var todayRec='';
+  if(actualRoas<predRoas*0.85)
+    todayRec='ลดงบรวม 10–20% และหยุดแคมเปญที่มี ROAS ต่ำสุด — รอดูผล 2–3 วันก่อนเพิ่มอีกครั้ง';
+  else if(actualRoas>=predRoas*1.1)
+    todayRec='ผลดีกว่าคาด — เพิ่มงบแคมเปญ Top 2–3 อีก 20–30% ได้เลย ขณะที่ Audience ยังตอบสนองดี';
+  else
+    todayRec='ผลอยู่ในเกณฑ์ตามแผน — คง allocation เดิมไว้ และโฟกัสที่การทดสอบ Creative ใหม่';
+  h+='<div style="font-size:.71rem;color:#334155;line-height:1.6">'+todayRec+'</div></div>';
+  h+='</div>';
+  el.innerHTML=h;
 }
 // ═══ end AI วิเคราะห์ Ads ═══════════════════════════════════════════════════
 
