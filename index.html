@@ -4818,7 +4818,7 @@ var _LEAVE_ANALYSTS=['มอส','บุ๋มบิ๋ม','ปาย'];
 var _LEAVE_QUOTA=6,_WFH_QUOTA=2;
 var _TH_MONTHS=['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
 var _TH_DOW=['อา','จ','อ','พ','พฤ','ศ','ส'];
-var _TH_HOLIDAYS_2026=['2026-01-01','2026-02-12','2026-04-06','2026-04-13','2026-04-14','2026-04-15','2026-05-01','2026-05-04','2026-05-22','2026-06-03','2026-07-28','2026-08-12','2026-10-13','2026-10-23','2026-12-05','2026-12-10','2026-12-31'];
+var _TH_HOLIDAYS_2026=['2026-01-01','2026-03-03','2026-04-13','2026-04-14','2026-04-15','2026-05-01','2026-06-03','2026-07-28','2026-07-29','2026-08-12','2026-10-23','2026-12-05','2026-12-31'];
 
 function _leaveGetData(){try{return JSON.parse(localStorage.getItem('leave_cal')||'{}');}catch(e){return{};}}
 function _leaveSaveData(d){try{localStorage.setItem('leave_cal',JSON.stringify(d));}catch(e){}}
@@ -4850,11 +4850,11 @@ function _renderLeave(el){
   // Header
   h+='<div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">';
   h+='<div style="font-family:Rajdhani,sans-serif;font-size:1.7rem;font-weight:900;color:#0f172a;letter-spacing:.3px">📅 วันหยุดคนวิเคราะห์</div>';
-  h+='<div style="font-size:.74rem;color:#94a3b8">ปี 2569 · คลิกช่องเพื่อสลับ ว่าง → หยุด → WFH → ออกกอง</div>';
+  h+='<div style="font-size:.74rem;color:#94a3b8">ปี 2569 · คลิกช่องเพื่อสลับ ว่าง → หยุด → WFH → ออกกอง | 💰 = วันค่าแรงเพิ่ม</div>';
   h+='</div>';
   // Legend
   h+='<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;align-items:center">';
-  [{l:'หยุด (6/เดือน)',bg:'#fca5a5',tc:'#991b1b'},{l:'WFH (2/เดือน)',bg:'#93c5fd',tc:'#1e40af'},{l:'ออกกอง',bg:'#fcd34d',tc:'#92400e'},{l:'วันหยุดบริษัท',bg:'#cbd5e1',tc:'#475569'},{l:'เสาร์/อาทิตย์',bg:'#f1f5f9',tc:'#94a3b8',border:'#e2e8f0'}].forEach(function(lg){
+  [{l:'หยุด (6/เดือน)',bg:'#fca5a5',tc:'#991b1b'},{l:'WFH (2/เดือน)',bg:'#93c5fd',tc:'#1e40af'},{l:'ออกกอง',bg:'#fcd34d',tc:'#92400e'},{l:'ค่าแรงเพิ่ม',bg:'#d1fae5',tc:'#475569'},{l:'เสาร์/อาทิตย์',bg:'#f1f5f9',tc:'#94a3b8',border:'#e2e8f0'}].forEach(function(lg){
     h+='<div style="display:flex;align-items:center;gap:5px"><div style="width:16px;height:16px;border-radius:4px;background:'+lg.bg+';'+(lg.border?'border:1px solid '+lg.border:'')+';flex-shrink:0"></div>';
     h+='<span style="font-size:.7rem;color:'+lg.tc+'">'+lg.l+'</span></div>';
   });
@@ -4895,7 +4895,7 @@ function _renderLeave(el){
       dates.forEach(function(dt){
         var t=ad[dt.dateStr]||'';
         var cellBg,cellTxt,cellCol,clickable=false;
-        if(dt.isHol&&!t){cellBg='#e2e8f0';cellTxt='🏢';cellCol='#64748b';}
+        if(dt.isHol&&!t){cellBg='#d1fae5';cellTxt='💰';cellCol='#059669';}
         else if(t==='หยุด'){cellBg='#fca5a5';cellTxt='หยุด';cellCol='#991b1b';clickable=true;}
         else if(t==='WFH'){cellBg='#93c5fd';cellTxt='WFH';cellCol='#1e40af';clickable=true;}
         else if(t==='ออกกอง'){cellBg='#fcd34d';cellTxt='ออกกอง';cellCol='#92400e';clickable=true;}
