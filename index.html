@@ -4108,28 +4108,51 @@ function _renderAdsAI(el){
   c1.forEach(function(c){roas1Map[c.campaign]=c.roas; spend1Map[c.campaign]=c.spend;});
   c3.forEach(function(c){roas3Map[c.campaign]=c.roas;});
 
-  // AI decision per camp (วันนี้/1d/3d/7d)
+  // Active only: campaigns with spend in today/1d/3d
+  var activeCamps=new Set();
+  cT.forEach(function(c){activeCamps.add(c.campaign);});
+  c1.forEach(function(c){activeCamps.add(c.campaign);});
+  c3.forEach(function(c){activeCamps.add(c.campaign);});
+  camps7=camps7.filter(function(c){return activeCamps.has(c.campaign);});
+
+  // Map campaign → account name → page name
+  var campAccMap={};
+  allAccNames.forEach(function(n){
+    if(fbDataMap[n]) fbDataMap[n].forEach(function(row){
+      if(row.campaign&&!campAccMap[row.campaign]) campAccMap[row.campaign]=n;
+    });
+  });
+  var accPageMap={};
+  if(typeof FB_HIERARCHY!=='undefined') FB_HIERARCHY.forEach(function(prod){
+    (prod.pages||[]).forEach(function(pg){
+      (pg.accounts||[]).forEach(function(acc){
+        (acc.adAccounts||[]).forEach(function(an){ accPageMap[an]=pg.name; });
+      });
+    });
+  });
+
+  // AI decision per camp (วันนี้/1d/3d/7d)  adj = budget multiplier change (0.3 = +30%)
   function aiDecide(c){
     var r7=c.roas,r3=roas3Map[c.campaign]||0,r1=roas1Map[c.campaign]||0,rT=roasTMap[c.campaign]||0;
     var hasT=(rT>0),hasR1=(r1>0),hasR3=(r3>0);
     var allZero=(r7===0&&r3===0&&r1===0&&rT===0);
-    if(allZero) return{act:'📋 ตรวจ tracking',col:'#94a3b8',score:0};
+    if(allZero) return{act:'📋 ตรวจ tracking',col:'#94a3b8',score:0,adj:0};
     // ปิดทันที: ต้องมี 3d<1 และ 7d<1 พร้อมกัน
     var close3d7d=(hasR3&&r3>0&&r3<1)&&(r7>0&&r7<1);
-    if(close3d7d) return{act:'⏸ ปิดทันที (3d+7d ROAS<1)',col:'#dc2626',score:-2};
+    if(close3d7d) return{act:'⏸ ปิดทันที (3d+7d ROAS<1)',col:'#dc2626',score:-2,adj:-1};
     // any period<1 แต่ 3d/7d ยังไม่ทั้งคู่ต่ำกว่า 1 → ลดงบ+ระวัง
     var anyLoss=(r7>0&&r7<1)||(hasR3&&r3<1)||(hasR1&&r1<1)||(hasT&&rT<1);
-    if(anyLoss) return{act:'🔻 ลดงบ 30% + ระวัง',col:'#d97706',score:-1};
+    if(anyLoss) return{act:'🔻 ลดงบ 30% + ระวัง',col:'#d97706',score:-1,adj:-0.3};
     var allGood=(r7>=2)&&(!hasR3||r3>=2)&&(!hasR1||r1>=2)&&(!hasT||rT>=2);
     var improving=hasR1&&hasR3&&r1>r3&&r3>r7&&r7>=1;
     var declining=(hasT&&hasR1&&rT<r1*0.85)||(hasR1&&hasR3&&r1<r3*0.85&&r3<r7*0.85);
-    if(allGood) return{act:'🚀 เพิ่มงบ 30–50%',col:'#16a34a',score:3};
-    if(r7>=2&&!declining) return{act:'📊 เพิ่มงบ +10–20%',col:'#22c55e',score:2};
-    if(improving) return{act:'📈 กำลังดีขึ้น +10%',col:'#2563eb',score:2};
-    if(declining) return{act:'🔻 ลดงบ 30% + ปรับ',col:'#d97706',score:-1};
-    if(r7>=1.5) return{act:'🔧 คง + ปรับ Creative',col:'#2563eb',score:1};
-    if(r7>=1)   return{act:'⚠️ ลดงบ + ทดสอบ',col:'#d97706',score:0};
-    return{act:'⏸ พิจารณาปิด',col:'#ef4444',score:-1};
+    if(allGood) return{act:'🚀 เพิ่มงบ 30–50%',col:'#16a34a',score:3,adj:0.4};
+    if(r7>=2&&!declining) return{act:'📊 เพิ่มงบ +10–20%',col:'#22c55e',score:2,adj:0.15};
+    if(improving) return{act:'📈 กำลังดีขึ้น +10%',col:'#2563eb',score:2,adj:0.1};
+    if(declining) return{act:'🔻 ลดงบ 30% + ปรับ',col:'#d97706',score:-1,adj:-0.3};
+    if(r7>=1.5) return{act:'🔧 คง + ปรับ Creative',col:'#2563eb',score:1,adj:0};
+    if(r7>=1)   return{act:'⚠️ ลดงบ + ทดสอบ',col:'#d97706',score:0,adj:-0.2};
+    return{act:'⏸ พิจารณาปิด',col:'#ef4444',score:-1,adj:-1};
   }
 
   h+='<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;margin-bottom:20px">';
@@ -4139,8 +4162,8 @@ function _renderAdsAI(el){
   h+='<span style="background:#f0fdf4;color:#16a34a;border-radius:4px;padding:2px 7px;font-size:.62rem;font-weight:700">Target ≥2×</span></div>';
   h+='<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:.7rem">';
   h+='<thead><tr style="background:#f8fafc">';
-  ['แคมเปญ','วันนี้','1 วัน','3 วัน','7 วัน','Spend 1d','Spend 7d','🤖 คำแนะนำ AI'].forEach(function(col,ci){
-    var align=(ci>=1&&ci<=6)?'right':'left';
+  ['แคมเปญ','วันนี้','1 วัน','3 วัน','7 วัน','Spend 1d','Spend 7d','💰 งบแนะนำ','🤖 คำแนะนำ AI'].forEach(function(col,ci){
+    var align=(ci>=1&&ci<=7)?'right':'left';
     h+='<th style="padding:8px 10px;text-align:'+align+';color:#64748b;font-weight:600;white-space:nowrap;border-bottom:1px solid #f1f5f9">'+col+'</th>';
   });
   h+='</tr></thead><tbody>';
@@ -4153,14 +4176,32 @@ function _renderAdsAI(el){
     }
     var dec=aiDecide(c);
     var nm=c.campaign.length>30?c.campaign.slice(0,28)+'…':c.campaign;
+    var accN=campAccMap[c.campaign]||'';
+    var pgN=accPageMap[accN]||'';
     var bg=(dec.score<=-2)?'#fff5f5':(i%2===0?'#fff':'#f8fafc');
     h+='<tr style="background:'+bg+';border-bottom:1px solid #f1f5f9">';
-    h+='<td style="padding:8px 10px;color:#0f172a;font-weight:600;max-width:190px;word-break:break-word">'+nm+'</td>';
+    h+='<td style="padding:8px 10px;max-width:220px;word-break:break-word">';
+    h+='<div style="font-weight:600;color:#0f172a">'+nm+'</div>';
+    if(pgN||accN) h+='<div style="font-size:.6rem;color:#94a3b8;margin-top:2px">'+(pgN?'📄 '+pgN:'')+(pgN&&accN?' · ':'')+(accN?'🏦 '+accN:'')+'</div>';
+    h+='</td>';
     h+=roasCell(rTv)+roasCell(r1v)+roasCell(r3v);
     h+='<td style="padding:8px 10px;text-align:right;font-weight:700;color:'+g7.color+'">'+c.roas.toFixed(2)+'×</td>';
     var sp1=spend1Map[c.campaign]||0;
+    // งบแนะนำ: คำนวณจาก spend เมื่อวาน × adj
+    var budgRec='—',budgCol='#94a3b8';
+    if(sp1>0){
+      if(dec.adj===-1){ budgRec='ปิด (฿0)'; budgCol='#dc2626'; }
+      else{
+        var delta=Math.round(sp1*dec.adj/10)*10;
+        var newB=sp1+delta;
+        var sign=delta>=0?'+':'';
+        budgRec=(delta!==0?sign+_aiFmtB(Math.abs(delta))+' → ':'')+ _aiFmtB(newB);
+        budgCol=delta>0?'#16a34a':delta<0?'#d97706':'#475569';
+      }
+    }
     h+='<td style="padding:8px 10px;text-align:right;color:#475569">'+(sp1>0?_aiFmtB(sp1):'—')+'</td>';
     h+='<td style="padding:8px 10px;text-align:right;color:#475569">'+_aiFmtB(c.spend)+'</td>';
+    h+='<td style="padding:8px 10px;text-align:right;font-weight:700;color:'+budgCol+';white-space:nowrap">'+budgRec+'</td>';
     h+='<td style="padding:8px 10px;color:'+dec.col+';font-weight:700;white-space:nowrap">'+dec.act+'</td>';
     h+='</tr>';
   });
