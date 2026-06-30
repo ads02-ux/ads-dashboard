@@ -513,6 +513,72 @@ canvas{filter:none}
 </style>
 </head>
 <body>
+<style>
+#pw-gate{position:fixed;inset:0;background:#f0f4ff;display:flex;align-items:center;justify-content:center;z-index:99999;font-family:Inter,sans-serif}
+#pw-box{background:#fff;border-radius:16px;padding:40px 36px;box-shadow:0 8px 40px rgba(21,101,192,.15);text-align:center;width:320px}
+#pw-logo{font-size:2.4rem;margin-bottom:10px}
+#pw-title{font-size:1.25rem;font-weight:700;color:#1565c0;letter-spacing:.08em;margin-bottom:4px}
+#pw-sub{font-size:.75rem;color:#64748b;margin-bottom:24px}
+#pw-input{width:100%;box-sizing:border-box;border:1.5px solid #dde3f4;border-radius:8px;padding:10px 14px;font-size:.95rem;font-family:Inter,sans-serif;color:#0f172a;outline:none;margin-bottom:12px;text-align:center;letter-spacing:.1em}
+#pw-input:focus{border-color:#1976d2;box-shadow:0 0 0 3px rgba(25,118,210,.12)}
+#pw-btn{width:100%;padding:11px;background:#1565c0;color:#fff;border:none;border-radius:8px;font-size:.95rem;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;transition:.2s}
+#pw-btn:hover{background:#1976d2}
+#pw-err{color:#dc2626;font-size:.78rem;margin-top:10px;min-height:1em}
+</style>
+<div id="pw-gate">
+  <div id="pw-box">
+    <div id="pw-logo">⚔️</div>
+    <div id="pw-title">ADS MISSION DASHBOARD</div>
+    <div id="pw-sub">Rich Biotech · Hunter System</div>
+    <input id="pw-input" type="password" placeholder="รหัสผ่าน" onkeydown="if(event.key==='Enter')pwCheck()">
+    <button id="pw-btn" onclick="pwCheck()">เข้าสู่ระบบ</button>
+    <div id="pw-err"></div>
+  </div>
+</div>
+<script>
+(function(){
+  var a=sessionStorage.getItem('rb_auth');
+  if(a==='1'){document.getElementById('pw-gate').style.display='none';}
+  else if(a==='hr'){document.getElementById('pw-gate').style.display='none';document.addEventListener('DOMContentLoaded',function(){switchView('commission',document.getElementById('sb-comm'));enableHrMode();});}
+})();
+function pwCheck(){
+  var v=document.getElementById('pw-input').value;
+  if(v==='rich01'){sessionStorage.setItem('rb_auth','1');document.getElementById('pw-gate').style.display='none';}
+  else if(v==='hr01'){sessionStorage.setItem('rb_auth','hr');document.getElementById('pw-gate').style.display='none';switchView('commission',document.getElementById('sb-comm'));enableHrMode();}
+  else{document.getElementById('pw-err').textContent='รหัสผ่านไม่ถูกต้อง';document.getElementById('pw-input').value='';document.getElementById('pw-input').focus();}
+}
+function enableHrMode(){
+  // Hide sidebar so HR can't navigate elsewhere
+  var nav=document.querySelector('.sb-nav');
+  if(nav){nav.style.display='none';}
+  // Also hide sidebar toggle area
+  var sidebar=document.querySelector('.sidebar');
+  if(sidebar){sidebar.style.width='0';sidebar.style.minWidth='0';sidebar.style.overflow='hidden';sidebar.style.padding='0';}
+  // Make main content full width
+  var wrap=document.querySelector('.main-wrap');
+  if(wrap){wrap.style.marginLeft='0';}
+  // Disable all inputs in commission view after render
+  setTimeout(function(){disableCommInputs();},600);
+}
+function disableCommInputs(){
+  var selectors=['.comm-inp','.comm-edit','.csum-goal-inp','#cdet-goal','[class*="comm"] input','[class*="csum"] input'];
+  selectors.forEach(function(sel){
+    document.querySelectorAll(sel).forEach(function(el){
+      el.disabled=true;
+      el.style.pointerEvents='none';
+      el.style.opacity='.6';
+      el.style.cursor='not-allowed';
+    });
+  });
+  // Also disable any buttons in commission view (nav prev/next month OK, but save buttons)
+  document.querySelectorAll('#commissionView button').forEach(function(btn){
+    if(btn.textContent.includes('บันทึก')||btn.textContent.includes('Save')||btn.textContent.includes('อัป')){
+      btn.disabled=true;btn.style.opacity='.4';btn.style.cursor='not-allowed';
+    }
+  });
+}
+</script>
+
 <button class="sb-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰</button>
 <div class="sidebar" id="sidebar">
   <div class="sb-logo">
@@ -1999,6 +2065,7 @@ function renderCommission(){
   });
 
   wrap.innerHTML='<div class="comm-wrap">'+out+'</div>';
+  if(sessionStorage.getItem('rb_auth')==='hr'){setTimeout(disableCommInputs,150);}
 
   // Render trend chart after DOM update
   requestAnimationFrame(function(){
@@ -2049,6 +2116,7 @@ function renderCommission(){
 // ============================================================
 
 function switchView(view,el){
+  if(sessionStorage.getItem('rb_auth')==='hr'&&view!=='commission')return;
   document.querySelectorAll('.sb-item').forEach(function(i){i.classList.remove('active');});
   if(el)el.classList.add('active');
   var mv=document.getElementById('mainView'),cv=document.getElementById('cohortView'),cmv=document.getElementById('commissionView'),fbv=document.getElementById('fbView');
