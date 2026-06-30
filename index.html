@@ -4896,15 +4896,15 @@ function _renderLeave(el){
         var t=ad[dt.dateStr]||'';
         var cellBg,cellTxt,cellCol,clickable=false;
         if(dt.isHol&&!t){cellBg='#e2e8f0';cellTxt='🏢';cellCol='#64748b';}
-        else if(t==='หยุด'){cellBg='#fca5a5';cellTxt='ห';cellCol='#991b1b';clickable=true;}
-        else if(t==='WFH'){cellBg='#93c5fd';cellTxt='W';cellCol='#1e40af';clickable=true;}
-        else if(t==='ออกกอง'){cellBg='#fcd34d';cellTxt='อ';cellCol='#92400e';clickable=true;}
+        else if(t==='หยุด'){cellBg='#fca5a5';cellTxt='หยุด';cellCol='#991b1b';clickable=true;}
+        else if(t==='WFH'){cellBg='#93c5fd';cellTxt='WFH';cellCol='#1e40af';clickable=true;}
+        else if(t==='ออกกอง'){cellBg='#fcd34d';cellTxt='ออกกอง';cellCol='#92400e';clickable=true;}
         else if(dt.isWE){cellBg='#f1f5f9';cellTxt='';cellCol='#94a3b8';}
         else{cellBg='transparent';cellTxt='';cellCol='#e2e8f0';clickable=true;}
         var tdStyle='padding:3px 2px;text-align:center;border-left:1px solid #f8fafc;'+(clickable?'cursor:pointer;':'');
         if(clickable)h+='<td style="'+tdStyle+'" onclick="_leaveToggle(\''+an+'\',\''+dt.dateStr+'\')">';
         else h+='<td style="'+tdStyle+'">';
-        h+='<div style="width:24px;height:24px;border-radius:4px;background:'+cellBg+';display:flex;align-items:center;justify-content:center;font-size:.58rem;font-weight:800;color:'+cellCol+';margin:0 auto;'+((!t&&!dt.isWE&&!dt.isHol)?'border:1px dashed #e2e8f0':'')+'">';
+        h+='<div style="width:36px;height:20px;border-radius:4px;background:'+cellBg+';display:flex;align-items:center;justify-content:center;font-size:.52rem;font-weight:800;color:'+cellCol+';margin:0 auto;white-space:nowrap;overflow:hidden;'+((!t&&!dt.isWE&&!dt.isHol)?'border:1px dashed #e2e8f0':'')+'">';
         h+=cellTxt+'</div></td>';
       });
       h+='</tr>';
