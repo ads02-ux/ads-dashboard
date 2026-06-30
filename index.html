@@ -619,6 +619,9 @@ function disableCommInputs(){
     <div class="sb-item" id="sb-adsai" onclick="switchView('adsai',this)">
       <span class="sb-icon">📈</span><span>AI วิเคราะห์ Ads</span>
     </div>
+    <div class="sb-item" id="sb-track" onclick="switchView('track',this)">
+      <span class="sb-icon">📊</span><span>ติดตามผล</span>
+    </div>
     <div class="sb-item" id="sb-benchmark" onclick="switchView('benchmark',this)">
       <span class="sb-icon">📐</span><span>BenchMark มาตรวัดแอด</span>
     </div>
@@ -811,6 +814,7 @@ function disableCommInputs(){
 <div id="chartrankView" style="display:none;padding:28px 32px"></div>
 <div id="aiView" style="display:none;padding:28px 32px"></div>
 <div id="adsaiView" style="display:none;padding:28px 32px"></div>
+<div id="trackView" style="display:none;padding:28px 32px"></div>
 
 <script>
 var SHEET_ID='1Qs57OO-tDRAsikHulJSKw6S0tfbMqgUuNbmiRHN1POI',GID_S1='997286503',GID_S2='1472268717',GID_COMM='1688902080',GID_CONFIG='388205387',REFRESH=300;
@@ -2148,13 +2152,13 @@ function switchView(view,el){
   if(el)el.classList.add('active');
   var mv=document.getElementById('mainView'),cv=document.getElementById('cohortView'),cmv=document.getElementById('commissionView'),fbv=document.getElementById('fbView');
   if(view==='cohort'){
-    mv.style.display='none';cv.style.display='block';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';
+    mv.style.display='none';cv.style.display='block';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var trv2=document.getElementById('trackView');if(trv2)trv2.style.display='none';
     renderCohort();window.scrollTo({top:0,behavior:'smooth'});
   } else if(view==='commission'){
-    mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='block';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';
+    mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='block';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var trv2=document.getElementById('trackView');if(trv2)trv2.style.display='none';
     renderCommission();window.scrollTo({top:0,behavior:'smooth'});
   } else if(view==='fb'){
-    mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='block';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';
+    mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='block';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var trv2=document.getElementById('trackView');if(trv2)trv2.style.display='none';
     renderFB();window.scrollTo({top:0,behavior:'smooth'});
   } else if(view==='chartrank'){
     mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv){crv.style.display='block';_renderChartRank(crv);}
@@ -2163,13 +2167,16 @@ function switchView(view,el){
     mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv){aiv.style.display='block';_renderAIContent(aiv);}
     window.scrollTo({top:0,behavior:'smooth'});
   } else if(view==='adsai'){
-    mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var aav=document.getElementById('adsaiView');if(aav){aav.style.display='block';_renderAdsAI(aav);}
+    mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var trv2=document.getElementById('trackView');if(trv2)trv2.style.display='none';var aav=document.getElementById('adsaiView');if(aav){aav.style.display='block';_renderAdsAI(aav);}
+    window.scrollTo({top:0,behavior:'smooth'});
+  } else if(view==='track'){
+    mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var trv2=document.getElementById('trackView');if(trv2)trv2.style.display='none';var trv=document.getElementById('trackView');if(trv){trv.style.display='block';_renderTrackHistory(trv);}
     window.scrollTo({top:0,behavior:'smooth'});
   } else if(view==='benchmark'){
-    mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='block';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';
+    mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='block';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var trv2=document.getElementById('trackView');if(trv2)trv2.style.display='none';
     renderBenchmark();window.scrollTo({top:0,behavior:'smooth'});
   } else {
-    mv.style.display='block';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';
+    mv.style.display='block';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var trv2=document.getElementById('trackView');if(trv2)trv2.style.display='none';
     if(view!=='top')setTimeout(function(){var t=document.getElementById(view);if(t){var y=t.getBoundingClientRect().top+window.scrollY-100;window.scrollTo({top:y,behavior:'smooth'});}},50);
   }
 }
@@ -4643,6 +4650,160 @@ function _adsaiRetroAnalyze(planId){
   _adsaiSaveHistory(arr);
   _adsaiRenderHistory();
 }
+// ═══ ติดตามผล (Plan History Page) ══════════════════════════════════════════
+function _renderTrackHistory(el){
+  if(!el) return;
+  var arr=_adsaiGetHistory();
+  var h='<div style="max-width:900px;margin:0 auto">';
+  h+='<div style="display:flex;align-items:center;gap:14px;margin-bottom:24px">';
+  h+='<div style="font-family:Rajdhani,sans-serif;font-size:1.7rem;font-weight:900;color:#0f172a;letter-spacing:.3px">📊 ติดตามผล</div>';
+  h+='<div style="font-size:.76rem;color:#94a3b8">ประวัติแผนงบและผลลัพธ์จริง</div>';
+  h+='</div>';
+
+  if(!arr.length){
+    h+='<div style="background:#f8fafc;border:1.5px dashed #cbd5e1;border-radius:14px;padding:48px;text-align:center">';
+    h+='<div style="font-size:2.5rem;margin-bottom:12px">📋</div>';
+    h+='<div style="font-size:.9rem;font-weight:700;color:#475569;margin-bottom:6px">ยังไม่มีแผนที่บันทึกไว้</div>';
+    h+='<div style="font-size:.76rem;color:#94a3b8">ไปที่ AI วิเคราะห์ Ads → กด คำนวณ → กด 💾 นำไปใช้</div>';
+    h+='</div>';
+  } else {
+    // Summary row
+    var totalPlans=arr.length;
+    var withActual=arr.filter(function(p){return p.actual&&p.actual.spend>0;}).length;
+    var avgAccuracy=0;
+    var accCount=0;
+    arr.forEach(function(p){if(p.actual&&p.actual.spend>0){var aR=p.actual.revenue/p.actual.spend;var diff=Math.abs(aR-p.predictedRoas)/p.predictedRoas;avgAccuracy+=(1-diff);accCount++;}});
+    if(accCount>0) avgAccuracy=Math.round(avgAccuracy/accCount*100);
+
+    h+='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px">';
+    [{l:'แผนทั้งหมด',v:totalPlans+' รายการ',c:'#0f172a',bg:'#f8fafc',bd:'#e2e8f0'},
+     {l:'ใส่ผลจริงแล้ว',v:withActual+'/'+totalPlans,c:'#16a34a',bg:'#f0fdf4',bd:'#86efac'},
+     {l:'ความแม่นยำเฉลี่ย',v:accCount>0?avgAccuracy+'%':'—',c:'#7c3aed',bg:'#faf5ff',bd:'#d8b4fe'}
+    ].forEach(function(s){
+      h+='<div style="background:'+s.bg+';border:1.5px solid '+s.bd+';border-radius:12px;padding:14px 16px">';
+      h+='<div style="font-size:.62rem;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px">'+s.l+'</div>';
+      h+='<div style="font-size:1.2rem;font-weight:800;color:'+s.c+';font-family:Rajdhani,sans-serif">'+s.v+'</div>';
+      h+='</div>';
+    });
+    h+='</div>';
+
+    // Plan cards
+    h+='<div style="display:flex;flex-direction:column;gap:12px">';
+    arr.forEach(function(p){
+      var hasActual=p.actual&&p.actual.spend>0;
+      var aRoas=hasActual?Math.round(p.actual.revenue/p.actual.spend*100)/100:0;
+      var roasDiff=hasActual?aRoas-p.predictedRoas:0;
+      var isGood=hasActual&&aRoas>=p.predictedRoas*0.9;
+      var cardBd=hasActual?(isGood?'#86efac':'#fecaca'):'#d8b4fe';
+      var cardBg=hasActual?(isGood?'#f0fdf4':'#fef2f2'):'#faf5ff';
+      var safeId=p.id.replace(/[^a-zA-Z0-9]/g,'_');
+
+      h+='<div style="background:'+cardBg+';border:1.5px solid '+cardBd+';border-radius:14px;padding:16px 20px">';
+      // Header row
+      h+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">';
+      h+='<div style="font-size:.88rem;font-weight:800;color:#0f172a">'+p.label+'</div>';
+      if(hasActual){
+        var badge=isGood?'✅ ตามเป้า':'⚠️ ต่ำกว่าเป้า';
+        var badgeC=isGood?'#16a34a':'#dc2626';
+        var badgeBg=isGood?'#dcfce7':'#fee2e2';
+        h+='<span style="font-size:.62rem;font-weight:700;color:'+badgeC+';background:'+badgeBg+';padding:3px 8px;border-radius:20px">'+badge+'</span>';
+      } else {
+        h+='<span style="font-size:.62rem;font-weight:700;color:#7c3aed;background:#ede9fe;padding:3px 8px;border-radius:20px">📝 รอใส่ผลจริง</span>';
+      }
+      h+='<span style="margin-left:auto;font-size:.66rem;cursor:pointer;color:#94a3b8;padding:2px 8px;border:1px solid #e2e8f0;border-radius:20px" data-planid="'+p.id+'" onclick="_adsaiDeletePlan(this.dataset.planid)">✕ ลบ</span>';
+      h+='</div>';
+
+      // Stats
+      h+='<div style="display:flex;gap:20px;flex-wrap:wrap;margin-bottom:12px">';
+      h+='<div><div style="font-size:.6rem;color:#64748b;margin-bottom:2px">งบที่วางแผน</div><div style="font-size:.92rem;font-weight:800;color:#0f172a;font-family:Rajdhani,sans-serif">'+_aiFmtB(p.totalBudget)+'</div></div>';
+      h+='<div><div style="font-size:.6rem;color:#64748b;margin-bottom:2px">คาด ROAS</div><div style="font-size:.92rem;font-weight:800;color:#7c3aed;font-family:Rajdhani,sans-serif">'+p.predictedRoas.toFixed(2)+'×</div></div>';
+      h+='<div><div style="font-size:.6rem;color:#64748b;margin-bottom:2px">คาด Revenue</div><div style="font-size:.92rem;font-weight:800;color:#1565c0;font-family:Rajdhani,sans-serif">'+_aiFmtB(p.predictedRevenue)+'</div></div>';
+      if(hasActual){
+        h+='<div style="width:1px;background:#e2e8f0;margin:0 4px"></div>';
+        h+='<div><div style="font-size:.6rem;color:#64748b;margin-bottom:2px">งบจริง</div><div style="font-size:.92rem;font-weight:800;color:#0f172a;font-family:Rajdhani,sans-serif">'+_aiFmtB(p.actual.spend)+'</div></div>';
+        h+='<div><div style="font-size:.6rem;color:#64748b;margin-bottom:2px">ROAS จริง</div><div style="font-size:.92rem;font-weight:800;color:'+(isGood?'#16a34a':'#dc2626')+';font-family:Rajdhani,sans-serif">'+aRoas.toFixed(2)+'× <span style="font-size:.7rem">'+(roasDiff>=0?'+':'')+roasDiff.toFixed(2)+'</span></div></div>';
+        h+='<div><div style="font-size:.6rem;color:#64748b;margin-bottom:2px">Revenue จริง</div><div style="font-size:.92rem;font-weight:800;color:#16a34a;font-family:Rajdhani,sans-serif">'+_aiFmtB(p.actual.revenue)+'</div></div>';
+      }
+      h+='</div>';
+
+      // Analysis if has actual
+      if(hasActual && p.analysis){
+        h+='<details style="margin-top:4px"><summary style="font-size:.71rem;font-weight:700;color:#7c3aed;cursor:pointer;padding:4px 0">🔍 ดูการวิเคราะห์</summary>';
+        h+='<div style="margin-top:8px">'+p.analysis+'</div></details>';
+      } else if(!hasActual){
+        // Input form (hidden by default)
+        h+='<div id="trk-form-'+safeId+'" style="display:none;margin-top:4px">';
+        h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">';
+        var iSt='border:1.5px solid #c4b5fd;border-radius:8px;padding:7px 10px;font-size:.76rem;width:100%;box-sizing:border-box;font-family:inherit';
+        h+='<div><div style="font-size:.64rem;color:#7c3aed;font-weight:700;margin-bottom:4px">งบจริงที่ใช้ (฿)</div><input id="trs-'+safeId+'" type="number" placeholder="เช่น 12000" style="'+iSt+'"></div>';
+        h+='<div><div style="font-size:.64rem;color:#7c3aed;font-weight:700;margin-bottom:4px">Revenue จริง (฿)</div><input id="trr-'+safeId+'" type="number" placeholder="เช่น 28000" style="'+iSt+'"></div>';
+        h+='</div>';
+        h+='<button data-pid="'+p.id+'" onclick="_adsaiTrackAnalyze(this.dataset.pid)" style="background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;border:none;border-radius:9px;padding:9px;font-size:.76rem;font-weight:700;cursor:pointer;width:100%;font-family:inherit">🤖 วิเคราะห์ผลลัพธ์</button>';
+        h+='</div>';
+        h+='<button data-fid="trk-form-'+safeId+'" onclick="_adsaiToggleForm(this)" style="background:#7c3aed;color:#fff;border:none;border-radius:9px;padding:8px 16px;font-size:.74rem;font-weight:700;cursor:pointer;font-family:inherit;width:100%">📝 ใส่ผลจริงเมื่อวาน</button>';
+      }
+      h+='</div>';
+    });
+    h+='</div>';
+  }
+  h+='</div>';
+  el.innerHTML=h;
+}
+
+function _adsaiTrackAnalyze(planId){
+  var arr=_adsaiGetHistory();
+  var plan=arr.find(function(p){return p.id===planId;});
+  if(!plan) return;
+  var safeId=planId.replace(/[^a-zA-Z0-9]/g,'_');
+  var sEl=document.getElementById('trs-'+safeId);
+  var rEl=document.getElementById('trr-'+safeId);
+  var actualSpend=sEl?parseFloat(sEl.value)||0:0;
+  var actualRev=rEl?parseFloat(rEl.value)||0:0;
+  if(actualSpend<=0||actualRev<=0){
+    var fe=document.getElementById('trk-form-'+safeId);if(fe)fe.style.display='block';return;
+  }
+  plan.actual={spend:actualSpend,revenue:actualRev};
+  // Run analysis (reuse logic)
+  var actualRoas=Math.round(actualRev/actualSpend*100)/100;
+  var predRoas=plan.predictedRoas||0;
+  var predRev=plan.predictedRevenue||0;
+  var roasDiff=actualRoas-predRoas;
+  var roasDiffPct=predRoas>0?Math.round(roasDiff/predRoas*100):0;
+  var spendDiff=actualSpend-(plan.totalBudget||0);
+  var revDiff=actualRev-predRev;
+  var isGood=actualRoas>=predRoas*0.9;
+  var h='<div style="background:'+(isGood?'#f0fdf4':'#fef2f2')+';border:1.5px solid '+(isGood?'#86efac':'#fecaca')+';border-radius:9px;padding:10px 13px;margin-bottom:8px">';
+  h+='<div style="font-size:.73rem;font-weight:800;color:'+(isGood?'#16a34a':'#dc2626')+';margin-bottom:5px">'+(isGood?'✅ ผลลัพธ์อยู่ในเกณฑ์':'⚠️ ต่ำกว่าที่คาด')+'</div>';
+  h+='<div style="display:flex;gap:16px;flex-wrap:wrap">';
+  [{l:'ROAS จริง',v:actualRoas.toFixed(2)+'×',c:actualRoas>=2?'#16a34a':actualRoas>=1?'#d97706':'#dc2626'},
+   {l:'คาดไว้',v:predRoas.toFixed(2)+'×',c:'#7c3aed'},
+   {l:'ต่าง',v:(roasDiff>=0?'+':'')+roasDiff.toFixed(2)+'× ('+roasDiffPct+'%)',c:roasDiff>=0?'#16a34a':'#dc2626'}
+  ].forEach(function(s){h+='<div><div style="font-size:.58rem;color:#64748b">'+s.l+'</div><div style="font-size:.82rem;font-weight:800;color:'+s.c+';font-family:Rajdhani,sans-serif">'+s.v+'</div></div>';});
+  h+='</div></div>';
+  var reasons=[];
+  if(Math.abs(spendDiff)>plan.totalBudget*0.1)
+    reasons.push({icon:'💰',col:'#0369a1',bg:'#eff6ff',bd:'#bfdbfe',t:'งบจริง'+(spendDiff>0?'สูงกว่า':'ต่ำกว่า')+'แผน '+_aiFmtB(Math.abs(spendDiff)),d:spendDiff>0?'Lifetime Budget ให้ Facebook ปรับเองตาม Auction':'Delivery ต่ำหรือ Audience แคบ'});
+  if(actualRoas<predRoas*0.85)
+    reasons.push({icon:'📉',col:'#dc2626',bg:'#fef2f2',bd:'#fecaca',t:'ROAS ต่ำกว่าคาด '+Math.abs(roasDiffPct)+'%',d:'Ad Fatigue, Audience Overlap สูง หรือ Competition ดัน CPM ขึ้น'});
+  else if(actualRoas>=predRoas*1.1)
+    reasons.push({icon:'🚀',col:'#16a34a',bg:'#f0fdf4',bd:'#bbf7d0',t:'ROAS ดีกว่าคาด +'+Math.abs(roasDiffPct)+'%',d:'Creative โดนใจ / มี Event พิเศษ — เพิ่มงบได้เลย'});
+  if(revDiff<-predRev*0.15)
+    reasons.push({icon:'🛒',col:'#d97706',bg:'#fffbeb',bd:'#fde68a',t:'Revenue ต่ำกว่าคาด '+_aiFmtB(Math.abs(revDiff)),d:'Conversion Rate ต่ำ — ตรวจ Landing Page / ราคา / Checkout'});
+  if(!reasons.length)
+    reasons.push({icon:'👍',col:'#16a34a',bg:'#f0fdf4',bd:'#bbf7d0',t:'โมเดลแม่นยำ',d:'ทิศทางจัดงบถูกต้อง ทำต่อได้เลย'});
+  h+='<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px">';
+  reasons.forEach(function(r){h+='<div style="background:'+r.bg+';border:1px solid '+r.bd+';border-radius:7px;padding:8px 11px;display:flex;gap:8px"><span>'+r.icon+'</span><div><div style="font-size:.7rem;font-weight:700;color:'+r.col+'">'+r.t+'</div><div style="font-size:.66rem;color:#475569;line-height:1.4">'+r.d+'</div></div></div>';});
+  h+='</div>';
+  h+='<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:7px;padding:8px 11px;font-size:.68rem;color:#334155"><b style="color:#0f172a">💡 ปรับแผนวันนี้:</b> ';
+  if(actualRoas<predRoas*0.85) h+='ลดงบรวม 10–20% และหยุดแคมเปญ ROAS ต่ำสุด';
+  else if(actualRoas>=predRoas*1.1) h+='เพิ่มงบ Top campaigns อีก 20–30% ได้เลย';
+  else h+='คง allocation เดิม โฟกัสทดสอบ Creative ใหม่';
+  h+='</div>';
+  plan.analysis=h;
+  _adsaiSaveHistory(arr);
+  _renderTrackHistory(document.getElementById('trackView'));
+}
+
 // ═══ end AI วิเคราะห์ Ads ═══════════════════════════════════════════════════
 
 
