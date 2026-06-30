@@ -3826,17 +3826,18 @@ function _aiCompetitorFallback(pIdx,el,btnEl,reason){
   var p=FB_HIERARCHY[pIdx];
   // Industry-level content type data for Thai health supplements
   var _adb='https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=TH&search_type=keyword_unordered&q=';
+  var _bk=(_prodSearchTerms[p?p.product:'']||'อาหารเสริมผู้ชาย สมรรถภาพ').split(' ').slice(0,2).join(' ');
   var industryTypes=[
-    {key:'review',label:'รีวิวลูกค้า',icon:'⭐',pct:88,l1:_adb+encodeURIComponent('อาหารเสริม รีวิว ใช้แล้ว'),l2:_adb+encodeURIComponent('อาหารเสริมผู้ชาย รีวิว')},
-    {key:'celebrity',label:'ดารา / KOL',icon:'🌟',pct:75,l1:_adb+encodeURIComponent('อาหารเสริม ดารา พรีเซนเตอร์'),l2:_adb+encodeURIComponent('อาหารเสริม influencer KOL')},
-    {key:'promo',label:'โปรโมชั่น / ลดราคา',icon:'🏷',pct:70,l1:_adb+encodeURIComponent('อาหารเสริม โปรโมชั่น ลดราคา'),l2:_adb+encodeURIComponent('อาหารเสริม flash sale ราคาพิเศษ')},
-    {key:'beforeafter',label:'Before / After',icon:'🔄',pct:60,l1:_adb+encodeURIComponent('อาหารเสริม ก่อน หลัง เปลี่ยน'),l2:_adb+encodeURIComponent('อาหารเสริม transformation ผล')},
-    {key:'expert',label:'ผู้เชี่ยวชาญ / หมอ',icon:'🩺',pct:52,l1:_adb+encodeURIComponent('อาหารเสริม หมอ แนะนำ แพทย์'),l2:_adb+encodeURIComponent('อาหารเสริม ผู้เชี่ยวชาญ เภสัช')},
-    {key:'result',label:'ผลลัพธ์ / ตัวเลข',icon:'📊',pct:45,l1:_adb+encodeURIComponent('อาหารเสริม ผล งานวิจัย ตัวเลข'),l2:_adb+encodeURIComponent('อาหารเสริม ผลลัพธ์ stat')},
-    {key:'ingredient',label:'ส่วนผสม / สูตร',icon:'🧪',pct:38,l1:_adb+encodeURIComponent('อาหารเสริม สูตร ส่วนผสม สกัด'),l2:_adb+encodeURIComponent('อาหารเสริม ingredient สาร')},
-    {key:'ugc',label:'UGC / ลูกค้าจริง',icon:'👥',pct:35,l1:_adb+encodeURIComponent('อาหารเสริม ลูกค้าจริง ใช้จริง'),l2:_adb+encodeURIComponent('อาหารเสริม UGC ผู้ใช้จริง')},
-    {key:'problem',label:'Problem-Solution',icon:'💡',pct:30,l1:_adb+encodeURIComponent('อาหารเสริม ปัญหา แก้ บรรเทา'),l2:_adb+encodeURIComponent('อาหารเสริม solution ช่วย')},
-    {key:'live',label:'Live / ไลฟ์',icon:'📡',pct:28,l1:_adb+encodeURIComponent('อาหารเสริม ไลฟ์ live สด'),l2:_adb+encodeURIComponent('อาหารเสริม live ไลฟ์สด')},
+    {key:'review',label:'รีวิวลูกค้า',icon:'⭐',pct:88,l1:_adb+encodeURIComponent(_bk+' รีวิว ใช้แล้ว'),l2:_adb+encodeURIComponent(_bk+' ประสบการณ์จริง')},
+    {key:'celebrity',label:'ดารา / KOL',icon:'🌟',pct:75,l1:_adb+encodeURIComponent(_bk+' ดารา พรีเซนเตอร์'),l2:_adb+encodeURIComponent(_bk+' KOL influencer')},
+    {key:'promo',label:'โปรโมชั่น / ลดราคา',icon:'🏷',pct:70,l1:_adb+encodeURIComponent(_bk+' โปรโมชั่น ลดราคา'),l2:_adb+encodeURIComponent(_bk+' flash sale ราคาพิเศษ')},
+    {key:'beforeafter',label:'Before / After',icon:'🔄',pct:60,l1:_adb+encodeURIComponent(_bk+' ก่อน หลัง'),l2:_adb+encodeURIComponent(_bk+' transformation เปลี่ยน')},
+    {key:'expert',label:'ผู้เชี่ยวชาญ / หมอ',icon:'🩺',pct:52,l1:_adb+encodeURIComponent(_bk+' หมอ แพทย์ แนะนำ'),l2:_adb+encodeURIComponent(_bk+' ผู้เชี่ยวชาญ เภสัช')},
+    {key:'result',label:'ผลลัพธ์ / ตัวเลข',icon:'📊',pct:45,l1:_adb+encodeURIComponent(_bk+' ผล งานวิจัย'),l2:_adb+encodeURIComponent(_bk+' ผลลัพธ์ ตัวเลข')},
+    {key:'ingredient',label:'ส่วนผสม / สูตร',icon:'🧪',pct:38,l1:_adb+encodeURIComponent(_bk+' สูตร ส่วนผสม สกัด'),l2:_adb+encodeURIComponent(_bk+' สาร ingredient')},
+    {key:'ugc',label:'UGC / ลูกค้าจริง',icon:'👥',pct:35,l1:_adb+encodeURIComponent(_bk+' ลูกค้าจริง ใช้จริง'),l2:_adb+encodeURIComponent(_bk+' UGC รีวิวจริง')},
+    {key:'problem',label:'Problem-Solution',icon:'💡',pct:30,l1:_adb+encodeURIComponent(_bk+' ปัญหา แก้'),l2:_adb+encodeURIComponent(_bk+' solution ช่วย')},
+    {key:'live',label:'Live / ไลฟ์',icon:'📡',pct:28,l1:_adb+encodeURIComponent(_bk+' ไลฟ์สด'),l2:_adb+encodeURIComponent(_bk+' live')},
   ];
   var allRows=[];
   if(p)p.pages.forEach(function(pg){pg.accounts.forEach(function(ac){ac.adAccounts.forEach(function(a){(fbDataMap[a]||[]).forEach(function(r){allRows.push(r);});});});});
