@@ -4266,13 +4266,14 @@ function _renderAdsAI(el){
 }
 
 function _adsaiCalcBudget(){
+  var resEl=document.getElementById('adsai-plan-result');
+  try{
   var budgetInput=document.getElementById('adsai-budget');
   var targetInput=document.getElementById('adsai-target');
   var cppInput=document.getElementById('adsai-cpp');
   var convInput=document.getElementById('adsai-conv');
   var targetCPP=cppInput&&cppInput.value?parseFloat(cppInput.value)||0:0;
   var targetConv=convInput&&convInput.value?parseFloat(convInput.value)||0:0;
-  var resEl=document.getElementById('adsai-plan-result');
   if(!budgetInput||!targetInput||!resEl)return;
   var totalBudget=parseFloat(budgetInput.value)||0;
   var targetRoas=parseFloat(targetInput.value)||2;
@@ -4425,6 +4426,10 @@ function _adsaiCalcBudget(){
   }
 
   resEl.innerHTML=h2;
+  }catch(err){
+    if(resEl) resEl.innerHTML='<div style="color:#dc2626;padding:8px;font-size:.75rem;background:#fef2f2;border-radius:6px">❌ Error: '+err.message+'</div>';
+    console.error('_adsaiCalcBudget:',err);
+  }
 }
 // ═══ end AI วิเคราะห์ Ads ═══════════════════════════════════════════════════
 
