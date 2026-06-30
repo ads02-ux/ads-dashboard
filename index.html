@@ -4400,7 +4400,7 @@ function _adsaiCalcBudget(){
   h2+='<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden;margin-bottom:10px">';
   h2+='<div style="padding:9px 14px;border-bottom:1px solid #f1f5f9;font-size:.72rem;font-weight:700;color:#0f172a">📋 แผนจัดงบแต่ละแคมเปญ (วิเคราะห์จาก 1d/3d/7d)</div>';
   h2+='<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:.69rem">';
-  h2+='<thead><tr style="background:#f8fafc"><th style="padding:7px 10px;text-align:left;color:#64748b;border-bottom:1px solid #f1f5f9">แคมเปญ</th><th style="padding:7px 10px;text-align:left;color:#64748b;border-bottom:1px solid #f1f5f9">บัญชี / เพจ</th><th style="padding:7px 10px;text-align:right;color:#64748b;border-bottom:1px solid #f1f5f9">1d</th><th style="padding:7px 10px;text-align:right;color:#64748b;border-bottom:1px solid #f1f5f9">3d</th><th style="padding:7px 10px;text-align:right;color:#64748b;border-bottom:1px solid #f1f5f9">7d</th><th style="padding:7px 10px;text-align:right;color:#64748b;border-bottom:1px solid #f1f5f9">Spend เมื่อวาน</th><th style="padding:7px 10px;text-align:right;color:#64748b;border-bottom:1px solid #f1f5f9">งบแนะนำ</th><th style="padding:7px 10px;text-align:left;color:#64748b;border-bottom:1px solid #f1f5f9">การกระทำ</th></tr></thead><tbody>';
+  h2+='<thead><tr style="background:#f8fafc"><th style="padding:7px 10px;text-align:left;color:#64748b;border-bottom:1px solid #f1f5f9">แคมเปญ</th><th style="padding:7px 10px;text-align:left;color:#64748b;border-bottom:1px solid #f1f5f9">บัญชี / เพจ</th><th style="padding:7px 10px;text-align:right;color:#64748b;border-bottom:1px solid #f1f5f9">วันนี้</th><th style="padding:7px 10px;text-align:right;color:#64748b;border-bottom:1px solid #f1f5f9">1d</th><th style="padding:7px 10px;text-align:right;color:#64748b;border-bottom:1px solid #f1f5f9">3d</th><th style="padding:7px 10px;text-align:right;color:#64748b;border-bottom:1px solid #f1f5f9">7d</th><th style="padding:7px 10px;text-align:right;color:#64748b;border-bottom:1px solid #f1f5f9">Spend เมื่อวาน</th><th style="padding:7px 10px;text-align:right;color:#64748b;border-bottom:1px solid #f1f5f9">งบแนะนำ</th><th style="padding:7px 10px;text-align:left;color:#64748b;border-bottom:1px solid #f1f5f9">การกระทำ</th></tr></thead><tbody>';
   active.forEach(function(c,i){
     var r1v=roas1Map[c.campaign]||0,r3v=roas3Map[c.campaign]||0;
     var g7=_aiRoasGrade(c.roas);
@@ -4416,6 +4416,8 @@ function _adsaiCalcBudget(){
     var bAccShort=bAcc.length>18?bAcc.slice(0,16)+'…':bAcc;
     var bPgShort=bPg.length>14?bPg.slice(0,12)+'…':bPg;
     h2+='<td style="padding:8px 10px;line-height:1.4"><div style="font-size:.63rem;color:#475569;font-weight:600">'+bAccShort+'</div>'+(bPgShort?'<div style="font-size:.58rem;color:#94a3b8">'+bPgShort+'</div>':'')+'</td>';
+    var rTv=roasTMap[c.campaign]||0;
+    h2+='<td style="padding:8px 10px;text-align:right;color:'+(rTv>=2?'#22c55e':rTv>=1?'#f97316':rTv>0?'#ef4444':'#94a3b8')+';font-weight:700">'+(rTv>0?rTv.toFixed(2)+'×':'—')+'</td>';
     h2+='<td style="padding:8px 10px;text-align:right;color:'+(r1v>=2?'#22c55e':r1v>=1?'#f97316':r1v>0?'#ef4444':'#94a3b8')+';font-weight:700">'+(r1v>0?r1v.toFixed(2)+'×':'—')+'</td>';
     h2+='<td style="padding:8px 10px;text-align:right;color:'+(r3v>=2?'#22c55e':r3v>=1?'#f97316':r3v>0?'#ef4444':'#94a3b8')+';font-weight:700">'+(r3v>0?r3v.toFixed(2)+'×':'—')+'</td>';
     h2+='<td style="padding:8px 10px;text-align:right;color:'+g7.color+';font-weight:700">'+c.roas.toFixed(2)+'×</td>';
@@ -4439,6 +4441,8 @@ function _adsaiCalcBudget(){
     var bAccShort2=bAcc2.length>18?bAcc2.slice(0,16)+'…':bAcc2;
     var bPgShort2=bPg2.length>14?bPg2.slice(0,12)+'…':bPg2;
     h2+='<td style="padding:8px 10px;line-height:1.4"><div style="font-size:.63rem;color:#7f1d1d;font-weight:600">'+bAccShort2+'</div>'+(bPgShort2?'<div style="font-size:.58rem;color:#ef4444">'+bPgShort2+'</div>':'')+'</td>';
+    var rTv2=roasTMap[c.campaign]||0;
+    h2+='<td style="padding:8px 10px;text-align:right;color:#ef4444;font-weight:700">'+(rTv2>0?rTv2.toFixed(2)+'×':'—')+'</td>';
     h2+='<td style="padding:8px 10px;text-align:right;color:#ef4444;font-weight:700">'+(r1v>0?r1v.toFixed(2)+'×':'—')+'</td>';
     h2+='<td style="padding:8px 10px;text-align:right;color:#ef4444;font-weight:700">'+(r3v>0?r3v.toFixed(2)+'×':'—')+'</td>';
     h2+='<td style="padding:8px 10px;text-align:right;color:#ef4444;font-weight:700">'+c.roas.toFixed(2)+'×</td>';
