@@ -657,6 +657,9 @@ function disableCommInputs(){
     <div class="sb-item" onclick="openPhotoManager();sbSetActive(this)">
       <span class="sb-icon">📷</span><span>จัดการโปรไฟล์</span>
     </div>
+    <div class="sb-item" id="sb-leave" onclick="switchView('leave',this)">
+      <span class="sb-icon">📅</span><span>วันหยุดคนวิเคราะห์</span>
+    </div>
     <div class="sb-sep"></div>
     <div class="sb-section">ตั้งค่า</div>
     <div class="sb-item" onclick="sbNav(this,'top')">
@@ -815,6 +818,7 @@ function disableCommInputs(){
 <div id="aiView" style="display:none;padding:28px 32px"></div>
 <div id="adsaiView" style="display:none;padding:28px 32px"></div>
 <div id="trackView" style="display:none;padding:28px 32px"></div>
+<div id="leaveView" style="display:none;padding:20px 24px"></div>
 
 <script>
 var SHEET_ID='1Qs57OO-tDRAsikHulJSKw6S0tfbMqgUuNbmiRHN1POI',GID_S1='997286503',GID_S2='1472268717',GID_COMM='1688902080',GID_CONFIG='388205387',REFRESH=300;
@@ -2152,13 +2156,13 @@ function switchView(view,el){
   if(el)el.classList.add('active');
   var mv=document.getElementById('mainView'),cv=document.getElementById('cohortView'),cmv=document.getElementById('commissionView'),fbv=document.getElementById('fbView');
   if(view==='cohort'){
-    mv.style.display='none';cv.style.display='block';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var trv2=document.getElementById('trackView');if(trv2)trv2.style.display='none';
+    mv.style.display='none';cv.style.display='block';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var trv2=document.getElementById('trackView');if(trv2)trv2.style.display='none';var lv2=document.getElementById('leaveView');if(lv2)lv2.style.display='none';
     renderCohort();window.scrollTo({top:0,behavior:'smooth'});
   } else if(view==='commission'){
-    mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='block';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var trv2=document.getElementById('trackView');if(trv2)trv2.style.display='none';
+    mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='block';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var trv2=document.getElementById('trackView');if(trv2)trv2.style.display='none';var lv2=document.getElementById('leaveView');if(lv2)lv2.style.display='none';
     renderCommission();window.scrollTo({top:0,behavior:'smooth'});
   } else if(view==='fb'){
-    mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='block';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var trv2=document.getElementById('trackView');if(trv2)trv2.style.display='none';
+    mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='block';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var trv2=document.getElementById('trackView');if(trv2)trv2.style.display='none';var lv2=document.getElementById('leaveView');if(lv2)lv2.style.display='none';
     renderFB();window.scrollTo({top:0,behavior:'smooth'});
   } else if(view==='chartrank'){
     mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv){crv.style.display='block';_renderChartRank(crv);}
@@ -2167,16 +2171,19 @@ function switchView(view,el){
     mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv){aiv.style.display='block';_renderAIContent(aiv);}
     window.scrollTo({top:0,behavior:'smooth'});
   } else if(view==='adsai'){
-    mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var trv2=document.getElementById('trackView');if(trv2)trv2.style.display='none';var aav=document.getElementById('adsaiView');if(aav){aav.style.display='block';_renderAdsAI(aav);}
+    mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var trv2=document.getElementById('trackView');if(trv2)trv2.style.display='none';var lv2=document.getElementById('leaveView');if(lv2)lv2.style.display='none';var aav=document.getElementById('adsaiView');if(aav){aav.style.display='block';_renderAdsAI(aav);}
     window.scrollTo({top:0,behavior:'smooth'});
   } else if(view==='track'){
-    mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var trv2=document.getElementById('trackView');if(trv2)trv2.style.display='none';var trv=document.getElementById('trackView');if(trv){trv.style.display='block';_renderTrackHistory(trv);}
+    mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var trv2=document.getElementById('trackView');if(trv2)trv2.style.display='none';var lv2=document.getElementById('leaveView');if(lv2)lv2.style.display='none';var trv=document.getElementById('trackView');if(trv){trv.style.display='block';_renderTrackHistory(trv);}
+    window.scrollTo({top:0,behavior:'smooth'});
+  } else if(view==='leave'){
+    mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var trv2=document.getElementById('trackView');if(trv2)trv2.style.display='none';var lv2=document.getElementById('leaveView');if(lv2)lv2.style.display='none';var lv=document.getElementById('leaveView');if(lv){lv.style.display='block';_renderLeave(lv);}
     window.scrollTo({top:0,behavior:'smooth'});
   } else if(view==='benchmark'){
-    mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='block';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var trv2=document.getElementById('trackView');if(trv2)trv2.style.display='none';
+    mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='block';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var trv2=document.getElementById('trackView');if(trv2)trv2.style.display='none';var lv2=document.getElementById('leaveView');if(lv2)lv2.style.display='none';
     renderBenchmark();window.scrollTo({top:0,behavior:'smooth'});
   } else {
-    mv.style.display='block';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var trv2=document.getElementById('trackView');if(trv2)trv2.style.display='none';
+    mv.style.display='block';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var trv2=document.getElementById('trackView');if(trv2)trv2.style.display='none';var lv2=document.getElementById('leaveView');if(lv2)lv2.style.display='none';
     if(view!=='top')setTimeout(function(){var t=document.getElementById(view);if(t){var y=t.getBoundingClientRect().top+window.scrollY-100;window.scrollTo({top:y,behavior:'smooth'});}},50);
   }
 }
@@ -4805,6 +4812,110 @@ function _adsaiTrackAnalyze(planId){
 }
 
 // ═══ end AI วิเคราะห์ Ads ═══════════════════════════════════════════════════
+
+// ═══ วันหยุดคนวิเคราะห์ ══════════════════════════════════════════════════════
+var _LEAVE_ANALYSTS=['มอส','บุ๋มบิ๋ม','ปาย'];
+var _LEAVE_QUOTA=6,_WFH_QUOTA=2;
+var _TH_MONTHS=['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+var _TH_DOW=['อา','จ','อ','พ','พฤ','ศ','ส'];
+var _TH_HOLIDAYS_2026=['2026-01-01','2026-02-12','2026-04-06','2026-04-13','2026-04-14','2026-04-15','2026-05-01','2026-05-04','2026-05-22','2026-06-03','2026-07-28','2026-08-12','2026-10-13','2026-10-23','2026-12-05','2026-12-10','2026-12-31'];
+
+function _leaveGetData(){try{return JSON.parse(localStorage.getItem('leave_cal')||'{}');}catch(e){return{};}}
+function _leaveSaveData(d){try{localStorage.setItem('leave_cal',JSON.stringify(d));}catch(e){}}
+
+function _leavePeriod(mon){// mon=1..12, returns array of {dateStr,display,dow,isWE,isHol}
+  var yr=2026,prev=mon===1?12:mon-1,pyr=mon===1?2025:2026;
+  var dim=new Date(pyr,prev,0).getDate();
+  var dates=[];
+  for(var d=26;d<=dim;d++){var ds=pyr+'-'+String(prev).padStart(2,'0')+'-'+String(d).padStart(2,'0');var dow=new Date(ds+'T00:00:00').getDay();dates.push({dateStr:ds,display:d,dow:dow,isWE:dow===0||dow===6,isHol:_TH_HOLIDAYS_2026.indexOf(ds)>=0});}
+  for(var d2=1;d2<=25;d2++){var ds2=yr+'-'+String(mon).padStart(2,'0')+'-'+String(d2).padStart(2,'0');var dow2=new Date(ds2+'T00:00:00').getDay();dates.push({dateStr:ds2,display:d2,dow:dow2,isWE:dow2===0||dow2===6,isHol:_TH_HOLIDAYS_2026.indexOf(ds2)>=0});}
+  return dates;
+}
+
+function _leaveToggle(an,ds){
+  var data=_leaveGetData();
+  if(!data[an])data[an]={};
+  var cycle=['','หยุด','WFH','ออกกอง'];
+  var cur=data[an][ds]||'';
+  var next=cycle[(cycle.indexOf(cur)+1)%cycle.length];
+  if(!next)delete data[an][ds]; else data[an][ds]=next;
+  _leaveSaveData(data);
+  _renderLeave(document.getElementById('leaveView'));
+}
+
+function _renderLeave(el){
+  if(!el)return;
+  var data=_leaveGetData();
+  var h='<div style="max-width:1400px;margin:0 auto">';
+  // Header
+  h+='<div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">';
+  h+='<div style="font-family:Rajdhani,sans-serif;font-size:1.7rem;font-weight:900;color:#0f172a;letter-spacing:.3px">📅 วันหยุดคนวิเคราะห์</div>';
+  h+='<div style="font-size:.74rem;color:#94a3b8">ปี 2569 · คลิกช่องเพื่อสลับ ว่าง → หยุด → WFH → ออกกอง</div>';
+  h+='</div>';
+  // Legend
+  h+='<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;align-items:center">';
+  [{l:'หยุด (6/เดือน)',bg:'#fca5a5',tc:'#991b1b'},{l:'WFH (2/เดือน)',bg:'#93c5fd',tc:'#1e40af'},{l:'ออกกอง',bg:'#fcd34d',tc:'#92400e'},{l:'วันหยุดบริษัท',bg:'#cbd5e1',tc:'#475569'},{l:'เสาร์/อาทิตย์',bg:'#f1f5f9',tc:'#94a3b8',border:'#e2e8f0'}].forEach(function(lg){
+    h+='<div style="display:flex;align-items:center;gap:5px"><div style="width:16px;height:16px;border-radius:4px;background:'+lg.bg+';'+(lg.border?'border:1px solid '+lg.border:'')+';flex-shrink:0"></div>';
+    h+='<span style="font-size:.7rem;color:'+lg.tc+'">'+lg.l+'</span></div>';
+  });
+  h+='</div>';
+
+  // 12 months
+  for(var m=1;m<=12;m++){
+    var dates=_leavePeriod(m);
+    h+='<div style="margin-bottom:14px;background:#fff;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden">';
+    // Month header
+    h+='<div style="background:#f8fafc;padding:9px 14px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;gap:14px;flex-wrap:wrap">';
+    h+='<div style="font-size:.82rem;font-weight:800;color:#0f172a;min-width:110px">'+_TH_MONTHS[m-1]+' 69</div>';
+    _LEAVE_ANALYSTS.forEach(function(an){
+      var ad=data[an]||{};var lc=0,wc=0,oc=0;
+      dates.forEach(function(dt){var t=ad[dt.dateStr]||'';if(t==='หยุด')lc++;else if(t==='WFH')wc++;else if(t==='ออกกอง')oc++;});
+      h+='<div style="font-size:.68rem;color:#475569;display:flex;gap:6px;align-items:center">';
+      h+='<b style="color:#334155">'+an+'</b>';
+      h+='<span style="background:'+(lc>_LEAVE_QUOTA?'#fee2e2':'#f1f5f9')+';color:'+(lc>_LEAVE_QUOTA?'#dc2626':'#475569')+';border-radius:20px;padding:1px 7px;font-weight:700">ห '+lc+'/'+_LEAVE_QUOTA+'</span>';
+      h+='<span style="background:'+(wc>_WFH_QUOTA?'#fee2e2':'#eff6ff')+';color:'+(wc>_WFH_QUOTA?'#dc2626':'#1e40af')+';border-radius:20px;padding:1px 7px;font-weight:700">W '+wc+'/'+_WFH_QUOTA+'</span>';
+      if(oc>0)h+='<span style="background:#fffbeb;color:#d97706;border-radius:20px;padding:1px 7px;font-weight:700">อก '+oc+'</span>';
+      h+='</div>';
+    });
+    h+='</div>';
+    // Grid
+    h+='<div style="overflow-x:auto"><table style="border-collapse:collapse;width:100%"><thead><tr>';
+    h+='<th style="padding:6px 12px;text-align:left;color:#64748b;font-size:.68rem;font-weight:700;background:#fff;min-width:80px;border-right:2px solid #f1f5f9;position:sticky;left:0;z-index:1">นักวิเคราะห์</th>';
+    dates.forEach(function(dt){
+      var bg=dt.isHol?'#e2e8f0':dt.isWE?'#f8fafc':'#fff';
+      var tc=dt.isHol?'#64748b':dt.isWE?'#94a3b8':'#64748b';
+      h+='<th style="padding:3px 1px;text-align:center;background:'+bg+';min-width:28px;border-left:1px solid #f1f5f9;font-size:.6rem;color:'+tc+';font-weight:'+(dt.isWE||dt.isHol?'700':'500')+'">';
+      h+=dt.display+'<div style="font-size:.5rem;opacity:.7">'+_TH_DOW[dt.dow]+'</div></th>';
+    });
+    h+='</tr></thead><tbody>';
+    _LEAVE_ANALYSTS.forEach(function(an,ai){
+      var ad=data[an]||{};
+      h+='<tr style="background:'+(ai%2?'#fafafa':'#fff')+'">';
+      h+='<td style="padding:5px 12px;font-weight:700;color:#334155;font-size:.74rem;border-right:2px solid #f1f5f9;background:'+(ai%2?'#fafafa':'#fff')+';position:sticky;left:0;z-index:1;white-space:nowrap">'+an+'</td>';
+      dates.forEach(function(dt){
+        var t=ad[dt.dateStr]||'';
+        var cellBg,cellTxt,cellCol,clickable=false;
+        if(dt.isHol&&!t){cellBg='#e2e8f0';cellTxt='🏢';cellCol='#64748b';}
+        else if(t==='หยุด'){cellBg='#fca5a5';cellTxt='ห';cellCol='#991b1b';clickable=true;}
+        else if(t==='WFH'){cellBg='#93c5fd';cellTxt='W';cellCol='#1e40af';clickable=true;}
+        else if(t==='ออกกอง'){cellBg='#fcd34d';cellTxt='อ';cellCol='#92400e';clickable=true;}
+        else if(dt.isWE){cellBg='#f1f5f9';cellTxt='';cellCol='#94a3b8';}
+        else{cellBg='transparent';cellTxt='';cellCol='#e2e8f0';clickable=true;}
+        var tdStyle='padding:3px 2px;text-align:center;border-left:1px solid #f8fafc;'+(clickable?'cursor:pointer;':'');
+        if(clickable)h+='<td style="'+tdStyle+'" onclick="_leaveToggle(\''+an+'\',\''+dt.dateStr+'\')">';
+        else h+='<td style="'+tdStyle+'">';
+        h+='<div style="width:24px;height:24px;border-radius:4px;background:'+cellBg+';display:flex;align-items:center;justify-content:center;font-size:.58rem;font-weight:800;color:'+cellCol+';margin:0 auto;'+((!t&&!dt.isWE&&!dt.isHol)?'border:1px dashed #e2e8f0':'')+'">';
+        h+=cellTxt+'</div></td>';
+      });
+      h+='</tr>';
+    });
+    h+='</tbody></table></div></div>';
+  }
+  h+='</div>';
+  el.innerHTML=h;
+}
+// ═══ end วันหยุดคนวิเคราะห์ ═══════════════════════════════════════════════════
+
 
 
 // ═══ ชาร์ตอันดับ ════════════════════════════════════════════════════════
