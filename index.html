@@ -619,6 +619,9 @@ function disableCommInputs(){
     <div class="sb-item" id="sb-benchmark" onclick="switchView('benchmark',this)">
       <span class="sb-icon">📐</span><span>BenchMark มาตรวัดแอด</span>
     </div>
+    <div class="sb-item" id="sb-chartrank" onclick="switchView('chartrank',this)">
+      <span class="sb-icon">🏆</span><span>ชาร์ตอันดับ</span>
+    </div>
     <div class="sb-sep"></div>
     <div class="sb-section">Hunter<span style="display:block;font-size:.6rem;font-weight:400;opacity:.55;margin-top:1px;letter-spacing:.02em">ดึงข้อมูลจาก Google Sheets</span></div>
     <div class="sb-item" onclick="sbNav(this,'top')" id="sb-home">
@@ -802,6 +805,11 @@ function disableCommInputs(){
 <div id="commissionView" style="display:none"><div class="page" id="commissionViewInner"></div></div>
 <div id="fbView"><div class="page" id="fbViewInner"></div></div>
 <div id="benchmarkView" style="display:none"><div class="page" id="benchmarkViewInner"></div></div>
+<div id="chartrankView" style="display:none;padding:28px 32px">
+  <div style="font-family:Rajdhani,sans-serif;font-size:1.7rem;font-weight:900;color:#0f172a;letter-spacing:.3px;margin-bottom:6px">🏆 ชาร์ตอันดับ</div>
+  <div style="font-size:.8rem;color:#64748b;margin-bottom:32px">วิเคราะห์อันดับประสิทธิภาพ</div>
+  <div style="background:#f8fafc;border:1.5px dashed #cbd5e1;border-radius:14px;padding:48px;text-align:center;color:#94a3b8;font-size:.9rem">🚧 กำลังพัฒนา — เร็วๆ นี้</div>
+</div>
 
 <script>
 var SHEET_ID='1Qs57OO-tDRAsikHulJSKw6S0tfbMqgUuNbmiRHN1POI',GID_S1='997286503',GID_S2='1472268717',GID_COMM='1688902080',GID_CONFIG='388205387',REFRESH=300;
@@ -2139,19 +2147,22 @@ function switchView(view,el){
   if(el)el.classList.add('active');
   var mv=document.getElementById('mainView'),cv=document.getElementById('cohortView'),cmv=document.getElementById('commissionView'),fbv=document.getElementById('fbView');
   if(view==='cohort'){
-    mv.style.display='none';cv.style.display='block';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';
+    mv.style.display='none';cv.style.display='block';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';
     renderCohort();window.scrollTo({top:0,behavior:'smooth'});
   } else if(view==='commission'){
-    mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='block';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';
+    mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='block';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';
     renderCommission();window.scrollTo({top:0,behavior:'smooth'});
   } else if(view==='fb'){
-    mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='block';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';
+    mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='block';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';
     renderFB();window.scrollTo({top:0,behavior:'smooth'});
+  } else if(view==='chartrank'){
+    mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='block';
+    window.scrollTo({top:0,behavior:'smooth'});
   } else if(view==='benchmark'){
-    mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='block';
+    mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='block';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';
     renderBenchmark();window.scrollTo({top:0,behavior:'smooth'});
   } else {
-    mv.style.display='block';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';
+    mv.style.display='block';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';
     if(view!=='top')setTimeout(function(){var t=document.getElementById(view);if(t){var y=t.getBoundingClientRect().top+window.scrollY-100;window.scrollTo({top:y,behavior:'smooth'});}},50);
   }
 }
