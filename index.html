@@ -3638,261 +3638,251 @@ function _fbMetricCell(val,fmt_fn,color,bold){
 
 function _fbRoasColor(r){return r>=2?'var(--green)':r>=1?'var(--amber)':'var(--red)';}
 function _fbPctColor(p){return p>0&&p<30?'var(--green)':p<50?'var(--amber)':'var(--red)';}
-// ═══ AI แนะนำคอนเทนต์ ════════════════════════════════════════════════════
 
-var _aiResults = {}; // cache: productKey -> {text, ts}
+// === AI แนะนำคอนเทนต์ (Rule-based + FB Ad Library Competitor) ============
 
-function _aiClearKey(){
-  sessionStorage.removeItem('rb_ai_key');
-  alert('ลบ API Key แล้ว — จะถามใหม่ครั้งหน้า');
-}
-function _getAIKey(){
-  var k = sessionStorage.getItem('rb_ai_key');
-  if(!k){
-    k = prompt('กรุณาใส่ Anthropic API Key (sk-ant-...):');
-    if(k && k.startsWith('sk-ant-')){
-      sessionStorage.setItem('rb_ai_key', k);
-    } else {
-      if(k) alert('API Key ไม่ถูกต้อง ต้องขึ้นต้นด้วย sk-ant-');
-      return null;
+var _aiResults = {};
+var _fbLoadingMap = _fbLoadingMap || {};
+
+var _prodSearchTerms = {
+  'เจ้าขุน': 'อาหารเสริมผู้ชาย สมรรถภาพ',
+  'Heavenplus+': 'อาหารเสริม ฟิต เล็กฤทธิ์',
+  'NayTam': 'อาหารเสริม ผู้หญิง สุขภาพ',
+  'RichFemme': 'อาหารเสริม ผู้หญิง คอลลาเจน',
+  'default': 'อาหารเสริม สุขภาพ'
+};
+
+var _contentPatterns = [
+  {key:'review',label:'รีวิวลูกค้า',icon:'⭐',keywords:['รีวิว','review','ความรู้สึก','ประสบการณ์','ใช้แล้ว','testimonial']},
+  {key:'celebrity',label:'ดารา / KOL',icon:'🌟',keywords:['ดารา','celebrity','kol','influencer','พรีเซนเตอร์','นักแสดง','ศิลปิน']},
+  {key:'promo',label:'โปรโมชั่น / ลดราคา',icon:'🏷',keywords:['โปร','promo','ลด','discount','sale','ราคา','พิเศษ','flash','offer']},
+  {key:'beforeafter',label:'Before / After',icon:'🔄',keywords:['before','after','ก่อน','หลัง','เปลี่ยน','transformation']},
+  {key:'problem',label:'Problem-Solution',icon:'💡',keywords:['ปัญหา','problem','แก้','solution','ช่วย','อาการ','บรรเทา']},
+  {key:'expert',label:'ผู้เชี่ยวชาญ / หมอ',icon:'🩺',keywords:['หมอ','doctor','ผู้เชี่ยวชาญ','expert','เภสัช','แพทย์','นักโภชนาการ']},
+  {key:'ingredient',label:'ส่วนผสม / สูตร',icon:'🧪',keywords:['สูตร','ส่วนผสม','ingredient','สาร','extract','สกัด','formula']},
+  {key:'bundle',label:'Bundle / เซต',icon:'📦',keywords:['bundle','เซต','set','คู่','แพ็ค','pack','combo']},
+  {key:'ugc',label:'UGC / ลูกค้าจริง',icon:'👥',keywords:['ugc','user','ลูกค้าจริง','ผู้ใช้จริง','จริง']},
+  {key:'result',label:'ผลลัพธ์ / ตัวเลข',icon:'📊',keywords:['ผล','result','ตัวเลข','stat','งานวิจัย','ข้อมูล']},
+  {key:'live',label:'Live / ไลฟ์',icon:'📡',keywords:['live','ไลฟ์','สด']},
+  {key:'story',label:'เรื่องราว / Storytelling',icon:'📖',keywords:['story','เรื่อง','ชีวิต','เส้นทาง']},
+];
+
+function _aiClassify(campName){
+  var name = (campName||'').toLowerCase();
+  for(var i=0;i<_contentPatterns.length;i++){
+    var p=_contentPatterns[i];
+    for(var j=0;j<p.keywords.length;j++){
+      if(name.indexOf(p.keywords[j])!==-1) return p;
     }
   }
-  return k;
+  return {key:'other',label:'ทั่วไป',icon:'📢'};
 }
 
-function _aiAnalyzeProduct(pIdx, btnEl){
-  var p = FB_HIERARCHY[pIdx];
+function _aiAnalyzeProduct(pIdx,btnEl){
+  var p=FB_HIERARCHY[pIdx];
   if(!p) return;
-  var key = p.product;
-  var apiKey = _getAIKey();
-  if(!apiKey) return;
-
-  // Gather campaign data for this product
-  var allRows = [];
-  p.pages.forEach(function(pg){
-    pg.accounts.forEach(function(h){
-      h.adAccounts.forEach(function(a){
-        (fbDataMap[a]||[]).forEach(function(r){ allRows.push(r); });
-      });
-    });
-  });
-  var filtered = _fbFilterRows(allRows);
-
-  // Aggregate by campaign
-  var campMap = {};
+  if(btnEl){btnEl.disabled=true;btnEl.textContent='⏳ วิเคราะห์...';}
+  var allRows=[];
+  p.pages.forEach(function(pg){pg.accounts.forEach(function(ac){ac.adAccounts.forEach(function(a){(fbDataMap[a]||[]).forEach(function(r){allRows.push(r);});});});});
+  var filtered=_fbFilterRows(allRows);
+  var campMap={};
   filtered.forEach(function(r){
     if(!r.campaign) return;
-    var c = r.campaign;
-    if(!campMap[c]) campMap[c] = {name:c, spend:0, revenue:0, purchases:0, conversations:0, impressions:0, clicks:0};
-    campMap[c].spend += r.spend;
-    campMap[c].revenue += r.revenue;
-    campMap[c].purchases += r.purchases;
-    campMap[c].conversations += r.conversations;
-    campMap[c].impressions += r.impressions;
-    campMap[c].clicks += r.clicks;
+    if(!campMap[r.campaign]) campMap[r.campaign]={name:r.campaign,spend:0,revenue:0,purchases:0,conversations:0,impressions:0,clicks:0};
+    var c=campMap[r.campaign];
+    c.spend+=r.spend;c.revenue+=r.revenue;c.purchases+=r.purchases;c.conversations+=r.conversations;c.impressions+=r.impressions;c.clicks+=r.clicks;
   });
-
-  var camps = Object.values(campMap).filter(function(c){ return c.spend > 0; });
-  camps.sort(function(a,b){ return b.revenue - a.revenue; });
-  var top = camps.slice(0, 15);
-
-  if(!top.length){
-    var el = document.getElementById('ai-result-' + pIdx);
-    if(el) el.innerHTML = '<div style="color:#94a3b8;font-size:.82rem;padding:12px">ยังไม่มีข้อมูลแคมเปญในช่วงนี้</div>';
-    return;
+  var camps=Object.values(campMap);
+  camps.sort(function(a,b){return b.revenue-a.revenue;});
+  var el=document.getElementById('ai-result-'+pIdx);
+  if(!el){if(btnEl){btnEl.disabled=false;btnEl.textContent='🔍 วิเคราะห์';} return;}
+  if(!camps.length){
+    el.innerHTML='<div style="color:#94a3b8;font-size:.82rem;padding:12px 0;text-align:center">ยังไม่มีข้อมูลแคมเปญในช่วงนี้</div>';
+    if(btnEl){btnEl.disabled=false;btnEl.textContent='🔍 วิเคราะห์';} return;
   }
-
-  // Build table string for prompt
-  var tableRows = top.map(function(c){
-    var roas = c.spend > 0 ? (c.revenue / c.spend).toFixed(2) : '0';
-    var ctr = c.impressions > 0 ? (c.clicks / c.impressions * 100).toFixed(2) : '0';
-    return '- ' + c.name + ' | Spend: ' + Math.round(c.spend).toLocaleString() + ' | Revenue: ' + Math.round(c.revenue).toLocaleString() + ' | ROAS: ' + roas + 'x | Orders: ' + c.purchases + ' | ทัก: ' + c.conversations + ' | CTR: ' + ctr + '%';
-  }).join('\n');
-
-  var filterLabel = {today:'วันนี้', yesterday:'เมื่อวาน', '3d':'3 วันล่าสุด', '7d':'7 วันล่าสุด', '14d':'14 วันล่าสุด', '30d':'30 วันล่าสุด'}[fbFilter] || fbFilter;
-
-  var prompt = 'คุณเป็นผู้เชี่ยวชาญด้านการตลาด Facebook Ads สำหรับผลิตภัณฑ์เสริมสุขภาพในประเทศไทย\n\n'
-    + 'สินค้า: ' + p.product + ' — ' + (p.desc || '') + '\n'
-    + 'ช่วงเวลา: ' + filterLabel + '\n\n'
-    + 'ข้อมูลแคมเปญที่กำลังยิงอยู่ (เรียงตาม Revenue):\n'
-    + tableRows + '\n\n'
-    + 'จากข้อมูลข้างต้น กรุณา:\n'
-    + '1. วิเคราะห์ว่าคอนเทนต์/มุมเนื้อหาแบบไหน (จากชื่อแคมเปญ) ให้ผลดีที่สุด\n'
-    + '2. แนะนำ 3-5 ทิศทางคอนเทนต์ถัดไปที่น่าจะสร้างยอดขายได้ดีกว่าเดิม พร้อมเหตุผล\n'
-    + '3. แนะนำมุมที่ยังไม่ได้ลองแต่น่าจะ work กับสินค้านี้\n'
-    + '4. สรุปคอนเทนต์ที่ควรหยุดหรือปรับปรุง\n'
-    + 'ตอบเป็นภาษาไทย กระชับ ปฏิบัติได้จริง';
-
-  // Show loading
-  if(btnEl) { btnEl.disabled = true; btnEl.textContent = '⏳ กำลังวิเคราะห์...'; }
-  var el = document.getElementById('ai-result-' + pIdx);
-  if(el) el.innerHTML = '<div style="color:#64748b;font-size:.82rem;padding:16px 12px;text-align:center">🤖 AI กำลังวิเคราะห์คอนเทนต์...</div>';
-
-  fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-      'content-type': 'application/json',
-      'anthropic-dangerous-direct-browser-access': 'true'
-    },
-    body: JSON.stringify({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 1200,
-      messages: [{role: 'user', content: prompt}]
-    })
-  })
-  .then(function(r){
-    if(!r.ok) return r.json().then(function(e){ throw new Error(e.error?.message || r.status); });
-    return r.json();
-  })
-  .then(function(data){
-    var text = data.content?.[0]?.text || 'ไม่มีผลลัพธ์';
-    _aiResults[key] = {text: text, ts: new Date().toLocaleTimeString('th-TH')};
-    _aiRenderResult(pIdx, text, _aiResults[key].ts);
-    if(btnEl){ btnEl.disabled = false; btnEl.textContent = '🔄 วิเคราะห์ใหม่'; }
-  })
-  .catch(function(err){
-    var el = document.getElementById('ai-result-' + pIdx);
-    if(el) el.innerHTML = '<div style="color:#dc2626;font-size:.8rem;padding:12px">❌ Error: ' + err.message + '</div>';
-    if(btnEl){ btnEl.disabled = false; btnEl.textContent = '🤖 วิเคราะห์'; }
-    // Clear bad key if auth error
-    if(String(err.message).includes('401') || String(err.message).includes('auth')){
-      sessionStorage.removeItem('rb_ai_key');
-    }
+  var typeMap={};
+  camps.forEach(function(c){
+    var t=_aiClassify(c.name),k=t.key;
+    if(!typeMap[k]) typeMap[k]={key:k,label:t.label,icon:t.icon,spend:0,revenue:0,purchases:0,conversations:0,camps:[]};
+    typeMap[k].spend+=c.spend;typeMap[k].revenue+=c.revenue;typeMap[k].purchases+=c.purchases;typeMap[k].conversations+=c.conversations;typeMap[k].camps.push(c);
   });
+  var types=Object.values(typeMap);
+  types.forEach(function(t){t.roas=t.spend>0?Math.round(t.revenue/t.spend*100)/100:0;});
+  types.sort(function(a,b){return b.roas-a.roas;});
+  var totalSpend=camps.reduce(function(s,c){return s+c.spend;},0);
+  var avgSpend=camps.length?totalSpend/camps.length:0;
+  var topCamps=camps.filter(function(c){return c.spend>0;}).sort(function(a,b){var ra=a.spend?a.revenue/a.spend:0,rb=b.spend?b.revenue/b.spend:0;return rb-ra;});
+  var cutCamps=camps.filter(function(c){return c.spend>avgSpend*0.5&&c.spend>0&&(c.spend?c.revenue/c.spend:0)<1;});
+  var goodTypes=types.filter(function(t){return t.roas>=1.5;});
+  var triedKeys=types.map(function(t){return t.key;});
+  var notTried=_contentPatterns.filter(function(pt){return triedKeys.indexOf(pt.key)===-1;});
+  var bestType=types[0];
+  var h='';
+  h+='<div style="font-size:.73rem;font-weight:700;color:#0f172a;margin-bottom:8px;letter-spacing:.3px;text-transform:uppercase">📊 ประสิทธิภาพตามประเภทคอนเทนต์</div>';
+  h+='<div style="overflow-x:auto;margin-bottom:16px"><table style="width:100%;border-collapse:collapse;font-size:.74rem"><thead><tr style="background:#f8fafc;border-bottom:1.5px solid #e2e8f0">';
+  h+='<th style="padding:7px 10px;text-align:left;color:#64748b;font-weight:700">ประเภท</th><th style="padding:7px 10px;text-align:center;color:#64748b;font-weight:700">แคมเปญ</th>';
+  h+='<th style="padding:7px 10px;text-align:right;color:#64748b;font-weight:700">Spend</th><th style="padding:7px 10px;text-align:right;color:#64748b;font-weight:700">Revenue</th>';
+  h+='<th style="padding:7px 10px;text-align:right;color:#64748b;font-weight:700">ROAS</th><th style="padding:7px 10px;text-align:right;color:#64748b;font-weight:700">Orders</th></tr></thead><tbody>';
+  types.forEach(function(t,i){
+    var rc=t.roas>=2?'#059669':t.roas>=1?'#d97706':'#dc2626';
+    var bg=i===0?'#fffbeb':(i===types.length-1&&t.roas<1?'#fff5f5':'');
+    var medal=i===0?'🥇 ':i===1?'🥈 ':i===2?'🥉 ':'';
+    h+='<tr style="border-bottom:1px solid #f1f5f9'+(bg?';background:'+bg:'')+'">';
+    h+='<td style="padding:7px 10px;font-weight:600;color:#334155">'+medal+t.icon+' '+t.label+'</td>';
+    h+='<td style="padding:7px 10px;text-align:center;color:#64748b">'+t.camps.length+'</td>';
+    h+='<td style="padding:7px 10px;text-align:right;color:#374151">฿'+Math.round(t.spend).toLocaleString()+'</td>';
+    h+='<td style="padding:7px 10px;text-align:right;color:#059669;font-weight:700">฿'+Math.round(t.revenue).toLocaleString()+'</td>';
+    h+='<td style="padding:7px 10px;text-align:right;font-weight:700;color:'+rc+'">'+(t.roas>0?t.roas.toFixed(2)+'x':'—')+'</td>';
+    h+='<td style="padding:7px 10px;text-align:right;color:#374151">'+t.purchases+'</td></tr>';
+  });
+  h+='</tbody></table></div>';
+  h+='<div style="font-size:.73rem;font-weight:700;color:#0f172a;margin-bottom:8px;letter-spacing:.3px;text-transform:uppercase">💡 แนะนำคอนเทนต์ถัดไป</div>';
+  h+='<div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px">';
+  var recs=[];
+  if(bestType&&bestType.roas>=1) recs.push({icon:'🚀',c:'#059669',bg:'#f0fdf4',b:'#bbf7d0',title:'เพิ่มงบ '+bestType.icon+' '+bestType.label,desc:'ROAS สูงสุดที่ '+bestType.roas.toFixed(2)+'x — ควรทำคอนเทนต์แนวนี้เพิ่มและเพิ่มงบ'});
+  if(topCamps.length&&topCamps[0].spend&&(topCamps[0].revenue/topCamps[0].spend)>=1.5) recs.push({icon:'📋',c:'#1565c0',bg:'#eff6ff',b:'#bfdbfe',title:'ทำซ้ำ: '+topCamps[0].name.substring(0,30)+(topCamps[0].name.length>30?'...':''),desc:'ROAS '+(topCamps[0].revenue/topCamps[0].spend).toFixed(2)+'x — ทำเนื้อหามุมคล้ายกันในบัญชีอื่น'});
+  if(notTried.length>0) recs.push({icon:'🆕',c:'#7c3aed',bg:'#faf5ff',b:'#e9d5ff',title:'ลองมุมใหม่ที่ยังไม่เคยทำ',desc:'ยังไม่มีแคมเปญแนว '+notTried.slice(0,3).map(function(t){return t.icon+' '+t.label;}).join(', ')});
+  if(goodTypes.length>=2) recs.push({icon:'⚖️',c:'#0891b2',bg:'#f0f9ff',b:'#bae6fd',title:'A/B Test '+goodTypes[0].icon+' vs '+goodTypes[1].icon,desc:goodTypes[0].label+' ('+goodTypes[0].roas.toFixed(2)+'x) vs '+goodTypes[1].label+' ('+goodTypes[1].roas.toFixed(2)+'x)'});
+  recs.slice(0,4).forEach(function(r){
+    h+='<div style="background:'+r.bg+';border:1px solid '+r.b+';border-radius:10px;padding:10px 14px;display:flex;gap:10px;align-items:flex-start">';
+    h+='<span style="font-size:1.1rem;margin-top:1px">'+r.icon+'</span>';
+    h+='<div><div style="font-size:.77rem;font-weight:700;color:'+r.c+';margin-bottom:2px">'+r.title+'</div>';
+    h+='<div style="font-size:.73rem;color:#475569;line-height:1.5">'+r.desc+'</div></div></div>';
+  });
+  h+='</div>';
+  if(cutCamps.length){
+    h+='<div style="font-size:.73rem;font-weight:700;color:#0f172a;margin-bottom:8px;letter-spacing:.3px;text-transform:uppercase">🛑 แคมเปญที่ควรหยุด / ปรับ</div>';
+    h+='<div style="background:#fff5f5;border:1px solid #fecaca;border-radius:10px;padding:12px 14px;margin-bottom:16px">';
+    cutCamps.slice(0,5).forEach(function(c){
+      var r=c.spend?c.revenue/c.spend:0;
+      h+='<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid #fee2e2;font-size:.73rem">';
+      h+='<span style="color:#7f1d1d;font-weight:500">'+c.name.substring(0,40)+(c.name.length>40?'...':'')+'</span>';
+      h+='<span style="color:#dc2626;font-weight:700;white-space:nowrap;margin-left:8px">'+r.toFixed(2)+'x / ฿'+Math.round(c.spend).toLocaleString()+'</span></div>';
+    });
+    h+='<div style="font-size:.7rem;color:#dc2626;margin-top:8px">→ Spend สูงกว่าค่าเฉลี่ยแต่ ROAS ต่ำกว่า 1x</div></div>';
+  }
+  h+='<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:14px 18px;margin-top:4px">';
+  h+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">';
+  h+='<div><div style="font-size:.77rem;font-weight:700;color:#0f172a">🔍 วิเคราะห์คู่แข่ง</div>';
+  h+='<div style="font-size:.7rem;color:#64748b">ค้นหาโฆษณาในหมวดเดียวกันผ่าน Facebook Ad Library</div></div>';
+  h+='<button data-idx="'+pIdx+'" onclick="_aiCompetitor(+this.dataset.idx,this)" style="background:#1565c0;color:#fff;border:none;border-radius:8px;padding:7px 14px;font-size:.74rem;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap">🔍 วิเคราะห์คู่แข่ง</button>';
+  h+='</div><div id="ai-comp-'+pIdx+'" style="font-size:.75rem;color:#94a3b8">กดปุ่มเพื่อดูว่าคู่แข่งใช้มุมคอนเทนต์อะไรบ้าง</div></div>';
+  h+='<div style="font-size:.66rem;color:#94a3b8;margin-top:10px;text-align:right">วิเคราะห์เมื่อ '+new Date().toLocaleTimeString('th-TH')+'</div>';
+  el.innerHTML=h;
+  _aiResults[p.product]={html:h};
+  if(btnEl){btnEl.disabled=false;btnEl.textContent='🔄 วิเคราะห์ใหม่';}
 }
 
-function _aiRenderResult(pIdx, text, ts){
-  var el = document.getElementById('ai-result-' + pIdx);
+function _aiCompetitor(pIdx,btnEl){
+  var p=FB_HIERARCHY[pIdx];
+  if(!p) return;
+  var el=document.getElementById('ai-comp-'+pIdx);
   if(!el) return;
-  // Convert markdown-like text to HTML
-  var html = text
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
-    .replace(/\*(.+?)\*/g,'<em>$1</em>')
-    .replace(/^#{1,3}\s+(.+)$/gm,'<div style="font-weight:700;color:#0f172a;margin-top:12px;margin-bottom:4px">$1</div>')
-    .replace(/^-\s+(.+)$/gm,'<div style="margin:3px 0;padding-left:16px;position:relative"><span style="position:absolute;left:0;color:#f97316">•</span>$1</div>')
-    .replace(/^(\d+\.\s+)(.+)$/gm,'<div style="margin:4px 0;padding-left:20px;position:relative"><span style="position:absolute;left:0;color:#1565c0;font-weight:700">$1</span>$2</div>')
-    .replace(/\n\n/g,'<div style="margin:8px 0"></div>')
-    .replace(/\n/g,'<br>');
-  el.innerHTML = '<div style="font-size:.8rem;line-height:1.7;color:#334155">' + html + '</div>'
-    + '<div style="font-size:.65rem;color:#94a3b8;margin-top:8px;text-align:right">วิเคราะห์เมื่อ ' + ts + '</div>';
+  if(btnEl){btnEl.disabled=true;btnEl.textContent='⏳ ค้นหา...';}
+  el.innerHTML='<div style="color:#64748b;font-size:.78rem">⏳ กำลังค้นหาโฆษณาคู่แข่ง...</div>';
+  var keyword=_prodSearchTerms[p.product]||_prodSearchTerms['default'];
+  var tok=FB_TOKEN;
+  var url='https://graph.facebook.com/v19.0/ads_archive?fields=ad_creative_body,ad_creative_link_title,page_name,ad_snapshot_url&search_terms='+encodeURIComponent(keyword)+'&ad_reached_countries=[%22TH%22]&ad_type=ALL&limit=30&access_token='+tok;
+  fetch(url).then(function(r){return r.json();}).then(function(data){
+    if(data.error){
+      el.innerHTML='<div style="color:#94a3b8;font-size:.75rem">⚠️ Ad Library API: '+data.error.message+'<br><span style="color:#64748b">หมายเหตุ: ต้องขอสิทธิ์ Ads Library API จาก Meta แยกต่างหาก</span></div>';
+      if(btnEl){btnEl.disabled=false;btnEl.textContent='🔍 วิเคราะห์คู่แข่ง';} return;
+    }
+    var ads=data.data||[];
+    if(!ads.length){
+      el.innerHTML='<div style="color:#94a3b8;font-size:.75rem">ไม่พบโฆษณาคู่แข่งสำหรับคำค้น: '+keyword+'</div>';
+      if(btnEl){btnEl.disabled=false;btnEl.textContent='🔍 วิเคราะห์คู่แข่ง';} return;
+    }
+    var compTypeMap={};
+    var pageSet={};
+    ads.forEach(function(ad){
+      var body=(ad.ad_creative_body||'')+(ad.ad_creative_link_title||'');
+      var t=_aiClassify(body);
+      if(!compTypeMap[t.key]) compTypeMap[t.key]={key:t.key,label:t.label,icon:t.icon,count:0};
+      compTypeMap[t.key].count++;
+      if(ad.page_name) pageSet[ad.page_name]=(pageSet[ad.page_name]||0)+1;
+    });
+    var compTypes=Object.values(compTypeMap).sort(function(a,b){return b.count-a.count;});
+    var ourTypeMap={};
+    var allRows=[];
+    p.pages.forEach(function(pg){pg.accounts.forEach(function(ac){ac.adAccounts.forEach(function(a){(fbDataMap[a]||[]).forEach(function(r){allRows.push(r);});});});});
+    _fbFilterRows(allRows).forEach(function(r){if(r.campaign){var t=_aiClassify(r.campaign);ourTypeMap[t.key]=1;}});
+    var gaps=compTypes.filter(function(t){return !ourTypeMap[t.key]&&t.count>=2;});
+    var pages=Object.keys(pageSet).sort(function(a,b){return pageSet[b]-pageSet[a];}).slice(0,5);
+    var h2='<div>';
+    if(pages.length) h2+='<div style="font-size:.74rem;font-weight:700;color:#1565c0;margin-bottom:8px">🌏 แบรนด์: '+pages.join(' / ')+'</div>';
+    h2+='<div style="font-size:.73rem;font-weight:700;color:#0f172a;margin-bottom:6px">📌 ประเภทคอนเทนต์ที่คู่แข่งใช้</div>';
+    h2+='<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px">';
+    compTypes.slice(0,8).forEach(function(t){
+      var hasIt=ourTypeMap[t.key];
+      h2+='<div style="background:'+(hasIt?'#d1fae5':'#fee2e2')+';border:1px solid '+(hasIt?'#6ee7b7':'#fca5a5')+';border-radius:20px;padding:4px 10px;font-size:.7rem;font-weight:600;color:'+(hasIt?'#065f46':'#991b1b')+'">';
+      h2+=t.icon+' '+t.label+' ('+t.count+')'+(hasIt?' ✓':' ⚠️')+'</div>';
+    });
+    h2+='</div>';
+    if(gaps.length){
+      h2+='<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:10px 12px;margin-top:4px">';
+      h2+='<div style="font-size:.74rem;font-weight:700;color:#92400e;margin-bottom:4px">🎯 ช่องว่าง: คู่แข่งทำแต่เรายังไม่ทำ</div>';
+      gaps.slice(0,3).forEach(function(t){h2+='<div style="font-size:.72rem;color:#78350f;margin:3px 0">• '+t.icon+' '+t.label+' — คู่แข่งยิงอยู่ '+t.count+' โฆษณา</div>';});
+      h2+='</div>';
+    } else {
+      h2+='<div style="font-size:.73rem;color:#059669">✅ เราครอบคลุมทุกประเภทคอนเทนต์ที่คู่แข่งใช้แล้ว</div>';
+    }
+    h2+='<div style="font-size:.65rem;color:#94a3b8;margin-top:6px">จาก '+ads.length+' โฆษณา ใน Facebook Ad Library | คำค้น: '+keyword+'</div>';
+    h2+='</div>';
+    el.innerHTML=h2;
+    if(btnEl){btnEl.disabled=false;btnEl.textContent='🔄 อัปเดต';}
+  }).catch(function(err){
+    el.innerHTML='<div style="color:#dc2626;font-size:.75rem">❌ '+err.message+'</div>';
+    if(btnEl){btnEl.disabled=false;btnEl.textContent='🔍 วิเคราะห์คู่แข่ง';}
+  });
 }
 
 function _renderAIContent(el){
-  if(!el) el = document.getElementById('aiView');
+  if(!el) el=document.getElementById('aiView');
   if(!el) return;
-
-  // Auto-load all accounts
-  FB_HIERARCHY.forEach(function(p){
-    p.pages.forEach(function(pg){
-      pg.accounts.forEach(function(h){
-        h.adAccounts.forEach(function(aName){
-          if(!fbLoadedMap[aName] && !_fbLoadingMap[aName]){
-            _fbLoadingMap[aName] = true;
-            var accMeta = FB_ACCOUNTS_META.find(function(a){ return a.name === aName; });
-            if(accMeta) _loadFBFromAPI(accMeta, aName);
-          }
-        });
-      });
-    });
-  });
-
-  var filterKeys = ['today','yesterday','3d','7d','14d','30d'];
-  var filterLabels = {today:'วันนี้', yesterday:'เมื่อวาน', '3d':'3 วัน', '7d':'7 วัน', '14d':'14 วัน', '30d':'30 วัน'};
-
-  var h = '';
-
-  // Header + time filters
-  h += '<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px">';
-  h += '<div>';
-  h += '<div style="font-family:Rajdhani,sans-serif;font-size:1.7rem;font-weight:900;color:#0f172a;letter-spacing:.3px;margin-bottom:4px">🤖 AI แนะนำคอนเทนต์</div>';
-  h += '<div style="font-size:.76rem;color:#64748b">วิเคราะห์แคมเปญที่ยิงอยู่ → แนะนำทิศทางคอนเทนต์ถัดไปเพื่อเพิ่มยอดขาย</div>';
-  h += '</div>';
-  h += '<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">';
+  FB_HIERARCHY.forEach(function(p){p.pages.forEach(function(pg){pg.accounts.forEach(function(ac){ac.adAccounts.forEach(function(aName){
+    if(!fbLoadedMap[aName]&&!_fbLoadingMap[aName]){_fbLoadingMap[aName]=true;var accMeta=FB_ACCOUNTS_META.find(function(a){return a.name===aName;});if(accMeta)_loadFBFromAPI(accMeta,aName);}
+  });});});});
+  var filterKeys=['today','yesterday','3d','7d','14d','30d'];
+  var filterLabels={today:'วันนี้',yesterday:'เมื่อวาน','3d':'3 วัน','7d':'7 วัน','14d':'14 วัน','30d':'30 วัน'};
+  var h='<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px">';
+  h+='<div><div style="font-family:Rajdhani,sans-serif;font-size:1.7rem;font-weight:900;color:#0f172a;letter-spacing:.3px;margin-bottom:4px">🤖 AI แนะนำคอนเทนต์</div>';
+  h+='<div style="font-size:.76rem;color:#64748b">วิเคราะห์ Performance แคมเปญของเรา + ค้นหาคู่แข่งผ่าน Facebook Ad Library → แนะนำทิศทางคอนเทนต์ถัดไป</div></div>';
+  h+='<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">';
   filterKeys.forEach(function(f){
-    var act = fbFilter === f;
-    h += '<button data-f="' + f + '" onclick="fbFilter=this.dataset.f;_renderAIContent()" style="background:' + (act?'#f97316':'#fff') + ';border:1.5px solid ' + (act?'#f97316':'#e2e8f0') + ';color:' + (act?'#fff':'#475569') + ';border-radius:7px;padding:5px 14px;font-size:.76rem;font-weight:700;cursor:pointer;font-family:inherit;transition:.15s">' + filterLabels[f] + '</button>';
+    var act=fbFilter===f;
+    h+='<button data-f="'+f+'" onclick="fbFilter=this.dataset.f;_renderAIContent()" style="background:'+(act?'#f97316':'#fff')+';border:1.5px solid '+(act?'#f97316':'#e2e8f0')+';color:'+(act?'#fff':'#475569')+';border-radius:7px;padding:5px 14px;font-size:.76rem;font-weight:700;cursor:pointer;font-family:inherit;transition:.15s">'+filterLabels[f]+'</button>';
   });
-  h += '</div>';
-  h += '</div>';
-
-  // Info box
-  h += '<div style="background:linear-gradient(135deg,#eff6ff,#f0f9ff);border:1px solid #bfdbfe;border-radius:12px;padding:14px 18px;margin-bottom:24px;font-size:.78rem;color:#1e40af;line-height:1.6">';
-  h += '💡 <strong>วิธีใช้:</strong> กด "🤖 วิเคราะห์" แต่ละกลุ่มสินค้า — AI จะอ่านชื่อแคมเปญ + ตัวเลข Performance แล้วแนะนำทิศทางคอนเทนต์ถัดไปที่น่าจะสร้างยอดขายได้ดีกว่าเดิม';
-  h += '</div>';
-
-  // Product cards
-  FB_HIERARCHY.forEach(function(p, pIdx){
-    var allRows = [];
-    p.pages.forEach(function(pg){
-      pg.accounts.forEach(function(h2){
-        h2.adAccounts.forEach(function(a){
-          (fbDataMap[a]||[]).forEach(function(r){ allRows.push(r); });
-        });
-      });
-    });
-    var filtered = _fbFilterRows(allRows);
-    var agg = _fbAgg(filtered);
-
-    // Count active campaigns
-    var campSet = {};
-    filtered.forEach(function(r){ if(r.campaign && r.spend>0) campSet[r.campaign]=1; });
-    var nCamps = Object.keys(campSet).length;
-
-    var cached = _aiResults[p.product];
-
-    h += '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;margin-bottom:16px;overflow:hidden">';
-
-    // Card header
-    h += '<div style="display:flex;align-items:center;gap:14px;padding:16px 20px;border-bottom:1px solid #f1f5f9">';
-    h += '<span style="font-size:1.6rem">' + p.icon + '</span>';
-    h += '<div style="flex:1">';
-    h += '<div style="font-size:.9rem;font-weight:700;color:#0f172a">' + p.product + '</div>';
-    h += '<div style="font-size:.7rem;color:#64748b;margin-top:2px">' + p.desc + ' · ' + nCamps + ' แคมเปญ active</div>';
-    h += '</div>';
-
-    // Mini KPIs
-    h += '<div style="display:flex;gap:16px;text-align:right">';
-    h += '<div><div style="font-size:.68rem;color:#94a3b8">Spend</div><div style="font-size:.82rem;font-weight:700;color:#0f172a">฿' + Math.round(agg.spend).toLocaleString('th-TH') + '</div></div>';
-    h += '<div><div style="font-size:.68rem;color:#94a3b8">Revenue</div><div style="font-size:.82rem;font-weight:700;color:#059669">฿' + Math.round(agg.revenue).toLocaleString('th-TH') + '</div></div>';
-    h += '<div><div style="font-size:.68rem;color:#94a3b8">ROAS</div><div style="font-size:.82rem;font-weight:700;color:' + (agg.roas>=2?'#059669':agg.roas>=1?'#d97706':'#dc2626') + '">' + (agg.roas>0?agg.roas.toFixed(2)+'x':'—') + '</div></div>';
-    h += '</div>';
-
-    // Analyze button
-    h += '<button id="ai-btn-' + pIdx + '" onclick="_aiAnalyzeProduct(' + pIdx + ',this)" style="background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:9px;padding:8px 16px;font-size:.76rem;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap">';
-    h += cached ? '🔄 วิเคราะห์ใหม่' : '🤖 วิเคราะห์';
-    h += '</button>';
-    h += '</div>';
-
-    // Result area
-    h += '<div id="ai-result-' + pIdx + '" style="padding:16px 20px;min-height:56px">';
-    if(cached){
-      h += '<div style="font-size:.8rem;line-height:1.7;color:#334155">' + cached.text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>') + '</div>';
-      h += '<div style="font-size:.65rem;color:#94a3b8;margin-top:8px;text-align:right">วิเคราะห์เมื่อ ' + cached.ts + '</div>';
-    } else {
-      h += '<div style="color:#94a3b8;font-size:.8rem;text-align:center;padding:8px">กด "วิเคราะห์" เพื่อให้ AI ช่วยแนะนำทิศทางคอนเทนต์</div>';
-    }
-    h += '</div>';
-
-    h += '</div>'; // card end
+  h+='</div></div>';
+  FB_HIERARCHY.forEach(function(p,pIdx){
+    var allRows=[];
+    p.pages.forEach(function(pg){pg.accounts.forEach(function(ac){ac.adAccounts.forEach(function(a){(fbDataMap[a]||[]).forEach(function(r){allRows.push(r);});});});});
+    var filtered=_fbFilterRows(allRows);
+    var agg=_fbAgg(filtered);
+    var campSet={};filtered.forEach(function(r){if(r.campaign&&r.spend>0)campSet[r.campaign]=1;});
+    var nCamps=Object.keys(campSet).length;
+    var cached=_aiResults[p.product];
+    h+='<div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;margin-bottom:16px;overflow:hidden">';
+    h+='<div style="display:flex;align-items:center;gap:14px;padding:16px 20px;border-bottom:1px solid #f1f5f9;flex-wrap:wrap">';
+    h+='<span style="font-size:1.6rem">'+p.icon+'</span>';
+    h+='<div style="flex:1;min-width:120px"><div style="font-size:.9rem;font-weight:700;color:#0f172a">'+p.product+'</div>';
+    h+='<div style="font-size:.7rem;color:#64748b;margin-top:2px">'+p.desc+' · '+nCamps+' แคมเปญ active</div></div>';
+    h+='<div style="display:flex;gap:16px;text-align:right">';
+    h+='<div><div style="font-size:.68rem;color:#94a3b8">Spend</div><div style="font-size:.82rem;font-weight:700;color:#0f172a">฿'+Math.round(agg.spend).toLocaleString('th-TH')+'</div></div>';
+    h+='<div><div style="font-size:.68rem;color:#94a3b8">Revenue</div><div style="font-size:.82rem;font-weight:700;color:#059669">฿'+Math.round(agg.revenue).toLocaleString('th-TH')+'</div></div>';
+    h+='<div><div style="font-size:.68rem;color:#94a3b8">ROAS</div><div style="font-size:.82rem;font-weight:700;color:'+(agg.roas>=2?'#059669':agg.roas>=1?'#d97706':'#dc2626')+'">'+(agg.roas>0?agg.roas.toFixed(2)+'x':'—')+'</div></div>';
+    h+='</div>';
+    h+='<button data-idx="'+pIdx+'" id="ai-btn-'+pIdx+'" onclick="_aiAnalyzeProduct(+this.dataset.idx,this)" style="background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:9px;padding:8px 18px;font-size:.76rem;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap">';
+    h+=cached?'🔄 วิเคราะห์ใหม่':'🔍 วิเคราะห์';
+    h+='</button></div>';
+    h+='<div id="ai-result-'+pIdx+'" style="padding:16px 20px;min-height:56px">';
+    if(cached){h+=cached.html;}else{h+='<div style="color:#94a3b8;font-size:.8rem;text-align:center;padding:8px">กด "วิเคราะห์" เพื่อให้ระบบวิเคราะห์ทิศทางคอนเทนต์จากข้อมูล Performance จริง</div>';}
+    h+='</div></div>';
   });
-
-  // Footer: change/clear API key
-  h += '<div style="text-align:center;margin-top:8px">';
-  h += '<button onclick="_aiClearKey()" style="background:transparent;border:1px solid #e2e8f0;color:#94a3b8;border-radius:7px;padding:4px 12px;font-size:.7rem;cursor:pointer;font-family:inherit">🔑 เปลี่ยน API Key</button>';
-  h += '</div>';
-
-  el.innerHTML = h;
-
-  // Re-render cached results with markdown formatting
-  FB_HIERARCHY.forEach(function(p, pIdx){
-    var cached = _aiResults[p.product];
-    if(cached) _aiRenderResult(pIdx, cached.text, cached.ts);
-  });
+  el.innerHTML=h;
+  FB_HIERARCHY.forEach(function(p,pIdx){if(_aiResults[p.product]){var el2=document.getElementById('ai-result-'+pIdx);if(el2)el2.innerHTML=_aiResults[p.product].html;}});
 }
-// ════════════════════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════════════
 
 
 // ═══ ชาร์ตอันดับ ════════════════════════════════════════════════════════
