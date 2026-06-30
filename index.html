@@ -547,6 +547,24 @@ function pwCheck(){
   else if(v==='hr01'){sessionStorage.setItem('rb_auth','hr');document.getElementById('pw-gate').style.display='none';switchView('commission',document.getElementById('sb-comm'));enableHrMode();}
   else{document.getElementById('pw-err').textContent='รหัสผ่านไม่ถูกต้อง';document.getElementById('pw-input').value='';document.getElementById('pw-input').focus();}
 }
+
+function _exportProductCSV(){
+  var rows=[['กลุ่ม','บัญชี','Spend','Revenue','ROAS','ทัก','Orders','CTR']];
+  FB_HIERARCHY.forEach(function(p){
+    var allAccNames=[];
+    p.pages.forEach(function(pg){pg.accounts.forEach(function(h){h.adAccounts.forEach(function(a){if(allAccNames.indexOf(a)<0)allAccNames.push(a);});});});
+    var allRows=[];
+    allAccNames.forEach(function(n){if(fbDataMap[n])allRows=allRows.concat(fbDataMap[n]);});
+    var agg=_fbAgg(_fbFilterRows(allRows));
+    rows.push([p.product,allAccNames.length,agg.spend.toFixed(0),agg.revenue.toFixed(0),agg.roas.toFixed(2),agg.conversations,agg.purchases,agg.ctr.toFixed(2)+'%']);
+  });
+  var csv=rows.map(function(r){return r.map(function(c){return '"'+String(c).replace(/"/g,'""')+'"';}).join(',');}).join('\n');
+  var blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');a.href=url;a.download='product_summary.csv';a.click();
+  URL.revokeObjectURL(url);
+}
+
 function enableHrMode(){
   // Hide sidebar so HR can't navigate elsewhere
   var nav=document.querySelector('.sb-nav');
@@ -2670,7 +2688,7 @@ function _fbBreadcrumb(){
 }
 
 function _renderFBProducts(el){
-  // Auto-trigger loading for all products' accounts
+  // Auto-load all accounts
   FB_HIERARCHY.forEach(function(p){
     p.pages.forEach(function(pg){
       pg.accounts.forEach(function(holder){
@@ -2685,152 +2703,119 @@ function _renderFBProducts(el){
     });
   });
 
-  var h='<div style="padding:24px 28px">';
-
-  // Header + filter pills
-  h+='<div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:22px">';
-  h+='<div style="font-family:Rajdhani,sans-serif;font-size:1.55rem;font-weight:900;color:#0f172a;letter-spacing:.4px;margin-right:8px">📦 ภาพรวมสินค้า</div>';
-  ['today','yesterday','3d','7d','30d','90d','all'].forEach(function(f){
-    var lbl={today:'วันนี้',yesterday:'เมื่อวาน','3d':'3 วัน','7d':'7 วัน','30d':'30 วัน','90d':'90 วัน',all:'ทั้งหมด'}[f];
-    var act=fbFilter===f;
-    h+='<button onclick="fbFilter=\''+f+'\';renderFB()" style="background:'+(act?'#1565c0':'#ffffff')+';border:1px solid '+(act?'#1565c0':'#dde3f4')+';color:'+(act?'#fff':'#475569')+';border-radius:6px;padding:5px 13px;font-size:.72rem;font-weight:700;cursor:pointer;font-family:inherit;transition:.15s">'+lbl+'</button>';
-  });
-  h+='<button onclick="fbRefresh()" style="margin-left:auto;background:rgba(21,101,192,.08);border:1px solid rgba(21,101,192,.25);color:#1565c0;border-radius:6px;padding:5px 13px;font-size:.72rem;font-weight:700;cursor:pointer;font-family:inherit">🔄 Refresh</button>';
-  h+='</div>';
-
-  FB_HIERARCHY.forEach(function(p,pi){
-    // Collect all adAccounts
+  // Build per-product aggregation
+  var productData=FB_HIERARCHY.map(function(p,pi){
     var allAccNames=[];
-    p.pages.forEach(function(pg){pg.accounts.forEach(function(holder){holder.adAccounts.forEach(function(aName){if(allAccNames.indexOf(aName)<0)allAccNames.push(aName);});});});
-
+    p.pages.forEach(function(pg){pg.accounts.forEach(function(h){h.adAccounts.forEach(function(a){if(allAccNames.indexOf(a)<0)allAccNames.push(a);});});});
     var loadedCount=allAccNames.filter(function(n){return fbLoadedMap[n];}).length;
-    var isLoading=loadedCount<allAccNames.length;
-
     var allRows=[];
     allAccNames.forEach(function(n){if(fbDataMap[n])allRows=allRows.concat(fbDataMap[n]);});
-    var filtered=_fbFilterRows(allRows);
-    var agg=_fbAgg(filtered);
-
-    h+='<div style="background:#ffffff;border:1.5px solid '+p.color+'28;border-radius:18px;margin-bottom:20px;overflow:hidden;box-shadow:0 2px 14px rgba(15,23,42,.06)">';
-
-    // Product header bar
-    h+='<div style="padding:14px 22px;background:linear-gradient(135deg,'+p.color+'0d,'+p.color+'03);border-bottom:1px solid '+p.color+'1a;display:flex;align-items:center;gap:12px">';
-    h+='<div style="width:42px;height:42px;border-radius:11px;background:linear-gradient(135deg,'+p.color+'22,'+p.color+'08);border:1.5px solid '+p.color+'30;display:flex;align-items:center;justify-content:center;font-size:1.3rem">'+p.icon+'</div>';
-    h+='<div><div style="font-family:Rajdhani,sans-serif;font-size:1.15rem;font-weight:900;color:#0f172a;letter-spacing:.3px">'+p.product+'</div>';
-    h+='<div style="font-size:.65rem;color:#64748b;display:flex;align-items:center;gap:8px;margin-top:3px">'
-      +'<span>'+p.desc+'</span>'
-      +'<span style="color:#cbd5e1">·</span>'
-      +'<span style="background:rgba(21,101,192,.08);color:#1565c0;border-radius:5px;padding:1px 7px;font-weight:700">'+p.pages.length+' เพจ</span>'
-      +'<span style="background:rgba(5,150,105,.08);color:#059669;border-radius:5px;padding:1px 7px;font-weight:700">'+allAccNames.length+' Ad Account</span>'
-      +'</div></div>';
-    h+='<div style="margin-left:auto;display:flex;align-items:center;gap:10px">';
-    if(isLoading)h+='<span style="font-size:.65rem;color:#d97706;background:rgba(217,119,6,.08);border:1px solid rgba(217,119,6,.2);border-radius:6px;padding:3px 9px">⏳ โหลด '+loadedCount+'/'+allAccNames.length+'</span>';
-    else h+='<span style="font-size:.65rem;color:#059669;background:rgba(5,150,105,.08);border:1px solid rgba(5,150,105,.2);border-radius:6px;padding:3px 9px">⚡ Live</span>';
-    h+='<button onclick="fbNavProduct=FB_HIERARCHY['+pi+'];fbNavPage=null;fbNavHolder=null;renderFB()" style="background:'+p.color+';border:none;color:#fff;border-radius:8px;padding:6px 15px;font-size:.71rem;font-weight:700;cursor:pointer;font-family:inherit">ดูรายละเอียด →</button>';
-    h+='</div></div>';
-
-    // Body
-    h+='<div style="padding:18px 22px">';
-
-    if(isLoading&&allRows.length===0){
-      h+='<div style="padding:28px;text-align:center;color:var(--text3);font-size:.82rem">⏳ กำลังดึงข้อมูล Real-time จาก Facebook...</div>';
-    } else {
-      // KPI cards
-      var pnl=agg.revenue-agg.spend;
-      var pnlColor=pnl>=0?'#059669':'#dc2626';
-      var roasColor=agg.roas>=2?'#059669':agg.roas>=1?'#d97706':'#dc2626';
-      function kpi(icon,lbl,val,col){
-        return '<div style="background:#f4f7fe;border:1px solid #e4eaf6;border-radius:11px;padding:13px 15px;min-width:0">'
-          +'<div style="font-size:.6rem;color:#94a3b8;text-transform:uppercase;letter-spacing:.8px;margin-bottom:5px">'+icon+' '+lbl+'</div>'
-          +'<div style="font-family:Rajdhani,sans-serif;font-size:1.3rem;font-weight:900;color:'+(col||'#0f172a')+'">'+val+'</div>'
-          +'</div>';
-      }
-      h+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-bottom:18px">';
-      h+=kpi('💰','Spend','฿'+fmtK(agg.spend),'#1565c0');
-      h+=kpi('📈','Revenue','฿'+fmtK(agg.revenue),'#0284c7');
-      h+=kpi('💵','P&L',(pnl>=0?'+':'')+'฿'+fmtK(pnl),pnlColor);
-      h+=kpi('⚡','ROAS',agg.roas.toFixed(2)+'x',roasColor);
-      h+=kpi('👁','Impressions',fmtK(agg.impressions),'#475569');
-      h+=kpi('💬','Conver.',fmt(agg.conversations),'#7c3aed');
-      h+=kpi('🛒','Purchases',fmt(agg.purchases),'#059669');
-      h+='</div>';
-
-      // Charts row
-      h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">';
-      h+='<div style="background:#f4f7fe;border:1px solid #e4eaf6;border-radius:11px;padding:14px">';
-      h+='<div style="font-size:.68rem;font-weight:700;color:#64748b;margin-bottom:10px;letter-spacing:.5px">ROAS ตาม Campaign</div>';
-      h+='<canvas id="prc_'+pi+'" style="max-height:180px"></canvas>';
-      h+='</div>';
-      h+='<div style="background:#f4f7fe;border:1px solid #e4eaf6;border-radius:11px;padding:14px">';
-      h+='<div style="font-size:.68rem;font-weight:700;color:#64748b;margin-bottom:10px;letter-spacing:.5px">Spend vs Revenue</div>';
-      h+='<canvas id="psr_'+pi+'" style="max-height:180px"></canvas>';
-      h+='</div>';
-      h+='</div>';
-    }
-    h+='</div></div>';
+    var agg=_fbAgg(_fbFilterRows(allRows));
+    return{p:p,pi:pi,allAccNames:allAccNames,loadedCount:loadedCount,agg:agg};
   });
+
+  // Grand totals
+  var gSpend=0,gRevenue=0,gConv=0,gPurchases=0;
+  productData.forEach(function(x){gSpend+=x.agg.spend;gRevenue+=x.agg.revenue;gConv+=x.agg.conversations;gPurchases+=x.agg.purchases;});
+  var gRoas=gSpend>0&&gRevenue>0?Math.round(gRevenue/gSpend*100)/100:0;
+
+  var h='<div style="padding:24px 28px">';
+
+  // ── Header ──
+  h+='<div style="margin-bottom:18px">';
+  h+='<div style="font-family:Rajdhani,sans-serif;font-size:1.6rem;font-weight:900;color:#0f172a;letter-spacing:.3px">ภาพรวมกลุ่มสินค้า</div>';
+  h+='<div style="font-size:.75rem;color:#64748b;margin-top:2px">สรุปประสิทธิภาพแต่ละกลุ่มสินค้า</div>';
+  h+='</div>';
+
+  // ── Time filter pills ──
+  h+='<div style="display:flex;align-items:center;gap:6px;margin-bottom:22px;flex-wrap:wrap">';
+  [{k:'today',l:'วันนี้'},{k:'yesterday',l:'เมื่อวาน'},{k:'3d',l:'3 วัน'},{k:'7d',l:'7 วัน'},{k:'14d',l:'14 วัน'},{k:'30d',l:'30 วัน'}].forEach(function(f){
+    var act=fbFilter===f.k;
+    h+='<button onclick="fbFilter=\''+f.k+'\';renderFB()" style="background:'+(act?'#f97316':'#fff')+';border:1.5px solid '+(act?'#f97316':'#e2e8f0')+';color:'+(act?'#fff':'#475569')+';border-radius:7px;padding:5px 14px;font-size:.76rem;font-weight:700;cursor:pointer;font-family:inherit;transition:.15s">'+f.l+'</button>';
+  });
+  h+='<div style="margin-left:auto;display:flex;gap:8px">';
+  h+='<button onclick="fbRefresh()" title="Refresh" style="background:#f1f5f9;border:1px solid #e2e8f0;color:#475569;border-radius:7px;padding:5px 11px;font-size:.85rem;cursor:pointer">🔄</button>';
+  h+='<button onclick="_exportProductCSV()" style="background:#f1f5f9;border:1px solid #e2e8f0;color:#475569;border-radius:7px;padding:5px 13px;font-size:.74rem;font-weight:700;cursor:pointer;font-family:inherit">↓ CSV</button>';
+  h+='</div></div>';
+
+  // ── 5 KPI summary cards ──
+  function kpiCard(label,value,grad,icon){
+    return '<div style="background:'+grad+';border-radius:14px;padding:18px 20px;color:#fff;position:relative;overflow:hidden">'
+      +'<div style="position:absolute;right:-8px;top:-8px;font-size:3.8rem;opacity:.13;line-height:1">'+icon+'</div>'
+      +'<div style="font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;opacity:.88;margin-bottom:10px">'+label+'</div>'
+      +'<div style="font-size:1.85rem;font-weight:900;font-family:Rajdhani,sans-serif;line-height:1">'+value+'</div>'
+      +'</div>';
+  }
+  h+='<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:22px">';
+  h+=kpiCard('กลุ่มทั้งหมด',FB_HIERARCHY.length,'linear-gradient(135deg,#3b82f6,#1d4ed8)','🏷');
+  h+=kpiCard('SPEND รวม','฿'+fmt(gSpend),'linear-gradient(135deg,#f97316,#c2410c)','💸');
+  h+=kpiCard('คนทัก',fmt(gConv),'linear-gradient(135deg,#06b6d4,#0284c7)','💬');
+  h+=kpiCard('REVENUE','฿'+fmt(gRevenue),'linear-gradient(135deg,#f59e0b,#b45309)','📈');
+  h+=kpiCard('ROAS',gRoas.toFixed(2)+'x','linear-gradient(135deg,#a855f7,#6d28d9)','🎯');
+  h+='</div>';
+
+  // ── Product cards grid ──
+  h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:22px">';
+  productData.forEach(function(x){
+    var p=x.p,agg=x.agg,pi=x.pi;
+    var isLoading=x.loadedCount<x.allAccNames.length&&x.allAccNames.length>0;
+    var roasColor=agg.roas>=2?'#059669':agg.roas>=1?'#d97706':'#dc2626';
+    var borderColor=agg.roas>=2?'#059669':agg.roas>=1?'#f59e0b':'#ef4444';
+    h+='<div style="background:#fff;border:1.5px solid #e8edf6;border-left:4px solid '+borderColor+';border-radius:12px;padding:18px 20px;box-shadow:0 2px 8px rgba(15,23,42,.04)">';
+    // Header row
+    h+='<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px">';
+    h+='<div>';
+    h+='<div style="font-family:Rajdhani,sans-serif;font-size:1.08rem;font-weight:900;color:#0f172a">'+p.icon+' '+p.product+'</div>';
+    h+='<div style="font-size:.67rem;color:#94a3b8;margin-top:3px">'+x.allAccNames.length+' บัญชี</div>';
+    if(isLoading)h+='<div style="font-size:.62rem;color:#d97706;margin-top:3px">⏳ โหลด '+x.loadedCount+'/'+x.allAccNames.length+'</div>';
+    h+='</div>';
+    h+='<div style="text-align:right">';
+    h+='<div style="font-family:Rajdhani,sans-serif;font-size:2rem;font-weight:900;color:'+roasColor+';line-height:1">'+agg.roas.toFixed(2)+'</div>';
+    h+='<div style="font-size:.62rem;color:#94a3b8;font-weight:600">ROAS</div>';
+    h+='</div></div>';
+    // Stats 2x2 grid
+    h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">';
+    function stat(lbl,val){return '<div style="background:#f8fafc;border-radius:8px;padding:8px 10px"><div style="font-size:.62rem;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px">'+lbl+'</div><div style="font-size:.92rem;font-weight:700;color:#0f172a">'+val+'</div></div>';}
+    h+=stat('Spend','฿'+fmt(agg.spend));
+    h+=stat('Revenue','฿'+fmt(agg.revenue));
+    h+=stat('ทัก',fmt(agg.conversations));
+    h+=stat('Orders',fmt(agg.purchases));
+    h+='</div>';
+    // Detail button
+    h+='<button onclick="fbNavProduct=FB_HIERARCHY['+pi+'];fbNavPage=null;fbNavHolder=null;renderFB()" style="width:100%;padding:7px;background:linear-gradient(135deg,'+p.color+'18,'+p.color+'08);border:1.5px solid '+p.color+'35;color:'+p.color+';border-radius:8px;font-size:.74rem;font-weight:700;cursor:pointer;font-family:inherit">⚡ Live &nbsp; ดูรายละเอียด →</button>';
+    h+='</div>';
+  });
+  h+='</div>';
+
+  // ── Summary table ──
+  h+='<div style="background:#fff;border:1.5px solid #e8edf6;border-radius:14px;overflow:hidden;box-shadow:0 2px 8px rgba(15,23,42,.04)">';
+  h+='<table style="width:100%;border-collapse:collapse">';
+  h+='<thead><tr style="background:#f8fafc">';
+  ['กลุ่ม','บัญชี','Spend','ทัก','Orders','Revenue','ROAS','CTR'].forEach(function(col,i){
+    var align=i>0?'right':'left';
+    h+='<th style="padding:11px 14px;text-align:'+align+';font-size:.68rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.06em;border-bottom:1.5px solid #e8edf6;white-space:nowrap">'+col+'</th>';
+  });
+  h+='</tr></thead><tbody>';
+  productData.forEach(function(x){
+    var p=x.p,agg=x.agg,pi=x.pi;
+    var roasColor=agg.roas>=2?'#059669':agg.roas>=1?'#d97706':'#dc2626';
+    h+='<tr style="border-bottom:1px solid #f1f5f9;cursor:pointer;transition:.1s" onclick="fbNavProduct=FB_HIERARCHY['+pi+'];fbNavPage=null;fbNavHolder=null;renderFB()" onmouseover="this.style.background=\'#f8fafc\'" onmouseout="this.style.background=\'\'">';
+    h+='<td style="padding:10px 14px"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:'+p.color+';margin-right:8px;vertical-align:middle"></span><span style="font-weight:600;color:#0f172a;font-size:.8rem">'+p.product+'</span></td>';
+    h+='<td style="padding:10px 14px;text-align:right;color:#64748b;font-size:.8rem">'+x.allAccNames.length+'</td>';
+    h+='<td style="padding:10px 14px;text-align:right;color:#475569;font-size:.8rem;font-weight:600">฿'+fmt(agg.spend)+'</td>';
+    h+='<td style="padding:10px 14px;text-align:right;color:#475569;font-size:.8rem">'+fmt(agg.conversations)+'</td>';
+    h+='<td style="padding:10px 14px;text-align:right;color:#475569;font-size:.8rem">'+fmt(agg.purchases)+'</td>';
+    h+='<td style="padding:10px 14px;text-align:right;color:#475569;font-size:.8rem;font-weight:600">฿'+fmt(agg.revenue)+'</td>';
+    h+='<td style="padding:10px 14px;text-align:right;font-weight:800;color:'+roasColor+';font-size:.8rem;font-family:Rajdhani,sans-serif">'+agg.roas.toFixed(2)+'x</td>';
+    h+='<td style="padding:10px 14px;text-align:right;color:#64748b;font-size:.8rem">'+agg.ctr.toFixed(2)+'%</td>';
+    h+='</tr>';
+  });
+  h+='</tbody></table></div>';
 
   h+='</div>';
   el.innerHTML=h;
-
-  // Build charts after DOM settles
-  setTimeout(function(){
-    Object.keys(_prodCharts).forEach(function(k){try{_prodCharts[k].destroy();}catch(e){}});
-    _prodCharts={};
-
-    FB_HIERARCHY.forEach(function(p,pi){
-      var allAccNames=[];
-      p.pages.forEach(function(pg){pg.accounts.forEach(function(holder){holder.adAccounts.forEach(function(aName){if(allAccNames.indexOf(aName)<0)allAccNames.push(aName);});});});
-      var allRows=[];
-      allAccNames.forEach(function(n){if(fbDataMap[n])allRows=allRows.concat(fbDataMap[n]);});
-      var filtered=_fbFilterRows(allRows);
-      if(!filtered.length)return;
-
-      // ROAS by campaign (horizontal bar)
-      var rcCanvas=document.getElementById('prc_'+pi);
-      if(rcCanvas){
-        var cm={};
-        filtered.forEach(function(r){if(!cm[r.campaign])cm[r.campaign]={spend:0,revenue:0};cm[r.campaign].spend+=r.spend;cm[r.campaign].revenue+=r.revenue;});
-        var camps=Object.keys(cm).map(function(k){return{name:k,roas:cm[k].spend>0&&cm[k].revenue>0?cm[k].revenue/cm[k].spend:0,spend:cm[k].spend};});
-        camps.sort(function(a,b){return b.spend-a.spend;});camps=camps.slice(0,7);
-        _prodCharts['rc_'+pi]=new Chart(rcCanvas,{
-          type:'bar',
-          data:{labels:camps.map(function(c){var n=c.name;return n.length>22?n.slice(0,22)+'…':n;}),
-            datasets:[{label:'ROAS',data:camps.map(function(c){return Math.round(c.roas*100)/100;}),
-              backgroundColor:camps.map(function(c){return c.roas>=2?'rgba(5,150,105,.65)':c.roas>=1?'rgba(217,119,6,.65)':'rgba(220,38,38,.65)';}),
-              borderColor:camps.map(function(c){return c.roas>=2?'#059669':c.roas>=1?'#d97706':'#dc2626';}),
-              borderWidth:1.5,borderRadius:4}]},
-          options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',
-            plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(255,255,255,.97)',borderColor:'rgba(21,101,192,.2)',borderWidth:1,titleColor:'#1565c0',bodyColor:'#1e3a5f',callbacks:{label:function(ctx){return 'ROAS: '+ctx.parsed.x+'x';}}}},
-            scales:{x:{grid:{color:'rgba(203,213,225,.5)'},ticks:{color:'#64748b',font:{size:9}},beginAtZero:true},
-              y:{grid:{display:false},ticks:{color:'#475569',font:{size:9}}}}}
-        });
-      }
-
-      // Spend vs Revenue by date (bar)
-      var srCanvas=document.getElementById('psr_'+pi);
-      if(srCanvas){
-        var dm={};
-        filtered.forEach(function(r){if(!dm[r.date])dm[r.date]={spend:0,revenue:0};dm[r.date].spend+=r.spend;dm[r.date].revenue+=r.revenue;});
-        var dates=Object.keys(dm).sort().slice(-14);
-        _prodCharts['sr_'+pi]=new Chart(srCanvas,{
-          type:'bar',
-          data:{labels:dates.map(function(d){return d.slice(5);}),
-            datasets:[
-              {label:'Spend',data:dates.map(function(d){return Math.round(dm[d].spend);}),backgroundColor:'rgba(21,101,192,.55)',borderColor:'#1565c0',borderWidth:1,borderRadius:3},
-              {label:'Revenue',data:dates.map(function(d){return Math.round(dm[d].revenue);}),backgroundColor:'rgba(2,132,199,.55)',borderColor:'#0284c7',borderWidth:1,borderRadius:3}
-            ]},
-          options:{responsive:true,maintainAspectRatio:false,
-            plugins:{legend:{labels:{color:'#64748b',font:{size:9},boxWidth:9,padding:8}},
-              tooltip:{backgroundColor:'rgba(255,255,255,.97)',borderColor:'rgba(21,101,192,.2)',borderWidth:1,titleColor:'#1565c0',bodyColor:'#1e3a5f',
-                callbacks:{label:function(ctx){return ctx.dataset.label+': ฿'+Math.round(ctx.parsed.y).toLocaleString();}}}},
-            scales:{x:{grid:{color:'rgba(203,213,225,.5)'},ticks:{color:'#64748b',font:{size:9}}},
-              y:{grid:{color:'rgba(203,213,225,.5)'},ticks:{color:'#64748b',font:{size:9}}}}}
-        });
-      }
-    });
-  },60);
 }
+
 
 function _renderFBPages(el){
   var prod=fbNavProduct;
@@ -3607,6 +3592,7 @@ function _fbFilterRows(rows){
   var cutoffDate=new Date(now);
   if(fbFilter==='3d')cutoffDate.setDate(now.getDate()-2);
   else if(fbFilter==='7d')cutoffDate.setDate(now.getDate()-6);
+  else if(fbFilter==='14d')cutoffDate.setDate(now.getDate()-13);
   else if(fbFilter==='30d')cutoffDate.setDate(now.getDate()-29);
   else if(fbFilter==='90d')cutoffDate.setDate(now.getDate()-89);
   var cutoffStr=toYMD(cutoffDate);
