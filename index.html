@@ -4413,9 +4413,9 @@ function _adsaiCalcBudget(){
     h2+='<td style="padding:8px 10px;font-weight:600;color:#0f172a">'+nm+'</td>';
     var bAcc=bCampAccMap[c.campaign]||'';
     var bPg=bAccPageMap[bAcc]||'';
-    var bAccShort=bAcc.length>18?bAcc.slice(0,16)+'…':bAcc;
-    var bPgShort=bPg.length>14?bPg.slice(0,12)+'…':bPg;
-    h2+='<td style="padding:8px 10px;line-height:1.4"><div style="font-size:.63rem;color:#475569;font-weight:600">'+bAccShort+'</div>'+(bPgShort?'<div style="font-size:.58rem;color:#94a3b8">'+bPgShort+'</div>':'')+'</td>';
+    var bAccShort=bAcc.length>22?bAcc.slice(0,20)+'…':bAcc;
+    var bPgShort=bPg;
+    h2+='<td style="padding:8px 10px;line-height:1.4;min-width:120px"><div style="font-size:.63rem;color:#475569;font-weight:600;white-space:nowrap">'+bAccShort+'</div>'+(bPgShort?'<div style="font-size:.6rem;color:#475569;font-weight:500;white-space:normal;word-break:break-word">'+bPgShort+'</div>':'')+'</td>';
     var rTv=roasTMap[c.campaign]||0;
     h2+='<td style="padding:8px 10px;text-align:right;color:'+(rTv>=2?'#22c55e':rTv>=1?'#f97316':rTv>0?'#ef4444':'#94a3b8')+';font-weight:700">'+(rTv>0?rTv.toFixed(2)+'×':'—')+'</td>';
     h2+='<td style="padding:8px 10px;text-align:right;color:'+(r1v>=2?'#22c55e':r1v>=1?'#f97316':r1v>0?'#ef4444':'#94a3b8')+';font-weight:700">'+(r1v>0?r1v.toFixed(2)+'×':'—')+'</td>';
@@ -4438,9 +4438,9 @@ function _adsaiCalcBudget(){
     h2+='<td style="padding:8px 10px;color:#7f1d1d;font-weight:600">'+nm+'</td>';
     var bAcc2=bCampAccMap[c.campaign]||'';
     var bPg2=bAccPageMap[bAcc2]||'';
-    var bAccShort2=bAcc2.length>18?bAcc2.slice(0,16)+'…':bAcc2;
-    var bPgShort2=bPg2.length>14?bPg2.slice(0,12)+'…':bPg2;
-    h2+='<td style="padding:8px 10px;line-height:1.4"><div style="font-size:.63rem;color:#7f1d1d;font-weight:600">'+bAccShort2+'</div>'+(bPgShort2?'<div style="font-size:.58rem;color:#ef4444">'+bPgShort2+'</div>':'')+'</td>';
+    var bAccShort2=bAcc2.length>22?bAcc2.slice(0,20)+'…':bAcc2;
+    var bPgShort2=bPg2;
+    h2+='<td style="padding:8px 10px;line-height:1.4;min-width:120px"><div style="font-size:.63rem;color:#7f1d1d;font-weight:600;white-space:nowrap">'+bAccShort2+'</div>'+(bPgShort2?'<div style="font-size:.6rem;color:#ef4444;font-weight:500;white-space:normal;word-break:break-word">'+bPgShort2+'</div>':'')+'</td>';
     var rTv2=roasTMap[c.campaign]||0;
     h2+='<td style="padding:8px 10px;text-align:right;color:#ef4444;font-weight:700">'+(rTv2>0?rTv2.toFixed(2)+'×':'—')+'</td>';
     h2+='<td style="padding:8px 10px;text-align:right;color:#ef4444;font-weight:700">'+(r1v>0?r1v.toFixed(2)+'×':'—')+'</td>';
