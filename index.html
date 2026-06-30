@@ -4272,6 +4272,34 @@ function _adsaiCalcBudget(){
   var roasTMap=window._adsaiRoasTMap||{};
   var roas1Map=window._adsaiRoas1Map||{};
   var roas3Map=window._adsaiRoas3Map||{};
+  // Build per-campaign CPP and CPConv maps from yesterday's data
+  var campCPPMap={},campConvMap={};
+  if(typeof fbDataMap!=='undefined'){
+    Object.keys(fbDataMap).forEach(function(accName){
+      (fbDataMap[accName]||[]).forEach(function(row){
+        if(!row.campaign) return;
+        var d=new Date(); d.setHours(0,0,0,0); var yd=new Date(d-864e5);
+        var rd=new Date(row.date_start||row.date||'');
+        if(rd<yd||rd>=d) return; // yesterday only
+        var cn=row.campaign;
+        campCPPMap[cn]=(campCPPMap[cn]||{spend:0,pur:0});
+        campCPPMap[cn].spend+=(row.spend||0);
+        campCPPMap[cn].pur+=(row.purchases||0);
+        campConvMap[cn]=(campConvMap[cn]||{spend:0,conv:0});
+        campConvMap[cn].spend+=(row.spend||0);
+        campConvMap[cn].conv+=(row.conversations||row.messaging_conversation_started_7d||0);
+      });
+    });
+    // Convert to cost-per values
+    Object.keys(campCPPMap).forEach(function(k){
+      var o=campCPPMap[k];
+      campCPPMap[k]=o.pur>0?o.spend/o.pur:0;
+    });
+    Object.keys(campConvMap).forEach(function(k){
+      var o=campConvMap[k];
+      campConvMap[k]=o.conv>0?o.spend/o.conv:0;
+    });
+  }
 
   if(!camps.length){resEl.innerHTML='<div style="color:#94a3b8;font-size:.75rem">ไม่มีข้อมูลแคมเปญ — กรุณารีเฟรช</div>';return;}
 
@@ -4297,8 +4325,14 @@ function _adsaiCalcBudget(){
     if(hasT&&rT>0){sumR+=rT*4;sumW+=4;}
     var avg=sumW>0?sumR/sumW:r7;
     if(avg<1) return{close:true,weight:0,avg:avg};
-    // weight = avg^1.5 (boost high performers)
-    return{close:false,weight:Math.pow(avg,1.5),avg:avg};
+    // Factor in CPP / CPConv if targets set
+    var cppOK=true,convOK=true;
+    if(targetCPP>0&&campCPPMap[c.campaign]>0&&campCPPMap[c.campaign]>targetCPP) cppOK=false;
+    if(targetConv>0&&campConvMap[c.campaign]>0&&campConvMap[c.campaign]>targetConv) convOK=false;
+    var adjW=Math.pow(avg,1.5);
+    if(!cppOK) adjW*=0.4;
+    if(!convOK) adjW*=0.5;
+    return{close:false,weight:adjW,avg:avg,cppOK:cppOK,convOK:convOK};
   }
 
   var scored=camps.map(function(c){return Object.assign({},c,campScore(c));});
@@ -4351,7 +4385,10 @@ function _adsaiCalcBudget(){
     h2+='<td style="padding:8px 10px;text-align:right;color:'+g7.color+';font-weight:700">'+c.roas.toFixed(2)+'×</td>';
     h2+='<td style="padding:8px 10px;text-align:right;color:#475569">'+_aiFmtB(c.spend)+'</td>';
     h2+='<td style="padding:8px 10px;text-align:right;font-weight:800;color:'+actCol+'">'+_aiFmtB(c._alloc)+'</td>';
-    h2+='<td style="padding:8px 10px;color:'+actCol+';font-weight:600;white-space:nowrap">'+actTxt+'</td>';
+    var badge='';
+    if(c.cppOK===false) badge+=' <span style="font-size:.56rem;background:#fef2f2;color:#dc2626;border-radius:3px;padding:1px 4px;font-weight:700">CPP เกิน</span>';
+    if(c.convOK===false) badge+=' <span style="font-size:.56rem;background:#fef3cd;color:#92400e;border-radius:3px;padding:1px 4px;font-weight:700">CPConv เกิน</span>';
+    h2+='<td style="padding:8px 10px;color:'+actCol+';font-weight:600;white-space:nowrap">'+actTxt+badge+'</td>';
     h2+='</tr>';
   });
   // Closing camps
