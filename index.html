@@ -4895,7 +4895,7 @@ function _renderLeave(el){
       dates.forEach(function(dt){
         var t=ad[dt.dateStr]||'';
         var cellBg,cellTxt,cellCol,clickable=false;
-        if(dt.isHol&&!t){cellBg='#d1fae5';cellTxt='💰';cellCol='#059669';}
+        if(dt.isHol&&!t){cellBg='#d1fae5';cellTxt='💰';cellCol='#059669';clickable=true;}
         else if(t==='หยุด'){cellBg='#fca5a5';cellTxt='หยุด';cellCol='#991b1b';clickable=true;}
         else if(t==='WFH'){cellBg='#93c5fd';cellTxt='WFH';cellCol='#1e40af';clickable=true;}
         else if(t==='ออกกอง'){cellBg='#fcd34d';cellTxt='ออกกอง';cellCol='#92400e';clickable=true;}
