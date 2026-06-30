@@ -2177,7 +2177,7 @@ function switchView(view,el){
     mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var trv2=document.getElementById('trackView');if(trv2)trv2.style.display='none';var lv2=document.getElementById('leaveView');if(lv2)lv2.style.display='none';var trv=document.getElementById('trackView');if(trv){trv.style.display='block';_renderTrackHistory(trv);}
     window.scrollTo({top:0,behavior:'smooth'});
   } else if(view==='leave'){
-    mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var trv2=document.getElementById('trackView');if(trv2)trv2.style.display='none';var lv2=document.getElementById('leaveView');if(lv2)lv2.style.display='none';var lv=document.getElementById('leaveView');if(lv){lv.style.display='block';_renderLeave(lv);}
+    mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var trv2=document.getElementById('trackView');if(trv2)trv2.style.display='none';var lv2=document.getElementById('leaveView');if(lv2)lv2.style.display='none';var lv=document.getElementById('leaveView');if(lv){lv.style.display='block';_renderLeaveInit(lv);}
     window.scrollTo({top:0,behavior:'smooth'});
   } else if(view==='benchmark'){
     mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='block';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var trv2=document.getElementById('trackView');if(trv2)trv2.style.display='none';var lv2=document.getElementById('leaveView');if(lv2)lv2.style.display='none';
@@ -4820,8 +4820,30 @@ var _TH_MONTHS=['มกราคม','กุมภาพันธ์','มีน
 var _TH_DOW=['อา','จ','อ','พ','พฤ','ศ','ส'];
 var _TH_HOLIDAYS_2026=['2026-01-01','2026-03-03','2026-04-13','2026-04-14','2026-04-15','2026-05-01','2026-06-03','2026-07-28','2026-07-29','2026-08-12','2026-10-23','2026-12-05','2026-12-31'];
 
-function _leaveGetData(){try{return JSON.parse(localStorage.getItem('leave_cal')||'{}');}catch(e){return{};}}
+var _LEAVE_NPOINT='https://api.npoint.io/0f30d56553bf06c0c544';
+window._leaveCache=null;
+function _leaveGetData(){try{return window._leaveCache||JSON.parse(localStorage.getItem('leave_cal')||'{}')||{};}catch(e){return{};}}
 function _leaveSaveData(d){try{localStorage.setItem('leave_cal',JSON.stringify(d));}catch(e){}}
+async function _leaveFetch(){
+  try{
+    var r=await fetch(_LEAVE_NPOINT);
+    var j=await r.json();
+    window._leaveCache=j||{};
+    _leaveSaveData(window._leaveCache);
+  }catch(e){
+    window._leaveCache=_leaveGetData();
+  }
+}
+async function _leavePost(data){
+  try{await fetch(_LEAVE_NPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});}catch(e){}
+}
+async function _renderLeaveInit(el){
+  if(!el)return;
+  window._leaveCache=window._leaveCache||_leaveGetData();
+  _renderLeave(el);
+  await _leaveFetch();
+  _renderLeave(el);
+}
 
 function _leavePeriod(mon){// mon=1..12, returns array of {dateStr,display,dow,isWE,isHol}
   var yr=2026,prev=mon===1?12:mon-1,pyr=mon===1?2025:2026;
@@ -4833,19 +4855,21 @@ function _leavePeriod(mon){// mon=1..12, returns array of {dateStr,display,dow,i
 }
 
 function _leaveToggle(an,ds){
-  var data=_leaveGetData();
+  var data=window._leaveCache||_leaveGetData();
   if(!data[an])data[an]={};
   var cycle=(an==='มอส')?['','หยุด','WFH','ออกกอง','ลาพักร้อน']:['','หยุด','WFH','ออกกอง'];
   var cur=data[an][ds]||'';
   var next=cycle[(cycle.indexOf(cur)+1)%cycle.length];
   if(!next)delete data[an][ds]; else data[an][ds]=next;
+  window._leaveCache=data;
   _leaveSaveData(data);
   _renderLeave(document.getElementById('leaveView'));
+  _leavePost(data);
 }
 
 function _renderLeave(el){
   if(!el)return;
-  var data=_leaveGetData();
+  var data=window._leaveCache||_leaveGetData();
   var h='<div style="max-width:1400px;margin:0 auto">';
   // Header
   h+='<div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">';
