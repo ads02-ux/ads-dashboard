@@ -3789,7 +3789,7 @@ function _renderChartRank(el){
     filtered.forEach(function(x,i){
       var rank=i<3?medals[i]:'<span style="color:#94a3b8;font-size:.82rem">#'+(i+1)+'</span>';
       var roasColor=x.roas>=2?'#059669':x.roas>=1?'#d97706':'#dc2626';
-      h+='<tr style="border-bottom:1px solid #f1f5f9;transition:.1s" onmouseover="this.style.background='#fafbff'" onmouseout="this.style.background=''">';
+      h+='<tr data-ho="#fafbff" data-out="" style="border-bottom:1px solid #f1f5f9;transition:.1s" onmouseover="this.style.background=this.dataset.ho" onmouseout="this.style.background=this.dataset.out">';
       h+='<td style="padding:11px 14px;text-align:center;font-size:1.05rem">'+rank+'</td>';
       h+='<td style="padding:11px 14px">';
       h+='<div style="font-size:.82rem;font-weight:700;color:#0f172a">'+x.name+'</div>';
