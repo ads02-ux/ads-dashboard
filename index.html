@@ -3863,6 +3863,54 @@ function _aiCompetitorFallback(pIdx,el,btnEl,reason){
   el.innerHTML=h2;
   if(btnEl){btnEl.disabled=false;btnEl.textContent='🔄 ลองใหม่';}
 }
+function _renderAIContent(el){
+  if(!el) el=document.getElementById('aiView');
+  if(!el) return;
+  FB_HIERARCHY.forEach(function(p){p.pages.forEach(function(pg){pg.accounts.forEach(function(ac){ac.adAccounts.forEach(function(aName){
+    if(!fbLoadedMap[aName]&&!_fbLoadingMap[aName]){_fbLoadingMap[aName]=true;var accMeta=FB_ACCOUNTS_META.find(function(a){return a.name===aName;});if(accMeta)_loadFBFromAPI(accMeta,aName);}
+  });});});});
+  var filterKeys=['today','yesterday','3d','7d','14d','30d'];
+  var filterLabels={today:'\u0e27\u0e31\u0e19\u0e19\u0e35\u0e49',yesterday:'\u0e40\u0e21\u0e37\u0e48\u0e2d\u0e27\u0e32\u0e19','3d':'3 \u0e27\u0e31\u0e19','7d':'7 \u0e27\u0e31\u0e19','14d':'14 \u0e27\u0e31\u0e31\u0e19','30d':'30 \u0e27\u0e31\u0e19'};
+  var filterLabels2={'today':'วันนี้','yesterday':'เมื่อวาน','3d':'3 วัน','7d':'7 วัน','14d':'14 วัน','30d':'30 วัน'};
+  var h='';
+  h+='<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px">';
+  h+='<div><div style="font-family:Rajdhani,sans-serif;font-size:1.7rem;font-weight:900;color:#0f172a;letter-spacing:.3px;margin-bottom:4px">🤖 AI แนะนำคอนเทนต์</div>';
+  h+='<div style="font-size:.76rem;color:#64748b">วิเคราะห์ Performance แคมเปญ + ค้นหาคู่แข่งผ่าน Facebook Ad Library → แนะนำทิศทางคอนเทนต์ถัดไป</div></div>';
+  h+='<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">';
+  filterKeys.forEach(function(f){
+    var act=fbFilter===f;
+    h+='<button data-f="'+f+'" onclick="fbFilter=this.dataset.f;_renderAIContent()" style="background:'+(act?'#f97316':'#fff')+';border:1.5px solid '+(act?'#f97316':'#e2e8f0')+';color:'+(act?'#fff':'#475569')+';border-radius:7px;padding:5px 14px;font-size:.76rem;font-weight:700;cursor:pointer;font-family:inherit">'+filterLabels2[f]+'</button>';
+  });
+  h+='</div></div>';
+  FB_HIERARCHY.forEach(function(p,pIdx){
+    var allRows=[];
+    p.pages.forEach(function(pg){pg.accounts.forEach(function(ac){ac.adAccounts.forEach(function(a){(fbDataMap[a]||[]).forEach(function(r){allRows.push(r);});});});});
+    var filtered=_fbFilterRows(allRows);
+    var agg=_fbAgg(filtered);
+    var campSet={};filtered.forEach(function(r){if(r.campaign&&r.spend>0)campSet[r.campaign]=1;});
+    var nCamps=Object.keys(campSet).length;
+    var cached=_aiResults[p.product];
+    h+='<div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;margin-bottom:16px;overflow:hidden">';
+    h+='<div style="display:flex;align-items:center;gap:14px;padding:16px 20px;border-bottom:1px solid #f1f5f9;flex-wrap:wrap">';
+    h+='<span style="font-size:1.6rem">'+(p.icon||'\ud83d\udce6')+'</span>';
+    h+='<div style="flex:1;min-width:120px"><div style="font-size:.9rem;font-weight:700;color:#0f172a">'+p.product+'</div>';
+    h+='<div style="font-size:.7rem;color:#64748b;margin-top:2px">'+(p.desc||'')+' · '+nCamps+' แคมเปญ active</div></div>';
+    h+='<div style="display:flex;gap:16px;text-align:right">';
+    h+='<div><div style="font-size:.68rem;color:#94a3b8">Spend</div><div style="font-size:.82rem;font-weight:700;color:#0f172a">฿'+Math.round(agg.spend).toLocaleString('th-TH')+'</div></div>';
+    h+='<div><div style="font-size:.68rem;color:#94a3b8">Revenue</div><div style="font-size:.82rem;font-weight:700;color:#059669">฿'+Math.round(agg.revenue).toLocaleString('th-TH')+'</div></div>';
+    h+='<div><div style="font-size:.68rem;color:#94a3b8">ROAS</div><div style="font-size:.82rem;font-weight:700;color:'+(agg.roas>=2?'#059669':agg.roas>=1?'#d97706':'#dc2626')+'">'+(agg.roas>0?agg.roas.toFixed(2)+'x':'—')+'</div></div>';
+    h+='</div>';
+    h+='<button data-idx="'+pIdx+'" id="ai-btn-'+pIdx+'" onclick="_aiAnalyzeProduct(+this.dataset.idx,this)" style="background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:9px;padding:8px 18px;font-size:.76rem;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap">';
+    h+=cached?'🔄 วิเคราะห์ใหม่':'🔍 วิเคราะห์';
+    h+='</button></div>';
+    h+='<div id="ai-result-'+pIdx+'" style="padding:16px 20px;min-height:56px">';
+    if(cached){h+=cached.html;}else{h+='กด "วิเคราะห์" เพื่อให้ระบบวิเคราะห์ทิศทางคอนเทนต์จากข้อมูล Performance จริง';}
+    h+='</div></div>';
+  });
+  el.innerHTML=h;
+  FB_HIERARCHY.forEach(function(p,pIdx){if(_aiResults[p.product]){var el2=document.getElementById('ai-result-'+pIdx);if(el2)el2.innerHTML=_aiResults[p.product].html;}});
+}
+
 // ════════════════════════════════════════════════════════════════════════
 
 
