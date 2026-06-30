@@ -4103,9 +4103,9 @@ function _renderAdsAI(el){
   if(!camps7.length) camps7=_aiAggCamps(_aiFilterRows(allRows,saved));
 
   // Map each period's roas by campaign name
-  var roasTMap={},roas1Map={},roas3Map={};
+  var roasTMap={},roas1Map={},roas3Map={},spend1Map={};
   cT.forEach(function(c){roasTMap[c.campaign]=c.roas;});
-  c1.forEach(function(c){roas1Map[c.campaign]=c.roas;});
+  c1.forEach(function(c){roas1Map[c.campaign]=c.roas; spend1Map[c.campaign]=c.spend;});
   c3.forEach(function(c){roas3Map[c.campaign]=c.roas;});
 
   // AI decision per camp (วันนี้/1d/3d/7d)
@@ -4139,8 +4139,8 @@ function _renderAdsAI(el){
   h+='<span style="background:#f0fdf4;color:#16a34a;border-radius:4px;padding:2px 7px;font-size:.62rem;font-weight:700">Target ≥2×</span></div>';
   h+='<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:.7rem">';
   h+='<thead><tr style="background:#f8fafc">';
-  ['แคมเปญ','วันนี้','1 วัน','3 วัน','7 วัน','Spend 7d','🤖 คำแนะนำ AI'].forEach(function(col,ci){
-    var align=(ci>=1&&ci<=5)?'right':'left';
+  ['แคมเปญ','วันนี้','1 วัน','3 วัน','7 วัน','Spend 1d','Spend 7d','🤖 คำแนะนำ AI'].forEach(function(col,ci){
+    var align=(ci>=1&&ci<=6)?'right':'left';
     h+='<th style="padding:8px 10px;text-align:'+align+';color:#64748b;font-weight:600;white-space:nowrap;border-bottom:1px solid #f1f5f9">'+col+'</th>';
   });
   h+='</tr></thead><tbody>';
@@ -4158,6 +4158,8 @@ function _renderAdsAI(el){
     h+='<td style="padding:8px 10px;color:#0f172a;font-weight:600;max-width:190px;word-break:break-word">'+nm+'</td>';
     h+=roasCell(rTv)+roasCell(r1v)+roasCell(r3v);
     h+='<td style="padding:8px 10px;text-align:right;font-weight:700;color:'+g7.color+'">'+c.roas.toFixed(2)+'×</td>';
+    var sp1=spend1Map[c.campaign]||0;
+    h+='<td style="padding:8px 10px;text-align:right;color:#475569">'+(sp1>0?_aiFmtB(sp1):'—')+'</td>';
     h+='<td style="padding:8px 10px;text-align:right;color:#475569">'+_aiFmtB(c.spend)+'</td>';
     h+='<td style="padding:8px 10px;color:'+dec.col+';font-weight:700;white-space:nowrap">'+dec.act+'</td>';
     h+='</tr>';
