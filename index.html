@@ -4835,7 +4835,7 @@ function _leavePeriod(mon){// mon=1..12, returns array of {dateStr,display,dow,i
 function _leaveToggle(an,ds){
   var data=_leaveGetData();
   if(!data[an])data[an]={};
-  var cycle=['','หยุด','WFH','ออกกอง'];
+  var cycle=(an==='มอส')?['','หยุด','WFH','ออกกอง','ลาพักร้อน']:['','หยุด','WFH','ออกกอง'];
   var cur=data[an][ds]||'';
   var next=cycle[(cycle.indexOf(cur)+1)%cycle.length];
   if(!next)delete data[an][ds]; else data[an][ds]=next;
@@ -4854,7 +4854,7 @@ function _renderLeave(el){
   h+='</div>';
   // Legend
   h+='<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;align-items:center">';
-  [{l:'หยุด (6/เดือน)',bg:'#fca5a5',tc:'#991b1b'},{l:'WFH (2/เดือน)',bg:'#93c5fd',tc:'#1e40af'},{l:'ออกกอง',bg:'#fcd34d',tc:'#92400e'},{l:'ค่าแรงเพิ่ม',bg:'#d1fae5',tc:'#475569'},{l:'เสาร์/อาทิตย์',bg:'#f1f5f9',tc:'#94a3b8',border:'#e2e8f0'}].forEach(function(lg){
+  [{l:'หยุด (6/เดือน)',bg:'#fca5a5',tc:'#991b1b'},{l:'WFH (2/เดือน)',bg:'#93c5fd',tc:'#1e40af'},{l:'ออกกอง',bg:'#fcd34d',tc:'#92400e'},{l:'ลาพักร้อน มอส (6/ปี)',bg:'#ede9fe',tc:'#7c3aed'},{l:'ค่าแรงเพิ่ม',bg:'#d1fae5',tc:'#059669'},{l:'เสาร์/อาทิตย์',bg:'#f1f5f9',tc:'#94a3b8',border:'#e2e8f0'}].forEach(function(lg){
     h+='<div style="display:flex;align-items:center;gap:5px"><div style="width:16px;height:16px;border-radius:4px;background:'+lg.bg+';'+(lg.border?'border:1px solid '+lg.border:'')+';flex-shrink:0"></div>';
     h+='<span style="font-size:.7rem;color:'+lg.tc+'">'+lg.l+'</span></div>';
   });
@@ -4875,6 +4875,7 @@ function _renderLeave(el){
       h+='<span style="background:'+(lc>_LEAVE_QUOTA?'#fee2e2':'#f1f5f9')+';color:'+(lc>_LEAVE_QUOTA?'#dc2626':'#475569')+';border-radius:20px;padding:1px 7px;font-weight:700">หยุด '+lc+'/'+_LEAVE_QUOTA+'</span>';
       h+='<span style="background:'+(wc>_WFH_QUOTA?'#fee2e2':'#eff6ff')+';color:'+(wc>_WFH_QUOTA?'#dc2626':'#1e40af')+';border-radius:20px;padding:1px 7px;font-weight:700">WFH '+wc+'/'+_WFH_QUOTA+'</span>';
       if(oc>0)h+='<span style="background:#fffbeb;color:#d97706;border-radius:20px;padding:1px 7px;font-weight:700">ออกกอง '+oc+'</span>';
+      if(an==='มอส'){var prTotal=Object.values(data['มอส']||{}).filter(function(v){return v==='ลาพักร้อน';}).length;h+='<span style="background:'+(prTotal>6?'#fee2e2':'#f5f3ff')+';color:'+(prTotal>6?'#dc2626':'#7c3aed')+';border-radius:20px;padding:1px 7px;font-weight:700">ลาพักร้อน '+prTotal+'/6 ปี</span>';}
       h+='</div>';
     });
     h+='</div>';
@@ -4899,6 +4900,7 @@ function _renderLeave(el){
         else if(t==='หยุด'){cellBg='#fca5a5';cellTxt='หยุด';cellCol='#991b1b';clickable=true;}
         else if(t==='WFH'){cellBg='#93c5fd';cellTxt='WFH';cellCol='#1e40af';clickable=true;}
         else if(t==='ออกกอง'){cellBg='#fcd34d';cellTxt='ออกกอง';cellCol='#92400e';clickable=true;}
+        else if(t==='ลาพักร้อน'){cellBg='#ede9fe';cellTxt='ลาพักร้อน';cellCol='#7c3aed';clickable=true;}
         else if(dt.isWE){cellBg='#f1f5f9';cellTxt='';cellCol='#94a3b8';}
         else{cellBg='transparent';cellTxt='';cellCol='#e2e8f0';clickable=true;}
         var tdStyle='padding:3px 2px;text-align:center;border-left:1px solid #f8fafc;'+(clickable?'cursor:pointer;':'');
