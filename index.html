@@ -3725,9 +3725,9 @@ function _renderChartRank(el){
   h+='<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">';
   filterKeys.forEach(function(f){
     var act=fbFilter===f;
-    h+='<button onclick="fbFilter=''+f+'';_renderChartRank()" style="background:'+(act?'#f97316':'#fff')+';border:1.5px solid '+(act?'#f97316':'#e2e8f0')+';color:'+(act?'#fff':'#475569')+';border-radius:7px;padding:5px 14px;font-size:.76rem;font-weight:700;cursor:pointer;font-family:inherit;transition:.15s">'+filterLabels[f]+'</button>';
+    h+='<button data-f="'+f+'" onclick="fbFilter=this.dataset.f;_renderChartRank()" style="background:'+(act?'#f97316':'#fff')+';border:1.5px solid '+(act?'#f97316':'#e2e8f0')+';color:'+(act?'#fff':'#475569')+';border-radius:7px;padding:5px 14px;font-size:.76rem;font-weight:700;cursor:pointer;font-family:inherit;transition:.15s">'+filterLabels[f]+'</button>';
   });
-  h+='<button onclick="alert('ยังไม่รองรับ')" style="background:#fff;border:1.5px solid #e2e8f0;color:#475569;border-radius:7px;padding:5px 11px;font-size:.76rem;cursor:pointer;font-family:inherit">📅 กำหนดเอง</button>';
+  h+='<button onclick="alert(this.dataset.m)" data-m="ยังไม่รองรับ" style="background:#fff;border:1.5px solid #e2e8f0;color:#475569;border-radius:7px;padding:5px 11px;font-size:.76rem;cursor:pointer;font-family:inherit">📅 กำหนดเอง</button>';
   h+='</div>';
   h+='</div>';
 
@@ -3740,8 +3740,8 @@ function _renderChartRank(el){
   h+='<div style="display:flex;flex-direction:column;gap:4px">';
   h+='<div style="font-size:.7rem;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.3px">ทิศทาง</div>';
   h+='<div style="display:flex;border:1.5px solid #e2e8f0;border-radius:8px;overflow:hidden">';
-  h+='<button onclick="chartrankDirection='top';_renderChartRank()" style="padding:5px 16px;font-size:.76rem;font-weight:700;cursor:pointer;font-family:inherit;border:none;border-right:1px solid #e2e8f0;background:'+(chartrankDirection==='top'?'#fff':'#f8fafc')+';color:'+(chartrankDirection==='top'?'#059669':'#64748b')+'">📈 ดีสุด</button>';
-  h+='<button onclick="chartrankDirection='bottom';_renderChartRank()" style="padding:5px 16px;font-size:.76rem;font-weight:700;cursor:pointer;font-family:inherit;border:none;background:'+(chartrankDirection==='bottom'?'#fff':'#f8fafc')+';color:'+(chartrankDirection==='bottom'?'#dc2626':'#64748b')+'">📉 แย่สุด</button>';
+  h+='<button data-d="top" onclick="chartrankDirection=this.dataset.d;_renderChartRank()" style="padding:5px 16px;font-size:.76rem;font-weight:700;cursor:pointer;font-family:inherit;border:none;border-right:1px solid #e2e8f0;background:'+(chartrankDirection==='top'?'#fff':'#f8fafc')+';color:'+(chartrankDirection==='top'?'#059669':'#64748b')+'">📈 ดีสุด</button>';
+  h+='<button data-d="bottom" onclick="chartrankDirection=this.dataset.d;_renderChartRank()" style="padding:5px 16px;font-size:.76rem;font-weight:700;cursor:pointer;font-family:inherit;border:none;background:'+(chartrankDirection==='bottom'?'#fff':'#f8fafc')+';color:'+(chartrankDirection==='bottom'?'#dc2626':'#64748b')+'">📉 แย่สุด</button>';
   h+='</div></div>';
 
   h+=_crDropdown('จำนวน','chartrankTopN',[['5','Top 5'],['10','Top 10'],['20','Top 20'],['50','Top 50']],String(chartrankTopN),'chartrankTopN=+this.value;_renderChartRank()');
