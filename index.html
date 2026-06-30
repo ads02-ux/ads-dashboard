@@ -4114,12 +4114,12 @@ function _renderAdsAI(el){
     var hasT=(rT>0),hasR1=(r1>0),hasR3=(r3>0);
     var allZero=(r7===0&&r3===0&&r1===0&&rT===0);
     if(allZero) return{act:'📋 ตรวจ tracking',col:'#94a3b8',score:0};
-    // ANY period < 1 → check 3d avg before closing
+    // ปิดทันที: ต้องมี 3d<1 และ 7d<1 พร้อมกัน
+    var close3d7d=(hasR3&&r3>0&&r3<1)&&(r7>0&&r7<1);
+    if(close3d7d) return{act:'⏸ ปิดทันที (3d+7d ROAS<1)',col:'#dc2626',score:-2};
+    // any period<1 แต่ 3d/7d ยังไม่ทั้งคู่ต่ำกว่า 1 → ลดงบ+ระวัง
     var anyLoss=(r7>0&&r7<1)||(hasR3&&r3<1)||(hasR1&&r1<1)||(hasT&&rT<1);
-    if(anyLoss){
-      if(hasR3&&r3>=1.7) return{act:'🔻 ลดงบ 30% (3d OK แต่ระวัง)',col:'#d97706',score:-1};
-      return{act:'⏸ ปิดทันที (ROAS<1)',col:'#dc2626',score:-2};
-    }
+    if(anyLoss) return{act:'🔻 ลดงบ 30% + ระวัง',col:'#d97706',score:-1};
     var allGood=(r7>=2)&&(!hasR3||r3>=2)&&(!hasR1||r1>=2)&&(!hasT||rT>=2);
     var improving=hasR1&&hasR3&&r1>r3&&r3>r7&&r7>=1;
     var declining=(hasT&&hasR1&&rT<r1*0.85)||(hasR1&&hasR3&&r1<r3*0.85&&r3<r7*0.85);
@@ -4240,11 +4240,12 @@ function _adsaiCalcBudget(){
     var r1=roas1Map[c.campaign]||0;
     var rT=roasTMap[c.campaign]||0;
     var hasT=(rT>0),hasR1=(r1>0),hasR3=(r3>0);
+    // ปิดจริง: 3d<1 AND 7d<1 พร้อมกัน
+    var close3d7dC=(hasR3&&r3>0&&r3<1)&&(r7>0&&r7<1);
+    if(close3d7dC) return{close:true,weight:0,avg:r7};
+    // period ใดสักช่วง<1 แต่ไม่ถึงเกณฑ์ปิด → ลดงบ 30%
     var anyLossC=(r7>0&&r7<1)||(hasR3&&r3<1)||(hasR1&&r1<1)||(hasT&&rT<1);
-    if(anyLossC){
-      if(hasR3&&r3>=1.7) return{close:false,weight:0.3,avg:r3}; // ลดงบ แต่ไม่ปิด
-      return{close:true,weight:0,avg:r7};
-    }
+    if(anyLossC) return{close:false,weight:0.3,avg:r3||r7};
     // weighted avg: 7d=1x, 3d=2x, 1d=3x, today=4x (recent matters most)
     var sumW=0,sumR=0;
     if(r7>0){sumR+=r7*1;sumW+=1;}
