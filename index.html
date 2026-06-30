@@ -616,6 +616,9 @@ function disableCommInputs(){
     <div class="sb-item" id="sb-ai" onclick="switchView('ai',this)">
       <span class="sb-icon">🤖</span><span>AI แนะนำคอนเทนต์</span>
     </div>
+    <div class="sb-item" id="sb-adsai" onclick="switchView('adsai',this)">
+      <span class="sb-icon">📈</span><span>AI วิเคราะห์ Ads</span>
+    </div>
     <div class="sb-item" id="sb-benchmark" onclick="switchView('benchmark',this)">
       <span class="sb-icon">📐</span><span>BenchMark มาตรวัดแอด</span>
     </div>
@@ -807,6 +810,7 @@ function disableCommInputs(){
 <div id="benchmarkView" style="display:none"><div class="page" id="benchmarkViewInner"></div></div>
 <div id="chartrankView" style="display:none;padding:28px 32px"></div>
 <div id="aiView" style="display:none;padding:28px 32px"></div>
+<div id="adsaiView" style="display:none;padding:28px 32px"></div>
 
 <script>
 var SHEET_ID='1Qs57OO-tDRAsikHulJSKw6S0tfbMqgUuNbmiRHN1POI',GID_S1='997286503',GID_S2='1472268717',GID_COMM='1688902080',GID_CONFIG='388205387',REFRESH=300;
@@ -2144,13 +2148,13 @@ function switchView(view,el){
   if(el)el.classList.add('active');
   var mv=document.getElementById('mainView'),cv=document.getElementById('cohortView'),cmv=document.getElementById('commissionView'),fbv=document.getElementById('fbView');
   if(view==='cohort'){
-    mv.style.display='none';cv.style.display='block';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';
+    mv.style.display='none';cv.style.display='block';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';
     renderCohort();window.scrollTo({top:0,behavior:'smooth'});
   } else if(view==='commission'){
-    mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='block';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';
+    mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='block';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';
     renderCommission();window.scrollTo({top:0,behavior:'smooth'});
   } else if(view==='fb'){
-    mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='block';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';
+    mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='block';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';
     renderFB();window.scrollTo({top:0,behavior:'smooth'});
   } else if(view==='chartrank'){
     mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv){crv.style.display='block';_renderChartRank(crv);}
@@ -2158,11 +2162,14 @@ function switchView(view,el){
   } else if(view==='ai'){
     mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv){aiv.style.display='block';_renderAIContent(aiv);}
     window.scrollTo({top:0,behavior:'smooth'});
+  } else if(view==='adsai'){
+    mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var aav=document.getElementById('adsaiView');if(aav){aav.style.display='block';_renderAdsAI(aav);}
+    window.scrollTo({top:0,behavior:'smooth'});
   } else if(view==='benchmark'){
-    mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='block';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';
+    mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='block';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';
     renderBenchmark();window.scrollTo({top:0,behavior:'smooth'});
   } else {
-    mv.style.display='block';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';
+    mv.style.display='block';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';
     if(view!=='top')setTimeout(function(){var t=document.getElementById(view);if(t){var y=t.getBoundingClientRect().top+window.scrollY-100;window.scrollTo({top:y,behavior:'smooth'});}},50);
   }
 }
@@ -3927,6 +3934,215 @@ function _renderAIContent(el){
 // ════════════════════════════════════════════════════════════════════════
 
 
+
+
+// ═══ AI วิเคราะห์ Ads ══════════════════════════════════════════════════════
+var _adsaiFilter='30d';
+function _renderAdsAI(el){
+  if(!el)el=document.getElementById('adsaiView');
+  if(!el)return;
+
+  // ── gather all rows from all accounts ──
+  var allAccNames=[];
+  FB_HIERARCHY.forEach(function(p){p.pages.forEach(function(pg){pg.accounts.forEach(function(ac){ac.adAccounts.forEach(function(n){if(allAccNames.indexOf(n)<0)allAccNames.push(n);});});});});
+
+  // pre-load missing accounts
+  allAccNames.forEach(function(aName){
+    if(!fbLoadedMap[aName]&&!_fbLoadingMap[aName]){
+      _fbLoadingMap[aName]=true;
+      var accMeta=FB_ACCOUNTS_META.find(function(a){return a.name===aName;});
+      if(accMeta)_loadFBFromAPI(accMeta,aName);
+    }
+  });
+
+  var loadedCount=allAccNames.filter(function(n){return fbLoadedMap[n];}).length;
+  var allRows=[];allAccNames.forEach(function(n){if(fbDataMap[n])allRows=allRows.concat(fbDataMap[n]);});
+
+  // ── filter by date ──
+  var periods=[{k:'today',l:'วันนี้'},{k:'yesterday',l:'เมื่อวาน'},{k:'3d',l:'3 วัน'},{k:'7d',l:'7 วัน'},{k:'14d',l:'14 วัน'},{k:'30d',l:'30 วัน'}];
+  var saved=_adsaiFilter||fbFilter||'30d';
+
+  function filterRows(rows,f){
+    var now=new Date(),todayStr=now.toLocaleDateString('sv-SE');
+    var yd=new Date(now);yd.setDate(yd.getDate()-1);var ydStr=yd.toLocaleDateString('sv-SE');
+    if(f==='today')return rows.filter(function(r){return r.date===todayStr;});
+    if(f==='yesterday')return rows.filter(function(r){return r.date===ydStr;});
+    var days={'3d':3,'7d':7,'14d':14,'30d':30}[f]||30;
+    var cut=new Date(now);cut.setDate(cut.getDate()-days);
+    return rows.filter(function(r){if(!r.date)return false;return new Date(r.date)>=cut;});
+  }
+  var filtered=filterRows(allRows,saved);
+
+  // ── aggregate by campaign ──
+  var campMap={};
+  filtered.forEach(function(r){
+    var k=r.campaign||'(ไม่มีชื่อ)';
+    if(!campMap[k])campMap[k]={campaign:k,spend:0,revenue:0,purchases:0,conversations:0,impressions:0,clicks:0,days:{}};
+    campMap[k].spend+=r.spend;campMap[k].revenue+=r.revenue;campMap[k].purchases+=r.purchases;
+    campMap[k].conversations+=r.conversations;campMap[k].impressions+=r.impressions;campMap[k].clicks+=r.clicks;
+    if(r.date)campMap[k].days[r.date]=1;
+  });
+  var camps=Object.values(campMap).map(function(c){
+    c.roas=c.spend>0&&c.revenue>0?Math.round(c.revenue/c.spend*100)/100:0;
+    c.ctr=c.impressions>0?Math.round(c.clicks/c.impressions*10000)/100:0;
+    c.cpb=c.purchases>0?Math.round(c.spend/c.purchases):0;
+    c.activeDays=Object.keys(c.days).length;
+    return c;
+  });
+  camps.sort(function(a,b){return b.spend-a.spend;});
+
+  // ── overall metrics ──
+  var totSpend=0,totRev=0,totPurch=0,totConv=0,totImpress=0,totClicks=0;
+  camps.forEach(function(c){totSpend+=c.spend;totRev+=c.revenue;totPurch+=c.purchases;totConv+=c.conversations;totImpress+=c.impressions;totClicks+=c.clicks;});
+  var totRoas=totSpend>0&&totRev>0?Math.round(totRev/totSpend*100)/100:0;
+  var totPct=totRev>0?Math.round(totSpend/totRev*1000)/10:0;
+
+  // ── helpers ──
+  function fmtB(v){return '฿'+(v>=1000000?(v/1000000).toFixed(1)+'M':v>=1000?Math.round(v/1000)+'K':Math.round(v));}
+  function roasGrade(r){
+    if(r>=3)return{grade:'S',icon:'⚔️',color:'#f59e0b',bg:'#fffbeb',label:'Excellent — เพิ่มงบได้ทันที'};
+    if(r>=2)return{grade:'A',icon:'🗡️',color:'#22c55e',bg:'#f0fdf4',label:'ดีมาก — ขยาย Audience'};
+    if(r>=1.5)return{grade:'B',icon:'🛡️',color:'#3b82f6',bg:'#eff6ff',label:'ดี — รักษางบต่อ'};
+    if(r>=1)return{grade:'C',icon:'⚡',color:'#f97316',bg:'#fff7ed',label:'พอดีทุน — ปรับ Creative'};
+    if(r>0)return{grade:'D',icon:'🔴',color:'#ef4444',bg:'#fef2f2',label:'ขาดทุน — พักหรือ Replan'};
+    return{grade:'—',icon:'⬜',color:'#94a3b8',bg:'#f8fafc',label:'ไม่มีข้อมูล Revenue'};
+  }
+  function action(c){
+    if(c.roas>=2.5)return{txt:'📈 เพิ่มงบ 30–50%',col:'#16a34a'};
+    if(c.roas>=1.5)return{txt:'📊 เพิ่มงบ +10–20%',col:'#2563eb'};
+    if(c.roas>=1)return{txt:'🔧 คง + ปรับ Creative',col:'#d97706'};
+    if(c.roas>0)return{txt:'⏸ พักชั่วคราว',col:'#dc2626'};
+    return{txt:'📋 ตรวจสอบ Revenue tracking',col:'#94a3b8'};
+  }
+
+  // ─── BUILD HTML ───
+  var h='';
+
+  // Header
+  h+='<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px">';
+  h+='<div><div style="font-family:Rajdhani,sans-serif;font-size:1.7rem;font-weight:900;color:#0f172a;letter-spacing:.3px;margin-bottom:4px">📈 AI วิเคราะห์ Ads</div>';
+  h+='<div style="font-size:.76rem;color:#64748b">วิเคราะห์ประสิทธิภาพแคมเปญ · ให้คำแนะนำว่าควรเพิ่มงบ ลดงบ หรือพัก</div></div>';
+  // filter buttons
+  h+='<div style="display:flex;gap:6px;flex-wrap:wrap">';
+  periods.forEach(function(p){
+    var act=saved===p.k;
+    h+='<button onclick="_adsaiFilter=\''+p.k+'\';_renderAdsAI(document.getElementById(\'adsaiView\'))" style="background:'+(act?'#1565c0':'#fff')+';border:1px solid '+(act?'#1565c0':'#dde3f4')+';color:'+(act?'#fff':'#475569')+';border-radius:6px;padding:5px 13px;font-size:.72rem;font-weight:700;cursor:pointer;font-family:inherit;transition:.15s">'+p.l+'</button>';
+  });
+  h+='</div></div>';
+
+  // Loading state
+  if(loadedCount<allAccNames.length&&allAccNames.length>0){
+    h+='<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:16px 20px;margin-bottom:16px;font-size:.77rem;color:#64748b">⏳ กำลังโหลดข้อมูล '+loadedCount+'/'+allAccNames.length+' บัญชี... <button onclick="setTimeout(function(){_renderAdsAI(document.getElementById(\'adsaiView\'));},1200)" style="background:#1565c0;color:#fff;border:none;border-radius:6px;padding:4px 12px;font-size:.72rem;font-weight:700;cursor:pointer;font-family:inherit;margin-left:8px">🔄 รีเฟรช</button></div>';
+  }
+
+  if(!filtered.length){
+    h+='<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:40px;text-align:center;color:#94a3b8;font-size:.85rem">ไม่มีข้อมูลในช่วงเวลาที่เลือก</div>';
+    el.innerHTML=h; return;
+  }
+
+  // ── Summary cards ──
+  var oRoas=roasGrade(totRoas);
+  var healthScore=Math.min(100,Math.round((totRoas>=2?100:totRoas>=1?60:30)*(0.4)+(camps.filter(function(c){return c.roas>=1.5;}).length/Math.max(camps.length,1))*60));
+  h+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:22px">';
+  var summary=[
+    {label:'รายได้รวม',val:fmtB(totRev),sub:'Spend: '+fmtB(totSpend),color:'#1565c0'},
+    {label:'ROAS รวม',val:totRoas.toFixed(2)+'×',sub:oRoas.label,color:oRoas.color},
+    {label:'%ค่าแอด/รายได้',val:totPct.toFixed(1)+'%',sub:totPct<30?'✅ ดี':totPct<50?'⚠️ พอใช้':'🔴 สูงเกิน',color:totPct<30?'#16a34a':totPct<50?'#d97706':'#dc2626'},
+    {label:'แคมเปญทั้งหมด',val:camps.length+' camps',sub:camps.filter(function(c){return c.roas>=1.5;}).length+' ทำกำไร',color:'#475569'},
+    {label:'ยอดซื้อ',val:totPurch.toLocaleString(),sub:totPurch>0?'Cost/Buy: '+fmtB(totPurch>0?totSpend/totPurch:0):'ไม่มีข้อมูล',color:'#0891b2'},
+  ];
+  summary.forEach(function(s){
+    h+='<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px 16px">';
+    h+='<div style="font-size:.65rem;color:#64748b;margin-bottom:4px">'+s.label+'</div>';
+    h+='<div style="font-size:1.15rem;font-weight:800;color:'+s.color+';font-family:Rajdhani,sans-serif">'+s.val+'</div>';
+    h+='<div style="font-size:.62rem;color:#94a3b8;margin-top:2px">'+s.sub+'</div>';
+    h+='</div>';
+  });
+  h+='</div>';
+
+  // ── AI Insights banner ──
+  var scaling=camps.filter(function(c){return c.roas>=2.5;});
+  var pausing=camps.filter(function(c){return c.roas>0&&c.roas<1;});
+  var watching=camps.filter(function(c){return c.roas>=1&&c.roas<1.5;});
+  var insights=[];
+  if(scaling.length)insights.push('🚀 <b>'+scaling.length+' แคมเปญ</b> ROAS ≥2.5× — พร้อมเพิ่มงบทันที');
+  if(pausing.length)insights.push('🔴 <b>'+pausing.length+' แคมเปญ</b> ขาดทุน — ควรพักหรือ Replan ก่อน');
+  if(watching.length)insights.push('⚡ <b>'+watching.length+' แคมเปญ</b> เกือบคุ้มทุน — ปรับ Creative แล้วรอ 5–7 วัน');
+  if(totRoas>=2)insights.push('✅ ภาพรวมพอร์ตแข็งแกร่ง ROAS '+totRoas.toFixed(2)+'× — พิจารณาขยาย Lookalike');
+  else if(totRoas<1&&totRoas>0)insights.push('⚠️ ROAS ภาพรวม '+totRoas.toFixed(2)+'× — ต้อง Replan Funnel โดยด่วน');
+  if(insights.length){
+    h+='<div style="background:linear-gradient(135deg,#eff6ff,#fff);border:1px solid #bfdbfe;border-radius:12px;padding:16px 20px;margin-bottom:20px">';
+    h+='<div style="font-size:.7rem;font-weight:700;color:#1565c0;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">🤖 AI Insight</div>';
+    insights.forEach(function(i){h+='<div style="font-size:.76rem;color:#1e40af;margin-bottom:5px">'+i+'</div>';});
+    h+='</div>';
+  }
+
+  // ── Campaign table ──
+  h+='<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;margin-bottom:20px">';
+  h+='<div style="padding:14px 18px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;gap:8px">';
+  h+='<span style="font-size:.8rem;font-weight:700;color:#0f172a">รายการแคมเปญ</span>';
+  h+='<span style="font-size:.65rem;color:#94a3b8">เรียงตามงบ (มากไปน้อย)</span></div>';
+  h+='<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:.72rem">';
+  h+='<thead><tr style="background:#f8fafc">';
+  ['แคมเปญ','เกรด','Spend','Revenue','ROAS','Purchase','คำแนะนำ AI'].forEach(function(col){
+    h+='<th style="padding:9px 12px;text-align:left;color:#64748b;font-weight:600;white-space:nowrap;border-bottom:1px solid #f1f5f9">'+col+'</th>';
+  });
+  h+='</tr></thead><tbody>';
+  camps.forEach(function(c,i){
+    var g=roasGrade(c.roas);
+    var act=action(c);
+    var bg=i%2===0?'#fff':'#f8fafc';
+    h+='<tr style="background:'+bg+';border-bottom:1px solid #f1f5f9">';
+    // campaign name (truncate)
+    var nm=c.campaign.length>35?c.campaign.slice(0,33)+'…':c.campaign;
+    h+='<td style="padding:10px 12px;color:#0f172a;font-weight:600;max-width:220px;word-break:break-word">'+nm+'</td>';
+    // grade badge
+    h+='<td style="padding:10px 12px;white-space:nowrap"><span style="background:'+g.bg+';color:'+g.color+';border-radius:6px;padding:3px 8px;font-weight:800;font-size:.7rem">'+g.icon+' '+g.grade+'</span></td>';
+    h+='<td style="padding:10px 12px;color:#475569;white-space:nowrap;text-align:right">'+fmtB(c.spend)+'</td>';
+    h+='<td style="padding:10px 12px;color:#475569;white-space:nowrap;text-align:right">'+fmtB(c.revenue)+'</td>';
+    h+='<td style="padding:10px 12px;font-weight:700;white-space:nowrap;text-align:right;color:'+g.color+'">'+c.roas.toFixed(2)+'×</td>';
+    h+='<td style="padding:10px 12px;color:#64748b;white-space:nowrap;text-align:right">'+c.purchases+'</td>';
+    h+='<td style="padding:10px 12px;white-space:nowrap;color:'+act.col+';font-weight:600">'+act.txt+'</td>';
+    h+='</tr>';
+  });
+  h+='</tbody></table></div></div>';
+
+  // ── Budget reallocation suggestion ──
+  if(scaling.length&&pausing.length){
+    var cutBudget=pausing.reduce(function(s,c){return s+c.spend;},0);
+    var toBudget=scaling.map(function(c){return c.campaign.length>25?c.campaign.slice(0,23)+'…':c.campaign;}).join(', ');
+    h+='<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:16px 20px;margin-bottom:20px">';
+    h+='<div style="font-size:.73rem;font-weight:700;color:#16a34a;margin-bottom:8px">💰 คำแนะนำจัดงบใหม่</div>';
+    h+='<div style="font-size:.76rem;color:#166534">ลองย้ายงบจากแคมเปญที่ขาดทุน (~'+fmtB(cutBudget)+') ไปเสริม: <b>'+toBudget+'</b></div>';
+    h+='</div>';
+  }
+
+  // ── Quick action table: Scale / Watch / Pause ──
+  var sections=[
+    {title:'🚀 แนะนำให้เพิ่มงบ',list:camps.filter(function(c){return c.roas>=2.5;}),color:'#16a34a',bg:'#f0fdf4',border:'#bbf7d0'},
+    {title:'📊 ดีพอ — รักษาระดับ',list:camps.filter(function(c){return c.roas>=1.5&&c.roas<2.5;}),color:'#2563eb',bg:'#eff6ff',border:'#bfdbfe'},
+    {title:'⏸ พิจารณาพัก / Replan',list:camps.filter(function(c){return c.roas>0&&c.roas<1;}),color:'#dc2626',bg:'#fef2f2',border:'#fecaca'},
+  ];
+  sections.forEach(function(sec){
+    if(!sec.list.length)return;
+    h+='<div style="background:'+sec.bg+';border:1px solid '+sec.border+';border-radius:12px;padding:16px 20px;margin-bottom:14px">';
+    h+='<div style="font-size:.73rem;font-weight:700;color:'+sec.color+';margin-bottom:10px">'+sec.title+' ('+sec.list.length+')</div>';
+    h+='<div style="display:flex;flex-wrap:wrap;gap:8px">';
+    sec.list.forEach(function(c){
+      var nm=c.campaign.length>30?c.campaign.slice(0,28)+'…':c.campaign;
+      h+='<div style="background:#fff;border:1px solid '+sec.border+';border-radius:8px;padding:8px 12px;font-size:.69rem">';
+      h+='<div style="font-weight:700;color:#0f172a;margin-bottom:3px">'+nm+'</div>';
+      h+='<div style="color:'+sec.color+';font-weight:700">ROAS '+c.roas.toFixed(2)+'× · '+fmtB(c.spend)+'</div>';
+      h+='</div>';
+    });
+    h+='</div></div>';
+  });
+
+  h+='<div style="font-size:.62rem;color:#94a3b8;text-align:right;margin-top:8px">อัปเดต '+new Date().toLocaleString('th-TH')+'</div>';
+
+  el.innerHTML=h;
+}
+// ═══ end AI วิเคราะห์ Ads ═══════════════════════════════════════════════════
 
 // ═══ ชาร์ตอันดับ ════════════════════════════════════════════════════════
 
