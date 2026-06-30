@@ -4260,6 +4260,8 @@ function _renderAdsAI(el){
       (function(){var r=[];allAccNames.forEach(function(n){if(fbDataMap[n])r=r.concat(fbDataMap[n]);});return r;})(),'today')).forEach(function(c){m[c.campaign]=c.roas;});return m;})();
     window._adsaiRoas1Map=(function(){var m={};_aiAggCamps(_aiFilterRows(
       (function(){var r=[];allAccNames.forEach(function(n){if(fbDataMap[n])r=r.concat(fbDataMap[n]);});return r;})(),'yesterday')).forEach(function(c){m[c.campaign]=c.roas;});return m;})();
+    window._adsaiSpend1Map=(function(){var m={};_aiAggCamps(_aiFilterRows(
+      (function(){var r=[];allAccNames.forEach(function(n){if(fbDataMap[n])r=r.concat(fbDataMap[n]);});return r;})(),'yesterday')).forEach(function(c){m[c.campaign]=c.spend;});return m;})();
     window._adsaiRoas3Map=(function(){var m={};_aiAggCamps(_aiFilterRows(
       (function(){var r=[];allAccNames.forEach(function(n){if(fbDataMap[n])r=r.concat(fbDataMap[n]);});return r;})(),'3d')).forEach(function(c){m[c.campaign]=c.roas;});return m;})();
   }catch(e){}
@@ -4282,6 +4284,7 @@ function _adsaiCalcBudget(){
   var camps=window._adsaiCamps7||[];
   var roasTMap=window._adsaiRoasTMap||{};
   var roas1Map=window._adsaiRoas1Map||{};
+  var spend1Map=window._adsaiSpend1Map||{};
   var roas3Map=window._adsaiRoas3Map||{};
   // Build per-campaign CPP and CPConv maps from yesterday's data
   var campCPPMap={},campConvMap={};
