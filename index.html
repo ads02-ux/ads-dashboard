@@ -4901,7 +4901,7 @@ function _renderLeave(el){
         else if(t==='WFH'){cellBg='#93c5fd';cellTxt='WFH';cellCol='#1e40af';clickable=true;}
         else if(t==='ออกกอง'){cellBg='#fcd34d';cellTxt='ออกกอง';cellCol='#92400e';clickable=true;}
         else if(t==='ลาพักร้อน'){cellBg='#ede9fe';cellTxt='ลาพักร้อน';cellCol='#7c3aed';clickable=true;}
-        else if(dt.isWE){cellBg='#f1f5f9';cellTxt='';cellCol='#94a3b8';}
+        else if(dt.isWE){cellBg='#f1f5f9';cellTxt='';cellCol='#94a3b8';clickable=true;}
         else{cellBg='transparent';cellTxt='';cellCol='#e2e8f0';clickable=true;}
         var tdStyle='padding:3px 2px;text-align:center;border-left:1px solid #f8fafc;'+(clickable?'cursor:pointer;':'');
         if(clickable)h+='<td style="'+tdStyle+'" onclick="_leaveToggle(\''+an+'\',\''+dt.dateStr+'\')">';
