@@ -4262,6 +4262,8 @@ function _renderAdsAI(el){
       (function(){var r=[];allAccNames.forEach(function(n){if(fbDataMap[n])r=r.concat(fbDataMap[n]);});return r;})(),'yesterday')).forEach(function(c){m[c.campaign]=c.roas;});return m;})();
     window._adsaiSpend1Map=(function(){var m={};_aiAggCamps(_aiFilterRows(
       (function(){var r=[];allAccNames.forEach(function(n){if(fbDataMap[n])r=r.concat(fbDataMap[n]);});return r;})(),'yesterday')).forEach(function(c){m[c.campaign]=c.spend;});return m;})();
+    window._adsaiSpendTMap=(function(){var m={};_aiAggCamps(_aiFilterRows(
+      (function(){var r=[];allAccNames.forEach(function(n){if(fbDataMap[n])r=r.concat(fbDataMap[n]);});return r;})(),'today')).forEach(function(c){m[c.campaign]=c.spend;});return m;})();
     window._adsaiRoas3Map=(function(){var m={};_aiAggCamps(_aiFilterRows(
       (function(){var r=[];allAccNames.forEach(function(n){if(fbDataMap[n])r=r.concat(fbDataMap[n]);});return r;})(),'3d')).forEach(function(c){m[c.campaign]=c.roas;});return m;})();
   }catch(e){}
@@ -4285,6 +4287,7 @@ function _adsaiCalcBudget(){
   var roasTMap=window._adsaiRoasTMap||{};
   var roas1Map=window._adsaiRoas1Map||{};
   var spend1Map=window._adsaiSpend1Map||{};
+  var spendTMap=window._adsaiSpendTMap||{};
   var roas3Map=window._adsaiRoas3Map||{};
   // Build account + page maps for display
   var bCampAccMap={};
@@ -4400,7 +4403,7 @@ function _adsaiCalcBudget(){
   h2+='<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden;margin-bottom:10px">';
   h2+='<div style="padding:9px 14px;border-bottom:1px solid #f1f5f9;font-size:.72rem;font-weight:700;color:#0f172a">📋 แผนจัดงบแต่ละแคมเปญ (วิเคราะห์จาก 1d/3d/7d)</div>';
   h2+='<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:.69rem">';
-  h2+='<thead><tr style="background:#f8fafc"><th style="padding:7px 10px;text-align:left;color:#64748b;border-bottom:1px solid #f1f5f9">แคมเปญ</th><th style="padding:7px 10px;text-align:left;color:#64748b;border-bottom:1px solid #f1f5f9">บัญชี / เพจ</th><th style="padding:7px 10px;text-align:right;color:#64748b;border-bottom:1px solid #f1f5f9">วันนี้</th><th style="padding:7px 10px;text-align:right;color:#64748b;border-bottom:1px solid #f1f5f9">1d</th><th style="padding:7px 10px;text-align:right;color:#64748b;border-bottom:1px solid #f1f5f9">3d</th><th style="padding:7px 10px;text-align:right;color:#64748b;border-bottom:1px solid #f1f5f9">7d</th><th style="padding:7px 10px;text-align:right;color:#64748b;border-bottom:1px solid #f1f5f9">Spend เมื่อวาน</th><th style="padding:7px 10px;text-align:right;color:#64748b;border-bottom:1px solid #f1f5f9">งบแนะนำ</th><th style="padding:7px 10px;text-align:left;color:#64748b;border-bottom:1px solid #f1f5f9">การกระทำ</th></tr></thead><tbody>';
+  h2+='<thead><tr style="background:#f8fafc"><th style="padding:7px 10px;text-align:left;color:#64748b;border-bottom:1px solid #f1f5f9">แคมเปญ</th><th style="padding:7px 10px;text-align:left;color:#64748b;border-bottom:1px solid #f1f5f9">บัญชี / เพจ</th><th style="padding:7px 10px;text-align:right;color:#64748b;border-bottom:1px solid #f1f5f9">วันนี้</th><th style="padding:7px 10px;text-align:right;color:#64748b;border-bottom:1px solid #f1f5f9">1d</th><th style="padding:7px 10px;text-align:right;color:#64748b;border-bottom:1px solid #f1f5f9">3d</th><th style="padding:7px 10px;text-align:right;color:#64748b;border-bottom:1px solid #f1f5f9">7d</th><th style="padding:7px 10px;text-align:right;color:#64748b;border-bottom:1px solid #f1f5f9">Spend เมื่อวาน</th><th style="padding:7px 10px;text-align:right;color:#64748b;border-bottom:1px solid #f1f5f9">Spend วันนี้</th><th style="padding:7px 10px;text-align:right;color:#64748b;border-bottom:1px solid #f1f5f9">งบแนะนำ</th><th style="padding:7px 10px;text-align:left;color:#64748b;border-bottom:1px solid #f1f5f9">การกระทำ</th></tr></thead><tbody>';
   active.forEach(function(c,i){
     var r1v=roas1Map[c.campaign]||0,r3v=roas3Map[c.campaign]||0;
     var g7=_aiRoasGrade(c.roas);
@@ -4422,7 +4425,9 @@ function _adsaiCalcBudget(){
     h2+='<td style="padding:8px 10px;text-align:right;color:'+(r3v>=2?'#22c55e':r3v>=1?'#f97316':r3v>0?'#ef4444':'#94a3b8')+';font-weight:700">'+(r3v>0?r3v.toFixed(2)+'×':'—')+'</td>';
     h2+='<td style="padding:8px 10px;text-align:right;color:'+g7.color+';font-weight:700">'+c.roas.toFixed(2)+'×</td>';
     var yd1spend=spend1Map[c.campaign]||0;
+    var tdSpend=spendTMap[c.campaign]||0;
     h2+='<td style="padding:8px 10px;text-align:right;color:#475569">'+(yd1spend>0?_aiFmtB(yd1spend):'—')+'</td>';
+    h2+='<td style="padding:8px 10px;text-align:right;color:#0369a1;font-weight:600">'+(tdSpend>0?_aiFmtB(tdSpend):'—')+'</td>';
     h2+='<td style="padding:8px 10px;text-align:right;font-weight:800;color:'+actCol+'">'+_aiFmtB(c._alloc)+'</td>';
     var badge='';
     if(c.cppOK===false) badge+=' <span style="font-size:.56rem;background:#fef2f2;color:#dc2626;border-radius:3px;padding:1px 4px;font-weight:700">CPP เกิน</span>';
@@ -4447,7 +4452,9 @@ function _adsaiCalcBudget(){
     h2+='<td style="padding:8px 10px;text-align:right;color:#ef4444;font-weight:700">'+(r3v>0?r3v.toFixed(2)+'×':'—')+'</td>';
     h2+='<td style="padding:8px 10px;text-align:right;color:#ef4444;font-weight:700">'+c.roas.toFixed(2)+'×</td>';
     var yd1close=spend1Map[c.campaign]||0;
+    var tdClose=spendTMap[c.campaign]||0;
     h2+='<td style="padding:8px 10px;text-align:right;color:#7f1d1d">'+(yd1close>0?_aiFmtB(yd1close):'—')+'</td>';
+    h2+='<td style="padding:8px 10px;text-align:right;color:#dc2626">'+(tdClose>0?_aiFmtB(tdClose):'—')+'</td>';
     h2+='<td style="padding:8px 10px;text-align:right;font-weight:800;color:#dc2626">฿0</td>';
     h2+='<td style="padding:8px 10px;color:#dc2626;font-weight:700">⏸ ปิดทันที (ROAS&lt;1)</td>';
     h2+='</tr>';
