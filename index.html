@@ -4046,10 +4046,10 @@ function _renderAdsAI(el){
 
   // ── multi-period aggregation (today/1d/3d/7d) ──
   var mPeriods=[
+    {k:'today',l:'วันนี้',short:'วันนี้'},
     {k:'yesterday',l:'เมื่อวาน',short:'1 วัน'},
     {k:'3d',l:'3 วัน',short:'3 วัน'},
     {k:'7d',l:'7 วัน',short:'7 วัน'},
-    {k:'14d',l:'14 วัน',short:'14 วัน'},
   ];
   var mData=mPeriods.map(function(p){
     var agg=_aiAggRows(_aiFilterRows(allRows,p.k));
@@ -4071,12 +4071,14 @@ function _renderAdsAI(el){
   h+='</div>';
 
   // ── AI insight box (trend-based) ──
-  var r1=mData[0].roas,r3=mData[1].roas,r7=mData[2].roas;
-  var trendUp=(r1>0&&r7>0&&r1>=r7*1.1);
-  var trendDown=(r1>0&&r7>0&&r1<=r7*0.85);
+  var r0=mData[0].roas,r1=mData[1].roas,r3=mData[2].roas,r7=mData[3].roas;
+  var trendUp=(r0>0&&r7>0&&r0>=r7*1.1);
+  var trendDown=(r0>0&&r7>0&&r0<=r7*0.85);
   var insightLines=[];
-  if(trendUp)  insightLines.push({icon:'📈',txt:'ROAS วันล่าสุด ('+r1.toFixed(2)+'×) สูงกว่า 7 วัน ('+r7.toFixed(2)+'×) — แนวโน้มดีขึ้น เพิ่มงบแคมเปญ A-Grade ได้',col:'#16a34a',bg:'#f0fdf4',bd:'#bbf7d0'});
-  else if(trendDown) insightLines.push({icon:'⚠️',txt:'ROAS วันล่าสุด ('+r1.toFixed(2)+'×) ต่ำกว่า 7 วัน ('+r7.toFixed(2)+'×) — แนวโน้มแย่ลง ระวังก่อนเพิ่มงบ',col:'#dc2626',bg:'#fef2f2',bd:'#fecaca'});
+  if(r0>0&&r0<1)insightLines.push({icon:'🚨',txt:'ROAS วันนี้ '+r0.toFixed(2)+'× ต่ำกว่า 1 — ขาดทุนวันนี้! ตรวจ Creative + ปิดแคมเปญแดงด่วน',col:'#dc2626',bg:'#fef2f2',bd:'#fecaca'});
+  else if(r0>0&&r0>=2)insightLines.push({icon:'🔥',txt:'ROAS วันนี้ '+r0.toFixed(2)+'× ≥ 2 — วันนี้กำไรดี พิจารณาเพิ่มงบแคมเปญที่ดีทันที',col:'#16a34a',bg:'#f0fdf4',bd:'#bbf7d0'});
+  if(trendUp)  insightLines.push({icon:'📈',txt:'ROAS วันนี้ ('+r0.toFixed(2)+'×) สูงกว่า 7 วัน ('+r7.toFixed(2)+'×) — แนวโน้มดีขึ้น เพิ่มงบแคมเปญ A-Grade ได้',col:'#16a34a',bg:'#f0fdf4',bd:'#bbf7d0'});
+  else if(trendDown) insightLines.push({icon:'⚠️',txt:'ROAS วันนี้ ('+r0.toFixed(2)+'×) ต่ำกว่า 7 วัน ('+r7.toFixed(2)+'×) — แนวโน้มแย่ลง ระวังก่อนเพิ่มงบ',col:'#dc2626',bg:'#fef2f2',bd:'#fecaca'});
   else if(r7>=2) insightLines.push({icon:'✅',txt:'ROAS เสถียร 7 วัน ('+r7.toFixed(2)+'×) ≥ Target 2× — พอร์ตแข็งแกร่ง ขยาย Lookalike ได้',col:'#2563eb',bg:'#eff6ff',bd:'#bfdbfe'});
   if(r3>0&&r3<1)insightLines.push({icon:'🚨',txt:'ROAS 3 วัน '+r3.toFixed(2)+'× ต่ำกว่า 1 — ขาดทุนระยะสั้น ตรวจ Creative + Audience ด่วน',col:'#dc2626',bg:'#fef2f2',bd:'#fecaca'});
   if(r7>0&&r7<2&&r7>=1)insightLines.push({icon:'⚡',txt:'ROAS 7 วัน '+r7.toFixed(2)+'× ยังต่ำกว่า Target 2× — เปลี่ยน Hook หรือทดสอบ Audience ใหม่',col:'#d97706',bg:'#fffbeb',bd:'#fde68a'});
@@ -4090,31 +4092,33 @@ function _renderAdsAI(el){
   }
 
   // ── campaign-level multi-period table ──
+  var rowsT=_aiFilterRows(allRows,'today');
   var rows1=_aiFilterRows(allRows,'yesterday');
   var rows3=_aiFilterRows(allRows,'3d');
   var rows7=_aiFilterRows(allRows,'7d');
-  var c1=_aiAggCamps(rows1),c3=_aiAggCamps(rows3),c7=_aiAggCamps(rows7);
+  var cT=_aiAggCamps(rowsT),c1=_aiAggCamps(rows1),c3=_aiAggCamps(rows3),c7=_aiAggCamps(rows7);
 
   // Build unified camp list from 7d (longest window = most data)
   var camps7=c7.slice();
   if(!camps7.length) camps7=_aiAggCamps(_aiFilterRows(allRows,saved));
 
-  // Map 1d and 3d roas by campaign name
-  var roas1Map={},roas3Map={};
+  // Map each period's roas by campaign name
+  var roasTMap={},roas1Map={},roas3Map={};
+  cT.forEach(function(c){roasTMap[c.campaign]=c.roas;});
   c1.forEach(function(c){roas1Map[c.campaign]=c.roas;});
   c3.forEach(function(c){roas3Map[c.campaign]=c.roas;});
 
-  // AI decision per camp (based on multi-period)
+  // AI decision per camp (วันนี้/1d/3d/7d)
   function aiDecide(c){
-    var r7=c.roas, r3=roas3Map[c.campaign]||0, r1=roas1Map[c.campaign]||0;
-    var hasR1=(r1>0), hasR3=(r3>0);
-    // Rule: any period < 1 = red flag
-    var anyLoss=(r7<1&&r7>0)||(hasR3&&r3<1)||(hasR1&&r1<1);
-    var allGood=(r7>=2)&&(!hasR3||r3>=2)&&(!hasR1||r1>=2);
+    var r7=c.roas,r3=roas3Map[c.campaign]||0,r1=roas1Map[c.campaign]||0,rT=roasTMap[c.campaign]||0;
+    var hasT=(rT>0),hasR1=(r1>0),hasR3=(r3>0);
+    var allZero=(r7===0&&r3===0&&r1===0&&rT===0);
+    if(allZero) return{act:'📋 ตรวจ tracking',col:'#94a3b8',score:0};
+    // ANY period < 1 = close
+    if((r7>0&&r7<1)||(hasR3&&r3<1)||(hasR1&&r1<1)||(hasT&&rT<1)) return{act:'⏸ ปิดทันที (ROAS<1)',col:'#dc2626',score:-2};
+    var allGood=(r7>=2)&&(!hasR3||r3>=2)&&(!hasR1||r1>=2)&&(!hasT||rT>=2);
     var improving=hasR1&&hasR3&&r1>r3&&r3>r7&&r7>=1;
-    var declining=hasR1&&hasR3&&r1<r3*0.85&&r3<r7*0.85;
-    if(r7===0&&r3===0&&r1===0) return{act:'📋 ตรวจ tracking',col:'#94a3b8',score:0};
-    if((r7>0&&r7<1)||(hasR3&&r3<1&&r3>0)||(hasR1&&r1<1&&r1>0)) return{act:'⏸ ปิดทันที (ROAS<1)',col:'#dc2626',score:-2};
+    var declining=(hasT&&hasR1&&rT<r1*0.85)||(hasR1&&hasR3&&r1<r3*0.85&&r3<r7*0.85);
     if(allGood) return{act:'🚀 เพิ่มงบ 30–50%',col:'#16a34a',score:3};
     if(r7>=2&&!declining) return{act:'📊 เพิ่มงบ +10–20%',col:'#22c55e',score:2};
     if(improving) return{act:'📈 กำลังดีขึ้น +10%',col:'#2563eb',score:2};
@@ -4126,31 +4130,32 @@ function _renderAdsAI(el){
 
   h+='<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;margin-bottom:20px">';
   h+='<div style="padding:12px 18px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;gap:8px">';
-  h+='<span style="font-size:.8rem;font-weight:700;color:#0f172a">รายการแคมเปญ (วิเคราะห์จาก 1d / 3d / 7d)</span>';
+  h+='<span style="font-size:.8rem;font-weight:700;color:#0f172a">รายการแคมเปญ (วันนี้ / 1d / 3d / 7d)</span>';
   h+='<span style="background:#fef2f2;color:#dc2626;border-radius:4px;padding:2px 7px;font-size:.62rem;font-weight:700">ROAS&lt;1 = ปิดทันที</span>';
   h+='<span style="background:#f0fdf4;color:#16a34a;border-radius:4px;padding:2px 7px;font-size:.62rem;font-weight:700">Target ≥2×</span></div>';
   h+='<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:.7rem">';
   h+='<thead><tr style="background:#f8fafc">';
-  ['แคมเปญ','1 วัน','3 วัน','7 วัน','Spend 7d','🤖 คำแนะนำ AI'].forEach(function(col,ci){
-    var align=ci>=2&&ci<=4?'right':'left';
-    h+='<th style="padding:8px 12px;text-align:'+align+';color:#64748b;font-weight:600;white-space:nowrap;border-bottom:1px solid #f1f5f9">'+col+'</th>';
+  ['แคมเปญ','วันนี้','1 วัน','3 วัน','7 วัน','Spend 7d','🤖 คำแนะนำ AI'].forEach(function(col,ci){
+    var align=(ci>=1&&ci<=5)?'right':'left';
+    h+='<th style="padding:8px 10px;text-align:'+align+';color:#64748b;font-weight:600;white-space:nowrap;border-bottom:1px solid #f1f5f9">'+col+'</th>';
   });
   h+='</tr></thead><tbody>';
   camps7.forEach(function(c,i){
     var g7=_aiRoasGrade(c.roas);
-    var r1v=roas1Map[c.campaign]||0,r3v=roas3Map[c.campaign]||0;
-    var g1=_aiRoasGrade(r1v),g3=_aiRoasGrade(r3v);
+    var rTv=roasTMap[c.campaign]||0,r1v=roas1Map[c.campaign]||0,r3v=roas3Map[c.campaign]||0;
+    function roasCell(v){
+      var col=v>=2?'#22c55e':v>=1?'#f97316':v>0?'#ef4444':'#94a3b8';
+      return '<td style="padding:8px 10px;text-align:right;font-weight:700;color:'+col+'">'+(v>0?v.toFixed(2)+'×':'—')+'</td>';
+    }
     var dec=aiDecide(c);
-    var nm=c.campaign.length>32?c.campaign.slice(0,30)+'…':c.campaign;
+    var nm=c.campaign.length>30?c.campaign.slice(0,28)+'…':c.campaign;
     var bg=(dec.score<=-2)?'#fff5f5':(i%2===0?'#fff':'#f8fafc');
     h+='<tr style="background:'+bg+';border-bottom:1px solid #f1f5f9">';
-    h+='<td style="padding:9px 12px;color:#0f172a;font-weight:600;max-width:210px;word-break:break-word">'+nm+'</td>';
-    // 1d roas
-    h+='<td style="padding:9px 12px;text-align:right;font-weight:700;color:'+(r1v>0?g1.color:'#94a3b8')+'">'+( r1v>0?r1v.toFixed(2)+'×':'—')+'</td>';
-    h+='<td style="padding:9px 12px;text-align:right;font-weight:700;color:'+(r3v>0?g3.color:'#94a3b8')+'">'+( r3v>0?r3v.toFixed(2)+'×':'—')+'</td>';
-    h+='<td style="padding:9px 12px;text-align:right;font-weight:700;color:'+g7.color+'">'+c.roas.toFixed(2)+'×</td>';
-    h+='<td style="padding:9px 12px;text-align:right;color:#475569">'+_aiFmtB(c.spend)+'</td>';
-    h+='<td style="padding:9px 12px;color:'+dec.col+';font-weight:700;white-space:nowrap">'+dec.act+'</td>';
+    h+='<td style="padding:8px 10px;color:#0f172a;font-weight:600;max-width:190px;word-break:break-word">'+nm+'</td>';
+    h+=roasCell(rTv)+roasCell(r1v)+roasCell(r3v);
+    h+='<td style="padding:8px 10px;text-align:right;font-weight:700;color:'+g7.color+'">'+c.roas.toFixed(2)+'×</td>';
+    h+='<td style="padding:8px 10px;text-align:right;color:#475569">'+_aiFmtB(c.spend)+'</td>';
+    h+='<td style="padding:8px 10px;color:'+dec.col+';font-weight:700;white-space:nowrap">'+dec.act+'</td>';
     h+='</tr>';
   });
   h+='</tbody></table></div></div>';
@@ -4164,8 +4169,10 @@ function _renderAdsAI(el){
     h+='<div style="font-size:.68rem;color:#64748b;margin-bottom:14px">AI จัดงบตาม ROAS 1d/3d/7d — Target 2+ เพิ่มงบ, &lt;1 ปิด</div>';
     // summary row
     h+='<div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">';
-    var ydG=_aiRoasGrade(ydAgg.roas),d3G=_aiRoasGrade(d3Agg.roas);
-    [{label:'เมื่อวาน Spend',val:_aiFmtB(ydAgg.spend),sub:'ROAS '+ydAgg.roas.toFixed(2)+'×',col:ydG.color},
+    var tdAgg=_aiAggRows(_aiFilterRows(allRows,'today'));
+    var ydG=_aiRoasGrade(ydAgg.roas),d3G=_aiRoasGrade(d3Agg.roas),tdG=_aiRoasGrade(tdAgg.roas);
+    [{label:'วันนี้ ROAS',val:tdAgg.roas>0?tdAgg.roas.toFixed(2)+'×':'—',sub:'Spend '+_aiFmtB(tdAgg.spend),col:tdG.color},
+     {label:'เมื่อวาน ROAS',val:ydAgg.roas.toFixed(2)+'×',sub:'Spend '+_aiFmtB(ydAgg.spend),col:ydG.color},
      {label:'3 วัน ROAS',val:d3Agg.roas.toFixed(2)+'×',sub:'Spend '+_aiFmtB(d3Agg.spend),col:d3G.color},
      {label:'7 วัน ROAS',val:r7.toFixed(2)+'×',sub:r7>=2?'✅ บรรลุ Target':'⚠️ ต่ำกว่า 2×',col:_aiRoasGrade(r7).color}].forEach(function(s){
       h+='<div style="background:#fff;border:1px solid #e0f2fe;border-radius:8px;padding:9px 14px;flex:1;min-width:90px">';
@@ -4196,6 +4203,8 @@ function _renderAdsAI(el){
     var _saved=_adsaiFilter||'7d';
     window._adsaiCamps7=_aiAggCamps(_aiFilterRows(
       (function(){var r=[];allAccNames.forEach(function(n){if(fbDataMap[n])r=r.concat(fbDataMap[n]);});return r;})(),'7d'));
+    window._adsaiRoasTMap=(function(){var m={};_aiAggCamps(_aiFilterRows(
+      (function(){var r=[];allAccNames.forEach(function(n){if(fbDataMap[n])r=r.concat(fbDataMap[n]);});return r;})(),'today')).forEach(function(c){m[c.campaign]=c.roas;});return m;})();
     window._adsaiRoas1Map=(function(){var m={};_aiAggCamps(_aiFilterRows(
       (function(){var r=[];allAccNames.forEach(function(n){if(fbDataMap[n])r=r.concat(fbDataMap[n]);});return r;})(),'yesterday')).forEach(function(c){m[c.campaign]=c.roas;});return m;})();
     window._adsaiRoas3Map=(function(){var m={};_aiAggCamps(_aiFilterRows(
@@ -4213,6 +4222,7 @@ function _adsaiCalcBudget(){
   if(totalBudget<=0){resEl.innerHTML='<div style="color:#dc2626;font-size:.75rem">กรุณาใส่งบวันนี้</div>';return;}
 
   var camps=window._adsaiCamps7||[];
+  var roasTMap=window._adsaiRoasTMap||{};
   var roas1Map=window._adsaiRoas1Map||{};
   var roas3Map=window._adsaiRoas3Map||{};
 
@@ -4224,13 +4234,15 @@ function _adsaiCalcBudget(){
     var r7=c.roas;
     var r3=roas3Map[c.campaign]||0;
     var r1=roas1Map[c.campaign]||0;
-    var hasR1=(r1>0),hasR3=(r3>0);
-    if((r7>0&&r7<1)||(hasR3&&r3<1)||(hasR1&&r1<1)) return{close:true,weight:0,avg:r7};
-    // weighted avg: 7d=1x, 3d=2x, 1d=3x weight (recent matters more)
+    var rT=roasTMap[c.campaign]||0;
+    var hasT=(rT>0),hasR1=(r1>0),hasR3=(r3>0);
+    if((r7>0&&r7<1)||(hasR3&&r3<1)||(hasR1&&r1<1)||(hasT&&rT<1)) return{close:true,weight:0,avg:r7};
+    // weighted avg: 7d=1x, 3d=2x, 1d=3x, today=4x (recent matters most)
     var sumW=0,sumR=0;
     if(r7>0){sumR+=r7*1;sumW+=1;}
     if(hasR3&&r3>0){sumR+=r3*2;sumW+=2;}
     if(hasR1&&r1>0){sumR+=r1*3;sumW+=3;}
+    if(hasT&&rT>0){sumR+=rT*4;sumW+=4;}
     var avg=sumW>0?sumR/sumW:r7;
     if(avg<1) return{close:true,weight:0,avg:avg};
     // weight = avg^1.5 (boost high performers)
