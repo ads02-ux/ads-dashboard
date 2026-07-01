@@ -4909,6 +4909,11 @@ function _adsaiTrackAnalyze(planId){
 
 // ═══ วันหยุดคนวิเคราะห์ ══════════════════════════════════════════════════════
 var _LEAVE_ANALYSTS=['มอส','บุ๋มบิ๋ม','ปาย'];
+var _ROUTINE_TASKS={
+  'มอส':['วิเคราะห์เจ้าขุน (บอล)(ลิงก์)','วิเคราะห์โอลิมพลัส (มอส)','วิเคราะห์โอลิมพลัสแม็ก (มอส)','วิเคราะห์เฮฟเว่นพลัส (มอส)'],
+  'ปาย':['วิเคราะห์เดอะลอร์ด (แจ๋ม)(เตอร์)','วิเคราะห์จูโด้ (แจ๋ม)(นุ่น)','วิเคราะห์ดราก้อนบลัด (มอส)(ดอม)(บอล)'],
+  'บุ๋มบิ๋ม':['วิเคราะห์ขุนแผน (มอส)(ดอม)']
+};
 var _LEAVE_QUOTA=6,_WFH_QUOTA=2;
 var _TH_MONTHS=['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
 var _TH_DOW=['อา','จ','อ','พ','พฤ','ศ','ส'];
@@ -5052,10 +5057,26 @@ function _renderDailyTask(el){
     if(_lt) h+='<span style="font-size:.6rem;background:'+(_lbg[_lt]||'#f1f5f9')+';color:'+(_ltc[_lt]||'#64748b')+';border-radius:12px;padding:2px 8px;font-weight:700">'+_lt+'</span>';
     h+='</div>';
     h+='<div style="font-size:.62rem;color:#94a3b8">'+tasks.length+' งาน</div></div></div>';
-    // Task list
-    h+='<div style="flex:1;min-height:80px">';
+    // งานประจำ (routine reference)
+    var _rt=_ROUTINE_TASKS[an]||[];
+    var _ld2=window._leaveCache||_leaveGetData();
+    var _lt2=_ld2[an]&&_ld2[an][dk];
+    if(_rt.length){
+      h+='<div style="background:#f8fafc;border-radius:8px;padding:8px 10px;margin-bottom:8px">';
+      h+='<div style="font-size:.6rem;font-weight:800;color:#94a3b8;letter-spacing:.5px;margin-bottom:5px">งานประจำ</div>';
+      _rt.forEach(function(r){
+        h+='<div style="font-size:.68rem;color:'+(_lt2?'#cbd5e1':'#475569')+';display:flex;align-items:center;gap:5px;padding:2px 0">';
+        h+='<span style="color:'+(_lt2?'#e2e8f0':col)+';font-size:.6rem">◆</span>';
+        h+=r.replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        if(_lt2) h+='<span style="font-size:.58rem;color:#94a3b8;margin-left:auto">('+_lt2+')</span>';
+        h+='</div>';
+      });
+      h+='</div>';
+    }
+    // งานที่บันทึกวันนี้
+    h+='<div style="flex:1;min-height:60px">';
     if(!tasks.length){
-      h+='<div style="color:#cbd5e1;font-size:.72rem;text-align:center;padding:16px 0">ยังไม่มีงานวันนี้</div>';
+      h+='<div style="color:#cbd5e1;font-size:.72rem;text-align:center;padding:12px 0">ยังไม่ได้บันทึกงานวันนี้</div>';
     } else {
       tasks.forEach(function(t,ti){
         var safe=t.replace(/</g,'&lt;').replace(/>/g,'&gt;');
