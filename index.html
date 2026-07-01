@@ -885,18 +885,23 @@ function triggerAvatarUpload(name){
       var b64=ev.target.result.split(',')[1];
       var mime=file.type||'image/jpeg';
       showBanner('⏳ กำลังอัปโหลดรูป '+name+'...');
-      fetch(WEBAPP_URL,{method:'POST',body:JSON.stringify({analyst:name,image:b64,mimeType:mime})})
-        .then(function(r){return r.json();})
-        .then(function(d){
-          if(d.ok){
-            avatarMap[name]=d.url+'&t='+Date.now();
-            showBanner('✅ อัปโหลดรูป '+name+' สำเร็จ');
-            renderCommission(document.getElementById('commissionViewInner'));
-          } else {
-            showBanner('❌ อัปโหลดไม่สำเร็จ: '+(d.err||'unknown'));
-          }
-        })
-        .catch(function(e){showBanner('❌ เกิดข้อผิดพลาด: '+e.message);});
+      // Compress image to max ~80px for profile, store as base64 in npoint
+      (function(){
+        var img=new Image();
+        img.onload=function(){
+          var maxSz=80;
+          var scale=Math.min(1,maxSz/Math.max(img.width,img.height));
+          var cv=document.createElement('canvas');
+          cv.width=Math.round(img.width*scale);cv.height=Math.round(img.height*scale);
+          cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);
+          var dataUrl=cv.toDataURL('image/jpeg',0.75);
+          avatarMap[name]=dataUrl;
+          showBanner('✅ บันทึกรูป '+name+' สำเร็จ');
+          renderCommission(document.getElementById('commissionViewInner'));
+          _leavePost(window._leaveCache||{});
+        };
+        img.src='data:'+mime+';base64,'+b64;
+      })();
     };
     reader.readAsDataURL(file);
   };
@@ -1387,18 +1392,24 @@ function renderPmList(analysts){
         var b64=ev.target.result.split(',')[1];
         var mime=file.type||'image/jpeg';
         showBanner('⏳ กำลังอัปโหลดรูป '+name+'...');
-        fetch(WEBAPP_URL,{method:'POST',body:JSON.stringify({analyst:name,image:b64,mimeType:mime})})
-          .then(function(r){return r.json();})
-          .then(function(d){
-            if(d.ok){
-              avatarMap[name]=d.url+'&t='+Date.now();
-              pmSetAvatar(name,avatarMap[name]);
-              showBanner('✅ อัปโหลดรูป '+name+' สำเร็จ');
-              var analysts2=[];(s1data||[]).forEach(function(r){if(r.analyst&&analysts2.indexOf(r.analyst)<0)analysts2.push(r.analyst);});
-              renderPmList(analysts2);
-            } else {showBanner('❌ '+(d.err||'upload failed'));}
-          })
-          .catch(function(e){showBanner('❌ '+e.message);});
+        (function(){
+          var img2=new Image();
+          img2.onload=function(){
+            var maxSz=80;
+            var scale=Math.min(1,maxSz/Math.max(img2.width,img2.height));
+            var cv=document.createElement('canvas');
+            cv.width=Math.round(img2.width*scale);cv.height=Math.round(img2.height*scale);
+            cv.getContext('2d').drawImage(img2,0,0,cv.width,cv.height);
+            var dataUrl=cv.toDataURL('image/jpeg',0.75);
+            avatarMap[name]=dataUrl;
+            pmSetAvatar(name,dataUrl);
+            showBanner('✅ บันทึกรูป '+name+' สำเร็จ');
+            var analysts2=[];(s1data||[]).forEach(function(r){if(r.analyst&&analysts2.indexOf(r.analyst)<0)analysts2.push(r.analyst);});
+            renderPmList(analysts2);
+            _leavePost(window._leaveCache||{});
+          };
+          img2.src='data:'+mime+';base64,'+b64;
+        })();
       };
       rd.readAsDataURL(file);
     };
@@ -4828,6 +4839,8 @@ async function _leaveFetch(){
   try{
     var r=await fetch(_LEAVE_NPOINT);
     var j=await r.json();
+    // extract photos
+    if(j._photos){Object.keys(j._photos).forEach(function(n){if(j._photos[n])avatarMap[n]=j._photos[n];});delete j._photos;}
     window._leaveCache=j||{};
     _leaveSaveData(window._leaveCache);
   }catch(e){
@@ -4835,7 +4848,12 @@ async function _leaveFetch(){
   }
 }
 async function _leavePost(data){
-  try{await fetch(_LEAVE_NPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});}catch(e){}
+  try{
+    // include current photos in post
+    var payload=Object.assign({},data);
+    payload._photos=Object.assign({},avatarMap);
+    await fetch(_LEAVE_NPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+  }catch(e){}
 }
 async function _renderLeaveInit(el){
   if(!el)return;
