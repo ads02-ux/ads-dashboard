@@ -4464,7 +4464,13 @@ function _adsaiCalcBudget(){
   }
 
   // Campaign allocation table
-  active.sort(function(a,b){return b._alloc-a._alloc;});
+  active.sort(function(a,b){
+    var accA=bCampAccMap[a.campaign]||'';
+    var accB=bCampAccMap[b.campaign]||'';
+    if(accA<accB)return -1;
+    if(accA>accB)return 1;
+    return b._alloc-a._alloc; // เรียงตามงบ desc ในบัญชีเดียวกัน
+  });
 
   // ── ถ้ากรองอยู่ → แสดงปุ่มกลับ + ชื่อบัญชี ──
   var budgetAccHeader='';
