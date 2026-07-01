@@ -4908,6 +4908,16 @@ async function _leaveFetch(){
     if(j._photos){Object.keys(j._photos).forEach(function(n){if(j._photos[n])avatarMap[n]=j._photos[n];});delete j._photos;}
     // extract commission data
     if(j._comm){_commNpointData=j._comm;delete j._comm;}
+    // Merge: npoint = source of truth แต่รักษา local entries ที่ยังไม่ sync
+    var local=_leaveGetData();
+    _LEAVE_ANALYSTS.forEach(function(an){
+      if(!j[an])j[an]={};
+      if(local[an]){
+        Object.keys(local[an]).forEach(function(dk){
+          if(!j[an][dk])j[an][dk]=local[an][dk]; // คง local ที่ npoint ยังไม่มี
+        });
+      }
+    });
     window._leaveCache=j||{};
     _leaveSaveData(window._leaveCache);
   }catch(e){
