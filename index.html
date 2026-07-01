@@ -4906,8 +4906,19 @@ async function _leaveFetch(){
     var j=await r.json();
     // extract photos
     if(j._photos){Object.keys(j._photos).forEach(function(n){if(j._photos[n])avatarMap[n]=j._photos[n];});delete j._photos;}
-    // extract commission data
+    // extract commission data + merge กับ localStorage (ป้องกันข้อมูลหายถ้า refresh เร็ว)
     if(j._comm){_commNpointData=j._comm;delete j._comm;}
+    // merge local commission entries ที่ยังไม่ sync
+    try{
+      for(var _k in localStorage){
+        if(_k.indexOf('rb_comm_')<0)continue;
+        var _moKey=_k.replace('rb_comm_','').replace('_','-'); // rb_comm_2026_07 → 2026-07
+        var _local=JSON.parse(localStorage.getItem(_k)||'null');
+        if(_local&&(!_commNpointData[_moKey]||!Object.keys(_commNpointData[_moKey]).length)){
+          _commNpointData[_moKey]=_local;
+        }
+      }
+    }catch(e){}
     // Merge: npoint = source of truth แต่รักษา local entries ที่ยังไม่ sync
     var local=_leaveGetData();
     _LEAVE_ANALYSTS.forEach(function(an){
