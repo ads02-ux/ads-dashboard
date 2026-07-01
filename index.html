@@ -4001,9 +4001,15 @@ function _aiFilterRows(rows,f){
   var yd=new Date(now);yd.setDate(yd.getDate()-1);var ydStr=yd.toLocaleDateString('sv-SE');
   if(f==='today')    return rows.filter(function(r){return r.date===todayStr;});
   if(f==='yesterday')return rows.filter(function(r){return r.date===ydStr;});
+  // 1d/3d/7d = วันที่สมบูรณ์เท่านั้น (ไม่รวมวันนี้) ตรงกับ FB Ads Manager
   var days={'1d':1,'3d':3,'7d':7,'14d':14,'30d':30}[f]||7;
   var cut=new Date(now);cut.setDate(cut.getDate()-days);
-  return rows.filter(function(r){if(!r.date)return false;return new Date(r.date)>=cut;});
+  var todayD=new Date(now);todayD.setHours(0,0,0,0);
+  return rows.filter(function(r){
+    if(!r.date)return false;
+    var rd=new Date(r.date);
+    return rd>=cut && rd<todayD; // exclude today
+  });
 }
 function _aiAggRows(rows){
   var s=0,rv=0,pu=0,im=0,cl=0;
