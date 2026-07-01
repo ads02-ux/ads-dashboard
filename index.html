@@ -5064,11 +5064,20 @@ function _renderDailyTask(el){
     if(_rt.length){
       h+='<div style="background:#f8fafc;border-radius:8px;padding:8px 10px;margin-bottom:8px">';
       h+='<div style="font-size:.6rem;font-weight:800;color:#94a3b8;letter-spacing:.5px;margin-bottom:5px">งานประจำ</div>';
-      _rt.forEach(function(r){
-        h+='<div style="font-size:.68rem;color:'+(_lt2?'#cbd5e1':'#475569')+';display:flex;align-items:center;gap:5px;padding:2px 0">';
-        h+='<span style="color:'+(_lt2?'#e2e8f0':col)+';font-size:.6rem">◆</span>';
-        h+=r.replace(/</g,'&lt;').replace(/>/g,'&gt;');
-        if(_lt2) h+='<span style="font-size:.58rem;color:#94a3b8;margin-left:auto">('+_lt2+')</span>';
+      _rt.forEach(function(r,ri){
+        var rSafe=r.replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        h+='<div style="font-size:.68rem;color:'+(_lt2?'#cbd5e1':'#475569')+';display:flex;align-items:center;gap:5px;padding:3px 0;flex-wrap:wrap">';
+        h+='<span style="color:'+(_lt2?'#e2e8f0':col)+';font-size:.6rem;flex-shrink:0">◆</span>';
+        h+='<span style="flex:1">'+rSafe+'</span>';
+        if(_lt2){
+          h+='<span style="font-size:.58rem;color:#94a3b8">('+_lt2+')</span>';
+          analysts.forEach(function(oan,oai){
+            if(oan!==an){
+              h+='<button data-to="'+oan+'" data-from="'+an+'" data-ri="'+ri+'" onclick="var b=this;_taskTakeOver(b.dataset.to,b.dataset.from,+b.dataset.ri)" ';
+              h+='style="font-size:.55rem;background:'+aColors[oai]+';color:#fff;border:none;border-radius:4px;padding:2px 7px;cursor:pointer;font-family:inherit;font-weight:700;flex-shrink:0">'+oan+' รับ</button>';
+            }
+          });
+        }
         h+='</div>';
       });
       h+='</div>';
@@ -5244,6 +5253,19 @@ function _taskAdd(analyst,text){
   if(!_taskData[dk])_taskData[dk]={};
   if(!_taskData[dk][analyst])_taskData[dk][analyst]=[];
   _taskData[dk][analyst].push(text);
+  _renderDailyTask(document.getElementById('dailyTaskView'));
+  _leavePost(window._leaveCache||{});
+}
+
+function _taskTakeOver(toAn,fromAn,ri){
+  var taskText=(_ROUTINE_TASKS[fromAn]||[])[ri]||'';
+  if(!taskText)return;
+  var dk=_taskDateKey(_taskViewDate||new Date());
+  var label='[แทน'+fromAn+'] '+taskText;
+  if(!_taskData[dk])_taskData[dk]={};
+  if(!_taskData[dk][toAn])_taskData[dk][toAn]=[];
+  if(_taskData[dk][toAn].indexOf(label)>=0)return; // ไม่ซ้ำ
+  _taskData[dk][toAn].push(label);
   _renderDailyTask(document.getElementById('dailyTaskView'));
   _leavePost(window._leaveCache||{});
 }
