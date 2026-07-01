@@ -660,6 +660,9 @@ function disableCommInputs(){
     <div class="sb-item" id="sb-leave" onclick="switchView('leave',this)">
       <span class="sb-icon">📅</span><span>วันหยุดคนวิเคราะห์</span>
     </div>
+    <div class="sb-item" id="sb-daily" onclick="switchView('dailytask',this)">
+      <span class="sb-icon">📝</span><span>งานรายวันคนวิเคราะห์</span>
+    </div>
     <div class="sb-sep"></div>
     <div class="sb-section">ตั้งค่า</div>
     <div class="sb-item" onclick="sbNav(this,'top')">
@@ -819,6 +822,7 @@ function disableCommInputs(){
 <div id="adsaiView" style="display:none;padding:28px 32px"></div>
 <div id="trackView" style="display:none;padding:28px 32px"></div>
 <div id="leaveView" style="display:none;padding:20px 24px"></div>
+<div id="dailyTaskView" style="display:none;padding:20px 24px"></div>
 
 <script>
 var SHEET_ID='1Qs57OO-tDRAsikHulJSKw6S0tfbMqgUuNbmiRHN1POI',GID_S1='997286503',GID_S2='1472268717',GID_COMM='1688902080',GID_CONFIG='388205387',REFRESH=1800;
@@ -2173,6 +2177,7 @@ function switchView(view,el){
   document.querySelectorAll('.sb-item').forEach(function(i){i.classList.remove('active');});
   if(el)el.classList.add('active');
   var mv=document.getElementById('mainView'),cv=document.getElementById('cohortView'),cmv=document.getElementById('commissionView'),fbv=document.getElementById('fbView');
+  var dtv2=document.getElementById('dailyTaskView');if(dtv2)dtv2.style.display='none';
   if(view==='cohort'){
     mv.style.display='none';cv.style.display='block';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var trv2=document.getElementById('trackView');if(trv2)trv2.style.display='none';var lv2=document.getElementById('leaveView');if(lv2)lv2.style.display='none';
     renderCohort();window.scrollTo({top:0,behavior:'smooth'});
@@ -2196,6 +2201,10 @@ function switchView(view,el){
     window.scrollTo({top:0,behavior:'smooth'});
   } else if(view==='leave'){
     mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var trv2=document.getElementById('trackView');if(trv2)trv2.style.display='none';var lv2=document.getElementById('leaveView');if(lv2)lv2.style.display='none';var lv=document.getElementById('leaveView');if(lv){lv.style.display='block';_renderLeaveInit(lv);}
+    window.scrollTo({top:0,behavior:'smooth'});
+  } else if(view==='dailytask'){
+    mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var trv2=document.getElementById('trackView');if(trv2)trv2.style.display='none';var lv2=document.getElementById('leaveView');if(lv2)lv2.style.display='none';
+    var dtv=document.getElementById('dailyTaskView');if(dtv){dtv.style.display='block';_renderDailyTaskInit(dtv);}
     window.scrollTo({top:0,behavior:'smooth'});
   } else if(view==='benchmark'){
     mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='block';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var trv2=document.getElementById('trackView');if(trv2)trv2.style.display='none';var lv2=document.getElementById('leaveView');if(lv2)lv2.style.display='none';
@@ -3975,6 +3984,7 @@ var _adsaiFilterAccount=null; // null=ทั้งหมด, string=กรอง
 var _adsaiBudgetAccFilter=null; // กรองบัญชีในส่วน วางแผนงบวันนี้
 window._adsaiBudgetSetAcc=function(n){_adsaiBudgetAccFilter=n;_adsaiCalcBudget();};
 window._adsaiBudgetClearAcc=function(){_adsaiBudgetAccFilter=null;_adsaiCalcBudget();};
+var _taskData={}; // {date: {analyst: [task,...]}}
 
 // ── shared helpers (global so _adsaiCalcBudget can use them) ──
 function _aiFmtB(v){return '฿'+(v>=1000000?(v/1000000).toFixed(1)+'M':v>=1000?Math.round(v/1000)+'K':Math.round(v));}
@@ -4908,6 +4918,7 @@ async function _leaveFetch(){
     if(j._photos){Object.keys(j._photos).forEach(function(n){if(j._photos[n])avatarMap[n]=j._photos[n];});delete j._photos;}
     // extract commission data + merge กับ localStorage (ป้องกันข้อมูลหายถ้า refresh เร็ว)
     if(j._comm){_commNpointData=j._comm;delete j._comm;}
+    if(j._tasks){_taskData=j._tasks;delete j._tasks;}
     // merge local commission entries ที่ยังไม่ sync
     try{
       for(var _k in localStorage){
@@ -4941,9 +4952,130 @@ async function _leavePost(data){
     var payload=Object.assign({},data);
     payload._photos=Object.assign({},avatarMap);
     payload._comm=Object.assign({},_commNpointData);
+    payload._tasks=Object.assign({},_taskData);
     await fetch(_LEAVE_NPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
   }catch(e){}
 }
+
+// ══════════════════════════════════════════════════════
+//  งานรายวันคนวิเคราะห์
+// ══════════════════════════════════════════════════════
+var _taskViewDate=null; // null = today
+
+function _taskDateKey(d){var dd=d||new Date();return dd.getFullYear()+'-'+('0'+(dd.getMonth()+1)).slice(-2)+'-'+('0'+dd.getDate()).slice(-2);}
+function _taskThaiDate(d){var dd=d||new Date();var day=dd.getDate(),mon=dd.getMonth()+1,yr=dd.getFullYear()+543;var mName=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'][dd.getMonth()];return day+' '+mName+' '+yr;}
+function _taskDayName(d){return ['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัส','ศุกร์','เสาร์'][(d||new Date()).getDay()];}
+
+async function _renderDailyTaskInit(el){
+  if(!el)return;
+  if(!_taskViewDate)_taskViewDate=new Date();
+  _renderDailyTask(el);
+  await _leaveFetch();
+  _renderDailyTask(el);
+}
+
+function _renderDailyTask(el){
+  if(!el)return;
+  var d=_taskViewDate||new Date();
+  var dk=_taskDateKey(d);
+  var analysts=['มอส','ปาย','บุ๋มบิ๋ม'];
+  var colors=['#7c3aed','#0369a1','#059669'];
+  var bgs=['#f5f3ff','#eff6ff','#f0fdf4'];
+  var borders=['#ddd6fe','#bfdbfe','#bbf7d0'];
+  var icons=['🎯','🌿','⭐'];
+  // prev/next date
+  var prev=new Date(d);prev.setDate(prev.getDate()-1);
+  var next=new Date(d);next.setDate(next.getDate()+1);
+  var isToday=(_taskDateKey(d)===_taskDateKey(new Date()));
+  var h='';
+  h+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px">';
+  h+='<div>';
+  h+='<div style="font-family:Rajdhani,sans-serif;font-size:1.55rem;font-weight:900;color:#0f172a;letter-spacing:.3px;margin-bottom:3px">📝 งานรายวันคนวิเคราะห์</div>';
+  h+='<div style="font-size:.75rem;color:#64748b">บันทึกงานที่ทำแต่ละวัน — ทุกคนเห็นพร้อมกัน</div>';
+  h+='</div>';
+  h+='<div style="display:flex;align-items:center;gap:8px">';
+  h+='<button onclick="_taskGoDate(-1)" style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:7px 12px;font-size:.8rem;cursor:pointer;font-family:inherit;color:#475569">‹</button>';
+  h+='<div style="text-align:center;min-width:130px">';
+  h+='<div style="font-size:.85rem;font-weight:700;color:#0f172a">'+_taskDayName(d)+' '+_taskThaiDate(d)+'</div>';
+  if(isToday)h+='<div style="font-size:.62rem;background:#dcfce7;color:#15803d;border-radius:20px;padding:2px 8px;font-weight:700;display:inline-block;margin-top:2px">วันนี้</div>';
+  h+='</div>';
+  h+='<button onclick="_taskGoDate(1)" '+(isToday?'disabled style="background:#f1f5f9;border:1px solid #e2e8f0;border-radius:8px;padding:7px 12px;font-size:.8rem;cursor:not-allowed;font-family:inherit;color:#cbd5e1"':'style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:7px 12px;font-size:.8rem;cursor:pointer;font-family:inherit;color:#475569"')+'>›</button>';
+  h+='</div></div>';
+
+  h+='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">';
+  analysts.forEach(function(an,ai){
+    var col=colors[ai],bg=bgs[ai],bd=borders[ai],icon=icons[ai];
+    var tasks=(_taskData[dk]&&_taskData[dk][an])||[];
+    var av=avatarMap[an]||'';
+    h+='<div style="background:#fff;border:1.5px solid '+bd+';border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px">';
+    // Header
+    h+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">';
+    if(av) h+='<img src="'+av+'" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid '+bd+'">';
+    else h+='<div style="width:36px;height:36px;border-radius:50%;background:'+bg+';display:flex;align-items:center;justify-content:center;font-size:1.1rem">'+icon+'</div>';
+    h+='<div><div style="font-size:.88rem;font-weight:800;color:#0f172a">'+an+'</div>';
+    h+='<div style="font-size:.62rem;color:#94a3b8">'+tasks.length+' งาน</div></div></div>';
+    // Task list
+    h+='<div style="flex:1;min-height:80px">';
+    if(!tasks.length){
+      h+='<div style="color:#cbd5e1;font-size:.72rem;text-align:center;padding:16px 0">ยังไม่มีงานวันนี้</div>';
+    } else {
+      tasks.forEach(function(t,ti){
+        var safe=t.replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        h+='<div style="display:flex;align-items:flex-start;gap:7px;padding:6px 0;border-bottom:1px solid #f1f5f9">';
+        h+='<span style="color:'+col+';font-size:.7rem;margin-top:2px;flex-shrink:0">•</span>';
+        h+='<span style="font-size:.75rem;color:#334155;flex:1;word-break:break-word">'+safe+'</span>';
+        if(isToday) h+='<button onclick="_taskDel(\''+an+'\',\''+dk+'\','+ti+')" style="background:none;border:none;color:#fca5a5;font-size:.72rem;cursor:pointer;padding:0;flex-shrink:0;line-height:1" title="ลบ">✕</button>';
+        h+='</div>';
+      });
+    }
+    h+='</div>';
+    // Input (today only)
+    if(isToday){
+      h+='<div style="display:flex;gap:6px;margin-top:4px">';
+      h+='<input id="task-inp-'+ai+'" type="text" placeholder="พิมพ์งานที่ทำ..." '
+        +'onkeydown="if(event.key===\'Enter\')_taskAdd(\''+an+'\',document.getElementById(\'task-inp-'+ai+'\').value)" '
+        +'style="flex:1;border:1.5px solid '+bd+';border-radius:8px;padding:6px 10px;font-size:.73rem;font-family:inherit;color:#334155;outline:none;background:#fafafa">';
+      h+='<button onclick="_taskAdd(\''+an+'\',document.getElementById(\'task-inp-'+ai+'\').value)" '
+        +'style="background:'+col+';color:#fff;border:none;border-radius:8px;padding:6px 12px;font-size:.72rem;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap">+ เพิ่ม</button>';
+      h+='</div>';
+    }
+    h+='</div>';
+  });
+  h+='</div>';
+  el.innerHTML=h;
+}
+
+function _taskGoDate(dir){
+  if(!_taskViewDate)_taskViewDate=new Date();
+  _taskViewDate=new Date(_taskViewDate);
+  _taskViewDate.setDate(_taskViewDate.getDate()+dir);
+  // ห้ามไปอนาคต
+  var today=new Date();today.setHours(23,59,59,999);
+  if(_taskViewDate>today)_taskViewDate=new Date();
+  _renderDailyTask(document.getElementById('dailyTaskView'));
+}
+
+function _taskAdd(analyst,text){
+  text=(text||'').trim();
+  if(!text)return;
+  var dk=_taskDateKey(new Date());
+  if(!_taskData[dk])_taskData[dk]={};
+  if(!_taskData[dk][analyst])_taskData[dk][analyst]=[];
+  _taskData[dk][analyst].push(text);
+  _taskViewDate=new Date();
+  _renderDailyTask(document.getElementById('dailyTaskView'));
+  _leavePost(window._leaveCache||{});
+}
+
+function _taskDel(analyst,dk,idx){
+  if(!_taskData[dk]||!_taskData[dk][analyst])return;
+  _taskData[dk][analyst].splice(idx,1);
+  if(!_taskData[dk][analyst].length)delete _taskData[dk][analyst];
+  if(!Object.keys(_taskData[dk]).length)delete _taskData[dk];
+  _renderDailyTask(document.getElementById('dailyTaskView'));
+  _leavePost(window._leaveCache||{});
+}
+
 async function _renderLeaveInit(el){
   if(!el)return;
   window._leaveCache=window._leaveCache||_leaveGetData();
