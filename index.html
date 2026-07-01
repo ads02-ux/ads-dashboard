@@ -1764,9 +1764,16 @@ function commStorageKey(yr,mo){return 'rb_comm_'+yr+'_'+('0'+mo).slice(-2);}
 function commLoad(yr,mo){
   var key=yr+'-'+pad2(mo);
   if(commSheetData[key]&&Object.keys(commSheetData[key]).length>0)return commSheetData[key];
+  if(_commNpointData[key]&&Object.keys(_commNpointData[key]).length>0)return _commNpointData[key];
   try{return JSON.parse(localStorage.getItem(commStorageKey(yr,mo))||'null')||{};}catch(e){return{};}
 }
-function commSave(yr,mo,data){try{localStorage.setItem(commStorageKey(yr,mo),JSON.stringify(data));}catch(e){}}
+function commSave(yr,mo,data){
+  try{localStorage.setItem(commStorageKey(yr,mo),JSON.stringify(data));}catch(e){}
+  // sync to npoint real-time
+  var key=yr+'-'+pad2(mo);
+  _commNpointData[key]=data;
+  _leavePost(window._leaveCache||{});
+}
 
 function cb_comm(resp){
   commSheetData={};
@@ -2171,7 +2178,7 @@ function switchView(view,el){
     renderCohort();window.scrollTo({top:0,behavior:'smooth'});
   } else if(view==='commission'){
     mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='block';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var trv2=document.getElementById('trackView');if(trv2)trv2.style.display='none';var lv2=document.getElementById('leaveView');if(lv2)lv2.style.display='none';
-    renderCommission();window.scrollTo({top:0,behavior:'smooth'});
+    _leaveFetch().then(function(){renderCommission();});window.scrollTo({top:0,behavior:'smooth'});
   } else if(view==='fb'){
     mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='block';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var trv2=document.getElementById('trackView');if(trv2)trv2.style.display='none';var lv2=document.getElementById('leaveView');if(lv2)lv2.style.display='none';
     renderFB();window.scrollTo({top:0,behavior:'smooth'});
@@ -4833,6 +4840,7 @@ var _TH_HOLIDAYS_2026=['2026-01-01','2026-03-03','2026-04-13','2026-04-14','2026
 
 var _LEAVE_NPOINT='https://api.npoint.io/0f30d56553bf06c0c544';
 window._leaveCache=null;
+var _commNpointData={};
 function _leaveGetData(){try{return window._leaveCache||JSON.parse(localStorage.getItem('leave_cal')||'{}')||{};}catch(e){return{};}}
 function _leaveSaveData(d){try{localStorage.setItem('leave_cal',JSON.stringify(d));}catch(e){}}
 async function _leaveFetch(){
@@ -4841,6 +4849,8 @@ async function _leaveFetch(){
     var j=await r.json();
     // extract photos
     if(j._photos){Object.keys(j._photos).forEach(function(n){if(j._photos[n])avatarMap[n]=j._photos[n];});delete j._photos;}
+    // extract commission data
+    if(j._comm){_commNpointData=j._comm;delete j._comm;}
     window._leaveCache=j||{};
     _leaveSaveData(window._leaveCache);
   }catch(e){
@@ -4849,9 +4859,10 @@ async function _leaveFetch(){
 }
 async function _leavePost(data){
   try{
-    // include current photos in post
+    // include current photos + commission in post
     var payload=Object.assign({},data);
     payload._photos=Object.assign({},avatarMap);
+    payload._comm=Object.assign({},_commNpointData);
     await fetch(_LEAVE_NPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
   }catch(e){}
 }
