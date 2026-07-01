@@ -13,7 +13,7 @@
   --blue:#1565c0;--blue2:#1976d2;--blue-glow:#1976d240;--blue-faint:#1976d212;
   --purple:#6d28d9;--purple2:#7c3aed;--purple-glow:#7c3aed35;
   --cyan:#0284c7;--cyan2:#0369a1;--cyan-glow:#0284c730;
-  --gold:#b45309;--gold2:#92400e;--gold-glow:#b4530930;
+  --gold:#b45309;--gold2:#92400e;--gold-glow:#b4530930;h
   --green:#059669;--red:#dc2626;--amber:#d97706;
   --text:#0f172a;--text2:#1e3a5f;--text3:#64748b;
   --rank-s:#b45309;--rank-a:#dc2626;--rank-b:#7c3aed;--rank-c:#1976d2;--rank-d:#059669;--rank-e:#64748b;
@@ -5074,7 +5074,7 @@ function _renderDailyTask(el){
           analysts.forEach(function(oan,oai){
             if(oan!==an){
               h+='<button data-to="'+oan+'" data-from="'+an+'" data-ri="'+ri+'" onclick="var b=this;_taskTakeOver(b.dataset.to,b.dataset.from,+b.dataset.ri)" ';
-              h+='style="font-size:.55rem;background:'+aColors[oai]+';color:#fff;border:none;border-radius:4px;padding:2px 7px;cursor:pointer;font-family:inherit;font-weight:700;flex-shrink:0">'+oan+' รับ</button>';
+              h+='style="font-size:.55rem;background:'+colors[oai]+';color:#fff;border:none;border-radius:4px;padding:2px 7px;cursor:pointer;font-family:inherit;font-weight:700;flex-shrink:0">'+oan+' รับ</button>';
             }
           });
         }
