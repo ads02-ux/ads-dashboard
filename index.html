@@ -4999,7 +4999,7 @@ function _renderDailyTask(el){
   h+='<div style="font-size:.85rem;font-weight:700;color:#0f172a">'+_taskDayName(d)+' '+_taskThaiDate(d)+'</div>';
   if(isToday)h+='<div style="font-size:.62rem;background:#dcfce7;color:#15803d;border-radius:20px;padding:2px 8px;font-weight:700;display:inline-block;margin-top:2px">วันนี้</div>';
   h+='</div>';
-  h+='<button onclick="_taskGoDate(1)" '+(isToday?'disabled style="background:#f1f5f9;border:1px solid #e2e8f0;border-radius:8px;padding:7px 12px;font-size:.8rem;cursor:not-allowed;font-family:inherit;color:#cbd5e1"':'style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:7px 12px;font-size:.8rem;cursor:pointer;font-family:inherit;color:#475569"')+'>›</button>';
+  h+='<button onclick="_taskGoDate(1)" style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:7px 12px;font-size:.8rem;cursor:pointer;font-family:inherit;color:#475569">›</button>';
   h+='</div></div>';
 
   h+='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">';
@@ -5024,13 +5024,13 @@ function _renderDailyTask(el){
         h+='<div style="display:flex;align-items:flex-start;gap:7px;padding:6px 0;border-bottom:1px solid #f1f5f9">';
         h+='<span style="color:'+col+';font-size:.7rem;margin-top:2px;flex-shrink:0">•</span>';
         h+='<span style="font-size:.75rem;color:#334155;flex:1;word-break:break-word">'+safe+'</span>';
-        if(isToday) h+='<button onclick="_taskDel(\''+an+'\',\''+dk+'\','+ti+')" style="background:none;border:none;color:#fca5a5;font-size:.72rem;cursor:pointer;padding:0;flex-shrink:0;line-height:1" title="ลบ">✕</button>';
+        h+='<button onclick="_taskDel(\''+an+'\',\''+dk+'\','+ti+')" style="background:none;border:none;color:#fca5a5;font-size:.72rem;cursor:pointer;padding:0;flex-shrink:0;line-height:1" title="ลบ">✕</button>';
         h+='</div>';
       });
     }
     h+='</div>';
-    // Input (today only)
-    if(isToday){
+    // Input (ทุกวัน)
+    {
       h+='<div style="display:flex;gap:6px;margin-top:4px">';
       h+='<input id="task-inp-'+ai+'" type="text" placeholder="พิมพ์งานที่ทำ..." '
         +'onkeydown="if(event.key===\'Enter\')_taskAdd(\''+an+'\',document.getElementById(\'task-inp-'+ai+'\').value)" '
@@ -5049,20 +5049,17 @@ function _taskGoDate(dir){
   if(!_taskViewDate)_taskViewDate=new Date();
   _taskViewDate=new Date(_taskViewDate);
   _taskViewDate.setDate(_taskViewDate.getDate()+dir);
-  // ห้ามไปอนาคต
-  var today=new Date();today.setHours(23,59,59,999);
-  if(_taskViewDate>today)_taskViewDate=new Date();
+  // อนุญาตให้ดูวันอนาคตได้
   _renderDailyTask(document.getElementById('dailyTaskView'));
 }
 
 function _taskAdd(analyst,text){
   text=(text||'').trim();
   if(!text)return;
-  var dk=_taskDateKey(new Date());
+  var dk=_taskDateKey(_taskViewDate||new Date()); // ใช้วันที่กำลังดูอยู่
   if(!_taskData[dk])_taskData[dk]={};
   if(!_taskData[dk][analyst])_taskData[dk][analyst]=[];
   _taskData[dk][analyst].push(text);
-  _taskViewDate=new Date();
   _renderDailyTask(document.getElementById('dailyTaskView'));
   _leavePost(window._leaveCache||{});
 }
