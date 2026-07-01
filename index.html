@@ -3971,6 +3971,7 @@ function _renderAIContent(el){
 // ═══ AI วิเคราะห์ Ads ══════════════════════════════════════════════════════
 var _adsaiFilter='7d';
 var _adsaiProduct=-1; // -1=ทั้งหมด, 0..N=index FB_HIERARCHY
+var _adsaiFilterAccount=null; // null=ทั้งหมด, string=กรองเฉพาะบัญชีนั้น
 
 // ── shared helpers (global so _adsaiCalcBudget can use them) ──
 function _aiFmtB(v){return '฿'+(v>=1000000?(v/1000000).toFixed(1)+'M':v>=1000?Math.round(v/1000)+'K':Math.round(v));}
@@ -4163,6 +4164,21 @@ function _renderAdsAI(el){
     });
   });
 
+  // ── Filter by account if selected ──
+  if(_adsaiFilterAccount){
+    camps7=camps7.filter(function(c){return campAccMap[c.campaign]===_adsaiFilterAccount;});
+    // Back button + account header
+    var accPg=accPageMap[_adsaiFilterAccount]||'';
+    h+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:12px 16px">';
+    h+='<button onclick="_adsaiFilterAccount=null;_renderAdsAI(document.getElementById(\'adsaiView\'))" style="background:#f1f5f9;border:none;border-radius:8px;padding:7px 14px;font-size:.75rem;font-weight:700;color:#475569;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:5px">← ภาพรวม</button>';
+    h+='<div style="flex:1">';
+    h+='<div style="font-size:.85rem;font-weight:800;color:#0f172a">🏦 '+_adsaiFilterAccount+'</div>';
+    if(accPg) h+='<div style="font-size:.65rem;color:#64748b;margin-top:2px">📄 '+accPg+'</div>';
+    h+='</div>';
+    h+='<span style="font-size:.7rem;color:#7c3aed;background:#f5f3ff;border-radius:6px;padding:3px 10px;font-weight:700">'+camps7.length+' แคมเปญ</span>';
+    h+='</div>';
+  }
+
   // AI decision per camp (วันนี้/1d/3d/7d)  adj = budget multiplier change (0.3 = +30%)
   function aiDecide(c){
     var r7=c.roas,r3=roas3Map[c.campaign]||0,r1=roas1Map[c.campaign]||0,rT=roasTMap[c.campaign]||0;
@@ -4214,7 +4230,14 @@ function _renderAdsAI(el){
     h+='<tr style="background:'+bg+';border-bottom:1px solid #f1f5f9">';
     h+='<td style="padding:8px 10px;max-width:220px;word-break:break-word">';
     h+='<div style="font-weight:600;color:#0f172a">'+nm+'</div>';
-    if(pgN||accN) h+='<div style="font-size:.6rem;color:#94a3b8;margin-top:2px">'+(pgN?'📄 '+pgN:'')+(pgN&&accN?' · ':'')+(accN?'🏦 '+accN:'')+'</div>';
+    if(pgN||accN){
+      if(!_adsaiFilterAccount){
+        var safeAccN=accN.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+        h+='<div onclick="_adsaiFilterAccount=\''+safeAccN+'\';_renderAdsAI(document.getElementById(\'adsaiView\'))" style="cursor:pointer;font-size:.6rem;color:#6366f1;margin-top:3px;display:inline-block;background:#f5f3ff;border-radius:5px;padding:1px 7px;font-weight:600" title="ดูแค่บัญชีนี้">'+(pgN?'📄 '+pgN+' · ':'')+(accN?'🏦 '+accN:'')+(accN?' 🔍':'')+'</div>';
+      } else {
+        h+='<div style="font-size:.6rem;color:#94a3b8;margin-top:2px">'+(pgN?'📄 '+pgN:'')+'</div>';
+      }
+    }
     h+='</td>';
     h+=roasCell(rTv)+roasCell(r1v)+roasCell(r3v);
     h+='<td style="padding:8px 10px;text-align:right;font-weight:700;color:'+g7.color+'">'+c.roas.toFixed(2)+'×</td>';
