@@ -4910,9 +4910,9 @@ function _adsaiTrackAnalyze(planId){
 // ═══ วันหยุดคนวิเคราะห์ ══════════════════════════════════════════════════════
 var _LEAVE_ANALYSTS=['มอส','บุ๋มบิ๋ม','ปาย'];
 var _ROUTINE_TASKS={
-  'มอส':['วิเคราะห์เจ้าขุน (บอล)(ลิงก์)','วิเคราะห์โอลิมพลัส (มอส)','วิเคราะห์โอลิมพลัสแม็ก (มอส)','วิเคราะห์เฮฟเว่นพลัส (มอส)'],
+  'มอส':['วิเคราะห์เจ้าขุน (บอล)(ลิงก์)','วิเคราะห์โอลิมพลัส (มอส)','วิเคราะห์โอลิมพลัสแม็ก (มอส)','วิเคราะห์เฮฟเว่นพลัส (มอส)','ตัดต่อคลิป'],
   'ปาย':['วิเคราะห์เดอะลอร์ด (แจ๋ม)(เตอร์)','วิเคราะห์จูโด้ (แจ๋ม)(นุ่น)','วิเคราะห์ดราก้อนบลัด (มอส)(ดอม)(บอล)'],
-  'บุ๋มบิ๋ม':['วิเคราะห์ขุนแผน (มอส)(ดอม)']
+  'บุ๋มบิ๋ม':['วิเคราะห์ขุนแผน (มอส)(ดอม)','ตัดต่อคลิป']
 };
 var _LEAVE_QUOTA=6,_WFH_QUOTA=2;
 var _TH_MONTHS=['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
@@ -5065,14 +5065,14 @@ function _renderDailyTask(el){
       h+='<div style="background:#f8fafc;border-radius:8px;padding:8px 10px;margin-bottom:8px">';
       h+='<div style="font-size:.6rem;font-weight:800;color:#94a3b8;letter-spacing:.5px;margin-bottom:5px">งานประจำ</div>';
       _rt.forEach(function(r,ri){
-        var rSafe=r.replace(/</g,'&lt;').replace(/>/g,'&gt;');
-        h+='<div style="font-size:.68rem;color:'+(_lt2?'#cbd5e1':'#475569')+';display:flex;align-items:center;gap:5px;padding:3px 0;flex-wrap:wrap">';
-        h+='<span style="color:'+(_lt2?'#e2e8f0':col)+';font-size:.6rem;flex-shrink:0">◆</span>';
+        var _isOff=(_lt2==='หยุด'||_lt2==='ออกกอง');var rSafe=r.replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        h+='<div style="font-size:.68rem;color:'+(_isOff?'#cbd5e1':'#475569')+';display:flex;align-items:center;gap:5px;padding:3px 0;flex-wrap:wrap">';
+        h+='<span style="color:'+(_isOff?'#e2e8f0':col)+';font-size:.6rem;flex-shrink:0">◆</span>';
         h+='<span style="flex:1">'+rSafe+'</span>';
         if(_lt2){
           h+='<span style="font-size:.58rem;color:#94a3b8">('+_lt2+')</span>';
           analysts.forEach(function(oan,oai){
-            if(oan!==an){
+            if(oan!==an&&_isOff){
               h+='<button data-to="'+oan+'" data-from="'+an+'" data-ri="'+ri+'" onclick="var b=this;_taskTakeOver(b.dataset.to,b.dataset.from,+b.dataset.ri)" ';
               h+='style="font-size:.55rem;background:'+colors[oai]+';color:#fff;border:none;border-radius:4px;padding:2px 7px;cursor:pointer;font-family:inherit;font-weight:700;flex-shrink:0">'+oan+' รับ</button>';
             }
