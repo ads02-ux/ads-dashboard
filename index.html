@@ -4006,13 +4006,12 @@ function _aiFilterRows(rows,f){
   if(f==='today')    return rows.filter(function(r){return r.date===todayStr;});
   if(f==='yesterday')return rows.filter(function(r){return r.date===ydStr;});
   // 1d/3d/7d = วันที่สมบูรณ์เท่านั้น (ไม่รวมวันนี้) ตรงกับ FB Ads Manager
+  // ใช้ string comparison (YYYY-MM-DD) เพื่อไม่ให้ timezone ทำให้ข้อมูลหาย
   var days={'1d':1,'3d':3,'7d':7,'14d':14,'30d':30}[f]||7;
-  var cut=new Date(now);cut.setDate(cut.getDate()-days);
-  var todayD=new Date(now);todayD.setHours(0,0,0,0);
+  var cutD=new Date(now);cutD.setDate(cutD.getDate()-days);
+  var cutStr=cutD.toLocaleDateString('sv-SE'); // "2026-06-28"
   return rows.filter(function(r){
-    if(!r.date)return false;
-    var rd=new Date(r.date);
-    return rd>=cut && rd<todayD; // exclude today
+    return r.date && r.date>=cutStr && r.date<todayStr; // string compare, no timezone issue
   });
 }
 function _aiAggRows(rows){
