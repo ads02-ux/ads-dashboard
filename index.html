@@ -5287,9 +5287,7 @@ function _leaveToggle(an,ds){
     if(pairVal==='หยุด'){
       // ข้าม 'หยุด' → ไป 'WFH' แทน
       next='WFH';
-      setTimeout(function(){alert('⚠️ '+pair+' หยุดวันนี้อยู่แล้ว
-'+an+' จึงเปลี่ยนเป็น WFH แทน
-(ปายกับบุ๋มบิ๋มห้ามหยุดทับกัน)');},100);
+      setTimeout(function(){alert('⚠️ '+pair+' หยุดวันนี้อยู่แล้ว — '+an+' จึงเปลี่ยนเป็น WFH แทน (ปายกับบุ๋มบิ๋มห้ามหยุดทับกัน)');},100);
     }
   }
   if(!next)delete data[an][ds]; else data[an][ds]=next;
