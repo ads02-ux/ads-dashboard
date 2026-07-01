@@ -3445,12 +3445,16 @@ function _fetchFBPage(url,accumulated,accName){
         var spend=parseFloat(ins.spend)||0;
         var purchases=0,revenue=0,conversations=0;
         (ins.actions||[]).forEach(function(a){
-          if(a.action_type==='purchase'||a.action_type==='omni_purchase')purchases+=parseFloat(a.value)||0;
+          if(a.action_type==='omni_purchase')purchases+=parseFloat(a.value)||0;
+          else if(a.action_type==='purchase'&&purchases===0)purchases+=parseFloat(a.value)||0;
           if(a.action_type==='onsite_conversion.messaging_conversation_started_7d')conversations+=parseFloat(a.value)||0;
         });
+        var _purchaseRev=0,_omniRev=0;
         (ins.action_values||[]).forEach(function(a){
-          if(a.action_type==='purchase'||a.action_type==='omni_purchase')revenue+=parseFloat(a.value)||0;
+          if(a.action_type==='purchase')_purchaseRev+=parseFloat(a.value)||0;
+          if(a.action_type==='omni_purchase')_omniRev+=parseFloat(a.value)||0;
         });
+        revenue=_omniRev>0?_omniRev:_purchaseRev; // ใช้ omni_purchase ตรงกับ FB Ads Manager
         var roas=spend>0&&revenue>0?Math.round(revenue/spend*100)/100:0;
         var pctAds=revenue>0?Math.round(spend/revenue*1000)/10:0;
         return{
