@@ -3972,6 +3972,9 @@ function _renderAIContent(el){
 var _adsaiFilter='7d';
 var _adsaiProduct=-1; // -1=ทั้งหมด, 0..N=index FB_HIERARCHY
 var _adsaiFilterAccount=null; // null=ทั้งหมด, string=กรองเฉพาะบัญชีนั้น
+var _adsaiBudgetAccFilter=null; // กรองบัญชีในส่วน วางแผนงบวันนี้
+window._adsaiBudgetSetAcc=function(n){_adsaiBudgetAccFilter=n;_adsaiCalcBudget();};
+window._adsaiBudgetClearAcc=function(){_adsaiBudgetAccFilter=null;_adsaiCalcBudget();};
 
 // ── shared helpers (global so _adsaiCalcBudget can use them) ──
 function _aiFmtB(v){return '฿'+(v>=1000000?(v/1000000).toFixed(1)+'M':v>=1000?Math.round(v/1000)+'K':Math.round(v));}
@@ -4454,10 +4457,31 @@ function _adsaiCalcBudget(){
   if(!hitTarget)h2+='<div style="font-size:.66rem;color:#92400e;margin-top:6px">💡 ต้องการรายได้ '+_aiFmtB(totalBudget*targetRoas)+' — เพิ่ม Creative คุณภาพสูงหรือหา Audience ที่ ROAS ดีกว่า</div>';
   h2+='</div>';
 
+  // ── กรองตามบัญชีถ้ามีการเลือก ──
+  if(_adsaiBudgetAccFilter){
+    active=active.filter(function(c){return bCampAccMap[c.campaign]===_adsaiBudgetAccFilter;});
+    closing=closing.filter(function(c){return bCampAccMap[c.campaign]===_adsaiBudgetAccFilter;});
+  }
+
   // Campaign allocation table
   active.sort(function(a,b){return b._alloc-a._alloc;});
+
+  // ── ถ้ากรองอยู่ → แสดงปุ่มกลับ + ชื่อบัญชี ──
+  var budgetAccHeader='';
+  if(_adsaiBudgetAccFilter){
+    var _bAccPg=bAccPageMap[_adsaiBudgetAccFilter]||'';
+    budgetAccHeader='<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;background:#f5f3ff;border:1px solid #ddd6fe;border-radius:10px;padding:10px 14px">'
+      +'<button onclick="window._adsaiBudgetClearAcc()" style="background:#fff;border:1.5px solid #c4b5fd;border-radius:8px;padding:6px 14px;font-size:.73rem;font-weight:700;color:#7c3aed;cursor:pointer;font-family:inherit">← ภาพรวม</button>'
+      +'<div style="flex:1"><div style="font-size:.82rem;font-weight:800;color:#4c1d95">🏦 '+_adsaiBudgetAccFilter+'</div>'
+      +(_bAccPg?'<div style="font-size:.63rem;color:#6d28d9">📄 '+_bAccPg+'</div>':'')+'</div>'
+      +'<span style="font-size:.69rem;color:#7c3aed;background:#ede9fe;border-radius:6px;padding:3px 9px;font-weight:700">'+active.length+' แคมเปญ</span>'
+      +'</div>';
+  }
+
+  h2+=budgetAccHeader;
   h2+='<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden;margin-bottom:10px">';
-  h2+='<div style="padding:9px 14px;border-bottom:1px solid #f1f5f9;font-size:.72rem;font-weight:700;color:#0f172a">📋 แผนจัดงบแต่ละแคมเปญ (วิเคราะห์จาก 1d/3d/7d)</div>';
+  h2+='<div style="padding:9px 14px;border-bottom:1px solid #f1f5f9;font-size:.72rem;font-weight:700;color:#0f172a">📋 แผนจัดงบแต่ละแคมเปญ (วิเคราะห์จาก 1d/3d/7d)'
+    +(_adsaiBudgetAccFilter?' — 🏦 '+_adsaiBudgetAccFilter:'')+'</div>';
   h2+='<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:.69rem">';
   h2+='<thead><tr style="background:#f8fafc"><th style="padding:7px 10px;text-align:left;color:#64748b;border-bottom:1px solid #f1f5f9">แคมเปญ</th><th style="padding:7px 10px;text-align:left;color:#64748b;border-bottom:1px solid #f1f5f9">บัญชี / เพจ</th><th style="padding:7px 10px;text-align:right;color:#64748b;border-bottom:1px solid #f1f5f9">วันนี้</th><th style="padding:7px 10px;text-align:right;color:#64748b;border-bottom:1px solid #f1f5f9">1d</th><th style="padding:7px 10px;text-align:right;color:#64748b;border-bottom:1px solid #f1f5f9">3d</th><th style="padding:7px 10px;text-align:right;color:#64748b;border-bottom:1px solid #f1f5f9">7d</th><th style="padding:7px 10px;text-align:right;color:#64748b;border-bottom:1px solid #f1f5f9">Spend เมื่อวาน</th><th style="padding:7px 10px;text-align:right;color:#64748b;border-bottom:1px solid #f1f5f9">Spend วันนี้</th><th style="padding:7px 10px;text-align:right;color:#64748b;border-bottom:1px solid #f1f5f9">งบแนะนำ</th><th style="padding:7px 10px;text-align:left;color:#64748b;border-bottom:1px solid #f1f5f9">การกระทำ</th></tr></thead><tbody>';
   active.forEach(function(c,i){
@@ -4474,7 +4498,9 @@ function _adsaiCalcBudget(){
     var bPg=bAccPageMap[bAcc]||'';
     var bAccShort=bAcc.length>22?bAcc.slice(0,20)+'…':bAcc;
     var bPgShort=bPg;
-    h2+='<td style="padding:8px 10px;line-height:1.4;min-width:120px"><div style="font-size:.63rem;color:#475569;font-weight:600;white-space:nowrap">'+bAccShort+'</div>'+(bPgShort?'<div style="font-size:.6rem;color:#475569;font-weight:500;white-space:normal;word-break:break-word">'+bPgShort+'</div>':'')+'</td>';
+    var _accCellStyle=_adsaiBudgetAccFilter?'':'cursor:pointer;';
+    var _accCellClick=_adsaiBudgetAccFilter?'':'onclick="window._adsaiBudgetSetAcc(this.dataset.acc)" data-acc="'+bAcc+'"';
+    h2+='<td style="padding:8px 10px;line-height:1.4;min-width:120px"><div '+_accCellClick+' style="font-size:.63rem;color:#6366f1;font-weight:600;white-space:nowrap;'+_accCellStyle+'">'+bAccShort+(bAcc&&!_adsaiBudgetAccFilter?' 🔍':'')+'</div>'+(bPgShort?'<div style="font-size:.6rem;color:#475569;font-weight:500;white-space:normal;word-break:break-word">'+bPgShort+'</div>':'')+'</td>';
     var rTv=roasTMap[c.campaign]||0;
     h2+='<td style="padding:8px 10px;text-align:right;color:'+(rTv>=2?'#22c55e':rTv>=1?'#f97316':rTv>0?'#ef4444':'#94a3b8')+';font-weight:700">'+(rTv>0?rTv.toFixed(2)+'×':'—')+'</td>';
     h2+='<td style="padding:8px 10px;text-align:right;color:'+(r1v>=2?'#22c55e':r1v>=1?'#f97316':r1v>0?'#ef4444':'#94a3b8')+';font-weight:700">'+(r1v>0?r1v.toFixed(2)+'×':'—')+'</td>';
@@ -4501,7 +4527,9 @@ function _adsaiCalcBudget(){
     var bPg2=bAccPageMap[bAcc2]||'';
     var bAccShort2=bAcc2.length>22?bAcc2.slice(0,20)+'…':bAcc2;
     var bPgShort2=bPg2;
-    h2+='<td style="padding:8px 10px;line-height:1.4;min-width:120px"><div style="font-size:.63rem;color:#7f1d1d;font-weight:600;white-space:nowrap">'+bAccShort2+'</div>'+(bPgShort2?'<div style="font-size:.6rem;color:#ef4444;font-weight:500;white-space:normal;word-break:break-word">'+bPgShort2+'</div>':'')+'</td>';
+    var _accCellClick2=_adsaiBudgetAccFilter?'':'onclick="window._adsaiBudgetSetAcc(this.dataset.acc)" data-acc="'+bAcc2+'"';
+    var _accCellStyle2=_adsaiBudgetAccFilter?'':'cursor:pointer;';
+    h2+='<td style="padding:8px 10px;line-height:1.4;min-width:120px"><div '+_accCellClick2+' style="font-size:.63rem;color:#7f1d1d;font-weight:600;white-space:nowrap;'+_accCellStyle2+'">'+bAccShort2+(bAcc2&&!_adsaiBudgetAccFilter?' 🔍':'')+'</div>'+(bPgShort2?'<div style="font-size:.6rem;color:#ef4444;font-weight:500;white-space:normal;word-break:break-word">'+bPgShort2+'</div>':'')+'</td>';
     var rTv2=roasTMap[c.campaign]||0;
     h2+='<td style="padding:8px 10px;text-align:right;color:#ef4444;font-weight:700">'+(rTv2>0?rTv2.toFixed(2)+'×':'—')+'</td>';
     h2+='<td style="padding:8px 10px;text-align:right;color:#ef4444;font-weight:700">'+(r1v>0?r1v.toFixed(2)+'×':'—')+'</td>';
