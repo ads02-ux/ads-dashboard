@@ -5044,7 +5044,13 @@ function _renderDailyTask(el){
     h+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">';
     if(av) h+='<img src="'+av+'" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid '+bd+'">';
     else h+='<div style="width:36px;height:36px;border-radius:50%;background:'+bg+';display:flex;align-items:center;justify-content:center;font-size:1.1rem">'+icon+'</div>';
-    h+='<div><div style="font-size:.88rem;font-weight:800;color:#0f172a">'+an+'</div>';
+    var _ld=window._leaveCache||_leaveGetData();
+    var _lt=_ld[an]&&_ld[an][dk];
+    var _lbg={'หยุด':'#fca5a5','WFH':'#93c5fd','ออกกอง':'#fcd34d','ลาพักร้อน':'#ede9fe'};
+    var _ltc={'หยุด':'#991b1b','WFH':'#1e40af','ออกกอง':'#92400e','ลาพักร้อน':'#7c3aed'};
+    h+='<div><div style="font-size:.88rem;font-weight:800;color:#0f172a;display:flex;align-items:center;gap:6px">'+an;
+    if(_lt) h+='<span style="font-size:.6rem;background:'+(_lbg[_lt]||'#f1f5f9')+';color:'+(_ltc[_lt]||'#64748b')+';border-radius:12px;padding:2px 8px;font-weight:700">'+_lt+'</span>';
+    h+='</div>';
     h+='<div style="font-size:.62rem;color:#94a3b8">'+tasks.length+' งาน</div></div></div>';
     // Task list
     h+='<div style="flex:1;min-height:80px">';
@@ -5176,7 +5182,16 @@ function _renderDailyTaskMonth(el){
     h+='</div>';
 
     if(!c.faded){
+      var leaveData=window._leaveCache||_leaveGetData();
+      var leaveBg={'หยุด':'#fca5a5','WFH':'#93c5fd','ออกกอง':'#fcd34d','ลาพักร้อน':'#ede9fe'};
+      var leaveTc={'หยุด':'#991b1b','WFH':'#1e40af','ออกกอง':'#92400e','ลาพักร้อน':'#7c3aed'};
       analysts.forEach(function(an,ai){
+        // แสดงสถานะหยุด/WFH จากข้อมูลวันหยุด
+        var lt=leaveData[an]&&leaveData[an][dk];
+        if(lt){
+          var lbg=leaveBg[lt]||'#f1f5f9',ltc=leaveTc[lt]||'#64748b';
+          h+='<div style="font-size:.58rem;background:'+lbg+';color:'+ltc+';border-radius:4px;padding:2px 5px;margin-bottom:2px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+an+' · '+lt+'</div>';
+        }
         var tasks=dayData[an]||[];
         tasks.slice(0,2).forEach(function(t){
           var safe=(t.length>22?t.slice(0,20)+'…':t).replace(/</g,'&lt;').replace(/>/g,'&gt;');
