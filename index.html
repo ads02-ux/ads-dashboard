@@ -2477,6 +2477,47 @@ var chartrankGroupBy='account',chartrankMetric='roas',chartrankDirection='top',c
 var fbCampaignsMap={},fbCampaignsLoadedMap={};
 var _fbLoadingMap={},_prodCharts={};
 var fbBudgetChangesToday={}; // {accId: {objName: {diff, isUp, label}}}
+var _fbNotes={};var _fbNotesPushTimer=null;
+function _fbNotesDateKey(){var now=new Date();function p(n){return n<10?'0'+n:n;}
+  if(fbFilter==='today'){return now.getFullYear()+'-'+p(now.getMonth()+1)+'-'+p(now.getDate());}
+  if(fbFilter==='yesterday'){var y=new Date(now);y.setDate(y.getDate()-1);return y.getFullYear()+'-'+p(y.getMonth()+1)+'-'+p(y.getDate());}
+  return null;}
+function _fbNotesGet(dt,name){if(!dt||!name)return{old:'',new:''};return((_fbNotes[dt]||{})[name])||{old:'',new:''};}
+function _fbNotesSave(dt,name,field,val){
+  if(!dt||!name)return;
+  if(!_fbNotes[dt])_fbNotes[dt]={};
+  if(!_fbNotes[dt][name])_fbNotes[dt][name]={old:'',new:''};
+  _fbNotes[dt][name][field]=val;
+  try{localStorage.setItem('_fbNotes',JSON.stringify(_fbNotes));}catch(e){}
+  clearTimeout(_fbNotesPushTimer);_fbNotesPushTimer=setTimeout(_fbNotesPush,2500);}
+function _fbNotesLoad(){
+  try{var s=localStorage.getItem('_fbNotes');if(s)_fbNotes=JSON.parse(s);}catch(e){}
+  fetch('https://raw.githubusercontent.com/ads02-ux/ads-dashboard/main/daily-notes.json?t='+Date.now())
+    .then(function(r){return r.json();})
+    .then(function(remote){
+      if(remote&&typeof remote==='object'&&!Array.isArray(remote)){
+        Object.keys(remote).forEach(function(dt){
+          if(!_fbNotes[dt])_fbNotes[dt]={};
+          Object.keys(remote[dt]).forEach(function(k){
+            var rv=remote[dt][k];var lv=_fbNotes[dt][k]||{};
+            _fbNotes[dt][k]={old:rv.old!==undefined?rv.old:lv.old||'',new:rv.new!==undefined?rv.new:lv.new||''};
+          });
+        });
+        try{localStorage.setItem('_fbNotes',JSON.stringify(_fbNotes));}catch(e){}
+      }
+    }).catch(function(){});}
+function _fbNotesPush(){
+  var pat=localStorage.getItem('_ghPAT')||'';if(!pat)return;
+  var content=btoa(unescape(encodeURIComponent(JSON.stringify(_fbNotes,null,2))));
+  var apiUrl='https://api.github.com/repos/ads02-ux/ads-dashboard/contents/daily-notes.json';
+  fetch(apiUrl,{headers:{Authorization:'token '+pat,'Accept':'application/vnd.github.v3+json'}})
+    .then(function(r){return r.ok?r.json():null;})
+    .then(function(meta){
+      var body={message:'notes '+new Date().toISOString(),content:content};
+      if(meta&&meta.sha)body.sha=meta.sha;
+      return fetch(apiUrl,{method:'PUT',headers:{Authorization:'token '+pat,'Content-Type':'application/json'},body:JSON.stringify(body)});
+    }).catch(function(){});}
+_fbNotesLoad();
 var fbCampAdsetMap={};       // {accId: {campName: [adsetName,...]}}  — for aggregating adset→campaign
 var _fbBudgetFetching={};    // guard: prevent concurrent fetches per accId
 
@@ -6440,6 +6481,7 @@ function _renderFBInner(el){
     +'<th style="'+TH+'text-align:right">ROAS</th>'
     +'<th style="'+TH+'text-align:right">%ADS</th>'
     +'<th style="'+TH+'text-align:right">เพิ่ม/ลด</th>'
+    +(_fbNotesDateKey()?'<th style="'+TH+'text-align:center;background:#fffbeb;color:#92400e;min-width:85px">ยอดเก่า</th><th style="'+TH+'text-align:center;background:#fffbeb;color:#92400e;min-width:85px">ยอดใหม่</th>':'')
     +'</tr></thead>';
 
   // Status badge — toggle switch + text (clickable for campaigns)
@@ -6593,6 +6635,7 @@ function _renderFBInner(el){
       +_fbMetricCell(cagg.roas>0?cagg.roas:null,function(v){return v.toFixed(2)+'x';},_fbRoasColor(cagg.roas),true)
       +_fbMetricCell(cagg.pctAds>0?cagg.pctAds:null,function(v){return v+'%';},_fbPctColor(cagg.pctAds),true)
       +(function(){var _bch=(fbBudgetChangesToday[_accId]||{})[cname];return _bch?'<td style="padding:8px 12px;text-align:right;white-space:nowrap"><span style="font-size:.7rem;font-weight:800;color:'+(_bch.isUp?'#059669':'#ef4444')+';background:'+(_bch.isUp?'rgba(5,150,105,.08)':'rgba(239,68,68,.08)')+';border-radius:5px;padding:3px 9px">'+_bch.label+'</span></td>':'<td style="padding:8px 12px;text-align:right"><span style="color:#cbd5e1;font-size:.7rem">—</span></td>';})()
+      +(function(){var _dn=_fbNotesDateKey();if(!_dn)return '';var _nv=_fbNotesGet(_dn,cname);var _na=cname.replace(/"/g,'&quot;');var _is='width:75px;padding:4px 7px;border:1px solid #fcd34d;border-radius:6px;font-size:.72rem;font-family:inherit;text-align:center;background:#fffbeb;outline:none';var _oc='onchange="_fbNotesSave(this.dataset.dt,this.dataset.nm,this.dataset.field,this.value)"';return '<td style="padding:6px 8px;background:#fffdf5" onclick="event.stopPropagation()"><input type="text" value="'+(_nv.old||'')+'" placeholder="กรอก..." data-dt="'+_dn+'" data-nm="'+_na+'" data-field="old" style="'+_is+'" '+_oc+' /></td>'+'<td style="padding:6px 8px;background:#fffdf5" onclick="event.stopPropagation()"><input type="text" value="'+(_nv.new||'')+'" placeholder="กรอก..." data-dt="'+_dn+'" data-nm="'+_na+'" data-field="new" style="'+_is+'" '+_oc+' /></td>';})()
       +'</tr>';
 
     // Ad Set rows (if expanded)
@@ -6621,6 +6664,7 @@ function _renderFBInner(el){
           +_fbMetricCell(aagg.roas>0?aagg.roas:null,function(v){return v.toFixed(2)+'x';},_fbRoasColor(aagg.roas),false)
           +_fbMetricCell(aagg.pctAds>0?aagg.pctAds:null,function(v){return v+'%';},_fbPctColor(aagg.pctAds),false)
           +(function(){var _bch=(fbBudgetChangesToday[_accId]||{})[aname];return _bch?'<td style="padding:8px 12px;text-align:right;white-space:nowrap"><span style="font-size:.7rem;font-weight:800;color:'+(_bch.isUp?'#059669':'#ef4444')+';background:'+(_bch.isUp?'rgba(5,150,105,.08)':'rgba(239,68,68,.08)')+';border-radius:5px;padding:3px 9px">'+_bch.label+'</span></td>':'<td style="padding:8px 12px;text-align:right"><span style="color:#cbd5e1;font-size:.7rem">—</span></td>';})()
+          +(function(){var _dn=_fbNotesDateKey();if(!_dn)return '';var _nv=_fbNotesGet(_dn,aname);var _na=aname.replace(/"/g,'&quot;');var _is='width:75px;padding:4px 7px;border:1px solid #fcd34d;border-radius:6px;font-size:.72rem;font-family:inherit;text-align:center;background:#fffbeb;outline:none';var _oc='onchange="_fbNotesSave(this.dataset.dt,this.dataset.nm,this.dataset.field,this.value)"';return '<td style="padding:6px 8px;background:#fffdf5" onclick="event.stopPropagation()"><input type="text" value="'+(_nv.old||'')+'" placeholder="กรอก..." data-dt="'+_dn+'" data-nm="'+_na+'" data-field="old" style="'+_is+'" '+_oc+' /></td>'+'<td style="padding:6px 8px;background:#fffdf5" onclick="event.stopPropagation()"><input type="text" value="'+(_nv.new||'')+'" placeholder="กรอก..." data-dt="'+_dn+'" data-nm="'+_na+'" data-field="new" style="'+_is+'" '+_oc+' /></td>';})()
           +'</tr>';
       });
     }
