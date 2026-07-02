@@ -2215,7 +2215,7 @@ function switchView(view,el){
     mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var trv2=document.getElementById('trackView');if(trv2)trv2.style.display='none';var lv2=document.getElementById('leaveView');if(lv2)lv2.style.display='none';var aav=document.getElementById('adsaiView');if(aav){aav.style.display='block';_renderAdsAI(aav);}
     window.scrollTo({top:0,behavior:'smooth'});
   } else if(view==='track'){
-    mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var trv2=document.getElementById('trackView');if(trv2)trv2.style.display='none';var lv2=document.getElementById('leaveView');if(lv2)lv2.style.display='none';var trv=document.getElementById('trackView');if(trv){trv.style.display='block';_renderTrackHistory(trv);}
+    mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var trv2=document.getElementById('trackView');if(trv2)trv2.style.display='none';var lv2=document.getElementById('leaveView');if(lv2)lv2.style.display='none';var trv=document.getElementById('trackView');if(trv){trv.style.display='block';_renderTrackHistory(trv);if(_ghGetPAT())_ghSync();}
     window.scrollTo({top:0,behavior:'smooth'});
   } else if(view==='leave'){
     mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var trv2=document.getElementById('trackView');if(trv2)trv2.style.display='none';var lv2=document.getElementById('leaveView');if(lv2)lv2.style.display='none';var lv=document.getElementById('leaveView');if(lv){lv.style.display='block';_renderLeaveInit(lv);}
@@ -4725,6 +4725,85 @@ function _adsaiGetHistory(){
 function _adsaiSaveHistory(arr){
   try{localStorage.setItem('adsai_history',JSON.stringify(arr));}catch(e){}
 }
+var _ghRepo='ads02-ux/ads-dashboard';
+var _ghFile='plans.json';
+var _ghSyncing=false;
+function _ghGetPAT(){return localStorage.getItem('_ghPAT')||'';}
+function _ghSetPAT(pat){if(pat)localStorage.setItem('_ghPAT',pat.trim());else localStorage.removeItem('_ghPAT');}
+function _ghRawUrl(){return 'https://raw.githubusercontent.com/'+_ghRepo+'/main/'+_ghFile+'?t='+Date.now();}
+function _ghApiUrl(){return 'https://api.github.com/repos/'+_ghRepo+'/contents/'+_ghFile;}
+function _ghSyncRead(cb){
+  fetch(_ghRawUrl()).then(function(r){return r.json();}).then(function(data){
+    if(Array.isArray(data))cb(null,data);else cb('invalid');
+  }).catch(function(e){cb(e.message);});
+}
+function _ghSyncWrite(arr,cb){
+  var pat=_ghGetPAT();if(!pat){if(cb)cb('no PAT');return;}
+  var content=btoa(unescape(encodeURIComponent(JSON.stringify(arr,null,2))));
+  fetch(_ghApiUrl(),{headers:{Authorization:'token '+pat,'Accept':'application/vnd.github.v3+json'}})
+    .then(function(r){return r.json();})
+    .then(function(meta){
+      return fetch(_ghApiUrl(),{method:'PUT',
+        headers:{Authorization:'token '+pat,'Content-Type':'application/json'},
+        body:JSON.stringify({message:'sync plans '+new Date().toISOString(),content:content,sha:meta.sha})});
+    })
+    .then(function(r){return r.json();})
+    .then(function(r){if(cb)cb(null,r);})
+    .catch(function(e){if(cb)cb(e.message);});
+}
+window._ghSync=function(onDone){
+  if(_ghSyncing)return;
+  _ghSyncing=true;
+  var syncBtn=document.getElementById('gh-sync-btn');
+  if(syncBtn)syncBtn.textContent='🔄 กำลัง Sync...';
+  _ghSyncRead(function(err,remote){
+    if(err){
+      _ghSyncing=false;
+      if(syncBtn)syncBtn.textContent='☁️ Sync';
+      if(onDone)onDone(err);return;
+    }
+    var local=_adsaiGetHistory();
+    var map={};
+    if(Array.isArray(remote))remote.forEach(function(p){if(p&&p.id)map[p.id]=p;});
+    local.forEach(function(p){
+      if(!p||!p.id)return;
+      if(!map[p.id]||((p.updatedAt||p.savedAt||0)>=(map[p.id].updatedAt||map[p.id].savedAt||0)))
+        map[p.id]=p;
+    });
+    var merged=Object.values(map).sort(function(a,b){return(b.savedAt||0)-(a.savedAt||0);});
+    _adsaiSaveHistory(merged);
+    var pat=_ghGetPAT();
+    if(pat){
+      _ghSyncWrite(merged,function(){
+        _ghSyncing=false;
+        if(syncBtn)syncBtn.textContent='☁️ Sync ✅';
+        setTimeout(function(){if(syncBtn)syncBtn.textContent='☁️ Sync';},2000);
+        var tv=document.getElementById('trackView');if(tv&&tv.style.display!=='none')_renderTrackHistory(tv);
+        if(onDone)onDone(null,merged);
+      });
+    }else{
+      _ghSyncing=false;
+      if(syncBtn)syncBtn.textContent='☁️ Sync';
+      var tv=document.getElementById('trackView');if(tv&&tv.style.display!=='none')_renderTrackHistory(tv);
+      if(onDone)onDone(null,merged);
+    }
+  });
+};
+window._ghSetupPAT=function(){
+  var box=document.getElementById('gh-pat-box');
+  if(box)box.style.display=box.style.display==='none'?'block':'none';
+};
+window._ghSavePAT=function(){
+  var inp=document.getElementById('gh-pat-input');
+  if(!inp||!inp.value.trim()){alert('กรุณาวาง PAT Token ก่อน');return;}
+  _ghSetPAT(inp.value.trim());
+  alert('บันทึก Token แล้ว! กด Sync เพื่อเริ่มซิงค์ข้อมูล');
+  document.getElementById('gh-pat-box').style.display='none';
+  var tv=document.getElementById('trackView');if(tv&&tv.style.display!=='none')_renderTrackHistory(tv);
+};
+window._ghClearPAT=function(){
+  if(confirm('ลบ Token ออก?')){_ghSetPAT('');var tv=document.getElementById('trackView');if(tv)_renderTrackHistory(tv);}
+};
 function _adsaiGetAccuracy(prod){
   try{return JSON.parse(localStorage.getItem('adsai_acc_'+(prod||'ALL'))||'[]');}catch(e){return[];}
 }
@@ -4949,11 +5028,23 @@ function _renderTrackHistory(el){
   h+='<div style="display:flex;align-items:center;gap:14px;margin-bottom:24px">';
   h+='<div style="font-family:Rajdhani,sans-serif;font-size:1.7rem;font-weight:900;color:#0f172a;letter-spacing:.3px">📊 ติดตามผล</div>';
   h+='<div style="font-size:.76rem;color:#94a3b8">ประวัติแผนงบและผลลัพธ์จริง</div>';
-  h+='<div style="margin-left:auto;display:flex;gap:8px">';
-  h+='<button onclick="_trackExport()" style="background:#f1f5f9;border:1px solid #e2e8f0;border-radius:8px;padding:6px 14px;font-size:.72rem;font-weight:700;color:#475569;cursor:pointer;font-family:inherit">📤 Export</button>';
-  h+='<button onclick="_trackImport()" style="background:#ede9fe;border:1px solid #c4b5fd;border-radius:8px;padding:6px 14px;font-size:.72rem;font-weight:700;color:#7c3aed;cursor:pointer;font-family:inherit">📥 Import</button>';
+  var hasPAT=!!_ghGetPAT();
+  h+='<div style="margin-left:auto;display:flex;gap:8px;align-items:center">';
+  h+='<button id="gh-sync-btn" onclick="_ghSync()" style="background:'+(hasPAT?'#dcfce7':'#f1f5f9')+';border:1px solid '+(hasPAT?'#86efac':'#e2e8f0')+';border-radius:8px;padding:6px 14px;font-size:.72rem;font-weight:700;color:'+(hasPAT?'#15803d':'#475569')+';cursor:pointer;font-family:inherit">☁️ Sync'+(hasPAT?'':' (ตั้งค่า)')+'</button>';
+  h+='<button onclick="_ghSetupPAT()" style="background:#fef3c7;border:1px solid #fcd34d;border-radius:8px;padding:6px 14px;font-size:.72rem;font-weight:700;color:#92400e;cursor:pointer;font-family:inherit">🔑 Token</button>';
+  h+='<button onclick="_trackExport()" style="background:#f1f5f9;border:1px solid #e2e8f0;border-radius:8px;padding:6px 14px;font-size:.72rem;font-weight:700;color:#475569;cursor:pointer;font-family:inherit">📤</button>';
+  h+='<button onclick="_trackImport()" style="background:#ede9fe;border:1px solid #c4b5fd;border-radius:8px;padding:6px 14px;font-size:.72rem;font-weight:700;color:#7c3aed;cursor:pointer;font-family:inherit">📥</button>';
   h+='</div>';
   h+='</div>';
+  h+='<div id="gh-pat-box" style="display:none;background:#fffbeb;border:1.5px solid #fcd34d;border-radius:12px;padding:16px;margin-bottom:12px">';
+  h+='<div style="font-size:.76rem;font-weight:700;color:#92400e;margin-bottom:6px">🔑 ตั้งค่า GitHub Token</div>';
+  h+='<div style="font-size:.68rem;color:#78350f;margin-bottom:8px">วาง Fine-grained PAT ที่มีสิทธิ์ Contents: Read and write — ใช้ครั้งเดียว เก็บในเครื่องนี้</div>';
+  h+='<input id="gh-pat-input" type="password" placeholder="github_pat_..." style="width:100%;border:1.5px solid #fcd34d;border-radius:8px;padding:8px 12px;font-size:.72rem;font-family:monospace;box-sizing:border-box;background:#fff;margin-bottom:10px">';
+  h+='<div style="display:flex;gap:8px">';
+  h+='<button onclick="_ghSavePAT()" style="background:#f59e0b;border:none;border-radius:8px;padding:6px 16px;font-size:.72rem;font-weight:700;color:#fff;cursor:pointer;font-family:inherit">✅ บันทึก</button>';
+  if(hasPAT){h+="<button onclick=\'_ghClearPAT()\' style=\'background:#fee2e2;border:none;border-radius:8px;padding:6px 16px;font-size:.72rem;font-weight:700;color:#dc2626;cursor:pointer;font-family:inherit\'>🗑️ ลบ Token</button>";}
+  h+='<button onclick="document.getElementById(\'gh-pat-box\').style.display=\'none\'" style="background:#f1f5f9;border:none;border-radius:8px;padding:6px 16px;font-size:.72rem;font-weight:700;color:#64748b;cursor:pointer;font-family:inherit">ยกเลิก</button>';
+  h+='</div></div>';
   h+='<div id="track-import-box" style="display:none;background:#faf5ff;border:1.5px solid #c4b5fd;border-radius:12px;padding:16px;margin-bottom:18px">';
   h+='<div style="font-size:.76rem;font-weight:700;color:#5b21b6;margin-bottom:8px">📥 วางรหัส Import ที่นี่</div>';
   h+='<textarea id="track-import-input" rows="4" placeholder="วาง Export Code จากเครื่องอื่น..." style="width:100%;border:1.5px solid #c4b5fd;border-radius:8px;padding:8px 12px;font-size:.72rem;font-family:inherit;box-sizing:border-box;resize:vertical;background:#fff"></textarea>';
