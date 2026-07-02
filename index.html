@@ -4522,7 +4522,7 @@ function _adsaiCalcBudget(){
   h2+='<div style="padding:9px 14px;border-bottom:1px solid #f1f5f9;font-size:.72rem;font-weight:700;color:#0f172a">📋 แผนจัดงบแต่ละแคมเปญ (วิเคราะห์จาก 1d/3d/7d)'
     +(_adsaiBudgetAccFilter?' — 🏦 '+_adsaiBudgetAccFilter:'')+'</div>';
   h2+='<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:.69rem">';
-  h2+='<thead><tr style="background:#f8fafc"><th style="padding:7px 10px;text-align:left;color:#64748b;border-bottom:1px solid #f1f5f9">แคมเปญ</th><th style="padding:7px 10px;text-align:left;color:#64748b;border-bottom:1px solid #f1f5f9">บัญชี / เพจ</th><th style="padding:7px 10px;text-align:right;color:#64748b;border-bottom:1px solid #f1f5f9">วันนี้</th><th style="padding:7px 10px;text-align:right;color:#64748b;border-bottom:1px solid #f1f5f9">1d</th><th style="padding:7px 10px;text-align:right;color:#64748b;border-bottom:1px solid #f1f5f9">3d</th><th style="padding:7px 10px;text-align:right;color:#64748b;border-bottom:1px solid #f1f5f9">7d</th><th style="padding:7px 10px;text-align:right;color:#64748b;border-bottom:1px solid #f1f5f9">Spend เมื่อวาน</th><th style="padding:7px 10px;text-align:right;color:#64748b;border-bottom:1px solid #f1f5f9">Spend วันนี้</th><th style="padding:7px 10px;text-align:right;color:#64748b;border-bottom:1px solid #f1f5f9">งบแนะนำ</th><th style="padding:7px 10px;text-align:left;color:#64748b;border-bottom:1px solid #f1f5f9">การกระทำ</th></tr></thead><tbody>';
+  h2+='<thead><tr style="background:#f8fafc"><th style="padding:7px 10px;text-align:left;color:#64748b;border-bottom:1px solid #f1f5f9">แคมเปญ</th><th style="padding:7px 10px;text-align:left;color:#64748b;border-bottom:1px solid #f1f5f9">บัญชี / เพจ</th><th style="padding:7px 10px;text-align:right;color:#64748b;border-bottom:1px solid #f1f5f9">วันนี้</th><th style="padding:7px 10px;text-align:right;color:#64748b;border-bottom:1px solid #f1f5f9">1d</th><th style="padding:7px 10px;text-align:right;color:#64748b;border-bottom:1px solid #f1f5f9">3d</th><th style="padding:7px 10px;text-align:right;color:#64748b;border-bottom:1px solid #f1f5f9">7d</th><th style="padding:7px 10px;text-align:right;color:#64748b;border-bottom:1px solid #f1f5f9">Spend เมื่อวาน</th><th style="padding:7px 10px;text-align:right;color:#64748b;border-bottom:1px solid #f1f5f9">Spend วันนี้</th><th style="padding:7px 10px;text-align:right;color:#64748b;border-bottom:1px solid #f1f5f9">งบแนะนำ</th><th style="padding:7px 10px;text-align:center;color:#7c3aed;border-bottom:1px solid #f1f5f9;min-width:85px">งบจริง</th><th style="padding:7px 10px;text-align:left;color:#64748b;border-bottom:1px solid #f1f5f9">การกระทำ</th></tr></thead><tbody>';
   active.forEach(function(c,i){
     var r1v=roas1Map[c.campaign]||0,r3v=roas3Map[c.campaign]||0;
     var g7=_aiRoasGrade(c.roas);
@@ -4550,6 +4550,8 @@ function _adsaiCalcBudget(){
     h2+='<td style="padding:8px 10px;text-align:right;color:#475569">'+(yd1spend>0?_aiFmtB(yd1spend):'—')+'</td>';
     h2+='<td style="padding:8px 10px;text-align:right;color:#0369a1;font-weight:600">'+(tdSpend>0?_aiFmtB(tdSpend):'—')+'</td>';
     h2+='<td style="padding:8px 10px;text-align:right;font-weight:800;color:'+actCol+'">'+_aiFmtB(c._alloc)+'</td>';
+    var _cSafe=c.campaign.replace(/[^a-zA-Z0-9]/g,'_');
+    h2+='<td style="padding:5px 8px;text-align:center"><input id="ai-acsp-'+_cSafe+'" type="number" placeholder="'+Math.round(c._alloc)+'" style="width:80px;border:1.5px solid #c4b5fd;border-radius:6px;padding:4px 6px;font-size:.7rem;text-align:right;font-family:inherit;background:#faf5ff"></td>';
     var badge='';
     if(c.cppOK===false) badge+=' <span style="font-size:.56rem;background:#fef2f2;color:#dc2626;border-radius:3px;padding:1px 4px;font-weight:700">CPP เกิน</span>';
     if(c.convOK===false) badge+=' <span style="font-size:.56rem;background:#fef3cd;color:#92400e;border-radius:3px;padding:1px 4px;font-weight:700">CPConv เกิน</span>';
@@ -4579,6 +4581,7 @@ function _adsaiCalcBudget(){
     h2+='<td style="padding:8px 10px;text-align:right;color:#7f1d1d">'+(yd1close>0?_aiFmtB(yd1close):'—')+'</td>';
     h2+='<td style="padding:8px 10px;text-align:right;color:#dc2626">'+(tdClose>0?_aiFmtB(tdClose):'—')+'</td>';
     h2+='<td style="padding:8px 10px;text-align:right;font-weight:800;color:#dc2626">฿0</td>';
+    h2+='<td style="padding:8px 10px;text-align:center;color:#94a3b8;font-size:.68rem">—</td>';
     h2+='<td style="padding:8px 10px;color:#dc2626;font-weight:700">⏸ ปิดทันที (ROAS&lt;1)</td>';
     h2+='</tr>';
   });
@@ -4601,9 +4604,18 @@ function _adsaiCalcBudget(){
     campaigns:active.map(function(c){return{name:c.campaign,alloc:c._alloc,expectedRoas:Math.round(c.avg*100)/100};}),
     actual:null,savedAt:now.toISOString()
   };
-  var hRetro='<div style="margin-top:10px;display:flex;align-items:center;gap:10px">';
+  var hRetro='<div style="margin-top:12px">';
+  hRetro+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">';
   hRetro+='<button onclick="_adsaiSavePlan()" style="background:linear-gradient(135deg,#0f172a,#1e40af);color:#fff;border:none;border-radius:9px;padding:8px 18px;font-size:.75rem;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap">💾 นำไปใช้ — '+planLabel+'</button>';
-  hRetro+='<span style="font-size:.66rem;color:#94a3b8">บันทึกแผนนี้เพื่อดูผลลัพธ์พรุ้งนี้</span></div>';
+  hRetro+='<span style="font-size:.66rem;color:#94a3b8">บันทึกแผนนี้เพื่อดูผลลัพธ์พรุ้งนี้</span>';
+  hRetro+='</div>';
+  hRetro+='<div style="background:#f5f3ff;border:1.5px solid #c4b5fd;border-radius:10px;padding:12px 14px">';
+  hRetro+='<div style="font-size:.69rem;font-weight:700;color:#5b21b6;margin-bottom:8px">📊 ใส่ผลจริงเลย — ไม่ต้องรอไปหน้าติดตามผล</div>';
+  hRetro+='<div style="display:flex;align-items:flex-end;gap:8px;flex-wrap:wrap">';
+  hRetro+='<div><div style="font-size:.62rem;color:#7c3aed;font-weight:600;margin-bottom:3px">Revenue จริง (฿) รวมทั้งหมด</div><input id="ai-actrev" type="number" placeholder="เช่น 28000" style="border:1.5px solid #c4b5fd;border-radius:8px;padding:6px 10px;font-size:.75rem;width:160px;font-family:inherit;background:#fff"></div>';
+  hRetro+='<button onclick="_adsaiSaveWithActual()" style="background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;border:none;border-radius:9px;padding:8px 16px;font-size:.74rem;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap">📊 บันทึก + ดูผลทันที</button>';
+  hRetro+='<span style="font-size:.62rem;color:#94a3b8">ใส่งบจริงในตาราง + Revenue ด้านซ้ายก่อน</span>';
+  hRetro+='</div></div></div>';
 
   resEl.innerHTML=h2+hRetro;
   _adsaiRenderHistory();
@@ -4659,6 +4671,30 @@ function _adsaiSavePlan(){
   // Show confirmation on button
   var btn=document.querySelector('button[onclick="_adsaiSavePlan()"]');
   if(btn){btn.textContent='✅ บันทึกแล้ว — '+plan.label;btn.style.background='#16a34a';btn.disabled=true;}
+}
+function _adsaiSaveWithActual(){
+  var plan=window._adsaiPendingPlan;
+  if(!plan){alert('กรุณาคำนวณงบก่อน');return;}
+  var revInp=document.getElementById('ai-actrev');
+  var actualRev=revInp?parseFloat(revInp.value)||0:0;
+  if(actualRev<=0){alert('กรุณาใส่ Revenue จริง (฿) รวมทั้งหมดก่อน');return;}
+  var campActuals=[];var totalActSpend=0;
+  (plan.campaigns||[]).forEach(function(c){
+    var safe=c.name.replace(/[^a-zA-Z0-9]/g,'_');
+    var inp=document.getElementById('ai-acsp-'+safe);
+    var v=inp?parseFloat(inp.value)||0:0;
+    totalActSpend+=v;
+    var act=v===0?'off':v>c.alloc*1.05?'inc':v<c.alloc*0.95?'dec':'same';
+    campActuals.push({name:c.name,alloc:c.alloc,actual:v,action:act,diff:v-c.alloc,diffPct:c.alloc>0?Math.round((v-c.alloc)/c.alloc*100):0});
+  });
+  if(totalActSpend<=0){alert('กรุณาใส่งบจริงในตารางด้านบนก่อน (คอลัมน์ งบจริง)');return;}
+  plan.actual={spend:totalActSpend,revenue:actualRev,campaigns:campActuals};
+  _adsaiSavePlan();
+  setTimeout(function(){
+    document.querySelectorAll('[id$="View"]').forEach(function(el){el.style.display='none';});
+    var tv=document.getElementById('trackView');
+    if(tv){tv.style.display='block';_renderTrackHistory(tv);}
+  },200);
 }
 function _adsaiDeletePlan(id){
   var arr=_adsaiGetHistory().filter(function(p){return p.id!==id;});
@@ -4914,6 +4950,8 @@ function _renderTrackHistory(el){
       if(hasActual && p.analysis){
         h+='<details style="margin-top:4px"><summary style="font-size:.71rem;font-weight:700;color:#7c3aed;cursor:pointer;padding:4px 0">🔍 ดูการวิเคราะห์</summary>';
         h+='<div style="margin-top:8px">'+p.analysis+'</div></details>';
+      } else if(hasActual && !p.analysis){
+        h+='<button data-pid="'+p.id+'" onclick="_adsaiTrackAnalyze(this.dataset.pid)" style="background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;border:none;border-radius:9px;padding:7px 14px;font-size:.72rem;font-weight:700;cursor:pointer;font-family:inherit;margin-top:6px">📊 ดูผลวิเคราะห์</button>';
       } else if(!hasActual){
         // Input form (hidden by default)
         h+='<div id="trk-form-'+safeId+'" style="display:none;margin-top:4px">';
@@ -4986,6 +5024,7 @@ function _adsaiTrackAnalyze(planId){
   var rEl=document.getElementById('trr-'+safeId);
   var actualSpend=0;var _campActuals=[];
   var _hasCampInp=document.getElementById('trc-'+safeId+'_c0');
+  var _hasSingleInp=document.getElementById('trs-'+safeId);
   if(_hasCampInp){
     var _ci=0;
     while(document.getElementById('trc-'+safeId+'_c'+_ci)){
@@ -4999,11 +5038,14 @@ function _adsaiTrackAnalyze(planId){
       _campActuals.push({name:_cName,alloc:_cAlloc,actual:_v,action:_act,diff:_v-_cAlloc,diffPct:_cAlloc>0?Math.round((_v-_cAlloc)/_cAlloc*100):0});
       _ci++;
     }
-  } else {
-    var sEl=document.getElementById('trs-'+safeId);
-    actualSpend=sEl?parseFloat(sEl.value)||0:0;
+  } else if(_hasSingleInp){
+    actualSpend=parseFloat(_hasSingleInp.value)||0;
+  } else if(plan.actual&&plan.actual.spend>0){
+    actualSpend=plan.actual.spend;
+    _campActuals=plan.actual.campaigns||[];
   }
   var actualRev=rEl?parseFloat(rEl.value)||0:0;
+  if(actualRev<=0&&plan.actual) actualRev=plan.actual.revenue||0;
   if(actualSpend<=0||actualRev<=0){
     var fe=document.getElementById('trk-form-'+safeId);if(fe)fe.style.display='block';return;
   }
