@@ -4908,6 +4908,40 @@ function _adsaiRetroAnalyze(planId){
   _adsaiRenderHistory();
 }
 // ═══ ติดตามผล (Plan History Page) ══════════════════════════════════════════
+window._trackExport=function(){
+  var arr=_adsaiGetHistory();
+  if(!arr.length){alert('ไม่มีข้อมูลแผนที่จะ Export');return;}
+  var code=btoa(unescape(encodeURIComponent(JSON.stringify(arr))));
+  navigator.clipboard.writeText(code).then(function(){
+    alert('คัดลอก Export Code แล้ว! \n('+arr.length+' แผน) \n\nนำไป Paste ในหน้า ติดตามผล → Import บนเครื่องอื่น');
+  }).catch(function(){
+    prompt('คัดลอก code ด้านล่าง:',code);
+  });
+};
+window._trackImport=function(){
+  var box=document.getElementById('track-import-box');
+  if(box) box.style.display=box.style.display==='none'?'block':'none';
+};
+window._trackImportConfirm=function(){
+  var input=document.getElementById('track-import-input');
+  if(!input||!input.value.trim()){alert('กรุณาวาง Export Code ก่อน');return;}
+  try{
+    var code=input.value.trim();
+    var json=decodeURIComponent(escape(atob(code)));
+    var imported=JSON.parse(json);
+    if(!Array.isArray(imported)){throw new Error('Invalid format');}
+    var existing=_adsaiGetHistory();
+    var existingIds=new Set(existing.map(function(p){return p.id;}));
+    var newItems=imported.filter(function(p){return !existingIds.has(p.id);});
+    var merged=existing.concat(newItems);
+    _adsaiSaveHistory(merged);
+    alert('นำเข้าสำเร็จ! เพิ่ม '+newItems.length+' แผน (รวม '+merged.length+' แผน)');
+    var tv=document.getElementById('trackView');
+    if(tv) _renderTrackHistory(tv);
+  }catch(e){
+    alert('Export Code ไม่ถูกต้อง กรุณาลองใหม่');
+  }
+};
 function _renderTrackHistory(el){
   if(!el) return;
   var arr=_adsaiGetHistory();
@@ -4915,7 +4949,18 @@ function _renderTrackHistory(el){
   h+='<div style="display:flex;align-items:center;gap:14px;margin-bottom:24px">';
   h+='<div style="font-family:Rajdhani,sans-serif;font-size:1.7rem;font-weight:900;color:#0f172a;letter-spacing:.3px">📊 ติดตามผล</div>';
   h+='<div style="font-size:.76rem;color:#94a3b8">ประวัติแผนงบและผลลัพธ์จริง</div>';
+  h+='<div style="margin-left:auto;display:flex;gap:8px">';
+  h+='<button onclick="_trackExport()" style="background:#f1f5f9;border:1px solid #e2e8f0;border-radius:8px;padding:6px 14px;font-size:.72rem;font-weight:700;color:#475569;cursor:pointer;font-family:inherit">📤 Export</button>';
+  h+='<button onclick="_trackImport()" style="background:#ede9fe;border:1px solid #c4b5fd;border-radius:8px;padding:6px 14px;font-size:.72rem;font-weight:700;color:#7c3aed;cursor:pointer;font-family:inherit">📥 Import</button>';
   h+='</div>';
+  h+='</div>';
+  h+='<div id="track-import-box" style="display:none;background:#faf5ff;border:1.5px solid #c4b5fd;border-radius:12px;padding:16px;margin-bottom:18px">';
+  h+='<div style="font-size:.76rem;font-weight:700;color:#5b21b6;margin-bottom:8px">📥 วางรหัส Import ที่นี่</div>';
+  h+='<textarea id="track-import-input" rows="4" placeholder="วาง Export Code จากเครื่องอื่น..." style="width:100%;border:1.5px solid #c4b5fd;border-radius:8px;padding:8px 12px;font-size:.72rem;font-family:inherit;box-sizing:border-box;resize:vertical;background:#fff"></textarea>';
+  h+='<div style="display:flex;gap:8px;margin-top:10px">';
+  h+='<button onclick="_trackImportConfirm()" style="background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;border:none;border-radius:8px;padding:7px 18px;font-size:.73rem;font-weight:700;cursor:pointer;font-family:inherit">✅ นำเข้า</button>';
+  h+='<button onclick="document.getElementById('track-import-box').style.display='none'" style="background:#f1f5f9;border:1px solid #e2e8f0;border-radius:8px;padding:7px 14px;font-size:.73rem;font-weight:700;color:#64748b;cursor:pointer;font-family:inherit">ยกเลิก</button>';
+  h+='</div></div>';
 
   if(!arr.length){
     h+='<div style="background:#f8fafc;border:1.5px dashed #cbd5e1;border-radius:14px;padding:48px;text-align:center">';
