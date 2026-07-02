@@ -1,1 +1,357 @@
-[]
+[
+  {
+    "id": "adsai_h_Olymplus_2026-07-02",
+    "label": "Olymplus 2/7/69",
+    "product": "Olymplus",
+    "date": "2026-07-02",
+    "thaiDate": "2/7/69",
+    "totalBudget": 10000,
+    "predictedRoas": 5.15,
+    "predictedRevenue": 51462,
+    "campaigns": [
+      {
+        "name": "**(004.) คุณโหน่ง OLMYPLUS 3 Noedtiting ผู้สูงอายุสามารถกินได้หรอ 6/12/68 ลุมยิง 18/05/69 ver 1 122280739886245413 การสนทนา 2 (ยศ)",
+        "alloc": 116,
+        "expectedRoas": 2.54
+      },
+      {
+        "name": "01.** คุณโหน่ง OLMYPLUS 3 Noedtiting ผู้สูงอายุสามารถกินได้หรอ 6/12/68 ลุมยิง 17/06/69 ver 1 122280739886245413 การซื้อ 1 (ยศ)",
+        "alloc": 116,
+        "expectedRoas": 0.71
+      },
+      {
+        "name": "03.** คุณโหน่ง OLMYPLUS 3 Noedtiting ผู้สูงอายุสามารถกินได้หรอ 6/12/68 ลุมยิง 17/06/69 ver 1 122280739886245413 การสนทนา 1 (ยศ)",
+        "alloc": 116,
+        "expectedRoas": 0.85
+      }
+    ],
+    "actual": null,
+    "savedAt": "2026-07-02T06:43:13.702Z"
+  },
+  {
+    "id": "adsai_h_เจ้าขุน_2026-07-02",
+    "label": "เจ้าขุน 2/7/69",
+    "product": "เจ้าขุน",
+    "date": "2026-07-02",
+    "thaiDate": "2/7/69",
+    "totalBudget": 20000,
+    "predictedRoas": 2.11,
+    "predictedRevenue": 42142,
+    "campaigns": [
+      {
+        "name": "-001.ผู้เชี่ยวชาญ เจ้าขุน MJ3 ทำงาน เครียด นอนดึก 17/6/69 ver1 สนทนา (เทสส่วนตัว)",
+        "alloc": 1055,
+        "expectedRoas": 1.9
+      },
+      {
+        "name": "-002.ผู้ใช้จริง40+อาชีพ เจ้าขุน2 Noedit พอเราดื่มกาแฟ 29/6/69 ver2 สนทนา",
+        "alloc": 464,
+        "expectedRoas": 1.1
+      },
+      {
+        "name": "*01.ผู้เชี่ยวชาญ เจ้าขุน MJ5 Noedit ชีวิตรักสะดุด 24/6/69 ver1 สนทนา (เทสส่วนตัว)",
+        "alloc": 420,
+        "expectedRoas": 1.03
+      },
+      {
+        "name": "*02.ผู้ใช้จริง40+อาชีพ เจ้าขุน1 Noedit ตอนแรกผมคิดว่า 24/6/69 ver1 สนทนา",
+        "alloc": 402,
+        "expectedRoas": 1
+      },
+      {
+        "name": "04.ผู้เชี่ยวชาญ เจ้าขุน MJ2 ต้นฉบับ กาแฟเจ้าขุน ไม่ใช่กาแฟทั่วไป 26/5/69 รุมยิง 7/6/69 ver1 122100439569330415 การซื้อ",
+        "alloc": 957,
+        "expectedRoas": 1.78
+      },
+      {
+        "name": "**002. ผู้เชี่ยวชาญ เจ้าขุน MJ 1 Noedit กาแฟเจ้าขุน 30/5/69 ลุมยิง 11/06/69 ver1 122101179657330415 การซื้อ 2 (ยศ)",
+        "alloc": 790,
+        "expectedRoas": 1.57
+      },
+      {
+        "name": "10.ผู้เชี่ยวชาญ เจ้าขุน MJ 1 Noedit กาแฟเจ้าขุน 30/5/69 รุมยิง 7/6/69 ver1 122101179657330415 การซื้อ (เทสส่วนตัว)",
+        "alloc": 587,
+        "expectedRoas": 1.29
+      },
+      {
+        "name": "-01.ผู้เชี่ยวชาญ เจ้าขุน MJ3 ต้นฉบับ ลองเปิดใจ 09/6/69 ver1 122102537427330415 สนทนา (เทสส่วนตัว)",
+        "alloc": 121,
+        "expectedRoas": 1.06
+      },
+      {
+        "name": "003.* ผู้เชี่ยวชาญ เจ้าขุน MJ 1 Noedit กาแฟเจ้าขุน 30/5/69 ลุมยิง 26/06/69 ver1 122101179657330415 การสนทนา 1 (ยศ)",
+        "alloc": 121,
+        "expectedRoas": 0.83
+      },
+      {
+        "name": "002.* ผู้เชี่ยวชาญ เจ้าขุน MJ 1 Noedit กาแฟเจ้าขุน 30/5/69 ลุมยิง 26/06/69 ver1 122101179657330415 การซื้อ 2 (ยศ)",
+        "alloc": 121,
+        "expectedRoas": 0.89
+      },
+      {
+        "name": "4.ผู้เชี่ยวชาญ เจ้าขุน MJ 4 Noedit เจ้าขุนมี อย 27/06/69 ver2  การสนทนา",
+        "alloc": 1160,
+        "expectedRoas": 2.03
+      },
+      {
+        "name": "2.ผู้ใช้จริง40+อาชีพ เจ้าขุน 4 Noedit สวัสดีครับผมชื้อสุภาพ 25/06/69 ver2  การสนทนา",
+        "alloc": 974,
+        "expectedRoas": 1.8
+      },
+      {
+        "name": "04. ผู้ใช้จริง40+อาชีพ เจ้าขุน 1 Noedit สวัสดีครับผมชื่อ 19/06/69 ลุมยิง 22/06/69  ver1 122114699091346056 การสนทนา 2 (ยศ)",
+        "alloc": 496,
+        "expectedRoas": 1.15
+      },
+      {
+        "name": "1.ผู้ใช้จริง40+อาชีพ เจ้าขุน 4 Noedit สวัสดีครับผมชื้อสุภาพ 25/06/69 ver1  การสนทนา",
+        "alloc": 121,
+        "expectedRoas": 0.46
+      },
+      {
+        "name": "2.ผู้เชี่ยวชาญ เจ้าขุน MJ 4 Noedit เปลี่ยนมา 7 ที่ ไม่ดีซักหน 23/06/69 ver2  การสนทนา",
+        "alloc": 2913,
+        "expectedRoas": 3.74
+      },
+      {
+        "name": "4.ผู้เชี่ยวชาญ เจ้าขุน MJ ยำคลิป 1-3 Noedit วัย 40 การันตี 30/06/69 ver2  การสนทนา",
+        "alloc": 947,
+        "expectedRoas": 1.77
+      },
+      {
+        "name": "3.ผู้เชี่ยวชาญ เจ้าขุน MJ ยำคลิป 1-3 Noedit เข้มข้น กลมกล่อม 30/06/69 ver2 การสนทนา",
+        "alloc": 947,
+        "expectedRoas": 1.77
+      },
+      {
+        "name": "02. ผู้ใช้จริง40+อาชีพ เจ้าขุน 2 Noedit สวัสดีครับ ผมนายมณฑลอายุ 20/06/69 ลุมยิง 25/06/69 ver1 122115103701346056 การซื้อ 2 (ยศ)",
+        "alloc": 792,
+        "expectedRoas": 1.57
+      },
+      {
+        "name": "1.ผู้เชี่ยวชาญ เจ้าขุน MJ 4 Noedit ไม่ต้องไปถึงเสม็ด 23/06/69 ver2  การสนทนา",
+        "alloc": 121,
+        "expectedRoas": 2.2
+      },
+      {
+        "name": "04. ผู้ใช้จริง40+อาชีพ เจ้าขุน 2 Noedit สวัสดีครับ ผมนายมณฑลอายุ 20/06/69 ลุมยิง 25/06/69 ver1 122115103701346056 การสนทนา 2 (ยศ)",
+        "alloc": 121,
+        "expectedRoas": 0.38
+      },
+      {
+        "name": "01. ผู้ใช้จริง40+อาชีพ เจ้าขุน 2 Noedit สวัสดีครับ ผมนายมณฑลอายุ 20/06/69 ลุมยิง 25/06/69 ver1 122115103701346056 การซื้อ 1 (ยศ)",
+        "alloc": 121,
+        "expectedRoas": 0.47
+      },
+      {
+        "name": "03. ผู้ใช้จริง40+อาชีพ เจ้าขุน 2 Noedit สวัสดีครับ ผมนายมณฑลอายุ 20/06/69 ลุมยิง 25/06/69 ver1 122115103701346056 การสนทนา 1 (ยศ)",
+        "alloc": 121,
+        "expectedRoas": 0.47
+      },
+      {
+        "name": "01. ผู้เชี่ยวชาญ เจ้าขุน MJ 1  Noedit ปลุกมะเขือเผาของคุณ 23/05/69 ลุมยิง 28/05/69 ver1 122104689765314313 การซื้อ 1 (ยศ)",
+        "alloc": 2565,
+        "expectedRoas": 3.44
+      },
+      {
+        "name": "(02.)** ผู้เชี่ยวชาญ เจ้าขุน MJ 3 Noedit แค่พกซองเดียว 03/06/69 ลุมยิง 11/06/69 ver1 122106972873314313  การซื้อ 2 (ยศ)",
+        "alloc": 1607,
+        "expectedRoas": 2.52
+      },
+      {
+        "name": "*001.ผู้เชี่ยวชาญ เจ้าขุน MJ 2 Noedit วิธีทานง่ายมาก 22/6/69 ver1 122104138953330415 สนทนา (เทสส่วนตัว)",
+        "alloc": 717,
+        "expectedRoas": 1.47
+      },
+      {
+        "name": "**001. ผู้เชี่ยวชาญ เจ้าขุน MJ4 Noedit ไม่ต้องไปถึงเสม็ด 13/6/69  ลุมยิง 22/06/69 ver1 122103026499330415 การซื้อ 1 (ยศ)",
+        "alloc": 121,
+        "expectedRoas": 0.59
+      },
+      {
+        "name": "*01.ผู้เชี่ยวชาญ เจ้าขุน MJ3 Noedit เสียชาติเกิด 23/6/69 ver1 สนทนา (เทสส่วนตัว)",
+        "alloc": 121,
+        "expectedRoas": 0.83
+      }
+    ],
+    "actual": null,
+    "savedAt": "2026-07-02T03:34:29.150Z"
+  },
+  {
+    "id": "adsai_h_Olymplus_2026-07-01",
+    "label": "Olymplus 1/7/69",
+    "product": "Olymplus",
+    "date": "2026-07-01",
+    "thaiDate": "1/7/69",
+    "totalBudget": 8000,
+    "predictedRoas": 2.89,
+    "predictedRevenue": 23129,
+    "campaigns": [
+      {
+        "name": "**(004.) คุณโหน่ง OLMYPLUS 3 Noedtiting ผู้สูงอายุสามารถกินได้หรอ 6/12/68 ลุมยิง 18/05/69 ver 1 122280739886245413 การสนทนา 2 (ยศ)",
+        "alloc": 790,
+        "expectedRoas": 2.11
+      },
+      {
+        "name": "01.** คุณโหน่ง OLMYPLUS 3 Noedtiting ผู้สูงอายุสามารถกินได้หรอ 6/12/68 ลุมยิง 17/06/69 ver 1 122280739886245413 การซื้อ 1 (ยศ)",
+        "alloc": 77,
+        "expectedRoas": 0.84
+      },
+      {
+        "name": "03.** คุณโหน่ง OLMYPLUS 3 Noedtiting ผู้สูงอายุสามารถกินได้หรอ 6/12/68 ลุมยิง 17/06/69 ver 1 122280739886245413 การสนทนา 1 (ยศ)",
+        "alloc": 77,
+        "expectedRoas": 0.92
+      }
+    ],
+    "actual": {
+      "spend": 8232,
+      "revenue": 15713,
+      "campaigns": []
+    },
+    "savedAt": "2026-07-01T04:47:54.191Z",
+    "analysis": "<div style=\"background:#fef2f2;border:1.5px solid #fecaca;border-radius:9px;padding:10px 13px;margin-bottom:8px\"><div style=\"font-size:.73rem;font-weight:800;color:#dc2626;margin-bottom:5px\">⚠️ ต่ำกว่าที่คาด</div><div style=\"display:flex;gap:16px;flex-wrap:wrap\"><div><div style=\"font-size:.58rem;color:#64748b\">ROAS จริง</div><div style=\"font-size:.82rem;font-weight:800;color:#d97706;font-family:Rajdhani,sans-serif\">1.91×</div></div><div><div style=\"font-size:.58rem;color:#64748b\">คาดไว้</div><div style=\"font-size:.82rem;font-weight:800;color:#7c3aed;font-family:Rajdhani,sans-serif\">2.89×</div></div><div><div style=\"font-size:.58rem;color:#64748b\">ต่าง</div><div style=\"font-size:.82rem;font-weight:800;color:#dc2626;font-family:Rajdhani,sans-serif\">-0.98× (-34%)</div></div></div></div><div style=\"display:flex;flex-direction:column;gap:6px;margin-bottom:8px\"><div style=\"background:#fef2f2;border:1px solid #fecaca;border-radius:7px;padding:8px 11px;display:flex;gap:8px\"><span>📉</span><div><div style=\"font-size:.7rem;font-weight:700;color:#dc2626\">ROAS ต่ำกว่าคาด 34%</div><div style=\"font-size:.66rem;color:#475569;line-height:1.4\">Ad Fatigue, Audience Overlap สูง หรือ Competition ดัน CPM ขึ้น</div></div></div><div style=\"background:#fffbeb;border:1px solid #fde68a;border-radius:7px;padding:8px 11px;display:flex;gap:8px\"><span>🛒</span><div><div style=\"font-size:.7rem;font-weight:700;color:#d97706\">Revenue ต่ำกว่าคาด ฿7K</div><div style=\"font-size:.66rem;color:#475569;line-height:1.4\">Conversion Rate ต่ำ — ตรวจ Landing Page / ราคา / Checkout</div></div></div></div><div style=\"background:#f8fafc;border:1px solid #e2e8f0;border-radius:7px;padding:8px 11px;font-size:.68rem;color:#334155\"><b style=\"color:#0f172a\">💡 ปรับแผนวันนี้:</b> ลดงบรวม 10–20% และหยุดแคมเปญ ROAS ต่ำสุด</div>"
+  },
+  {
+    "id": "adsai_h_เจ้าขุน_2026-07-01",
+    "label": "เจ้าขุน 1/7/69",
+    "product": "เจ้าขุน",
+    "date": "2026-07-01",
+    "thaiDate": "1/7/69",
+    "totalBudget": 20000,
+    "predictedRoas": 2.88,
+    "predictedRevenue": 57596,
+    "campaigns": [
+      {
+        "name": "1.ผู้เชี่ยวชาญ เจ้าขุน MJ 4 Noedit ไม่ต้องไปถึงเสม็ด 23/06/69 ver2  การสนทนา",
+        "alloc": 4412,
+        "expectedRoas": 5.47
+      },
+      {
+        "name": "4.ผู้เชี่ยวชาญ เจ้าขุน MJ 4 Noedit เจ้าขุนมี อย 27/06/69 ver2  การสนทนา",
+        "alloc": 2258,
+        "expectedRoas": 3.5
+      },
+      {
+        "name": "**002. ผู้เชี่ยวชาญ เจ้าขุน MJ 1 Noedit กาแฟเจ้าขุน 30/5/69 ลุมยิง 11/06/69 ver1 122101179657330415 การซื้อ 2 (ยศ)",
+        "alloc": 1591,
+        "expectedRoas": 2.77
+      },
+      {
+        "name": "-002.ผู้ใช้จริง40+อาชีพ เจ้าขุน2 Noedit พอเราดื่มกาแฟ 29/6/69 ver2 สนทนา",
+        "alloc": 1541,
+        "expectedRoas": 2.71
+      },
+      {
+        "name": "04.ผู้เชี่ยวชาญ เจ้าขุน MJ2 ต้นฉบับ กาแฟเจ้าขุน ไม่ใช่กาแฟทั่วไป 26/5/69 รุมยิง 7/6/69 ver1 122100439569330415 การซื้อ",
+        "alloc": 1350,
+        "expectedRoas": 2.48
+      },
+      {
+        "name": "01. ผู้เชี่ยวชาญ เจ้าขุน MJ 1  Noedit ปลุกมะเขือเผาของคุณ 23/05/69 ลุมยิง 28/05/69 ver1 122104689765314313 การซื้อ 1 (ยศ)",
+        "alloc": 1199,
+        "expectedRoas": 2.29
+      },
+      {
+        "name": "*01.ผู้เชี่ยวชาญ เจ้าขุน MJ5 Noedit ชีวิตรักสะดุด 24/6/69 ver1 สนทนา (เทสส่วนตัว)",
+        "alloc": 1160,
+        "expectedRoas": 2.24
+      },
+      {
+        "name": "-001.ผู้เชี่ยวชาญ เจ้าขุน MJ3 ทำงาน เครียด นอนดึก 17/6/69 ver1 สนทนา (เทสส่วนตัว)",
+        "alloc": 969,
+        "expectedRoas": 1.99
+      },
+      {
+        "name": "*001.ผู้เชี่ยวชาญ เจ้าขุน MJ 2 Noedit วิธีทานง่ายมาก 22/6/69 ver1 122104138953330415 สนทนา (เทสส่วนตัว)",
+        "alloc": 882,
+        "expectedRoas": 1.87
+      },
+      {
+        "name": "2.ผู้เชี่ยวชาญ เจ้าขุน MJ 4 Noedit เปลี่ยนมา 7 ที่ ไม่ดีซักหน 23/06/69 ver2  การสนทนา",
+        "alloc": 858,
+        "expectedRoas": 1.84
+      },
+      {
+        "name": "10.ผู้เชี่ยวชาญ เจ้าขุน MJ 1 Noedit กาแฟเจ้าขุน 30/5/69 รุมยิง 7/6/69 ver1 122101179657330415 การซื้อ (เทสส่วนตัว)",
+        "alloc": 765,
+        "expectedRoas": 1.7
+      },
+      {
+        "name": "04. ผู้ใช้จริง40+อาชีพ เจ้าขุน 1 Noedit สวัสดีครับผมชื่อ 19/06/69 ลุมยิง 22/06/69  ver1 122114699091346056 การสนทนา 2 (ยศ)",
+        "alloc": 426,
+        "expectedRoas": 1.15
+      },
+      {
+        "name": "*02.ผู้ใช้จริง40+อาชีพ เจ้าขุน1 Noedit ตอนแรกผมคิดว่า 24/6/69 ver1 สนทนา",
+        "alloc": 345,
+        "expectedRoas": 1
+      },
+      {
+        "name": "(02.)** ผู้เชี่ยวชาญ เจ้าขุน MJ 3 Noedit แค่พกซองเดียว 03/06/69 ลุมยิง 11/06/69 ver1 122106972873314313  การซื้อ 2 (ยศ)",
+        "alloc": 104,
+        "expectedRoas": 2.31
+      },
+      {
+        "name": "**001. ผู้เชี่ยวชาญ เจ้าขุน MJ4 Noedit ไม่ต้องไปถึงเสม็ด 13/6/69  ลุมยิง 22/06/69 ver1 122103026499330415 การซื้อ 1 (ยศ)",
+        "alloc": 104,
+        "expectedRoas": 0.62
+      },
+      {
+        "name": "02. ผู้ใช้จริง40+อาชีพ เจ้าขุน 2 Noedit สวัสดีครับ ผมนายมณฑลอายุ 20/06/69 ลุมยิง 25/06/69 ver1 122115103701346056 การซื้อ 2 (ยศ)",
+        "alloc": 104,
+        "expectedRoas": 0.73
+      },
+      {
+        "name": "-01.ผู้เชี่ยวชาญ เจ้าขุน MJ3 ต้นฉบับ ลองเปิดใจ 09/6/69 ver1 122102537427330415 สนทนา (เทสส่วนตัว)",
+        "alloc": 104,
+        "expectedRoas": 1.08
+      },
+      {
+        "name": "2.ผู้ใช้จริง40+อาชีพ เจ้าขุน 4 Noedit สวัสดีครับผมชื้อสุภาพ 25/06/69 ver2  การสนทนา",
+        "alloc": 104,
+        "expectedRoas": 0.73
+      },
+      {
+        "name": "04. ผู้ใช้จริง40+อาชีพ เจ้าขุน 2 Noedit สวัสดีครับ ผมนายมณฑลอายุ 20/06/69 ลุมยิง 25/06/69 ver1 122115103701346056 การสนทนา 2 (ยศ)",
+        "alloc": 104,
+        "expectedRoas": 0.38
+      },
+      {
+        "name": "*01.ผู้เชี่ยวชาญ เจ้าขุน MJ3 Noedit เสียชาติเกิด 23/6/69 ver1 สนทนา (เทสส่วนตัว)",
+        "alloc": 104,
+        "expectedRoas": 0.83
+      },
+      {
+        "name": "003.* ผู้เชี่ยวชาญ เจ้าขุน MJ 1 Noedit กาแฟเจ้าขุน 30/5/69 ลุมยิง 26/06/69 ver1 122101179657330415 การสนทนา 1 (ยศ)",
+        "alloc": 104,
+        "expectedRoas": 0.84
+      },
+      {
+        "name": "1.ผู้ใช้จริง40+อาชีพ เจ้าขุน 4 Noedit สวัสดีครับผมชื้อสุภาพ 25/06/69 ver1  การสนทนา",
+        "alloc": 104,
+        "expectedRoas": 0.46
+      },
+      {
+        "name": "01. ผู้ใช้จริง40+อาชีพ เจ้าขุน 2 Noedit สวัสดีครับ ผมนายมณฑลอายุ 20/06/69 ลุมยิง 25/06/69 ver1 122115103701346056 การซื้อ 1 (ยศ)",
+        "alloc": 104,
+        "expectedRoas": 0.47
+      },
+      {
+        "name": "03. ผู้ใช้จริง40+อาชีพ เจ้าขุน 2 Noedit สวัสดีครับ ผมนายมณฑลอายุ 20/06/69 ลุมยิง 25/06/69 ver1 122115103701346056 การสนทนา 1 (ยศ)",
+        "alloc": 104,
+        "expectedRoas": 0.47
+      },
+      {
+        "name": "002.* ผู้เชี่ยวชาญ เจ้าขุน MJ 1 Noedit กาแฟเจ้าขุน 30/5/69 ลุมยิง 26/06/69 ver1 122101179657330415 การซื้อ 2 (ยศ)",
+        "alloc": 104,
+        "expectedRoas": 0.89
+      }
+    ],
+    "actual": {
+      "spend": 15019,
+      "revenue": 34650
+    },
+    "savedAt": "2026-07-01T02:59:20.950Z",
+    "analysis": "<div style=\"background:#fef2f2;border:1.5px solid #fecaca;border-radius:9px;padding:10px 13px;margin-bottom:8px\"><div style=\"font-size:.73rem;font-weight:800;color:#dc2626;margin-bottom:5px\">⚠️ ต่ำกว่าที่คาด</div><div style=\"display:flex;gap:16px;flex-wrap:wrap\"><div><div style=\"font-size:.58rem;color:#64748b\">ROAS จริง</div><div style=\"font-size:.82rem;font-weight:800;color:#16a34a;font-family:Rajdhani,sans-serif\">2.31×</div></div><div><div style=\"font-size:.58rem;color:#64748b\">คาดไว้</div><div style=\"font-size:.82rem;font-weight:800;color:#7c3aed;font-family:Rajdhani,sans-serif\">2.88×</div></div><div><div style=\"font-size:.58rem;color:#64748b\">ต่าง</div><div style=\"font-size:.82rem;font-weight:800;color:#dc2626;font-family:Rajdhani,sans-serif\">-0.57× (-20%)</div></div></div></div><div style=\"display:flex;flex-direction:column;gap:6px;margin-bottom:8px\"><div style=\"background:#eff6ff;border:1px solid #bfdbfe;border-radius:7px;padding:8px 11px;display:flex;gap:8px\"><span>💰</span><div><div style=\"font-size:.7rem;font-weight:700;color:#0369a1\">งบจริงต่ำกว่าแผน ฿5K</div><div style=\"font-size:.66rem;color:#475569;line-height:1.4\">Delivery ต่ำหรือ Audience แคบ</div></div></div><div style=\"background:#fef2f2;border:1px solid #fecaca;border-radius:7px;padding:8px 11px;display:flex;gap:8px\"><span>📉</span><div><div style=\"font-size:.7rem;font-weight:700;color:#dc2626\">ROAS ต่ำกว่าคาด 20%</div><div style=\"font-size:.66rem;color:#475569;line-height:1.4\">Ad Fatigue, Audience Overlap สูง หรือ Competition ดัน CPM ขึ้น</div></div></div><div style=\"background:#fffbeb;border:1px solid #fde68a;border-radius:7px;padding:8px 11px;display:flex;gap:8px\"><span>🛒</span><div><div style=\"font-size:.7rem;font-weight:700;color:#d97706\">Revenue ต่ำกว่าคาด ฿23K</div><div style=\"font-size:.66rem;color:#475569;line-height:1.4\">Conversion Rate ต่ำ — ตรวจ Landing Page / ราคา / Checkout</div></div></div></div><div style=\"background:#f8fafc;border:1px solid #e2e8f0;border-radius:7px;padding:8px 11px;font-size:.68rem;color:#334155\"><b style=\"color:#0f172a\">💡 ปรับแผนวันนี้:</b> ลดงบรวม 10–20% และหยุดแคมเปญ ROAS ต่ำสุด</div>"
+  }
+]
