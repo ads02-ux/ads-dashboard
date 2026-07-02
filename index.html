@@ -839,7 +839,8 @@ var FB_ACCOUNTS_META=[
   {name:'AkSharma',id:'act_1913444239051318',configKey:'FB_GID_AkSharma'},
   {name:'RatanaDhami',id:'act_1008617083642899',configKey:'FB_GID_RatanaDhami'},
   {name:'SteinarrPippin',id:'act_826904805849438',configKey:'FB_GID_SteinarrPippin'},
-  {name:'WinstonCobbe',id:'act_991802753735658',configKey:'FB_GID_WinstonCobbe'}
+  {name:'WinstonCobbe',id:'act_991802753735658',configKey:'FB_GID_WinstonCobbe'},
+  {name:'MootjarinTakpho',id:'act_623330351870998',configKey:'FB_GID_MootjarinTakpho'}
 ];
 var WEBAPP_URL='https://script.google.com/macros/s/AKfycbz6l9ORjUnzbHrMgr0uNVPNOq3i2DeYAFAGKS0kErL-W6bFY4jBN1EMNxDvxPYuCYoc/exec';
 // ─── Facebook API (Real-time) ─────────────────────────────────────────────────
@@ -856,6 +857,7 @@ var FB_TOKENS={
   'RatanaDhami':'EAAOHeqVdn5kBRZBXebBpLNgqCSybXZAXcblWWZCNvhZAZBm2IlgOQ4zYmYi0n8NuUeZBSpH4JY7xSASSDGrgPlPCTITzE3ZAZA4sYfoeybBiSW9ySCNpTfxTEOH7DBT1ZCWSQckj5SGpZCO0yjY0Kdh45dsxTmPB55uF0QLrWhzlBHbUv7l4RujOBfn72QrCd8iwZDZD',
   'SteinarrPippin':'EAAOHeqVdn5kBRZBXebBpLNgqCSybXZAXcblWWZCNvhZAZBm2IlgOQ4zYmYi0n8NuUeZBSpH4JY7xSASSDGrgPlPCTITzE3ZAZA4sYfoeybBiSW9ySCNpTfxTEOH7DBT1ZCWSQckj5SGpZCO0yjY0Kdh45dsxTmPB55uF0QLrWhzlBHbUv7l4RujOBfn72QrCd8iwZDZD',
   'WinstonCobbe':'EAAOHeqVdn5kBRZBXebBpLNgqCSybXZAXcblWWZCNvhZAZBm2IlgOQ4zYmYi0n8NuUeZBSpH4JY7xSASSDGrgPlPCTITzE3ZAZA4sYfoeybBiSW9ySCNpTfxTEOH7DBT1ZCWSQckj5SGpZCO0yjY0Kdh45dsxTmPB55uF0QLrWhzlBHbUv7l4RujOBfn72QrCd8iwZDZD'
+  'MootjarinTakpho':'EAAOHeqVdn5kBRZBXebBpLNgqCSybXZAXcblWWZCNvhZAZBm2IlgOQ4zYmYi0n8NuUeZBSpH4JY7xSASSDGrgPlPCTITzE3ZAZA4sYfoeybBiSW9ySCNpTfxTEOH7DBT1ZCWSQckj5SGpZCO0yjY0Kdh45dsxTmPB55uF0QLrWhzlBHbUv7l4RujOBfn72QrCd8iwZDZD',
 };
 var FB_API='https://graph.facebook.com/v20.0/';
 var s1data=null,s2data=null,loadedCount=0,chartInst={},modalCharts={};
@@ -2695,6 +2697,16 @@ var FB_HIERARCHY=[
           {
             displayName:'ขุนแผนสะกดรัก Account',
             adAccounts:[]
+          }
+        ]
+      },
+      {
+        name:'ขุนแผน ดูแลผู้ชาย',
+        phone:'02-124-3032',
+        accounts:[
+          {
+            displayName:'Mootjarin Takpho',
+            adAccounts:['act_623330351870998']
           }
         ]
       }
