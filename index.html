@@ -5051,36 +5051,7 @@ function _renderTrackHistory(el){
             _fCamps=_rArr.map(function(c){return{name:c.name,alloc:Math.round((p.totalBudget||0)*c.spend/_rT),expectedRoas:p.predictedRoas};});
           }
         }
-        if(_fCamps&&_fCamps.length){
-          h+='<div style="font-size:.64rem;font-weight:700;color:#5b21b6;margin-bottom:8px">💰 งบจริงต่อแคมเปญ</div>';
-          h+='<div style="display:flex;flex-direction:column;gap:5px;margin-bottom:10px">';
-          _fCamps.forEach(function(c,ci){
-            var cSafe=safeId+'_c'+ci;
-            var nm=c.name.length>34?c.name.slice(0,32)+'…':c.name;
-            h+='<div style="background:#f5f3ff;border-radius:9px;padding:9px 11px">';
-            h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">';
-            h+='<div style="font-size:.64rem;color:#334155;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;margin-right:8px" title="'+c.name+'">'+nm+'</div>';
-            h+='<div style="font-size:.6rem;color:#7c3aed;white-space:nowrap">แนะนำ <b>'+_aiFmtB(c.alloc)+'</b></div>';
-            h+='</div>';
-            h+='<div style="display:flex;gap:6px;align-items:center">';
-            h+='<select id="traa-'+cSafe+'" data-sid="'+safeId+'" data-n="'+_fCamps.length+'" data-alloc="'+Math.round(c.alloc)+'" data-campname="'+encodeURIComponent(c.name)+'" onchange="_trkActChange(this)" style="border:1.5px solid #c4b5fd;border-radius:6px;padding:4px 5px;font-size:.66rem;color:#334155;font-family:inherit;background:#fff;flex-shrink:0">';
-            h+='<option value="inc">▲ เพิ่ม</option>';
-            h+='<option value="same" selected>➡ คงเดิม</option>';
-            h+='<option value="dec">▼ ลด</option>';
-            h+='<option value="off">⏸ ปิด</option>';
-            h+='</select>';
-            h+='<input id="trc-'+cSafe+'" type="number" data-sid="'+safeId+'" data-n="'+_fCamps.length+'" oninput="_trkSumCamp(this)" placeholder="'+Math.round(c.alloc)+'" style="border:1.5px solid #c4b5fd;border-radius:6px;padding:5px 8px;font-size:.76rem;flex:1;min-width:0;box-sizing:border-box;font-family:inherit;text-align:right">';
-            h+='</div>';
-            h+='</div>';
-          });
-          h+='</div>';
-          h+='<div style="display:flex;align-items:center;justify-content:space-between;background:#ede9fe;border-radius:8px;padding:7px 12px;margin-bottom:10px">';
-          h+='<div style="font-size:.66rem;font-weight:700;color:#5b21b6">รวมงบจริงทั้งหมด</div>';
-          h+='<div id="trs-disp-'+safeId+'" style="font-size:.85rem;font-weight:800;color:#7c3aed;font-family:Rajdhani,sans-serif">฿—</div>';
-          h+='</div>';
-        } else {
-          h+='<div style="margin-bottom:10px"><div style="font-size:.64rem;color:#7c3aed;font-weight:700;margin-bottom:4px">งบจริงที่ใช้ (฿)</div><input id="trs-'+safeId+'" type="number" placeholder="เช่น 12000" style="'+iSt+'"></div>';
-        }
+        h+='<div style="margin-bottom:10px"><div style="font-size:.64rem;color:#7c3aed;font-weight:700;margin-bottom:4px">💸 ยอดยิงรวม (฿)</div><input id="trs-'+safeId+'" type="number" placeholder="เช่น 12000" style="'+iSt+'"></div>';
         h+='<div style="margin-bottom:10px"><div style="font-size:.64rem;color:#7c3aed;font-weight:700;margin-bottom:4px">Revenue จริง (฿)</div><input id="trr-'+safeId+'" type="number" placeholder="เช่น 28000" style="'+iSt+'"></div>';
         h+='<button data-pid="'+p.id+'" onclick="_adsaiTrackAnalyze(this.dataset.pid)" style="background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;border:none;border-radius:9px;padding:9px;font-size:.76rem;font-weight:700;cursor:pointer;width:100%;font-family:inherit">🤖 วิเคราะห์ผลลัพธ์</button>';
         h+='</div>';
