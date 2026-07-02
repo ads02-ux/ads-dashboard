@@ -6492,8 +6492,8 @@ function _renderFBInner(el){
     if(canToggle){
       var esc=(campName||'').replace(/'/g,"\\'");
       var bgOn='#059669',bgOff='rgba(148,163,184,.3)',bgAmb='#d97706';
-      var togBg=active?(delivering===false?bgAmb:bgOn):bgOff;
-      var kx=active?'13px':'1px';
+      var togBg=active&&delivering!==false?bgOn:bgOff;
+      var kx=(active&&delivering!==false)?'13px':'1px';
       toggleHtml='<div onclick="event.stopPropagation();fbToggleStatus(\''+esc+'\',\''+campId+'\','+active+')" '
         +'style="width:28px;height:16px;border-radius:8px;background:'+togBg+';position:relative;display:inline-block;cursor:pointer;flex-shrink:0;transition:.2s;vertical-align:middle">'
         +'<div style="position:absolute;top:2px;left:'+kx+';width:12px;height:12px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(15,23,42,.2)"></div>'
@@ -6519,7 +6519,7 @@ function _renderFBInner(el){
     } else if(es==='ADSET_PAUSED'){
       label='ชุดโฆษณาปิด'; color='#64748b'; bg='rgba(100,116,139,.1)'; pill=true;
     } else if(active&&delivering===false){
-      label='ไม่ส่ง'; color='#d97706'; bg='rgba(217,119,6,.12)'; pill=true;
+      label='ปิดอยู่'; color='#64748b';
     } else if(active){
       label='ใช้งานอยู่'; color='#059669';
     } else if(isAdSet){
