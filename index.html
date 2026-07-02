@@ -13,7 +13,7 @@
   --blue:#1565c0;--blue2:#1976d2;--blue-glow:#1976d240;--blue-faint:#1976d212;
   --purple:#6d28d9;--purple2:#7c3aed;--purple-glow:#7c3aed35;
   --cyan:#0284c7;--cyan2:#0369a1;--cyan-glow:#0284c730;
-  --gold:#b45309;--gold2:#92400e;--gold-glow:#b4530930;h
+  --gold:#b45309;--gold2:#92400e;--gold-glow:#b4530930;
   --green:#059669;--red:#dc2626;--amber:#d97706;
   --text:#0f172a;--text2:#1e3a5f;--text3:#64748b;
   --rank-s:#b45309;--rank-a:#dc2626;--rank-b:#7c3aed;--rank-c:#1976d2;--rank-d:#059669;--rank-e:#64748b;
@@ -4458,12 +4458,26 @@ function _adsaiCalcBudget(){
   var expRev=active.reduce(function(s,c){return s+(c._alloc*(c.avg||c.roas));},0);
   var expRoas=totalBudget>0?Math.round(expRev/totalBudget*100)/100:0;
   var hitTarget=expRoas>=targetRoas;
+  // ── AI Calibration: ปรับ prediction จากประวัติความแม่น ──
+  var _calHistory=_adsaiGetAccuracy(prodName),_calFactor=1,_calN=0;
+  if(_calHistory.length>=2){
+    var _calR=_calHistory.slice(-5);
+    var _calS=_calR.reduce(function(s,x){return s+x.roasAcc;},0);
+    _calFactor=Math.round(_calS/_calR.length*100)/100;
+    _calN=_calR.length;
+    // clamp: ปรับได้สูงสุด ±40%
+    _calFactor=Math.min(1.4,Math.max(0.6,_calFactor));
+    expRoas=Math.round(expRoas*_calFactor*100)/100;
+    expRev=expRev*_calFactor;
+    hitTarget=expRoas>=targetRoas;
+  }
 
   var h2='';
   // Result header
   var hCol=hitTarget?'#16a34a':'#d97706';
   h2+='<div style="background:'+(hitTarget?'#f0fdf4':'#fffbeb')+';border:1.5px solid '+(hitTarget?'#86efac':'#fde68a')+';border-radius:10px;padding:12px 16px;margin-bottom:12px">';
   h2+='<div style="font-size:.72rem;font-weight:700;color:'+hCol+';margin-bottom:4px">'+(hitTarget?'✅ คาด ROAS บรรลุ Target '+targetRoas+'×':'⚠️ คาด ROAS '+expRoas.toFixed(2)+'× ยังต่ำกว่า Target '+targetRoas+'×')+'</div>';
+  if(_calN>=2) h2+='<div style="display:inline-block;background:#ede9fe;color:#7c3aed;border-radius:20px;padding:2px 10px;font-size:.62rem;font-weight:700;margin-bottom:6px">🧠 AI เรียนรู้จาก '+_calN+' ครั้ง: '+(_calFactor>=1?'+':'')+Math.round((_calFactor-1)*100)+'% calibration</div>';
   h2+='<div style="display:flex;gap:16px;flex-wrap:wrap">';
   [{l:'งบวันนี้',v:_aiFmtB(totalBudget),c:'#0f172a'},
    {l:'คาด Revenue',v:_aiFmtB(expRev),c:'#1565c0'},
@@ -4600,11 +4614,38 @@ function _adsaiCalcBudget(){
 }
 // ═══ Plan History Functions ═══════════════════════════════════════════════════
 function _adsaiToggleForm(btn){var d=document.getElementById(btn.dataset.fid);if(d)d.style.display=d.style.display==='none'?'block':'none';}
+function _trkSumCamp(el){
+  var sid=el.dataset.sid,n=parseInt(el.dataset.n)||0;
+  var total=0;
+  for(var i=0;i<n;i++){var e=document.getElementById('trc-'+sid+'_c'+i);if(e)total+=parseFloat(e.value)||0;}
+  var disp=document.getElementById('trs-disp-'+sid);
+  if(disp)disp.textContent=total>0?'฿'+Math.round(total).toLocaleString():'฿—';
+}
+function _trkActChange(sel){
+  var sid=sel.dataset.sid,ci=sel.id.replace('traa-'+sid+'_c','');
+  var inp=document.getElementById('trc-'+sid+'_c'+ci);
+  if(!inp) return;
+  if(sel.value==='off'){inp.value='0';inp.disabled=true;inp.style.opacity='0.4';}
+  else{inp.disabled=false;inp.style.opacity='1';if(sel.value==='same'&&(!inp.value||parseFloat(inp.value)===0))inp.value=sel.dataset.alloc||'';}
+  _trkSumCamp(inp);
+}
 function _adsaiGetHistory(){
   try{return JSON.parse(localStorage.getItem('adsai_history')||'[]');}catch(e){return[];}
 }
 function _adsaiSaveHistory(arr){
   try{localStorage.setItem('adsai_history',JSON.stringify(arr));}catch(e){}
+}
+function _adsaiGetAccuracy(prod){
+  try{return JSON.parse(localStorage.getItem('adsai_acc_'+(prod||'ALL'))||'[]');}catch(e){return[];}
+}
+function _adsaiSaveAccuracy(prod,entry){
+  var k=prod||'ALL';
+  var arr=_adsaiGetAccuracy(k);
+  arr=arr.filter(function(x){return x.date!==entry.date;});
+  arr.push(entry);
+  if(arr.length>30)arr=arr.slice(arr.length-30);
+  arr.sort(function(a,b){return a.date<b.date?-1:1;});
+  try{localStorage.setItem('adsai_acc_'+k,JSON.stringify(arr));}catch(e){}
 }
 function _adsaiSavePlan(){
   var plan=window._adsaiPendingPlan;
@@ -4748,6 +4789,7 @@ function _adsaiRetroAnalyze(planId){
   h+='</div>';
 
   plan.analysis=h;
+  _adsaiSaveAccuracy(plan.product,{date:plan.date,predictedRoas:predRoas,actualRoas:actualRoas,roasAcc:predRoas>0?Math.round(actualRoas/predRoas*100)/100:1,predictedRev:predRev,actualRev:actualRev,revAcc:predRev>0?Math.round(actualRev/predRev*100)/100:1});
   _adsaiSaveHistory(arr);
   _adsaiRenderHistory();
 }
@@ -4787,6 +4829,47 @@ function _renderTrackHistory(el){
       h+='</div>';
     });
     h+='</div>';
+
+    // AI Learning Panel
+    var _accByProd={};
+    arr.forEach(function(p){
+      if(p.actual&&p.actual.spend>0&&p.predictedRoas>0){
+        var aR=p.actual.revenue/p.actual.spend;
+        var acc=Math.round(aR/p.predictedRoas*100)/100;
+        if(!_accByProd[p.product])_accByProd[p.product]=[];
+        _accByProd[p.product].push({date:p.date,roasAcc:acc,label:p.label});
+      }
+    });
+    var _prodKeys=Object.keys(_accByProd);
+    if(_prodKeys.length){
+      var _allAccArr=[];
+      _prodKeys.forEach(function(pr){_accByProd[pr].forEach(function(x){_allAccArr.push(x.roasAcc);});});
+      var _overallPct=Math.round(_allAccArr.reduce(function(s,x){return s+x;},0)/_allAccArr.length*100);
+      var _calNote=_overallPct>=105?'AI มักทำนาย ROAS ต่ำกว่าจริง (+'+(_overallPct-100)+'%) — กำลังปรับสูงขึ้น':
+                  _overallPct<=95?'AI มักทำนาย ROAS สูงกว่าจริง ('+(100-_overallPct)+'%) — กำลังปรับลดลง':
+                  'AI ทำนายแม่นมาก (เฉลี่ย '+_overallPct+'%) 🎯';
+      h+='<div style="background:#f5f3ff;border:1.5px solid #c4b5fd;border-radius:14px;padding:16px 20px;margin-bottom:20px">';
+      h+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">';
+      h+='<div style="font-size:.8rem;font-weight:800;color:#5b21b6">🧠 AI เรียนรู้จากผลจริง</div>';
+      h+='<div style="font-size:.62rem;color:#7c3aed;background:#ede9fe;border-radius:20px;padding:2px 10px;font-weight:700">'+_allAccArr.length+' ผลที่ใช้</div>';
+      h+='</div>';
+      h+='<div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px">';
+      _prodKeys.forEach(function(prod){
+        var pArr=_accByProd[prod];
+        var avgAcc=Math.round(pArr.reduce(function(s,x){return s+x.roasAcc;},0)/pArr.length*100);
+        var trend=pArr.length>=2?(pArr[pArr.length-1].roasAcc>=pArr[pArr.length-2].roasAcc?'▲':'▼'):'—';
+        var trendC=trend==='▲'?'#16a34a':trend==='▼'?'#dc2626':'#94a3b8';
+        var accC=avgAcc>=95?'#16a34a':avgAcc>=80?'#d97706':'#dc2626';
+        h+='<div style="background:#fff;border:1px solid #e9d5ff;border-radius:10px;padding:10px 14px;min-width:110px">';
+        h+='<div style="font-size:.63rem;font-weight:700;color:#7c3aed;margin-bottom:4px">'+prod+'</div>';
+        h+='<div style="font-size:1.15rem;font-weight:800;color:'+accC+';font-family:Rajdhani,sans-serif">'+avgAcc+'%</div>';
+        h+='<div style="font-size:.58rem;color:#94a3b8">'+pArr.length+' ครั้ง <span style="color:'+trendC+'">'+trend+'</span></div>';
+        h+='</div>';
+      });
+      h+='</div>';
+      h+='<div style="font-size:.67rem;color:#5b21b6;background:#ede9fe;border-radius:8px;padding:8px 12px">💡 '+_calNote+'</div>';
+      h+='</div>';
+    }
 
     // Plan cards
     h+='<div style="display:flex;flex-direction:column;gap:12px">';
@@ -4834,11 +4917,54 @@ function _renderTrackHistory(el){
       } else if(!hasActual){
         // Input form (hidden by default)
         h+='<div id="trk-form-'+safeId+'" style="display:none;margin-top:4px">';
-        h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">';
         var iSt='border:1.5px solid #c4b5fd;border-radius:8px;padding:7px 10px;font-size:.76rem;width:100%;box-sizing:border-box;font-family:inherit';
-        h+='<div><div style="font-size:.64rem;color:#7c3aed;font-weight:700;margin-bottom:4px">งบจริงที่ใช้ (฿)</div><input id="trs-'+safeId+'" type="number" placeholder="เช่น 12000" style="'+iSt+'"></div>';
-        h+='<div><div style="font-size:.64rem;color:#7c3aed;font-weight:700;margin-bottom:4px">Revenue จริง (฿)</div><input id="trr-'+safeId+'" type="number" placeholder="เช่น 28000" style="'+iSt+'"></div>';
-        h+='</div>';
+        // Per-campaign spend inputs — reconstruct from fbDataMap if plan has no campaigns
+        var _fCamps=p.campaigns&&p.campaigns.length?p.campaigns:null;
+        if(!_fCamps&&p.product&&typeof FB_HIERARCHY!=='undefined'&&typeof fbDataMap!=='undefined'){
+          var _rC={};
+          FB_HIERARCHY.forEach(function(prod){
+            if(prod.product!==p.product) return;
+            prod.pages.forEach(function(pg){pg.accounts.forEach(function(ac){ac.adAccounts.forEach(function(an){
+              (fbDataMap[an]||[]).forEach(function(r){if(r.campaign){_rC[r.campaign]=(_rC[r.campaign]||0)+(r.spend||0);}});
+            });});});
+          });
+          var _rArr=Object.keys(_rC).filter(function(k){return _rC[k]>0;}).map(function(k){return{name:k,spend:_rC[k]};});
+          _rArr.sort(function(a,b){return b.spend-a.spend;});
+          if(_rArr.length){
+            var _rT=_rArr.reduce(function(s,x){return s+x.spend;},0);
+            _fCamps=_rArr.map(function(c){return{name:c.name,alloc:Math.round((p.totalBudget||0)*c.spend/_rT),expectedRoas:p.predictedRoas};});
+          }
+        }
+        if(_fCamps&&_fCamps.length){
+          h+='<div style="font-size:.64rem;font-weight:700;color:#5b21b6;margin-bottom:8px">💰 งบจริงต่อแคมเปญ</div>';
+          h+='<div style="display:flex;flex-direction:column;gap:5px;margin-bottom:10px">';
+          _fCamps.forEach(function(c,ci){
+            var cSafe=safeId+'_c'+ci;
+            var nm=c.name.length>34?c.name.slice(0,32)+'…':c.name;
+            h+='<div style="background:#f5f3ff;border-radius:9px;padding:9px 11px">';
+            h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">';
+            h+='<div style="font-size:.64rem;color:#334155;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;margin-right:8px" title="'+c.name+'">'+nm+'</div>';
+            h+='<div style="font-size:.6rem;color:#7c3aed;white-space:nowrap">แนะนำ <b>'+_aiFmtB(c.alloc)+'</b></div>';
+            h+='</div>';
+            h+='<div style="display:flex;gap:6px;align-items:center">';
+            h+='<select id="traa-'+cSafe+'" data-sid="'+safeId+'" data-n="'+_fCamps.length+'" data-alloc="'+Math.round(c.alloc)+'" data-campname="'+encodeURIComponent(c.name)+'" onchange="_trkActChange(this)" style="border:1.5px solid #c4b5fd;border-radius:6px;padding:4px 5px;font-size:.66rem;color:#334155;font-family:inherit;background:#fff;flex-shrink:0">';
+            h+='<option value="inc">▲ เพิ่ม</option>';
+            h+='<option value="same" selected>➡ คงเดิม</option>';
+            h+='<option value="dec">▼ ลด</option>';
+            h+='<option value="off">⏸ ปิด</option>';
+            h+='</select>';
+            h+='<input id="trc-'+cSafe+'" type="number" data-sid="'+safeId+'" data-n="'+_fCamps.length+'" oninput="_trkSumCamp(this)" placeholder="'+Math.round(c.alloc)+'" style="border:1.5px solid #c4b5fd;border-radius:6px;padding:5px 8px;font-size:.76rem;flex:1;min-width:0;box-sizing:border-box;font-family:inherit;text-align:right">';
+            h+='</div>';
+            h+='</div>';
+          });
+          h+='<div style="display:flex;align-items:center;justify-content:space-between;background:#ede9fe;border-radius:8px;padding:7px 12px;margin-bottom:10px">';
+          h+='<div style="font-size:.66rem;font-weight:700;color:#5b21b6">รวมงบจริงทั้งหมด</div>';
+          h+='<div id="trs-disp-'+safeId+'" style="font-size:.85rem;font-weight:800;color:#7c3aed;font-family:Rajdhani,sans-serif">฿—</div>';
+          h+='</div>';
+        } else {
+          h+='<div style="margin-bottom:10px"><div style="font-size:.64rem;color:#7c3aed;font-weight:700;margin-bottom:4px">งบจริงที่ใช้ (฿)</div><input id="trs-'+safeId+'" type="number" placeholder="เช่น 12000" style="'+iSt+'"></div>';
+        }
+        h+='<div style="margin-bottom:10px"><div style="font-size:.64rem;color:#7c3aed;font-weight:700;margin-bottom:4px">Revenue จริง (฿)</div><input id="trr-'+safeId+'" type="number" placeholder="เช่น 28000" style="'+iSt+'"></div>';
         h+='<button data-pid="'+p.id+'" onclick="_adsaiTrackAnalyze(this.dataset.pid)" style="background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;border:none;border-radius:9px;padding:9px;font-size:.76rem;font-weight:700;cursor:pointer;width:100%;font-family:inherit">🤖 วิเคราะห์ผลลัพธ์</button>';
         h+='</div>';
         h+='<button data-fid="trk-form-'+safeId+'" onclick="_adsaiToggleForm(this)" style="background:#7c3aed;color:#fff;border:none;border-radius:9px;padding:8px 16px;font-size:.74rem;font-weight:700;cursor:pointer;font-family:inherit;width:100%">📝 ใส่ผลจริงเมื่อวาน</button>';
@@ -4856,14 +4982,31 @@ function _adsaiTrackAnalyze(planId){
   var plan=arr.find(function(p){return p.id===planId;});
   if(!plan) return;
   var safeId=planId.replace(/[^a-zA-Z0-9]/g,'_');
-  var sEl=document.getElementById('trs-'+safeId);
   var rEl=document.getElementById('trr-'+safeId);
-  var actualSpend=sEl?parseFloat(sEl.value)||0:0;
+  var actualSpend=0;var _campActuals=[];
+  var _hasCampInp=document.getElementById('trc-'+safeId+'_c0');
+  if(_hasCampInp){
+    var _ci=0;
+    while(document.getElementById('trc-'+safeId+'_c'+_ci)){
+      var _cInp=document.getElementById('trc-'+safeId+'_c'+_ci);
+      var _cSel=document.getElementById('traa-'+safeId+'_c'+_ci);
+      var _cName=_cSel?(decodeURIComponent(_cSel.dataset.campname||'')||('แคมเปญ '+(_ci+1))):'แคมเปญ '+(_ci+1);
+      var _cAlloc=_cSel?parseFloat(_cSel.dataset.alloc)||0:0;
+      var _v=_cInp?parseFloat(_cInp.value)||0:0;
+      var _act=_cSel?_cSel.value:'same';
+      actualSpend+=_v;
+      _campActuals.push({name:_cName,alloc:_cAlloc,actual:_v,action:_act,diff:_v-_cAlloc,diffPct:_cAlloc>0?Math.round((_v-_cAlloc)/_cAlloc*100):0});
+      _ci++;
+    }
+  } else {
+    var sEl=document.getElementById('trs-'+safeId);
+    actualSpend=sEl?parseFloat(sEl.value)||0:0;
+  }
   var actualRev=rEl?parseFloat(rEl.value)||0:0;
   if(actualSpend<=0||actualRev<=0){
     var fe=document.getElementById('trk-form-'+safeId);if(fe)fe.style.display='block';return;
   }
-  plan.actual={spend:actualSpend,revenue:actualRev};
+  plan.actual={spend:actualSpend,revenue:actualRev,campaigns:_campActuals};
   // Run analysis (reuse logic)
   var actualRoas=Math.round(actualRev/actualSpend*100)/100;
   var predRoas=plan.predictedRoas||0;
@@ -4895,12 +5038,36 @@ function _adsaiTrackAnalyze(planId){
   h+='<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px">';
   reasons.forEach(function(r){h+='<div style="background:'+r.bg+';border:1px solid '+r.bd+';border-radius:7px;padding:8px 11px;display:flex;gap:8px"><span>'+r.icon+'</span><div><div style="font-size:.7rem;font-weight:700;color:'+r.col+'">'+r.t+'</div><div style="font-size:.66rem;color:#475569;line-height:1.4">'+r.d+'</div></div></div>';});
   h+='</div>';
+  // Per-campaign comparison if available
+  if(_campActuals&&_campActuals.length){
+    h+='<div style="margin-bottom:8px">';
+    h+='<div style="font-size:.66rem;font-weight:700;color:#0f172a;margin-bottom:5px">📋 งบต่อแคมเปญ (แนะนำ vs จริง)</div>';
+    h+='<div style="display:flex;flex-direction:column;gap:4px">';
+    var _aMap={'inc':'▲ เพิ่ม','same':'➡ คงเดิม','dec':'▼ ลด','off':'⏸ ปิด'};
+    var _aCol={'inc':'#16a34a','same':'#0369a1','dec':'#d97706','off':'#dc2626'};
+    _campActuals.forEach(function(c){
+      var nm=c.name.length>28?c.name.slice(0,26)+'…':c.name;
+      var aLabel=_aMap[c.action||'same'];
+      var aColor=_aCol[c.action||'same'];
+      var isOff=c.action==='off';
+      var dc=c.diff>0?'#0369a1':c.diff<0?'#dc2626':'#64748b';
+      var ds=isOff?'—':((c.diff>=0?'+':'')+Math.round(c.diff).toLocaleString()+'฿');
+      h+='<div style="display:grid;grid-template-columns:1fr 65px 60px 52px;gap:5px;align-items:center;font-size:.62rem;background:'+(isOff?'#fef2f2':'#f8fafc')+';border-radius:6px;padding:5px 9px">';
+      h+='<span style="color:'+(isOff?'#94a3b8':'#334155')+';overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-decoration:'+(isOff?'line-through':'none')+'">'+nm+'</span>';
+      h+='<span style="color:'+aColor+';font-weight:700;text-align:center;font-size:.58rem">'+aLabel+'</span>';
+      h+='<span style="color:'+(isOff?'#94a3b8':'#0f172a')+';font-weight:700;text-align:right">'+(isOff?'฿0':_aiFmtB(c.actual))+'</span>';
+      h+='<span style="color:'+dc+';font-weight:700;text-align:right;font-size:.6rem">'+ds+'</span>';
+      h+='</div>';
+    });
+    h+='</div></div>';
+  }
   h+='<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:7px;padding:8px 11px;font-size:.68rem;color:#334155"><b style="color:#0f172a">💡 ปรับแผนวันนี้:</b> ';
   if(actualRoas<predRoas*0.85) h+='ลดงบรวม 10–20% และหยุดแคมเปญ ROAS ต่ำสุด';
   else if(actualRoas>=predRoas*1.1) h+='เพิ่มงบ Top campaigns อีก 20–30% ได้เลย';
   else h+='คง allocation เดิม โฟกัสทดสอบ Creative ใหม่';
   h+='</div>';
   plan.analysis=h;
+  _adsaiSaveAccuracy(plan.product,{date:plan.date,predictedRoas:predRoas,actualRoas:actualRoas,roasAcc:predRoas>0?Math.round(actualRoas/predRoas*100)/100:1,predictedRev:predRev,actualRev:actualRev,revAcc:predRev>0?Math.round(actualRev/predRev*100)/100:1});
   _adsaiSaveHistory(arr);
   _renderTrackHistory(document.getElementById('trackView'));
 }
@@ -5065,18 +5232,21 @@ function _renderDailyTask(el){
       h+='<div style="background:#f8fafc;border-radius:8px;padding:8px 10px;margin-bottom:8px">';
       h+='<div style="font-size:.6rem;font-weight:800;color:#94a3b8;letter-spacing:.5px;margin-bottom:5px">งานประจำ</div>';
       _rt.forEach(function(r,ri){
-        var _isOff=(_lt2==='หยุด'||_lt2==='ออกกอง');var rSafe=r.replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        var rSafe=r.replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        var _isOff=(_lt2==='หยุด'||_lt2==='ออกกอง');
         h+='<div style="font-size:.68rem;color:'+(_isOff?'#cbd5e1':'#475569')+';display:flex;align-items:center;gap:5px;padding:3px 0;flex-wrap:wrap">';
         h+='<span style="color:'+(_isOff?'#e2e8f0':col)+';font-size:.6rem;flex-shrink:0">◆</span>';
         h+='<span style="flex:1">'+rSafe+'</span>';
         if(_lt2){
           h+='<span style="font-size:.58rem;color:#94a3b8">('+_lt2+')</span>';
-          analysts.forEach(function(oan,oai){
-            if(oan!==an&&_isOff){
-              h+='<button data-to="'+oan+'" data-from="'+an+'" data-ri="'+ri+'" onclick="var b=this;_taskTakeOver(b.dataset.to,b.dataset.from,+b.dataset.ri)" ';
-              h+='style="font-size:.55rem;background:'+colors[oai]+';color:#fff;border:none;border-radius:4px;padding:2px 7px;cursor:pointer;font-family:inherit;font-weight:700;flex-shrink:0">'+oan+' รับ</button>';
-            }
-          });
+          if(_isOff){
+            analysts.forEach(function(oan,oai){
+              if(oan!==an){
+                h+='<button data-to="'+oan+'" data-from="'+an+'" data-ri="'+ri+'" onclick="var b=this;_taskTakeOver(b.dataset.to,b.dataset.from,+b.dataset.ri)" ';
+                h+='style="font-size:.55rem;background:'+colors[oai]+';color:#fff;border:none;border-radius:4px;padding:2px 7px;cursor:pointer;font-family:inherit;font-weight:700;flex-shrink:0">'+oan+' รับ</button>';
+              }
+            });
+          }
         }
         h+='</div>';
       });
