@@ -5748,14 +5748,22 @@ function _leaveToggle(an,ds){
   var cycle=(an==='มอส')?['','หยุด','WFH','ออกกอง','ลาพักร้อน']:['','หยุด','WFH','ออกกอง'];
   var cur=data[an][ds]||'';
   var next=cycle[(cycle.indexOf(cur)+1)%cycle.length];
-  // ── rule: ปาย & บุ๋มบิ๋ม ห้ามหยุดทับกัน (ยกเว้น 1 คน WFH) ──
+  // ── rule: ปาย & บุ๋มบิ๋ม หยุดซ้ำกันได้แค่ 1 วัน ──
   if(next==='หยุด'&&(an==='ปาย'||an==='บุ๋มบิ๋ม')){
     var pair=an==='ปาย'?'บุ๋มบิ๋ม':'ปาย';
     var pairVal=data[pair]&&data[pair][ds];
     if(pairVal==='หยุด'){
-      // ข้าม 'หยุด' → ไป 'WFH' แทน
-      next='WFH';
-      setTimeout(function(){alert('⚠️ '+pair+' หยุดวันนี้อยู่แล้ว — '+an+' จึงเปลี่ยนเป็น WFH แทน (ปายกับบุ๋มบิ๋มห้ามหยุดทับกัน)');},100);
+      // นับวันที่ทั้งคู่หยุดซ้ำกันในข้อมูลทั้งหมด (ยกเว้นวันนี้ที่กำลังจะเพิ่ม)
+      var overlapCount=0;
+      var payData=data['ปาย']||{};
+      var bumData=data['บุ๋มบิ๋ม']||{};
+      Object.keys(an==='ปาย'?bumData:payData).forEach(function(d){
+        if(d!==ds&&(an==='ปาย'?bumData[d]==='หยุด'&&(payData[d]||'')==='หยุด':payData[d]==='หยุด'&&(bumData[d]||'')==='หยุด'))overlapCount++;
+      });
+      if(overlapCount>=1){
+        next='WFH';
+        setTimeout(function(){alert('⚠️ หยุดซ้ำกับ'+pair+'ได้แค่ 1 วัน — '+an+' จึงเปลี่ยนเป็น WFH แทน');},100);
+      }
     }
   }
   if(!next)delete data[an][ds]; else data[an][ds]=next;
