@@ -182,15 +182,12 @@ body{font-family:Sarabun,sans-serif;background:#eef2f7;color:#0f172a;-webkit-pri
     var dtStr=now.toLocaleDateString('th-TH',{year:'numeric',month:'long',day:'numeric'})+' เวลา '+now.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});
     var eName=(data.name||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
-    var has3=dailyAll.length>=3;
-    var has7=dailyAll.length>=7;
-    var has30=dailyAll.length>=30;
     var periodBar='';
-    if(has3||has7||has30){
+    if(dailyAll.length>0){
       periodBar='<div class="period-bar no-print">';
-      if(has3)periodBar+='<button class="ptab'+(periodDays===3?' active':'')+'" onclick="switchPeriod(3)">📅 3 วัน</button>';
-      if(has7)periodBar+='<button class="ptab'+(periodDays===7?' active':'')+'" onclick="switchPeriod(7)">📅 7 วัน</button>';
-      if(has30)periodBar+='<button class="ptab'+(periodDays===30?' active':'')+'" onclick="switchPeriod(30)">📅 30 วัน</button>';
+      periodBar+='<button class="ptab'+(periodDays===3?' active':'')+'" onclick="switchPeriod(3)">📅 3 วัน</button>';
+      periodBar+='<button class="ptab'+(periodDays===7?' active':'')+'" onclick="switchPeriod(7)">📅 7 วัน</button>';
+      periodBar+='<button class="ptab'+(periodDays===30?' active':'')+'" onclick="switchPeriod(30)">📅 30 วัน</button>';
       periodBar+='</div>';
     }
 
