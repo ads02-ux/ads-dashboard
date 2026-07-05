@@ -678,6 +678,9 @@ function disableCommInputs(){
     <div class="sb-item" onclick="sbNav(this,'top')">
       <span class="sb-icon">🔄</span><span>รีเฟรชข้อมูล</span><span class="sb-badge live">Auto</span>
     </div>
+    <div class="sb-item" id="sb-usermgmt" onclick="switchView('usermgmt',this)">
+      <span class="sb-icon">👥</span><span>จัดการผู้ใช้</span>
+    </div>
     <div class="sb-item" style="opacity:.4;cursor:not-allowed">
       <span class="sb-icon">📤</span><span>Export</span><span class="sb-badge">Soon</span>
     </div>
@@ -833,6 +836,7 @@ function disableCommInputs(){
 <div id="trackView" style="display:none;padding:28px 32px"></div>
 <div id="leaveView" style="display:none;padding:20px 24px"></div>
 <div id="dailyTaskView" style="display:none;padding:20px 24px"></div>
+<div id="userMgmtView" style="display:none;padding:28px 32px"></div>
 
 <script>
 var SHEET_ID='1Qs57OO-tDRAsikHulJSKw6S0tfbMqgUuNbmiRHN1POI',GID_S1='997286503',GID_S2='1472268717',GID_COMM='1688902080',GID_CONFIG='388205387',REFRESH=1800;
@@ -2205,6 +2209,7 @@ function renderCommission(){
 
 function switchView(view,el){
   var _db=document.querySelector('.dbar');if(_db)_db.style.display='none';
+  var _umv=document.getElementById('userMgmtView');if(_umv)_umv.style.display='none';
   if(sessionStorage.getItem('rb_auth')==='hr'&&view!=='commission')return;
   document.querySelectorAll('.sb-item').forEach(function(i){i.classList.remove('active');});
   if(el)el.classList.add('active');
@@ -2237,6 +2242,10 @@ function switchView(view,el){
   } else if(view==='dailytask'){
     mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var trv2=document.getElementById('trackView');if(trv2)trv2.style.display='none';var lv2=document.getElementById('leaveView');if(lv2)lv2.style.display='none';
     var dtv=document.getElementById('dailyTaskView');if(dtv){dtv.style.display='block';_renderDailyTaskInit(dtv);}
+    window.scrollTo({top:0,behavior:'smooth'});
+  } else if(view==='usermgmt'){
+    mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var trv2=document.getElementById('trackView');if(trv2)trv2.style.display='none';var lv2=document.getElementById('leaveView');if(lv2)lv2.style.display='none';
+    var umv=document.getElementById('userMgmtView');if(umv){umv.style.display='block';_renderUserMgmt(umv);}
     window.scrollTo({top:0,behavior:'smooth'});
   } else if(view==='benchmark'){
     mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='block';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var trv2=document.getElementById('trackView');if(trv2)trv2.style.display='none';var lv2=document.getElementById('leaveView');if(lv2)lv2.style.display='none';
@@ -6932,6 +6941,106 @@ loadJSONP(GID_CONFIG,'A2:B','cb_config');
 setTimeout(function(){if(loadedCount<2){showBanner('⚠ โหลด Sheet ช้า — แสดงข้อมูลที่มี');loadedCount=2;buildProductFilter();buildAnalystFilter();renderAll();}},15000);
 var countdown=REFRESH;
 setInterval(function(){countdown--;var el=document.getElementById('cdwn');if(el){var m=Math.floor(countdown/60),s=countdown%60;el.textContent='Refresh in '+(m>0?m+'m '+pad2(s)+'s':s+'s');}if(countdown<=0)location.reload();},1000);
+
+// ── User Management ──
+function _renderUserMgmt(el){
+  var stored=JSON.parse(localStorage.getItem('rb_users')||'[]');
+  var analysts=[];
+  (s1data||[]).forEach(function(r){if(r.analyst&&analysts.indexOf(r.analyst)<0)analysts.push(r.analyst);});
+  
+  // Merge sheet analysts with stored users
+  analysts.forEach(function(name){
+    if(!stored.find(function(u){return u.name===name;})){
+      stored.push({name:name,role:'Hunter',active:true,note:''});
+    }
+  });
+  // Always ensure admin exists
+  if(!stored.find(function(u){return u.name==='Rich Biotech';})){
+    stored.unshift({name:'Rich Biotech',role:'Admin',active:true,note:'ระบบ'});
+  }
+  localStorage.setItem('rb_users',JSON.stringify(stored));
+
+  var roleBadge=function(r){
+    var map={'Admin':'background:#4f46e5;color:#fff','Hunter':'background:#0f172a;color:#e2e8f0','HR':'background:#059669;color:#fff','Viewer':'background:#64748b;color:#fff'};
+    return '<span style="display:inline-block;padding:2px 10px;border-radius:20px;font-size:.62rem;font-weight:700;font-family:Rajdhani,sans-serif;letter-spacing:.5px;'+(map[r]||'background:#e2e8f0;color:#475569')+'">'+r+'</span>';
+  };
+  var rows='';
+  stored.forEach(function(u,i){
+    var av=u.name.slice(0,2).toUpperCase();
+    var savedPhoto=localStorage.getItem('rb_photo_'+u.name);
+    var avEl=savedPhoto
+      ?'<div style="width:38px;height:38px;border-radius:50%;overflow:hidden;border:2px solid rgba(25,118,210,.2);flex-shrink:0"><img src="'+savedPhoto+'" style="width:100%;height:100%;object-fit:cover"></div>'
+      :'<div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#1e3a5f,#3730a3);border:2px solid rgba(25,118,210,.2);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800;color:#e0e7ff;flex-shrink:0">'+av+'</div>';
+    var statusDot=u.active
+      ?'<span style="display:inline-flex;align-items:center;gap:5px;font-size:.7rem;color:#059669;font-weight:600"><span style="width:7px;height:7px;border-radius:50%;background:#10b981;display:inline-block"></span>Active</span>'
+      :'<span style="display:inline-flex;align-items:center;gap:5px;font-size:.7rem;color:#94a3b8;font-weight:600"><span style="width:7px;height:7px;border-radius:50%;background:#94a3b8;display:inline-block"></span>Inactive</span>';
+    var roleOpts=['Admin','Hunter','HR','Viewer'].map(function(r){return '<option value="'+r+'"'+(u.role===r?' selected':'')+'>'+r+'</option>';}).join('');
+    rows+='<tr style="border-bottom:1px solid #f1f5f9;transition:.15s" onmouseover="this.style.background='#f8faff'" onmouseout="this.style.background='transparent'">'
+      +'<td style="padding:12px 16px"><div style="display:flex;align-items:center;gap:10px">'+avEl+'<div><div style="font-weight:700;color:#0f172a;font-size:.82rem">'+u.name+'</div><div style="font-size:.67rem;color:#94a3b8;margin-top:1px">'+(u.note||'—')+'</div></div></div></td>'
+      +'<td style="padding:12px 16px">'+roleBadge(u.role)+'</td>'
+      +'<td style="padding:12px 16px">'+statusDot+'</td>'
+      +'<td style="padding:12px 16px">'
+        +'<select onchange="_umSetRole('+i+',this.value)" style="border:1px solid #e2e8f0;border-radius:6px;padding:4px 8px;font-size:.72rem;font-family:inherit;color:#475569;background:#fff;cursor:pointer">'+roleOpts+'</select>'
+      +'</td>'
+      +'<td style="padding:12px 16px;text-align:right">'
+        +(u.name==='Rich Biotech'?'<span style="font-size:.68rem;color:#94a3b8">—</span>'
+        :'<button onclick="_umToggleActive('+i+')" style="background:'+(u.active?'#fef2f2':'#f0fdf4')+';color:'+(u.active?'#dc2626':'#059669')+';border:1px solid '+(u.active?'#fecaca':'#bbf7d0')+';border-radius:6px;padding:4px 12px;font-size:.7rem;font-weight:700;cursor:pointer;font-family:inherit">'+(u.active?'ระงับ':'เปิดใช้')+'</button>')
+        +'&nbsp;<button onclick="_umDelete('+i+')" style="background:#f8faff;color:#94a3b8;border:1px solid #e2e8f0;border-radius:6px;padding:4px 8px;font-size:.7rem;cursor:pointer;font-family:inherit" title="ลบ">✕</button>'
+      +'</td>'
+    +'</tr>';
+  });
+
+  el.innerHTML=''
+    +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px">'
+      +'<div><div style="font-family:Rajdhani,sans-serif;font-size:1.2rem;font-weight:700;color:#0f172a;letter-spacing:1.5px;text-transform:uppercase;display:flex;align-items:center;gap:10px"><span style="width:4px;height:22px;background:linear-gradient(#4f46e5,#7c3aed);border-radius:2px;display:inline-block"></span>จัดการผู้ใช้</div>'
+        +'<div style="font-size:.72rem;color:#94a3b8;margin-top:3px">ผู้ใช้ทั้งหมด '+stored.length+' คน</div></div>'
+      +'<button onclick="_umShowAdd()" style="background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:Rajdhani,sans-serif;letter-spacing:.5px;box-shadow:0 4px 12px rgba(79,70,229,.3)">+ เพิ่มผู้ใช้</button>'
+    +'</div>'
+    +'<div id="umAddForm" style="display:none;background:#f8faff;border:1.5px solid #e2e8f0;border-radius:12px;padding:18px 20px;margin-bottom:20px">'
+      +'<div style="font-size:.75rem;font-weight:700;color:#4f46e5;margin-bottom:12px;font-family:Rajdhani,sans-serif;letter-spacing:1px">เพิ่มผู้ใช้ใหม่</div>'
+      +'<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">'
+        +'<div><label style="font-size:.67rem;color:#64748b;display:block;margin-bottom:4px">ชื่อ</label><input id="umNewName" placeholder="ชื่อผู้ใช้" style="border:1.5px solid #e2e8f0;border-radius:7px;padding:7px 12px;font-size:.8rem;font-family:inherit;width:160px;color:#0f172a;outline:none"></div>'
+        +'<div><label style="font-size:.67rem;color:#64748b;display:block;margin-bottom:4px">Role</label><select id="umNewRole" style="border:1.5px solid #e2e8f0;border-radius:7px;padding:7px 12px;font-size:.8rem;font-family:inherit;color:#0f172a;background:#fff"><option>Hunter</option><option>Admin</option><option>HR</option><option>Viewer</option></select></div>'
+        +'<div><label style="font-size:.67rem;color:#64748b;display:block;margin-bottom:4px">หมายเหตุ</label><input id="umNewNote" placeholder="หมายเหตุ (optional)" style="border:1.5px solid #e2e8f0;border-radius:7px;padding:7px 12px;font-size:.8rem;font-family:inherit;width:180px;color:#0f172a;outline:none"></div>'
+        +'<button onclick="_umAddUser()" style="background:#4f46e5;color:#fff;border:none;border-radius:7px;padding:8px 18px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit">บันทึก</button>'
+        +'<button onclick="document.getElementById('umAddForm').style.display='none'" style="background:#f1f5f9;color:#64748b;border:1px solid #e2e8f0;border-radius:7px;padding:8px 14px;font-size:.78rem;cursor:pointer;font-family:inherit">ยกเลิก</button>'
+      +'</div>'
+    +'</div>'
+    +'<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;overflow:hidden;box-shadow:0 2px 12px rgba(15,23,42,.05)">'
+      +'<div style="padding:14px 18px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between">'
+        +'<span style="font-family:Rajdhani,sans-serif;font-size:.75rem;font-weight:700;color:#64748b;letter-spacing:1.5px;text-transform:uppercase">รายชื่อผู้ใช้</span>'
+      +'</div>'
+      +'<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:.78rem">'
+        +'<thead><tr style="background:#f8faff">'
+          +'<th style="padding:10px 16px;text-align:left;font-size:.65rem;font-weight:700;color:#94a3b8;letter-spacing:1px;text-transform:uppercase;white-space:nowrap">ผู้ใช้</th>'
+          +'<th style="padding:10px 16px;text-align:left;font-size:.65rem;font-weight:700;color:#94a3b8;letter-spacing:1px;text-transform:uppercase">Role</th>'
+          +'<th style="padding:10px 16px;text-align:left;font-size:.65rem;font-weight:700;color:#94a3b8;letter-spacing:1px;text-transform:uppercase">สถานะ</th>'
+          +'<th style="padding:10px 16px;text-align:left;font-size:.65rem;font-weight:700;color:#94a3b8;letter-spacing:1px;text-transform:uppercase">เปลี่ยน Role</th>'
+          +'<th style="padding:10px 16px;text-align:right;font-size:.65rem;font-weight:700;color:#94a3b8;letter-spacing:1px;text-transform:uppercase">จัดการ</th>'
+        +'</tr></thead>'
+        +'<tbody>'+rows+'</tbody>'
+      +'</table></div>'
+    +'</div>';
+}
+
+window._umShowAdd=function(){document.getElementById('umAddForm').style.display='block';document.getElementById('umNewName').focus();};
+window._umGetUsers=function(){return JSON.parse(localStorage.getItem('rb_users')||'[]');};
+window._umSave=function(u){localStorage.setItem('rb_users',JSON.stringify(u));};
+window._umRefresh=function(){var el=document.getElementById('userMgmtView');if(el)_renderUserMgmt(el);};
+window._umSetRole=function(i,v){var u=_umGetUsers();if(u[i]){u[i].role=v;_umSave(u);}};
+window._umToggleActive=function(i){var u=_umGetUsers();if(u[i]){u[i].active=!u[i].active;_umSave(u);_umRefresh();}};
+window._umDelete=function(i){var u=_umGetUsers();if(u[i]&&u[i].name!=='Rich Biotech'){if(confirm('ลบ "'+u[i].name+'" ออกจากระบบ?')){u.splice(i,1);_umSave(u);_umRefresh();}}};
+window._umAddUser=function(){
+  var n=(document.getElementById('umNewName').value||'').trim();
+  var r=document.getElementById('umNewRole').value;
+  var nt=(document.getElementById('umNewNote').value||'').trim();
+  if(!n){alert('กรุณากรอกชื่อผู้ใช้');return;}
+  var u=_umGetUsers();
+  if(u.find(function(x){return x.name===n;})){alert('"'+n+'" มีในระบบแล้ว');return;}
+  u.push({name:n,role:r,active:true,note:nt});
+  _umSave(u);_umRefresh();
+  document.getElementById('umAddForm').style.display='none';
+};
 </script>
 </div><!-- /content-wrap -->
 </body>
