@@ -6398,11 +6398,24 @@ function _ceoBuildChart(dailyArr){
 function _openCEOReport(){
   var camp=window._fbDetailCamp;
   if(!camp||!camp._agg){alert('ยังไม่มีข้อมูลแคมเปญ — กรุณาเลือกแคมเปญก่อน');return;}
-  var payload={name:camp.name,days:camp.days||7,agg:camp._agg,daily:camp._daily||[]};
+  // Build full daily array from ALL available rows (not limited to current period filter)
+  var allCampRows=(fbDataMap[fbAccount]||[]).filter(function(r){return r.campaign===camp.name;});
+  var byDateAll={};
+  allCampRows.forEach(function(r){
+    if(!r.date)return;
+    if(!byDateAll[r.date])byDateAll[r.date]={date:r.date,spend:0,revenue:0,impressions:0,clicks:0,purchases:0,conversations:0};
+    var b=byDateAll[r.date];
+    b.spend+=r.spend;b.revenue+=r.revenue;b.impressions+=r.impressions;
+    b.clicks+=r.clicks;b.purchases+=r.purchases;b.conversations+=r.conversations;
+  });
+  var allDailyArr=Object.keys(byDateAll).sort().map(function(d){return byDateAll[d];});
+  var payload={name:camp.name,days:camp.days||7,agg:camp._agg,daily:allDailyArr};
   var encoded;
   try{encoded=btoa(unescape(encodeURIComponent(JSON.stringify(payload))));}
   catch(e){alert('ไม่สามารถสร้างลิงก์ได้: '+e.message);return;}
-  var url='https://ads02-ux.github.io/ads-dashboard/ceo-report.html#'+encoded;
+  // Build URL relative to current page so it works on any host
+  var base=(window.location.href.split('#')[0]).replace(/\/[^\/]*$/, '/');
+  var url=base+'ceo-report.html#'+encoded;
   var w=window.open(url,'_blank');
   if(!w){
     prompt('กรุณา copy ลิงก์นี้ส่งให้ CEO:',url);
