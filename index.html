@@ -561,7 +561,7 @@ function pwCheck(){
   var found=users.find(function(u){return u.password===v;});
   if(found){
     sessionStorage.setItem('rb_username',found.name);
-    sessionStorage.setItem('rb_access',found.access);
+    sessionStorage.setItem('rb_access',Array.isArray(found.access)?JSON.stringify(found.access):found.access);
     sessionStorage.setItem('rb_perm',found.perm||'edit');
     if(found.access==='all'){
       sessionStorage.setItem('rb_auth','1');
@@ -606,15 +606,14 @@ var _viewAccessMap={
   hr:['commission'],leave:['leave'],dailytask:['dailytask']
 };
 function _applyLimitedAccess(access){
-  var allowed=_viewAccessMap[access]||[];
-  // Hide sidebar items not in allowed list
+  var _keys=Array.isArray(access)?access:[access];
+  var allowed=[];
+  _keys.forEach(function(k){var v=_viewAccessMap[k]||[];v.forEach(function(vn){if(allowed.indexOf(vn)<0)allowed.push(vn);});});
   var sidebar=document.querySelector('.sidebar');
   if(sidebar){
-    // Shrink sidebar
     sidebar.style.width='0';sidebar.style.minWidth='0';sidebar.style.overflow='hidden';sidebar.style.padding='0';
   }
   var wrap=document.querySelector('.main-wrap,.content-wrap');if(wrap)wrap.style.marginLeft='0';
-  // Navigate to first allowed view
   if(allowed.length){
     var v=allowed[0];
     var el=document.getElementById('sb-'+v)||document.getElementById('sb-'+v+'View');
@@ -2258,7 +2257,7 @@ function switchView(view,el){
   var _umv=document.getElementById('userMgmtView');if(_umv)_umv.style.display='none';
   var _auth=sessionStorage.getItem('rb_auth'),_acc=sessionStorage.getItem('rb_access');
   if(_auth==='hr'&&view!=='commission')return;
-  if(_auth==='limited'&&_acc){var _allowed=_viewAccessMap[_acc]||[];if(_allowed.indexOf(view)<0)return;}
+  if(_auth==='limited'&&_acc){var _accParsed;try{_accParsed=JSON.parse(_acc);}catch(e){_accParsed=_acc;}var _accKeys=Array.isArray(_accParsed)?_accParsed:[_accParsed];var _allowed=[];_accKeys.forEach(function(k){var v=_viewAccessMap[k]||[];v.forEach(function(vn){if(_allowed.indexOf(vn)<0)_allowed.push(vn);});});if(_allowed.indexOf(view)<0)return;}
   document.querySelectorAll('.sb-item').forEach(function(i){i.classList.remove('active');});
   if(el)el.classList.add('active');
   var mv=document.getElementById('mainView'),cv=document.getElementById('cohortView'),cmv=document.getElementById('commissionView'),fbv=document.getElementById('fbView');
@@ -7003,14 +7002,24 @@ function _renderUserMgmt(el){
   var _AL={all:'ทุกหน้า',fb:'Facebook Ads',ai:'AI แนะนำ',adsai:'AI วิเคราะห์ Ads',track:'ติดตามผล',benchmark:'BenchMark',chartrank:'ชาร์ตอันดับ',hunter:'Hunter',hr:'ค่าคอม',leave:'วันหยุด',dailytask:'งานรายวัน'};
   var _AC={all:'linear-gradient(135deg,#4f46e5,#7c3aed)',fb:'#1d4ed8',ai:'#7c3aed',adsai:'#6d28d9',track:'#0891b2',benchmark:'#b45309',chartrank:'#d97706',hunter:'#0f172a',hr:'#059669',leave:'#dc2626',dailytask:'#475569'};
   var accessLabel=function(a){
-    var lbl=_AL[a]||a; var bg=_AC[a]||'#64748b';
-    return '<span style="display:inline-flex;align-items:center;padding:3px 12px;border-radius:20px;font-size:.68rem;font-weight:700;background:'+bg+';color:#fff">'+lbl+'</span>';
+    if(a==='all'){return '<span style="display:inline-flex;align-items:center;padding:3px 12px;border-radius:20px;font-size:.68rem;font-weight:700;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff">ทุกหน้า</span>';}
+    var arr=Array.isArray(a)?a:[a];
+    if(arr.length===1){var lbl=_AL[arr[0]]||arr[0];var bg=_AC[arr[0]]||'#64748b';return '<span style="display:inline-flex;align-items:center;padding:3px 12px;border-radius:20px;font-size:.68rem;font-weight:700;background:'+bg+';color:#fff">'+lbl+'</span>';}
+    return '<span style="display:inline-flex;align-items:center;padding:3px 12px;border-radius:20px;font-size:.68rem;font-weight:700;background:linear-gradient(135deg,#0891b2,#4f46e5);color:#fff">'+arr.length+' หน้า</span>';
   };
   var maskedPw=function(pw){return pw.slice(0,2)+'••••••';};
   var rows='';
   users.forEach(function(u,i){
     var av=u.name.slice(0,2).toUpperCase();
     var isDefault=(u.password==='rich01'||u.password==='hr01');
+    var _curAccess=u.access;
+    var _isAll=(_curAccess==='all');
+    var _curArr=_isAll?[]:Array.isArray(_curAccess)?_curAccess:[_curAccess];
+    var _PAGES=[{k:'fb',lbl:'FB Ads'},{k:'ai',lbl:'AI แนะนำ'},{k:'adsai',lbl:'AI วิเคราะห์'},{k:'track',lbl:'ติดตาม'},{k:'benchmark',lbl:'Benchmark'},{k:'chartrank',lbl:'ชาร์ต'},{k:'hunter',lbl:'Hunter'},{k:'hr',lbl:'ค่าคอม'},{k:'leave',lbl:'วันหยุด'},{k:'dailytask',lbl:'งานรายวัน'}];
+    var _accPills='<div style="display:flex;flex-wrap:wrap;gap:3px;max-width:300px">';
+    _accPills+='<button data-idx="'+i+'" onclick="_umSetAllAccess(this)" style="font-size:.6rem;padding:2px 8px;border-radius:20px;border:1px solid '+(_isAll?'#4f46e5':'#e2e8f0')+';background:'+(_isAll?'#4f46e5':'#f8fafc')+';color:'+(_isAll?'#fff':'#94a3b8')+';cursor:pointer;font-family:inherit;font-weight:700">ทุกหน้า</button>';
+    _PAGES.forEach(function(p){var active=_curArr.indexOf(p.k)>=0;_accPills+='<button data-idx="'+i+'" data-key="'+p.k+'" onclick="_umTogglePage(this)" style="font-size:.6rem;padding:2px 8px;border-radius:20px;border:1px solid '+(active?'#3b82f6':'#e2e8f0')+';background:'+(active?'#eff6ff':'#f8fafc')+';color:'+(active?'#1d4ed8':'#94a3b8')+';cursor:pointer;font-family:inherit;font-weight:'+(active?'700':'400')+'">'+p.lbl+'</button>';});
+    _accPills+='</div>';
     rows+='<tr style="border-bottom:1px solid #f1f5f9">'
       +'<td style="padding:13px 16px"><div style="display:flex;align-items:center;gap:10px">'
         +'<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#1e3a5f,#3730a3);display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:800;color:#e0e7ff;flex-shrink:0">'+av+'</div>'
@@ -7022,21 +7031,7 @@ function _renderUserMgmt(el){
         +'<span id="pw-full-'+i+'" style="display:none;font-size:.75rem;color:#475569">'+u.password+'</span>'
       +'</div></td>'
       +'<td style="padding:13px 16px">'+accessLabel(u.access)+'</td>'
-      +'<td style="padding:13px 16px">'
-        +'<select onchange="_umChangeAccess('+i+',this.value)" style="border:1px solid #e2e8f0;border-radius:6px;padding:5px 8px;font-size:.72rem;font-family:inherit;color:#475569;background:#fff;cursor:pointer">'
-          +'<option value="all"'+(u.access==='all'?' selected':'')+'>ทุกหน้า</option>'
-          +'<option value="fb"'+(u.access==='fb'?' selected':'')+'>Facebook Ads</option>'
-          +'<option value="ai"'+(u.access==='ai'?' selected':'')+'>AI แนะนำคอนเทนต์</option>'
-          +'<option value="adsai"'+(u.access==='adsai'?' selected':'')+'>AI วิเคราะห์ Ads</option>'
-          +'<option value="track"'+(u.access==='track'?' selected':'')+'>ติดตามผล</option>'
-          +'<option value="benchmark"'+(u.access==='benchmark'?' selected':'')+'>BenchMark มาตรวัดแอด</option>'
-          +'<option value="chartrank"'+(u.access==='chartrank'?' selected':'')+'>ชาร์ตอันดับ</option>'
-          +'<option value="hunter"'+(u.access==='hunter'?' selected':'')+'>Hunter Dashboard</option>'
-          +'<option value="hr"'+(u.access==='hr'?' selected':'')+'>ค่าคอม</option>'
-          +'<option value="leave"'+(u.access==='leave'?' selected':'')+'>วันหยุด</option>'
-          +'<option value="dailytask"'+(u.access==='dailytask'?' selected':'')+'>งานรายวัน</option>'
-        +'</select>'
-      +'</td>'
+      +'<td style="padding:10px 14px">'+_accPills+'</td>'
       +'<td style="padding:13px 14px">'
         +'<select onchange="_umChangePerm('+i+',this.value)" style="border:1px solid #e2e8f0;border-radius:6px;padding:5px 8px;font-size:.72rem;font-family:inherit;color:#475569;background:#fff;cursor:pointer">'
           +'<option value="edit"'+((!u.perm||u.perm==='edit')?' selected':'')+'>แก้ไขได้</option>'
@@ -7067,20 +7062,20 @@ function _renderUserMgmt(el){
           +'<input id="umNewName" placeholder="เช่น มอส, ปาย" style="border:1.5px solid #e2e8f0;border-radius:7px;padding:7px 12px;font-size:.8rem;font-family:inherit;width:140px;color:#0f172a;outline:none"></div>'
         +'<div><label style="font-size:.67rem;color:#64748b;display:block;margin-bottom:4px;font-weight:600">รหัสผ่าน</label>'
           +'<input id="umNewPw" placeholder="เช่น hunter01" style="border:1.5px solid #e2e8f0;border-radius:7px;padding:7px 12px;font-size:.8rem;font-family:inherit;width:140px;color:#0f172a;outline:none"></div>'
-        +'<div><label style="font-size:.67rem;color:#64748b;display:block;margin-bottom:4px;font-weight:600">สิทธิ์การเข้าถึง</label>'
-          +'<select id="umNewAccess" style="border:1.5px solid #e2e8f0;border-radius:7px;padding:7px 12px;font-size:.8rem;font-family:inherit;color:#0f172a;background:#fff">'
-            +'<option value="all">ทุกหน้า</option>'
-            +'<option value="fb">Facebook Ads</option>'
-            +'<option value="ai">AI แนะนำคอนเทนต์</option>'
-            +'<option value="adsai">AI วิเคราะห์ Ads</option>'
-            +'<option value="track">ติดตามผล</option>'
-            +'<option value="benchmark">BenchMark มาตรวัดแอด</option>'
-            +'<option value="chartrank">ชาร์ตอันดับ</option>'
-            +'<option value="hunter">Hunter Dashboard</option>'
-            +'<option value="hr">ค่าคอม</option>'
-            +'<option value="leave">วันหยุด</option>'
-            +'<option value="dailytask">งานรายวัน</option>'
-          +'</select></div>'
+        +'<div style="flex-basis:100%"><label style="font-size:.67rem;color:#64748b;display:block;margin-bottom:4px;font-weight:600">สิทธิ์การเข้าถึง (เลือกได้หลายหน้า)</label>'
+          +'<div id="umNewPagePills" style="display:flex;flex-wrap:wrap;gap:4px;padding:8px;border:1.5px solid #e2e8f0;border-radius:7px;background:#fff;max-width:420px">'
+            +'<span data-nacc="all" data-active="1" onclick="_umNewAccPillToggle(this)" style="cursor:pointer;display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;border:1px solid #4f46e5;background:#4f46e5;color:#fff;font-size:.65rem;font-weight:700">ทุกหน้า</span>'
+            +'<span data-nacc="fb" data-active="0" onclick="_umNewAccPillToggle(this)" style="cursor:pointer;display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;border:1px solid #e2e8f0;background:#f8fafc;color:#64748b;font-size:.65rem;font-weight:400">FB Ads</span>'
+            +'<span data-nacc="ai" data-active="0" onclick="_umNewAccPillToggle(this)" style="cursor:pointer;display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;border:1px solid #e2e8f0;background:#f8fafc;color:#64748b;font-size:.65rem;font-weight:400">AI แนะนำ</span>'
+            +'<span data-nacc="adsai" data-active="0" onclick="_umNewAccPillToggle(this)" style="cursor:pointer;display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;border:1px solid #e2e8f0;background:#f8fafc;color:#64748b;font-size:.65rem;font-weight:400">AI วิเคราะห์</span>'
+            +'<span data-nacc="track" data-active="0" onclick="_umNewAccPillToggle(this)" style="cursor:pointer;display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;border:1px solid #e2e8f0;background:#f8fafc;color:#64748b;font-size:.65rem;font-weight:400">ติดตาม</span>'
+            +'<span data-nacc="benchmark" data-active="0" onclick="_umNewAccPillToggle(this)" style="cursor:pointer;display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;border:1px solid #e2e8f0;background:#f8fafc;color:#64748b;font-size:.65rem;font-weight:400">Benchmark</span>'
+            +'<span data-nacc="chartrank" data-active="0" onclick="_umNewAccPillToggle(this)" style="cursor:pointer;display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;border:1px solid #e2e8f0;background:#f8fafc;color:#64748b;font-size:.65rem;font-weight:400">ชาร์ต</span>'
+            +'<span data-nacc="hunter" data-active="0" onclick="_umNewAccPillToggle(this)" style="cursor:pointer;display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;border:1px solid #e2e8f0;background:#f8fafc;color:#64748b;font-size:.65rem;font-weight:400">Hunter</span>'
+            +'<span data-nacc="hr" data-active="0" onclick="_umNewAccPillToggle(this)" style="cursor:pointer;display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;border:1px solid #e2e8f0;background:#f8fafc;color:#64748b;font-size:.65rem;font-weight:400">ค่าคอม</span>'
+            +'<span data-nacc="leave" data-active="0" onclick="_umNewAccPillToggle(this)" style="cursor:pointer;display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;border:1px solid #e2e8f0;background:#f8fafc;color:#64748b;font-size:.65rem;font-weight:400">วันหยุด</span>'
+            +'<span data-nacc="dailytask" data-active="0" onclick="_umNewAccPillToggle(this)" style="cursor:pointer;display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;border:1px solid #e2e8f0;background:#f8fafc;color:#64748b;font-size:.65rem;font-weight:400">งานรายวัน</span>'
+          +'</div></div>'
         +'<div><label style="font-size:.67rem;color:#64748b;display:block;margin-bottom:4px;font-weight:600">การใช้งาน</label>'
           +'<select id="umNewPerm" style="border:1.5px solid #e2e8f0;border-radius:7px;padding:7px 12px;font-size:.8rem;font-family:inherit;color:#0f172a;background:#fff">'
             +'<option value="edit">แก้ไขได้</option>'
@@ -7117,7 +7112,9 @@ window._umTogglePw=function(i){
   if(f.style.display==='none'){f.style.display='inline';d.style.display='none';}
   else{f.style.display='none';d.style.display='inline';}
 };
-window._umChangeAccess=function(i,v){var u=_getAccessUsers();if(u[i]){u[i].access=v;_saveAccessUsers(u);}var el=document.getElementById('userMgmtView');if(el)_renderUserMgmt(el);};
+window._umSetAllAccess=function(btn){var i=parseInt(btn.getAttribute('data-idx'));var u=_getAccessUsers();if(u[i]){u[i].access='all';_saveAccessUsers(u);}var el=document.getElementById('userMgmtView');if(el)_renderUserMgmt(el);};
+window._umTogglePage=function(btn){var i=parseInt(btn.getAttribute('data-idx'));var key=btn.getAttribute('data-key');var u=_getAccessUsers();if(!u[i])return;var cur=u[i].access;var arr=cur==='all'?[]:Array.isArray(cur)?cur.slice():[cur];var idx=arr.indexOf(key);if(idx>=0){arr.splice(idx,1);}else{arr.push(key);}if(arr.length===0)arr=[key];u[i].access=arr.length===1?arr[0]:arr;_saveAccessUsers(u);var el=document.getElementById('userMgmtView');if(el)_renderUserMgmt(el);};
+window._umNewAccPillToggle=function(el){var key=el.getAttribute('data-nacc');var pills=document.querySelectorAll('#umNewPagePills [data-nacc]');var PI='cursor:pointer;display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;border:1px solid #4f46e5;background:#4f46e5;color:#fff;font-size:.65rem;font-weight:700';var PN='cursor:pointer;display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;border:1px solid #e2e8f0;background:#f8fafc;color:#64748b;font-size:.65rem;font-weight:400';var PM='cursor:pointer;display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;border:1px solid #3b82f6;background:#eff6ff;color:#1d4ed8;font-size:.65rem;font-weight:700';if(key==='all'){pills.forEach(function(p){p.setAttribute('data-active','0');p.style.cssText=PN;});el.setAttribute('data-active','1');el.style.cssText=PI;}else{var allPill=document.querySelector('#umNewPagePills [data-nacc="all"]');if(allPill){allPill.setAttribute('data-active','0');allPill.style.cssText=PN;}var isActive=el.getAttribute('data-active')==='1';if(isActive){el.setAttribute('data-active','0');el.style.cssText=PN;var anyActive=false;pills.forEach(function(p){if(p.getAttribute('data-nacc')!=='all'&&p.getAttribute('data-active')==='1')anyActive=true;});if(!anyActive&&allPill){allPill.setAttribute('data-active','1');allPill.style.cssText=PI;}}else{el.setAttribute('data-active','1');el.style.cssText=PM;}}};
 window._umChangePerm=function(i,v){var u=_getAccessUsers();if(u[i]){u[i].perm=v;_saveAccessUsers(u);}};
 // Apply read-only mode: disable all inputs/buttons/selects/textareas except in userMgmt
 window._applyReadOnly=function(){
@@ -7137,8 +7134,8 @@ window._umDelUser=function(i){var u=_getAccessUsers();if(!u[i])return;if(u[i].pa
 window._umAddUser=function(){
   var n=(document.getElementById('umNewName').value||'').trim();
   var pw=(document.getElementById('umNewPw').value||'').trim();
-  var ac=document.getElementById('umNewAccess').value;
   var pm=document.getElementById('umNewPerm')?document.getElementById('umNewPerm').value:'edit';
+  var _pills=document.querySelectorAll('#umNewPagePills [data-nacc]');var _selKeys=[];_pills.forEach(function(p){if(p.getAttribute('data-active')==='1')_selKeys.push(p.getAttribute('data-nacc'));});var ac=_selKeys.length===0?'hr':(_selKeys.length===1?_selKeys[0]:_selKeys);
   if(!n||!pw){alert('กรุณากรอกชื่อและรหัสผ่าน');return;}
   var u=_getAccessUsers();
   if(u.find(function(x){return x.password===pw;})){alert('รหัสผ่านนี้ถูกใช้แล้ว');return;}
