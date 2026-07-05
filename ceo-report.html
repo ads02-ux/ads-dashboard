@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>CEO Report — Rich Biotech</title> 
+<title>CEO Report — Rich Biotech</title>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -184,11 +184,13 @@ body{font-family:Sarabun,sans-serif;background:#eef2f7;color:#0f172a;-webkit-pri
 
     var has3=dailyAll.length>=3;
     var has7=dailyAll.length>=7;
+    var has30=dailyAll.length>=30;
     var periodBar='';
-    if(has3||has7){
+    if(has3||has7||has30){
       periodBar='<div class="period-bar no-print">';
       if(has3)periodBar+='<button class="ptab'+(periodDays===3?' active':'')+'" onclick="switchPeriod(3)">📅 3 วัน</button>';
       if(has7)periodBar+='<button class="ptab'+(periodDays===7?' active':'')+'" onclick="switchPeriod(7)">📅 7 วัน</button>';
+      if(has30)periodBar+='<button class="ptab'+(periodDays===30?' active':'')+'" onclick="switchPeriod(30)">📅 30 วัน</button>';
       periodBar+='</div>';
     }
 
@@ -237,7 +239,7 @@ body{font-family:Sarabun,sans-serif;background:#eef2f7;color:#0f172a;-webkit-pri
     }
   };
 
-  var initDays=dailyAll.length>=7?7:(dailyAll.length>=3?3:dailyAll.length||1);
+  var initDays=dailyAll.length>=30?30:(dailyAll.length>=7?7:(dailyAll.length>=3?3:dailyAll.length||1));
   render(initDays);
 })();
 </script>
