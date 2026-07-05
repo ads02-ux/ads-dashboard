@@ -521,6 +521,7 @@ canvas{filter:none}
   #modal{width:96vw;margin:20px auto}
 }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/lz-string.min.js"></script>
 </head>
 <body>
 <style>
@@ -6411,7 +6412,11 @@ function _openCEOReport(){
   var allDailyArr=Object.keys(byDateAll).sort().map(function(d){return byDateAll[d];});
   var payload={name:camp.name,days:camp.days||7,agg:camp._agg,daily:allDailyArr};
   var encoded;
-  try{encoded=btoa(unescape(encodeURIComponent(JSON.stringify(payload))));}
+  try{
+    var json=JSON.stringify(payload);
+    if(window.LZString){encoded=LZString.compressToEncodedURIComponent(json);}
+    else{encoded=btoa(unescape(encodeURIComponent(json)));}
+  }
   catch(e){alert('ไม่สามารถสร้างลิงก์ได้: '+e.message);return;}
   // Build URL relative to current page so it works on any host
   var base=(window.location.href.split('#')[0]).replace(/\/[^\/]*$/, '/');
