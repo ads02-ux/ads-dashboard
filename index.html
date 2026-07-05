@@ -560,13 +560,22 @@ function pwCheck(){
   if(!users.length)users=[{name:'Admin',password:'rich01',access:'all'},{name:'HR',password:'hr01',access:'hr'}];
   var found=users.find(function(u){return u.password===v;});
   if(found){
+    sessionStorage.setItem('rb_username',found.name);
+    sessionStorage.setItem('rb_access',found.access);
+    sessionStorage.setItem('rb_perm',found.perm||'edit');
     if(found.access==='all'){
-      sessionStorage.setItem('rb_auth','1');sessionStorage.setItem('rb_username',found.name);
+      sessionStorage.setItem('rb_auth','1');
       document.getElementById('pw-gate').style.display='none';
     } else if(found.access==='hr'){
-      sessionStorage.setItem('rb_auth','hr');sessionStorage.setItem('rb_username',found.name);
+      sessionStorage.setItem('rb_auth','hr');
       document.getElementById('pw-gate').style.display='none';
       switchView('commission',document.getElementById('sb-comm'));enableHrMode();
+      if((found.perm||'edit')==='view')setTimeout(_applyReadOnly,800);
+    } else {
+      sessionStorage.setItem('rb_auth','limited');
+      document.getElementById('pw-gate').style.display='none';
+      _applyLimitedAccess(found.access);
+      if((found.perm||'edit')==='view')setTimeout(_applyReadOnly,800);
     }
   } else {
     document.getElementById('pw-err').textContent='รหัสผ่านไม่ถูกต้อง';
@@ -591,6 +600,27 @@ function _exportProductCSV(){
   URL.revokeObjectURL(url);
 }
 
+var _viewAccessMap={
+  fb:['fb'],ai:['ai'],adsai:['adsai'],track:['track'],benchmark:['benchmark'],
+  chartrank:['chartrank'],hunter:['top','kpiGrid','lbSection','chartSection','cohort','t1wrap','t2wrap'],
+  hr:['commission'],leave:['leave'],dailytask:['dailytask']
+};
+function _applyLimitedAccess(access){
+  var allowed=_viewAccessMap[access]||[];
+  // Hide sidebar items not in allowed list
+  var sidebar=document.querySelector('.sidebar');
+  if(sidebar){
+    // Shrink sidebar
+    sidebar.style.width='0';sidebar.style.minWidth='0';sidebar.style.overflow='hidden';sidebar.style.padding='0';
+  }
+  var wrap=document.querySelector('.main-wrap,.content-wrap');if(wrap)wrap.style.marginLeft='0';
+  // Navigate to first allowed view
+  if(allowed.length){
+    var v=allowed[0];
+    var el=document.getElementById('sb-'+v)||document.getElementById('sb-'+v+'View');
+    switchView(v,el);
+  }
+}
 function enableHrMode(){
   // Hide sidebar so HR can't navigate elsewhere
   var nav=document.querySelector('.sb-nav');
@@ -2226,7 +2256,9 @@ function renderCommission(){
 function switchView(view,el){
   var _db=document.querySelector('.dbar');if(_db)_db.style.display='none';
   var _umv=document.getElementById('userMgmtView');if(_umv)_umv.style.display='none';
-  if(sessionStorage.getItem('rb_auth')==='hr'&&view!=='commission')return;
+  var _auth=sessionStorage.getItem('rb_auth'),_acc=sessionStorage.getItem('rb_access');
+  if(_auth==='hr'&&view!=='commission')return;
+  if(_auth==='limited'&&_acc){var _allowed=_viewAccessMap[_acc]||[];if(_allowed.indexOf(view)<0)return;}
   document.querySelectorAll('.sb-item').forEach(function(i){i.classList.remove('active');});
   if(el)el.classList.add('active');
   var mv=document.getElementById('mainView'),cv=document.getElementById('cohortView'),cmv=document.getElementById('commissionView'),fbv=document.getElementById('fbView');
@@ -6968,10 +7000,11 @@ function _saveAccessUsers(u){localStorage.setItem('rb_access_users',JSON.stringi
 
 function _renderUserMgmt(el){
   var users=_getAccessUsers();
+  var _AL={all:'ทุกหน้า',fb:'Facebook Ads',ai:'AI แนะนำ',adsai:'AI วิเคราะห์ Ads',track:'ติดตามผล',benchmark:'BenchMark',chartrank:'ชาร์ตอันดับ',hunter:'Hunter',hr:'ค่าคอม',leave:'วันหยุด',dailytask:'งานรายวัน'};
+  var _AC={all:'linear-gradient(135deg,#4f46e5,#7c3aed)',fb:'#1d4ed8',ai:'#7c3aed',adsai:'#6d28d9',track:'#0891b2',benchmark:'#b45309',chartrank:'#d97706',hunter:'#0f172a',hr:'#059669',leave:'#dc2626',dailytask:'#475569'};
   var accessLabel=function(a){
-    if(a==='all')return '<span style="display:inline-flex;align-items:center;gap:5px;padding:3px 12px;border-radius:20px;font-size:.68rem;font-weight:700;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff">ทุกหน้า</span>';
-    if(a==='hr')return '<span style="display:inline-flex;align-items:center;gap:5px;padding:3px 12px;border-radius:20px;font-size:.68rem;font-weight:700;background:#059669;color:#fff">ค่าคอม</span>';
-    return '<span style="display:inline-flex;align-items:center;gap:5px;padding:3px 12px;border-radius:20px;font-size:.68rem;font-weight:700;background:#64748b;color:#fff">'+a+'</span>';
+    var lbl=_AL[a]||a; var bg=_AC[a]||'#64748b';
+    return '<span style="display:inline-flex;align-items:center;padding:3px 12px;border-radius:20px;font-size:.68rem;font-weight:700;background:'+bg+';color:#fff">'+lbl+'</span>';
   };
   var maskedPw=function(pw){return pw.slice(0,2)+'••••••';};
   var rows='';
@@ -6992,7 +7025,22 @@ function _renderUserMgmt(el){
       +'<td style="padding:13px 16px">'
         +'<select onchange="_umChangeAccess('+i+',this.value)" style="border:1px solid #e2e8f0;border-radius:6px;padding:5px 8px;font-size:.72rem;font-family:inherit;color:#475569;background:#fff;cursor:pointer">'
           +'<option value="all"'+(u.access==='all'?' selected':'')+'>ทุกหน้า</option>'
+          +'<option value="fb"'+(u.access==='fb'?' selected':'')+'>Facebook Ads</option>'
+          +'<option value="ai"'+(u.access==='ai'?' selected':'')+'>AI แนะนำคอนเทนต์</option>'
+          +'<option value="adsai"'+(u.access==='adsai'?' selected':'')+'>AI วิเคราะห์ Ads</option>'
+          +'<option value="track"'+(u.access==='track'?' selected':'')+'>ติดตามผล</option>'
+          +'<option value="benchmark"'+(u.access==='benchmark'?' selected':'')+'>BenchMark มาตรวัดแอด</option>'
+          +'<option value="chartrank"'+(u.access==='chartrank'?' selected':'')+'>ชาร์ตอันดับ</option>'
+          +'<option value="hunter"'+(u.access==='hunter'?' selected':'')+'>Hunter Dashboard</option>'
           +'<option value="hr"'+(u.access==='hr'?' selected':'')+'>ค่าคอม</option>'
+          +'<option value="leave"'+(u.access==='leave'?' selected':'')+'>วันหยุด</option>'
+          +'<option value="dailytask"'+(u.access==='dailytask'?' selected':'')+'>งานรายวัน</option>'
+        +'</select>'
+      +'</td>'
+      +'<td style="padding:13px 14px">'
+        +'<select onchange="_umChangePerm('+i+',this.value)" style="border:1px solid #e2e8f0;border-radius:6px;padding:5px 8px;font-size:.72rem;font-family:inherit;color:#475569;background:#fff;cursor:pointer">'
+          +'<option value="edit"'+((!u.perm||u.perm==='edit')?' selected':'')+'>แก้ไขได้</option>'
+          +'<option value="view"'+(u.perm==='view'?' selected':'')+'>ดูอย่างเดียว</option>'
         +'</select>'
       +'</td>'
       +'<td style="padding:13px 16px;text-align:right">'
@@ -7022,7 +7070,21 @@ function _renderUserMgmt(el){
         +'<div><label style="font-size:.67rem;color:#64748b;display:block;margin-bottom:4px;font-weight:600">สิทธิ์การเข้าถึง</label>'
           +'<select id="umNewAccess" style="border:1.5px solid #e2e8f0;border-radius:7px;padding:7px 12px;font-size:.8rem;font-family:inherit;color:#0f172a;background:#fff">'
             +'<option value="all">ทุกหน้า</option>'
+            +'<option value="fb">Facebook Ads</option>'
+            +'<option value="ai">AI แนะนำคอนเทนต์</option>'
+            +'<option value="adsai">AI วิเคราะห์ Ads</option>'
+            +'<option value="track">ติดตามผล</option>'
+            +'<option value="benchmark">BenchMark มาตรวัดแอด</option>'
+            +'<option value="chartrank">ชาร์ตอันดับ</option>'
+            +'<option value="hunter">Hunter Dashboard</option>'
             +'<option value="hr">ค่าคอม</option>'
+            +'<option value="leave">วันหยุด</option>'
+            +'<option value="dailytask">งานรายวัน</option>'
+          +'</select></div>'
+        +'<div><label style="font-size:.67rem;color:#64748b;display:block;margin-bottom:4px;font-weight:600">การใช้งาน</label>'
+          +'<select id="umNewPerm" style="border:1.5px solid #e2e8f0;border-radius:7px;padding:7px 12px;font-size:.8rem;font-family:inherit;color:#0f172a;background:#fff">'
+            +'<option value="edit">แก้ไขได้</option>'
+            +'<option value="view">ดูอย่างเดียว</option>'
           +'</select></div>'
         +'<button onclick="_umAddUser()" style="background:#4f46e5;color:#fff;border:none;border-radius:7px;padding:8px 18px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit">บันทึก</button>'
         +'<button onclick="_umHideAdd()" style="background:#f1f5f9;color:#64748b;border:1px solid #e2e8f0;border-radius:7px;padding:8px 14px;font-size:.78rem;cursor:pointer;font-family:inherit">ยกเลิก</button>'
@@ -7038,6 +7100,7 @@ function _renderUserMgmt(el){
           +'<th style="padding:10px 16px;text-align:left;font-size:.63rem;font-weight:700;color:#94a3b8;letter-spacing:1px;text-transform:uppercase">รหัสผ่าน</th>'
           +'<th style="padding:10px 16px;text-align:left;font-size:.63rem;font-weight:700;color:#94a3b8;letter-spacing:1px;text-transform:uppercase">สิทธิ์ปัจจุบัน</th>'
           +'<th style="padding:10px 16px;text-align:left;font-size:.63rem;font-weight:700;color:#94a3b8;letter-spacing:1px;text-transform:uppercase">เปลี่ยนสิทธิ์</th>'
+          +'<th style="padding:10px 14px;text-align:left;font-size:.63rem;font-weight:700;color:#94a3b8;letter-spacing:1px;text-transform:uppercase">การใช้งาน</th>'
           +'<th style="padding:10px 16px;text-align:right;font-size:.63rem;font-weight:700;color:#94a3b8;letter-spacing:1px;text-transform:uppercase">จัดการ</th>'
         +'</tr></thead>'
         +'<tbody>'+rows+'</tbody>'
@@ -7055,15 +7118,31 @@ window._umTogglePw=function(i){
   else{f.style.display='none';d.style.display='inline';}
 };
 window._umChangeAccess=function(i,v){var u=_getAccessUsers();if(u[i]){u[i].access=v;_saveAccessUsers(u);}var el=document.getElementById('userMgmtView');if(el)_renderUserMgmt(el);};
+window._umChangePerm=function(i,v){var u=_getAccessUsers();if(u[i]){u[i].perm=v;_saveAccessUsers(u);}};
+// Apply read-only mode: disable all inputs/buttons/selects/textareas except in userMgmt
+window._applyReadOnly=function(){
+  var style=document.createElement('style');
+  style.id='ro-style';
+  style.textContent='#mainView button:not(.apill):not(.photo-manage-btn),#mainView input,#mainView select,#mainView textarea,#fbView button:not([onclick*="switchView"]),#fbView input,#fbView select,#aiView button,#aiView input,#aiView select,#adsaiView button,#adsaiView input,#adsaiView select,#trackView button,#trackView input,#trackView select,#trackView textarea,#benchmarkView button,#benchmarkView input,#chartrankView button,#chartrankView input,#leaveView .leave-cell,#dailyTaskView button,#dailyTaskView input{pointer-events:none!important;opacity:.6!important;cursor:not-allowed!important}';
+  document.head.appendChild(style);
+  // Add readonly badge to header
+  var hright=document.querySelector('.hright');
+  if(hright&&!document.getElementById('ro-badge')){
+    var b=document.createElement('div');b.id='ro-badge';
+    b.style.cssText='background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.35);border-radius:6px;padding:4px 12px;font-size:.68rem;font-weight:700;color:#b45309;font-family:Rajdhani,sans-serif;letter-spacing:.5px';
+    b.textContent='READ ONLY';hright.prepend(b);
+  }
+};
 window._umDelUser=function(i){var u=_getAccessUsers();if(!u[i])return;if(u[i].password==='rich01'||u[i].password==='hr01'){alert('ไม่สามารถลบ Default user ได้');return;}if(confirm('ลบผู้ใช้ "'+u[i].name+'" ?')){u.splice(i,1);_saveAccessUsers(u);var el=document.getElementById('userMgmtView');if(el)_renderUserMgmt(el);}};
 window._umAddUser=function(){
   var n=(document.getElementById('umNewName').value||'').trim();
   var pw=(document.getElementById('umNewPw').value||'').trim();
   var ac=document.getElementById('umNewAccess').value;
+  var pm=document.getElementById('umNewPerm')?document.getElementById('umNewPerm').value:'edit';
   if(!n||!pw){alert('กรุณากรอกชื่อและรหัสผ่าน');return;}
   var u=_getAccessUsers();
   if(u.find(function(x){return x.password===pw;})){alert('รหัสผ่านนี้ถูกใช้แล้ว');return;}
-  u.push({name:n,password:pw,access:ac});
+  u.push({name:n,password:pw,access:ac,perm:pm});
   _saveAccessUsers(u);
   var el=document.getElementById('userMgmtView');if(el)_renderUserMgmt(el);
   document.getElementById('umAddForm').style.display='none';
