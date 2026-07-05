@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CEO Report — Rich Biotech</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Sarabun,sans-serif;background:#eef2f7;color:#0f172a;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.page{max-width:900px;margin:0 auto;background:#fff;box-shadow:0 0 60px rgba(0,0,0,.12);min-height:100vh}
+.hd{background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 55%,#1a237e 100%);color:#fff;padding:38px 48px 32px}
+.brand{font-family:Rajdhani,sans-serif;font-size:.78rem;letter-spacing:3px;color:rgba(255,255,255,.4);text-transform:uppercase;margin-bottom:6px}
+.hd-title{font-family:Rajdhani,sans-serif;font-size:1.45rem;font-weight:700;letter-spacing:.5px;line-height:1.4;margin-bottom:5px}
+.hd-meta{font-size:.72rem;color:rgba(255,255,255,.4);margin-bottom:20px}
+.vrd{display:inline-flex;align-items:center;gap:10px;padding:10px 24px;border-radius:30px;font-weight:700;font-size:.9rem}
+.period-bar{background:#f8faff;border-bottom:2px solid #e2e8f0;display:flex;gap:0;padding:0 48px}
+.ptab{padding:14px 28px;border:none;background:none;font-family:Sarabun,sans-serif;font-size:.85rem;font-weight:600;color:#94a3b8;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:.15s}
+.ptab:hover{color:#1565c0}
+.ptab.active{color:#1565c0;border-bottom:3px solid #1565c0;background:none}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:2px solid #f1f5f9}
+.kpi-card{padding:24px 16px;text-align:center;border-right:1px solid #f1f5f9}
+.kpi-card:last-child{border-right:none}
+.kpi-lbl{font-size:.6rem;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;font-weight:700}
+.kpi-val{font-size:1.6rem;font-weight:800;line-height:1}
+.section{padding:28px 48px;border-bottom:1px solid #f1f5f9}
+.sec-ttl{font-family:Rajdhani,sans-serif;font-size:.68rem;font-weight:700;color:#94a3b8;letter-spacing:2px;text-transform:uppercase;margin-bottom:18px;padding-bottom:10px;border-bottom:1px solid #f1f5f9}
+.ft{padding:22px 48px;background:#f8faff;text-align:center;font-size:.7rem;color:#94a3b8;border-top:1px solid #e2e8f0}
+.hd-btns{display:flex;flex-direction:column;gap:8px;align-items:flex-end;flex-shrink:0}
+.hd-btn{border-radius:8px;padding:10px 18px;font-size:.78rem;cursor:pointer;font-family:inherit;white-space:nowrap;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.1);color:#fff;letter-spacing:.3px;transition:.15s}
+.hd-btn:hover{background:rgba(255,255,255,.2)}
+.copy-btn{background:rgba(255,255,255,.06);color:rgba(255,255,255,.75);font-size:.73rem}
+.err{padding:80px;text-align:center;color:#ef4444;font-size:1.1rem}
+@media(max-width:600px){
+  .hd{padding:24px 20px 20px}
+  .section{padding:20px}
+  .period-bar{padding:0 20px}
+  .kpi-val{font-size:1.2rem}
+  .kpi-card{padding:16px 8px}
+  .hd-title{font-size:1.1rem}
+}
+@media print{
+  body{background:#fff}
+  .no-print{display:none!important}
+  .page{box-shadow:none}
+}
+</style>
+</head>
+<body>
+<div id="app"><div style="padding:80px;text-align:center;font-family:Sarabun,sans-serif;color:#94a3b8;font-size:1rem">⏳ กำลังโหลดรายงาน...</div></div>
+<script>
+(function(){
+  var raw=location.hash.slice(1);
+  if(!raw){
+    document.getElementById('app').innerHTML='<div class="page"><div class="err">⚠️ ไม่พบข้อมูล — ลิงก์อาจไม่ถูกต้อง<br><small style="color:#94a3b8;font-size:.8rem;margin-top:8px;display:block">กรุณาขอลิงก์ใหม่จากทีม Ads</small></div></div>';
+    return;
+  }
+  var data;
+  try{data=JSON.parse(decodeURIComponent(escape(atob(raw))));}
+  catch(e){document.getElementById('app').innerHTML='<div class="page"><div class="err">⚠️ ไม่สามารถอ่านข้อมูลได้<br><small style="color:#94a3b8;font-size:.8rem;margin-top:8px;display:block">ลิงก์อาจเสียหาย</small></div></div>';return;}
+
+  var dailyAll=data.daily||[];
+
+  function fmt(n){if(n===undefined||n===null)return'—';return(+n).toLocaleString('th-TH',{maximumFractionDigits:0});}
+
+  function calcAgg(arr){
+    var a={spend:0,revenue:0,impressions:0,clicks:0,purchases:0,conversations:0};
+    arr.forEach(function(d){a.spend+=(d.spend||0);a.revenue+=(d.revenue||0);a.impressions+=(d.impressions||0);a.clicks+=(d.clicks||0);a.purchases+=(d.purchases||0);a.conversations+=(d.conversations||0);});
+    a.roas=a.spend>0?Math.round(a.revenue/a.spend*100)/100:0;
+    a.ctr=a.impressions>0?Math.round(a.clicks/a.impressions*10000)/100:0;
+    a.costPerBuy=a.purchases>0?Math.round(a.spend/a.purchases):0;
+    return a;
+  }
+
+  function getVerdict(roas){
+    if(roas>=2)return{vrd:'ผลดี — แนะนำเดินหน้าต่อ',vColor:'#065f46',vBg:'linear-gradient(135deg,#d1fae5,#a7f3d0)',vIcon:'✅'};
+    if(roas>=1)return{vrd:'พอไป — ควรปรับ Creative',vColor:'#92400e',vBg:'linear-gradient(135deg,#fef3c7,#fde68a)',vIcon:'⚠️'};
+    if(roas>0) return{vrd:'ขาดทุน — ต้องปรับใหม่',vColor:'#7f1d1d',vBg:'linear-gradient(135deg,#fee2e2,#fca5a5)',vIcon:'🛑'};
+    return{vrd:'ยังไม่มีข้อมูลเพียงพอ',vColor:'#334155',vBg:'linear-gradient(135deg,#f1f5f9,#e2e8f0)',vIcon:'📊'};
+  }
+
+  function buildChart(arr){
+    if(!arr.length)return'<p style="color:#94a3b8;text-align:center;padding:24px">ไม่มีข้อมูลในช่วงนี้</p>';
+    var W=820,H=190,PL=56,PR=64,PT=14,PB=34;
+    var cW=W-PL-PR,cH=H-PT-PB;
+    var maxSpend=Math.max.apply(null,arr.map(function(d){return d.spend||0;}));
+    if(maxSpend<=0)return'<p style="color:#94a3b8;text-align:center;padding:24px">ไม่มี Spend</p>';
+    var maxR=Math.max.apply(null,arr.map(function(d){return d.spend>0?(d.revenue||0)/d.spend:0;}).concat([1]));
+    var n=arr.length;
+    var bw=Math.max(4,Math.floor(cW/n)-5);
+    var svg='<svg viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg" style="width:100%;border-radius:10px;background:#f8faff;border:1px solid #e2e8f0">';
+    [0,0.25,0.5,0.75,1].forEach(function(f){
+      var y=PT+cH*(1-f);
+      svg+='<line x1="'+PL+'" y1="'+y+'" x2="'+(PL+cW)+'" y2="'+y+'" stroke="#e2e8f0" stroke-width="1"/>';
+      if(f>0)svg+='<text x="'+(PL-5)+'" y="'+(y+4)+'" text-anchor="end" font-size="10" fill="#94a3b8">฿'+Math.round(maxSpend*f).toLocaleString()+'</text>';
+    });
+    arr.forEach(function(d,i){
+      var x=PL+i*(cW/n)+((cW/n)-bw)/2;
+      var bh=maxSpend>0?((d.spend||0)/maxSpend)*cH:0;
+      var y=PT+cH-bh;
+      svg+='<rect x="'+x+'" y="'+y+'" width="'+bw+'" height="'+bh+'" fill="rgba(59,130,246,.65)" rx="3"/>';
+      var lbl=d.date?d.date.slice(5):'';
+      svg+='<text x="'+(x+bw/2)+'" y="'+(H-PB+14)+'" text-anchor="middle" font-size="9" fill="#64748b">'+lbl+'</text>';
+    });
+    var pts=arr.map(function(d,i){
+      var r=d.spend>0?(d.revenue||0)/d.spend:0;
+      var x=PL+i*(cW/n)+cW/n/2;
+      var y=PT+cH*(1-r/maxR);
+      return x+','+y;
+    }).join(' ');
+    svg+='<polyline points="'+pts+'" fill="none" stroke="#f59e0b" stroke-width="2.5" stroke-linejoin="round"/>';
+    arr.forEach(function(d,i){
+      var r=d.spend>0?(d.revenue||0)/d.spend:0;
+      var x=PL+i*(cW/n)+cW/n/2;
+      var y=PT+cH*(1-r/maxR);
+      svg+='<circle cx="'+x+'" cy="'+y+'" r="3.5" fill="#f59e0b" stroke="#fff" stroke-width="1.5"/>';
+      if(r>0)svg+='<text x="'+x+'" y="'+(y-8)+'" text-anchor="middle" font-size="9" fill="#b45309" font-weight="700">'+r.toFixed(1)+'x</text>';
+    });
+    [0.5,1].forEach(function(f){
+      var y=PT+cH*(1-f);
+      svg+='<text x="'+(PL+cW+6)+'" y="'+(y+4)+'" font-size="9" fill="#b45309">'+Math.round(maxR*f*10)/10+'x</text>';
+    });
+    svg+='<rect x="'+PL+'" y="'+(H-6)+'" width="10" height="6" fill="rgba(59,130,246,.65)" rx="2"/>';
+    svg+='<text x="'+(PL+14)+'" y="'+(H-1)+'" font-size="9" fill="#64748b">Spend</text>';
+    svg+='<circle cx="'+(PL+66)+'" cy="'+(H-3)+'" r="4" fill="#f59e0b"/>';
+    svg+='<text x="'+(PL+74)+'" y="'+(H-1)+'" font-size="9" fill="#b45309">ROAS</text>';
+    svg+='</svg>';
+    return svg;
+  }
+
+  function buildRecs(agg,arr){
+    var recs=[];
+    if(agg.spend===0){
+      recs.push({icon:'⏸',color:'#64748b',title:'ยังไม่ได้ยิงโฆษณา',desc:'ไม่มี Spend ในช่วงนี้ — แคมเปญอาจปิดหรืองบหมด'});
+    } else {
+      if(agg.roas>=3)recs.push({icon:'🚀',color:'#10b981',title:'ROAS ดีมาก — แนะนำเพิ่มงบ',desc:'ROAS '+agg.roas.toFixed(2)+'x ดีมาก ลองเพิ่มงบ 20-30% เพื่อขยายยอดขาย'});
+      else if(agg.roas>=2)recs.push({icon:'✅',color:'#38bdf8',title:'ผลดี — คงงบไว้',desc:'ROAS '+agg.roas.toFixed(2)+'x ดี แนะนำคงงบและติดตามต่อเนื่อง'});
+      else if(agg.roas>=1)recs.push({icon:'⚠️',color:'#f59e0b',title:'ROAS ต่ำ — ควรปรับ',desc:'ROAS '+agg.roas.toFixed(2)+'x ใกล้จุดคุ้มทุน ควรลองปรับ Creative หรือ Targeting'});
+      else recs.push({icon:'🛑',color:'#ef4444',title:'ขาดทุน — ควรพิจารณาหยุด',desc:'ROAS '+agg.roas.toFixed(2)+'x ทุกบาทที่ยิงไม่คุ้มทุน ควรปรับใหม่ก่อน'});
+      if(agg.ctr<1)recs.push({icon:'📸',color:'#ef4444',title:'CTR ต่ำ — เปลี่ยน Creative',desc:'CTR '+agg.ctr.toFixed(2)+'% ภาพโฆษณาไม่ดึงดูด ควรเปลี่ยน Creative ใหม่'});
+      else if(agg.ctr<2)recs.push({icon:'🎯',color:'#f59e0b',title:'CTR ปานกลาง — ลอง A/B Test',desc:'CTR '+agg.ctr.toFixed(2)+'% ลอง A/B test Creative ใหม่เพื่อเพิ่ม CTR'});
+      else recs.push({icon:'🎯',color:'#10b981',title:'CTR ดี — Creative ทำงานได้ดี',desc:'CTR '+agg.ctr.toFixed(2)+'% Creative ดึงดูดผู้ชมได้ดี'});
+      if(arr.length>=4){
+        var half=Math.floor(arr.length/2);
+        var oldS=arr.slice(0,half).reduce(function(s,d){return s+(d.spend||0);},0)/half;
+        var newS=arr.slice(-half).reduce(function(s,d){return s+(d.spend||0);},0)/half;
+        if(oldS>0){var pct=Math.round((newS-oldS)/oldS*100);if(Math.abs(pct)>=20)recs.push({icon:pct>0?'📈':'📉',color:pct>0?'#10b981':'#ef4444',title:'Spend '+(pct>0?'เพิ่มขึ้น':'ลดลง')+' '+Math.abs(pct)+'%',desc:'ช่วงหลัง Spend เฉลี่ย ฿'+fmt(Math.round(newS))+'/วัน '+(pct>0?'สูงกว่า':'ต่ำกว่า')+'ช่วงแรก'});}
+      }
+    }
+    return recs.map(function(r){
+      return'<div style="display:flex;gap:14px;background:#f8faff;border-left:4px solid '+r.color+';border-radius:8px;padding:14px 16px;margin-bottom:10px">'
+        +'<span style="font-size:1.3rem;line-height:1.3;flex-shrink:0">'+r.icon+'</span>'
+        +'<div><div style="font-size:.9rem;font-weight:700;color:'+r.color+';margin-bottom:4px">'+r.title+'</div>'
+        +'<div style="font-size:.82rem;color:#475569;line-height:1.65">'+r.desc+'</div></div>'
+        +'</div>';
+    }).join('');
+  }
+
+  function buildTable(agg,days){
+    var rows=[
+      ['งบประมาณที่ใช้ (Total Spend)','฿'+fmt(agg.spend),''],
+      ['รายได้ (Revenue)','฿'+fmt(agg.revenue),''],
+      ['ROAS (Return on Ad Spend)',agg.roas>0?agg.roas.toFixed(2)+'x':'—',agg.roas>=2?'#d1fae5':agg.roas>=1?'#fef3c7':''],
+      ['CTR (Click-Through Rate)',agg.ctr>0?agg.ctr.toFixed(2)+'%':'—',''],
+      ['จำนวนการคลิก',fmt(agg.clicks),''],
+      ['จำนวนการแสดงผล (Impressions)',fmt(agg.impressions),''],
+      ['จำนวนการซื้อ',agg.purchases>0?fmt(agg.purchases)+' ครั้ง':'—',''],
+      ['ต้นทุนต่อการซื้อ (CPA)',agg.costPerBuy>0?'฿'+fmt(agg.costPerBuy):'—',''],
+    ];
+    return'<table style="width:100%;border-collapse:collapse;font-size:.85rem">'
+      +rows.map(function(r,i){var bg=r[2]||(i%2?'#f8faff':'#fff');return'<tr style="background:'+bg+'"><td style="padding:12px 16px;border:1px solid #e2e8f0;color:#64748b;font-weight:600;width:55%">'+r[0]+'</td><td style="padding:12px 16px;border:1px solid #e2e8f0;font-weight:700;font-size:.95rem">'+r[1]+'</td></tr>';}).join('')
+      +'</table>';
+  }
+
+  function render(periodDays){
+    var arr=dailyAll.length>=periodDays?dailyAll.slice(-periodDays):dailyAll;
+    if(!arr.length)arr=dailyAll;
+    var agg=calcAgg(arr);
+    var v=getVerdict(agg.roas);
+    var roasC=agg.roas>=2?'#10b981':agg.roas>=1?'#f59e0b':'#ef4444';
+    var now=new Date();
+    var dtStr=now.toLocaleDateString('th-TH',{year:'numeric',month:'long',day:'numeric'})+' เวลา '+now.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});
+    var eName=(data.name||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+    var has3=dailyAll.length>=3;
+    var has7=dailyAll.length>=7;
+    var periodBar='';
+    if(has3||has7){
+      periodBar='<div class="period-bar no-print">';
+      if(has3)periodBar+='<button class="ptab'+(periodDays===3?' active':'')+'" onclick="switchPeriod(3)">📅 3 วัน</button>';
+      if(has7)periodBar+='<button class="ptab'+(periodDays===7?' active':'')+'" onclick="switchPeriod(7)">📅 7 วัน</button>';
+      periodBar+='</div>';
+    }
+
+    var html='<div class="page">'
+      +'<div class="hd">'
+      +'<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:20px">'
+      +'<div style="flex:1;min-width:0">'
+      +'<div class="brand">Rich Biotech · Campaign Performance Report</div>'
+      +'<div class="hd-title">'+eName+'</div>'
+      +'<div class="hd-meta">สรุปผล '+arr.length+' วันย้อนหลัง · จัดทำ '+dtStr+'</div>'
+      +'<div class="vrd" style="background:'+v.vBg+';color:'+v.vColor+'">'+v.vIcon+' '+v.vrd+'</div>'
+      +'</div>'
+      +'<div class="hd-btns no-print">'
+      +'<button class="hd-btn" onclick="window.print()">🖨️ Print / PDF</button>'
+      +'<button class="hd-btn copy-btn" id="copyBtn" onclick="copyLink()">🔗 Copy Link สำหรับ CEO</button>'
+      +'</div>'
+      +'</div>'
+      +'</div>'
+      +periodBar
+      +'<div class="kpi-grid">'
+      +'<div class="kpi-card"><div class="kpi-lbl">Total Spend</div><div class="kpi-val" style="color:#f59e0b">฿'+fmt(agg.spend)+'</div></div>'
+      +'<div class="kpi-card"><div class="kpi-lbl">ROAS</div><div class="kpi-val" style="color:'+roasC+'">'+(agg.roas>0?agg.roas.toFixed(2)+'x':'—')+'</div></div>'
+      +'<div class="kpi-card"><div class="kpi-lbl">CTR</div><div class="kpi-val" style="color:#38bdf8">'+(agg.ctr>0?agg.ctr.toFixed(2)+'%':'—')+'</div></div>'
+      +'<div class="kpi-card"><div class="kpi-lbl">การซื้อ</div><div class="kpi-val" style="color:#10b981">'+(agg.purchases>0?fmt(agg.purchases)+' ครั้ง':'—')+'</div></div>'
+      +'</div>'
+      +'<div class="section"><div class="sec-ttl">📈 Spend &amp; ROAS รายวัน ('+arr.length+' วัน)</div>'+buildChart(arr)+'</div>'
+      +'<div class="section"><div class="sec-ttl">🤖 AI วิเคราะห์ &amp; คำแนะนำ</div>'+buildRecs(agg,arr)+'</div>'
+      +'<div class="section"><div class="sec-ttl">📊 ข้อมูลรายละเอียด</div>'+buildTable(agg,arr.length)+'</div>'
+      +'<div class="ft">จัดทำโดย Rich Biotech · Ads Mission Dashboard · '+dtStr+'<br><span style="color:#cbd5e1">รายงานนี้จัดทำสำหรับการตัดสินใจเชิงกลยุทธ์เท่านั้น</span></div>'
+      +'</div>';
+
+    document.getElementById('app').innerHTML=html;
+  }
+
+  window.switchPeriod=function(d){render(d);};
+
+  window.copyLink=function(){
+    var url=location.href;
+    if(navigator.clipboard){
+      navigator.clipboard.writeText(url).then(function(){
+        var btn=document.getElementById('copyBtn');
+        if(btn){btn.textContent='✅ Copied!';btn.style.color='#86efac';setTimeout(function(){btn.textContent='🔗 Copy Link สำหรับ CEO';btn.style.color='';},2500);}
+      });
+    } else {
+      prompt('Copy link นี้ส่งให้ CEO:',url);
+    }
+  };
+
+  var initDays=dailyAll.length>=7?7:(dailyAll.length>=3?3:dailyAll.length||1);
+  render(initDays);
+})();
+</script>
+</body>
+</html>
