@@ -6975,7 +6975,7 @@ function _renderUserMgmt(el){
       ?'<span style="display:inline-flex;align-items:center;gap:5px;font-size:.7rem;color:#059669;font-weight:600"><span style="width:7px;height:7px;border-radius:50%;background:#10b981;display:inline-block"></span>Active</span>'
       :'<span style="display:inline-flex;align-items:center;gap:5px;font-size:.7rem;color:#94a3b8;font-weight:600"><span style="width:7px;height:7px;border-radius:50%;background:#94a3b8;display:inline-block"></span>Inactive</span>';
     var roleOpts=['Admin','Hunter','HR','Viewer'].map(function(r){return '<option value="'+r+'"'+(u.role===r?' selected':'')+'>'+r+'</option>';}).join('');
-    rows+='<tr style="border-bottom:1px solid #f1f5f9;transition:.15s" onmouseover="this.style.background='#f8faff'" onmouseout="this.style.background='transparent'">'
+    rows+='<tr style="border-bottom:1px solid #f1f5f9;transition:.15s" onmouseover="this.style.background=&quot;#f8faff&quot;" onmouseout="this.style.background=&quot;transparent&quot;">'
       +'<td style="padding:12px 16px"><div style="display:flex;align-items:center;gap:10px">'+avEl+'<div><div style="font-weight:700;color:#0f172a;font-size:.82rem">'+u.name+'</div><div style="font-size:.67rem;color:#94a3b8;margin-top:1px">'+(u.note||'—')+'</div></div></div></td>'
       +'<td style="padding:12px 16px">'+roleBadge(u.role)+'</td>'
       +'<td style="padding:12px 16px">'+statusDot+'</td>'
@@ -7003,7 +7003,7 @@ function _renderUserMgmt(el){
         +'<div><label style="font-size:.67rem;color:#64748b;display:block;margin-bottom:4px">Role</label><select id="umNewRole" style="border:1.5px solid #e2e8f0;border-radius:7px;padding:7px 12px;font-size:.8rem;font-family:inherit;color:#0f172a;background:#fff"><option>Hunter</option><option>Admin</option><option>HR</option><option>Viewer</option></select></div>'
         +'<div><label style="font-size:.67rem;color:#64748b;display:block;margin-bottom:4px">หมายเหตุ</label><input id="umNewNote" placeholder="หมายเหตุ (optional)" style="border:1.5px solid #e2e8f0;border-radius:7px;padding:7px 12px;font-size:.8rem;font-family:inherit;width:180px;color:#0f172a;outline:none"></div>'
         +'<button onclick="_umAddUser()" style="background:#4f46e5;color:#fff;border:none;border-radius:7px;padding:8px 18px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit">บันทึก</button>'
-        +'<button onclick="document.getElementById('umAddForm').style.display='none'" style="background:#f1f5f9;color:#64748b;border:1px solid #e2e8f0;border-radius:7px;padding:8px 14px;font-size:.78rem;cursor:pointer;font-family:inherit">ยกเลิก</button>'
+        +'<button onclick="_umHideAdd()" style="background:#f1f5f9;color:#64748b;border:1px solid #e2e8f0;border-radius:7px;padding:8px 14px;font-size:.78rem;cursor:pointer;font-family:inherit">ยกเลิก</button>'
       +'</div>'
     +'</div>'
     +'<div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;overflow:hidden;box-shadow:0 2px 12px rgba(15,23,42,.05)">'
@@ -7023,6 +7023,7 @@ function _renderUserMgmt(el){
     +'</div>';
 }
 
+window._umHideAdd=function(){document.getElementById('umAddForm').style.display='none';};
 window._umShowAdd=function(){document.getElementById('umAddForm').style.display='block';document.getElementById('umNewName').focus();};
 window._umGetUsers=function(){return JSON.parse(localStorage.getItem('rb_users')||'[]');};
 window._umSave=function(u){localStorage.setItem('rb_users',JSON.stringify(u));};
