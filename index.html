@@ -68,7 +68,7 @@ header::after{display:none}
 /* === BARS === */
 .dbar{position:sticky;top:0;z-index:102;background:rgba(248,250,255,.97);border-bottom:1px solid var(--panel-border);padding:10px 28px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;backdrop-filter:blur(12px);box-shadow:0 1px 6px rgba(15,23,42,.05)}
 .pbar{position:sticky;top:49px;z-index:101;background:rgba(248,250,255,.95);border-bottom:1px solid var(--panel-border);padding:8px 28px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;backdrop-filter:blur(10px)}
-.abar{position:sticky;top:91px;z-index:100;background:rgba(248,250,255,.93);border-bottom:1px solid rgba(109,40,217,.18);padding:8px 28px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;backdrop-filter:blur(10px)}
+.abar{position:sticky;top:49px;z-index:100;background:rgba(248,250,255,.93);border-bottom:1px solid rgba(109,40,217,.18);padding:8px 28px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;backdrop-filter:blur(10px)}
 .bar-label{font-family:'Rajdhani',sans-serif;font-size:.7rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:2px;white-space:nowrap}
 .abar .bar-label{color:var(--purple2)}
 .pill-wrap{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
@@ -752,7 +752,7 @@ function disableCommInputs(){
   <div class="hlogo"><div class="hicon">⚔️</div><div><div class="htitle">Ads Mission Dashboard</div><div class="hsub">Rich Biotech &bull; Hunter Analytics System &bull; Mission Control</div></div></div>
   <div class="hright"><div class="live-badge"><div class="dot"></div><span>Online</span></div><div class="upd" id="upd">กำลังโหลด...</div><div class="cdwn" id="cdwn"></div></div>
 </header>
-<div class="dbar">
+<div class="dbar" style="display:none">
   <span class="bar-label">📅 ช่วงเวลา</span>
   <div class="pill-wrap">
     <button class="dpill" onclick="setPreset(this,'today')">Today</button>
@@ -772,7 +772,7 @@ function disableCommInputs(){
   <div class="dinfo" id="dinfo">— Mission</div>
 </div>
 <div class="pbar" id="pbar" style="display:none"><span class="bar-label">🛡️ Product</span><div class="pill-wrap" id="productPills"></div></div>
-<div class="abar" id="abar" style="display:none">
+<div class="abar" id="abar">
   <span class="bar-label">⚡ Hunter</span>
   <div class="pill-wrap" id="analystPills"></div>
   <button class="photo-manage-btn" onclick="openPhotoManager()">📷 Player Profile</button>
@@ -1040,6 +1040,7 @@ function applyCustom(){
 function buildProductFilter(){
   var prods=[];(s1data||[]).forEach(function(r){if(r.product&&prods.indexOf(r.product)<0)prods.push(r.product);});
   var pb=document.getElementById('pbar'),c=document.getElementById('productPills');
+  pb.style.display='none';return;
   if(!prods.length){pb.style.display='none';return;}
   pb.style.display='flex';c.innerHTML='';
   function mk(l,v){var b=document.createElement('button');b.className='ppill'+(filterProduct===v?' active':'');b.textContent=l;b.onclick=function(){filterProduct=v;buildProductFilter();renderAll();};c.appendChild(b);}
@@ -2203,6 +2204,7 @@ function renderCommission(){
 // ============================================================
 
 function switchView(view,el){
+  var _db=document.querySelector('.dbar');if(_db)_db.style.display='none';
   if(sessionStorage.getItem('rb_auth')==='hr'&&view!=='commission')return;
   document.querySelectorAll('.sb-item').forEach(function(i){i.classList.remove('active');});
   if(el)el.classList.add('active');
@@ -2240,6 +2242,7 @@ function switchView(view,el){
     mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='block';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var trv2=document.getElementById('trackView');if(trv2)trv2.style.display='none';var lv2=document.getElementById('leaveView');if(lv2)lv2.style.display='none';
     renderBenchmark();window.scrollTo({top:0,behavior:'smooth'});
   } else {
+    if(_db)_db.style.display='flex';
     mv.style.display='block';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var trv2=document.getElementById('trackView');if(trv2)trv2.style.display='none';var lv2=document.getElementById('leaveView');if(lv2)lv2.style.display='none';
     if(view!=='top')setTimeout(function(){var t=document.getElementById(view);if(t){var y=t.getBoundingClientRect().top+window.scrollY-100;window.scrollTo({top:y,behavior:'smooth'});}},50);
   }
