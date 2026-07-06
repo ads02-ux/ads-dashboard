@@ -6322,18 +6322,27 @@ function _renderAlert(el){
     h+='<div style="font-size:.72rem;color:#94a3b8;margin-bottom:16px">📅 '+lastDate+' · '+campCount+' แคมเปญ · '+accsLoaded.length+' บัญชี · ดูอยู่: <b>'+prodLabel+'</b> · สแกนเมื่อ '+new Date().toLocaleTimeString('th-TH')+'</div>';
 
     var mkCards=function(arr,bg,border,tc){
-      return arr.map(function(a){
+      // Group alerts by campaign name
+      var grouped={},order=[];
+      arr.forEach(function(a){
+        if(!grouped[a.camp]){grouped[a.camp]=[];order.push(a.camp);}
+        grouped[a.camp].push(a);
+      });
+      return order.map(function(camp){
+        var items=grouped[camp];
+        var first=items[0];
         return '<div style="background:'+bg+';border:1.5px solid '+border+';border-radius:12px;padding:16px 20px;margin-bottom:10px">'
           +'<div style="display:flex;align-items:flex-start;gap:12px">'
-          +'<div style="font-size:1.4rem;line-height:1.3;flex-shrink:0">'+a.icon+'</div>'
+          +'<div style="font-size:1.4rem;line-height:1.3;flex-shrink:0">'+first.icon+'</div>'
           +'<div style="flex:1;min-width:0">'
-          +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap">'
-          +'<span style="font-size:.82rem;font-weight:800;color:'+tc+'">'+a.msg+'</span>'
-          +'<span style="font-size:.66rem;background:rgba(0,0,0,.07);padding:2px 8px;border-radius:10px;color:#475569;max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+a.camp+'">'+a.camp+'</span>'
-          +'</div>'
-          +'<div style="font-size:.79rem;font-weight:600;color:#0f172a;margin-bottom:2px">'+a.detail+'</div>'
-          +'<div style="font-size:.72rem;color:#64748b">'+a.sub+'</div>'
-          +(a.meta||'')
+          +'<div style="font-size:.68rem;background:rgba(0,0,0,.07);padding:2px 10px;border-radius:10px;color:#475569;display:inline-block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:10px" title="'+camp+'">'+camp+'</div>'
+          +items.map(function(a,i){
+            return (i>0?'<div style="border-top:1px dashed '+border+';margin:8px 0"></div>':'')
+              +'<div style="font-size:.82rem;font-weight:800;color:'+tc+';margin-bottom:3px">'+a.msg+'</div>'
+              +'<div style="font-size:.79rem;font-weight:600;color:#0f172a;margin-bottom:2px">'+a.detail+'</div>'
+              +'<div style="font-size:.72rem;color:#64748b">'+a.sub+'</div>'
+              +(a.meta||'');
+          }).join('')
           +'</div></div></div>';
       }).join('');
     };
