@@ -5987,6 +5987,20 @@ function _buildChartRankData(){
 
 
 // ═══ Alert การแจ้งเตือน ════════════════════════════════════════════════════
+function _getCfgForProd(pi){
+  var gCfg={};try{gCfg=JSON.parse(localStorage.getItem('rb_alert_cfg')||'{}');}catch(e){}
+  var base={roasWarn:gCfg.roasWarn||1.5,roasCrit:gCfg.roasCrit||1.0,roasScale:gCfg.roasScale||2.0,ctrWarn:gCfg.ctrWarn||0.5,spendMax:gCfg.spendMax||10000,newCampDays:gCfg.newCampDays||2};
+  if(pi<0)return base;
+  var pStored=localStorage.getItem('rb_alert_cfg_P'+pi);
+  if(!pStored)return base;
+  var pCfg={};try{pCfg=JSON.parse(pStored);}catch(e){}
+  if(!Object.keys(pCfg).length)return base;
+  return{roasWarn:pCfg.roasWarn||base.roasWarn,roasCrit:pCfg.roasCrit||base.roasCrit,roasScale:pCfg.roasScale||base.roasScale,ctrWarn:pCfg.ctrWarn||base.ctrWarn,spendMax:pCfg.spendMax||base.spendMax,newCampDays:pCfg.newCampDays||base.newCampDays};
+}
+function _alertResetProdCfg(pi){
+  try{localStorage.removeItem('rb_alert_cfg_P'+pi);}catch(e){}
+  var alv=document.getElementById('alertView');if(alv)_renderAlert(alv);
+}
 function _alertSaveCfg(){
   var cfg={
     roasWarn:parseFloat((document.getElementById('al-roasWarn')||{}).value)||1.5,
@@ -5996,7 +6010,9 @@ function _alertSaveCfg(){
     spendMax:parseFloat((document.getElementById('al-spendMax')||{}).value)||10000,
     newCampDays:parseFloat((document.getElementById('al-newCampDays')||{}).value)||2
   };
-  try{localStorage.setItem('rb_alert_cfg',JSON.stringify(cfg));}catch(e){}
+  var _sp=window._alertFilterProd!==undefined?window._alertFilterProd:-1;
+  var _saveKey=_sp>=0?'rb_alert_cfg_P'+_sp:'rb_alert_cfg';
+  try{localStorage.setItem(_saveKey,JSON.stringify(cfg));}catch(e){}
   var alv=document.getElementById('alertView');if(alv)_renderAlert(alv);
 }
 
@@ -6023,11 +6039,11 @@ function _renderAlert(el){
   }
 
   // ── config ─────────────────────────────────────────────────────────────────
-  var cfg={};try{cfg=JSON.parse(localStorage.getItem('rb_alert_cfg')||'{}');}catch(e){}
-  var roasWarn=cfg.roasWarn||1.5,roasCrit=cfg.roasCrit||1.0,ctrWarn=cfg.ctrWarn||0.5,spendMax=cfg.spendMax||10000;
-  var roasScale=cfg.roasScale||2.0,newCampDays=cfg.newCampDays||2;
   if(window._alertFilterProd===undefined)window._alertFilterProd=-1;
   var selProd=window._alertFilterProd;
+  var cfg=_getCfgForProd(selProd);
+  var roasWarn=cfg.roasWarn||1.5,roasCrit=cfg.roasCrit||1.0,ctrWarn=cfg.ctrWarn||0.5,spendMax=cfg.spendMax||10000;
+  var roasScale=cfg.roasScale||2.0,newCampDays=cfg.newCampDays||2;
 
   var h='';
 
@@ -6052,8 +6068,13 @@ function _renderAlert(el){
   h+='</div>';
 
   // ── config panel ───────────────────────────────────────────────────────────
+  var _hasProdCfg=selProd>=0&&!!localStorage.getItem('rb_alert_cfg_P'+selProd);
+  var _cfgTitle=selProd>=0?(FB_HIERARCHY[selProd].icon+' '+FB_HIERARCHY[selProd].product+(_hasProdCfg?' <span style="color:#10b981;font-size:.68rem;font-weight:600">● เกณฑ์เฉพาะ</span>':' <span style="color:#94a3b8;font-size:.68rem">(ใช้ค่าเริ่มต้น)</span>')):' ทุกสินค้า (ค่าเริ่มต้น)';
   h+='<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:16px 20px;margin-bottom:24px">';
-  h+='<div style="font-size:.78rem;font-weight:700;color:#0f172a;margin-bottom:12px">⚙️ ตั้งค่าเกณฑ์การแจ้งเตือน</div>';
+  h+='<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px">';
+  h+='<div style="font-size:.78rem;font-weight:700;color:#0f172a">⚙️ เกณฑ์สำหรับ'+_cfgTitle+'</div>';
+  h+=(selProd>=0&&_hasProdCfg?'<button onclick="_alertResetProdCfg('+selProd+')" style="background:#fee2e2;border:1px solid #fca5a5;color:#dc2626;border-radius:6px;padding:4px 12px;font-size:.69rem;font-weight:700;cursor:pointer;font-family:inherit">↩ รีเซ็ตเป็นค่าเริ่มต้น</button>':'<span style="font-size:.68rem;color:#94a3b8">'+( selProd>=0?'แก้ไขแล้วจะบันทึกแยกสินค้านี้':'เป็นค่าเริ่มต้นให้ทุกสินค้า' )+'</span>');
+  h+='</div>';
   h+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px">';
   h+='<div><label style="font-size:.72rem;color:#64748b;display:block;margin-bottom:4px">ROAS เตือน 🟡</label><input id="al-roasWarn" type="number" step="0.1" value="'+roasWarn+'" style="width:100%;padding:6px 10px;border:1px solid #e2e8f0;border-radius:6px;font-size:.8rem;font-family:inherit"></div>';
   h+='<div><label style="font-size:.72rem;color:#64748b;display:block;margin-bottom:4px">ROAS วิกฤต 🔴</label><input id="al-roasCrit" type="number" step="0.1" value="'+roasCrit+'" style="width:100%;padding:6px 10px;border:1px solid #e2e8f0;border-radius:6px;font-size:.8rem;font-family:inherit"></div>';
@@ -6158,6 +6179,10 @@ function _renderAlert(el){
 
   Object.keys(bycamp).forEach(function(camp){
     var d=bycamp[camp];
+    var _ci2=campAccMap[camp]||{};
+    var _cPi=(_ci2.prodIdx!==undefined)?_ci2.prodIdx:-1;
+    var _cc=_getCfgForProd(_cPi);
+    var roasCrit=_cc.roasCrit,roasWarn=_cc.roasWarn,roasScale=_cc.roasScale,ctrWarn=_cc.ctrWarn,spendMax=_cc.spendMax,newCampDays=_cc.newCampDays;
     var roas=d.spend>0?d.revenue/d.spend:0;
     var ctr=d.impressions>0?d.clicks/d.impressions*100:0;
     var prev=bycampPrev[camp]||{};var prevSpend=prev.spend||0;
