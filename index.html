@@ -684,6 +684,9 @@ function disableCommInputs(){
     <div class="sb-item" id="sb-chartrank" onclick="switchView('chartrank',this)">
       <span class="sb-icon">🏆</span><span>ชาร์ตอันดับ</span>
     </div>
+    <div class="sb-item" id="sb-alert" onclick="switchView('alert',this)">
+      <span class="sb-icon">🔔</span><span>Alert การแจ้งเตือน</span>
+    </div>
     <div class="sb-sep"></div>
     <div class="sb-section">Hunter<span style="display:block;font-size:.6rem;font-weight:400;opacity:.55;margin-top:1px;letter-spacing:.02em">ดึงข้อมูลจาก Google Sheets</span></div>
     <div class="sb-item" onclick="sbNav(this,'top')" id="sb-home">
@@ -880,6 +883,7 @@ function disableCommInputs(){
 <div id="aiView" style="display:none;padding:28px 32px"></div>
 <div id="adsaiView" style="display:none;padding:28px 32px"></div>
 <div id="trackView" style="display:none;padding:28px 32px"></div>
+<div id="alertView" style="display:none;padding:28px 32px"></div>
 <div id="leaveView" style="display:none;padding:20px 24px"></div>
 <div id="dailyTaskView" style="display:none;padding:20px 24px"></div>
 <div id="userMgmtView" style="display:none;padding:28px 32px"></div>
@@ -2298,6 +2302,10 @@ function switchView(view,el){
   } else if(view==='benchmark'){
     mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='block';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var trv2=document.getElementById('trackView');if(trv2)trv2.style.display='none';var lv2=document.getElementById('leaveView');if(lv2)lv2.style.display='none';
     renderBenchmark();window.scrollTo({top:0,behavior:'smooth'});
+  } else if(view==='alert'){
+    mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var trv2=document.getElementById('trackView');if(trv2)trv2.style.display='none';var lv2=document.getElementById('leaveView');if(lv2)lv2.style.display='none';
+    var alv=document.getElementById('alertView');if(alv){alv.style.display='block';_renderAlert(alv);}
+    window.scrollTo({top:0,behavior:'smooth'});
   } else {
     if(_db)_db.style.display='flex';
     mv.style.display='block';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var trv2=document.getElementById('trackView');if(trv2)trv2.style.display='none';var lv2=document.getElementById('leaveView');if(lv2)lv2.style.display='none';
@@ -5976,6 +5984,168 @@ function _buildChartRankData(){
   }
   return rows;
 }
+
+
+// ═══ Alert การแจ้งเตือน ════════════════════════════════════════════════════
+function _alertSaveCfg(){
+  var cfg={
+    roasWarn:parseFloat((document.getElementById('al-roasWarn')||{}).value)||1.5,
+    roasCrit:parseFloat((document.getElementById('al-roasCrit')||{}).value)||1.0,
+    ctrWarn:parseFloat((document.getElementById('al-ctrWarn')||{}).value)||0.5,
+    spendMax:parseFloat((document.getElementById('al-spendMax')||{}).value)||10000
+  };
+  try{localStorage.setItem('rb_alert_cfg',JSON.stringify(cfg));}catch(e){}
+  var alv=document.getElementById('alertView');if(alv)_renderAlert(alv);
+}
+
+function _renderAlert(el){
+  var cfg={};try{cfg=JSON.parse(localStorage.getItem('rb_alert_cfg')||'{}');}catch(e){}
+  var roasWarn=cfg.roasWarn||1.5,roasCrit=cfg.roasCrit||1.0,ctrWarn=cfg.ctrWarn||0.5,spendMax=cfg.spendMax||10000;
+
+  var h='';
+  h+='<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px">';
+  h+='<div><div style="font-family:Rajdhani,sans-serif;font-size:1.7rem;font-weight:900;color:#0f172a;letter-spacing:.3px;margin-bottom:4px">🔔 Alert การแจ้งเตือน</div>';
+  h+='<div style="font-size:.76rem;color:#64748b">ตรวจสอบแคมเปญอัตโนมัติ — แจ้งเตือนเมื่อ ROAS ต่ำ, ใช้งบสูงผิดปกติ หรือมีปัญหาประสิทธิภาพ</div></div>';
+  h+='<button onclick="_renderAlert(document.getElementById(\'alertView\'))" style="background:#f1f5f9;border:1px solid #e2e8f0;color:#374151;border-radius:8px;padding:8px 16px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit">🔄 รีเฟรช</button>';
+  h+='</div>';
+
+  // Config panel
+  h+='<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:16px 20px;margin-bottom:24px">';
+  h+='<div style="font-size:.78rem;font-weight:700;color:#0f172a;margin-bottom:12px">⚙️ ตั้งค่าเกณฑ์การแจ้งเตือน</div>';
+  h+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px">';
+  h+='<div><label style="font-size:.72rem;color:#64748b;display:block;margin-bottom:4px">ROAS เตือน 🟡</label><input id="al-roasWarn" type="number" step="0.1" value="'+roasWarn+'" style="width:100%;padding:6px 10px;border:1px solid #e2e8f0;border-radius:6px;font-size:.8rem;font-family:inherit"></div>';
+  h+='<div><label style="font-size:.72rem;color:#64748b;display:block;margin-bottom:4px">ROAS วิกฤต 🔴</label><input id="al-roasCrit" type="number" step="0.1" value="'+roasCrit+'" style="width:100%;padding:6px 10px;border:1px solid #e2e8f0;border-radius:6px;font-size:.8rem;font-family:inherit"></div>';
+  h+='<div><label style="font-size:.72rem;color:#64748b;display:block;margin-bottom:4px">CTR ต่ำสุด % 🟡</label><input id="al-ctrWarn" type="number" step="0.1" value="'+ctrWarn+'" style="width:100%;padding:6px 10px;border:1px solid #e2e8f0;border-radius:6px;font-size:.8rem;font-family:inherit"></div>';
+  h+='<div><label style="font-size:.72rem;color:#64748b;display:block;margin-bottom:4px">งบสูงสุด/วัน ฿ 🟡</label><input id="al-spendMax" type="number" step="1000" value="'+spendMax+'" style="width:100%;padding:6px 10px;border:1px solid #e2e8f0;border-radius:6px;font-size:.8rem;font-family:inherit"></div>';
+  h+='</div>';
+  h+='<button onclick="_alertSaveCfg()" style="margin-top:12px;background:#0f172a;color:#fff;border:none;border-radius:8px;padding:8px 20px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit">💾 บันทึกเกณฑ์</button>';
+  h+='</div>';
+
+  // Collect data from fbDataMap
+  var allRows=fbDataMap[fbAccount]||[];
+  var allDates=[];
+  allRows.forEach(function(r){if(r.date&&allDates.indexOf(r.date)<0)allDates.push(r.date);});
+  allDates.sort();
+  var lastDate=allDates[allDates.length-1]||'';
+  var prevDate=allDates[allDates.length-2]||'';
+
+  // Aggregate by campaign for last date
+  var bycamp={};
+  allRows.forEach(function(r){
+    if(!r.date||r.date!==lastDate)return;
+    if(!bycamp[r.campaign])bycamp[r.campaign]={campaign:r.campaign,spend:0,revenue:0,impressions:0,clicks:0,purchases:0,conversations:0};
+    var b=bycamp[r.campaign];
+    b.spend+=(r.spend||0);b.revenue+=(r.revenue||0);b.impressions+=(r.impressions||0);
+    b.clicks+=(r.clicks||0);b.purchases+=(r.purchases||0);b.conversations+=(r.conversations||0);
+  });
+
+  // Aggregate by campaign for prev date
+  var bycampPrev={};
+  allRows.forEach(function(r){
+    if(!r.date||r.date!==prevDate)return;
+    if(!bycampPrev[r.campaign])bycampPrev[r.campaign]={spend:0,revenue:0};
+    bycampPrev[r.campaign].spend+=(r.spend||0);
+    bycampPrev[r.campaign].revenue+=(r.revenue||0);
+  });
+
+  var alerts=[];
+  var campCount=Object.keys(bycamp).length;
+
+  Object.keys(bycamp).forEach(function(camp){
+    var d=bycamp[camp];
+    var roas=d.spend>0?d.revenue/d.spend:0;
+    var ctr=d.impressions>0?d.clicks/d.impressions*100:0;
+    var prev=bycampPrev[camp]||{};
+    var prevSpend=prev.spend||0;
+
+    if(d.spend>0&&roas<roasCrit){
+      alerts.push({level:'critical',icon:'🔴',camp:camp,msg:'ROAS วิกฤต',detail:'ROAS '+roas.toFixed(2)+'× (เกณฑ์: <'+roasCrit+'×)',sub:'งบ ฿'+d.spend.toLocaleString('th-TH')+' · รายได้ ฿'+d.revenue.toLocaleString('th-TH')});
+    } else if(d.spend>0&&roas<roasWarn){
+      alerts.push({level:'warning',icon:'🟡',camp:camp,msg:'ROAS ต่ำกว่าเกณฑ์',detail:'ROAS '+roas.toFixed(2)+'× (เกณฑ์: <'+roasWarn+'×)',sub:'งบ ฿'+d.spend.toLocaleString('th-TH')+' · รายได้ ฿'+d.revenue.toLocaleString('th-TH')});
+    }
+
+    if(d.spend>500&&d.purchases===0){
+      alerts.push({level:'warning',icon:'🟡',camp:camp,msg:'ไม่มียอดซื้อ',detail:'งบ ฿'+d.spend.toLocaleString('th-TH')+' แต่ยอดซื้อ = 0',sub:'ตรวจสอบ Target · ครีเอทีฟ · Landing Page'});
+    }
+
+    if(d.impressions>1000&&ctr<ctrWarn){
+      alerts.push({level:'warning',icon:'🟡',camp:camp,msg:'CTR ต่ำ',detail:'CTR '+ctr.toFixed(2)+'% (เกณฑ์: <'+ctrWarn+'%)',sub:'Impression '+d.impressions.toLocaleString('th-TH')+' · คลิก '+d.clicks.toLocaleString('th-TH')});
+    }
+
+    if(prevSpend>0&&d.spend>prevSpend*1.5&&d.spend>2000){
+      var pct=Math.round((d.spend/prevSpend-1)*100);
+      alerts.push({level:'warning',icon:'🟡',camp:camp,msg:'งบพุ่งผิดปกติ',detail:'งบวันนี้ ฿'+d.spend.toLocaleString('th-TH')+' (+'+pct+'% จากเมื่อวาน)',sub:'เมื่อวาน ฿'+prevSpend.toLocaleString('th-TH')});
+    }
+
+    if(d.spend>spendMax){
+      alerts.push({level:'warning',icon:'🟡',camp:camp,msg:'งบสูงกว่าเพดาน',detail:'งบ ฿'+d.spend.toLocaleString('th-TH')+' (เพดาน ฿'+spendMax.toLocaleString('th-TH')+')',sub:'พิจารณาปรับงบหรือตั้ง Cap'});
+    }
+  });
+
+  Object.keys(bycampPrev).forEach(function(camp){
+    if(!bycamp[camp]&&bycampPrev[camp].spend>0){
+      alerts.push({level:'info',icon:'⚪',camp:camp,msg:'แคมเปญหยุดใช้งบ',detail:'มีข้อมูลเมื่อวาน แต่ไม่มีข้อมูลวันล่าสุด ('+lastDate+')',sub:'ตรวจสอบว่าแคมเปญยัง Active อยู่หรือเปล่า'});
+    }
+  });
+
+  var crits=alerts.filter(function(a){return a.level==='critical';});
+  var warns=alerts.filter(function(a){return a.level==='warning';});
+  var infos=alerts.filter(function(a){return a.level==='info';});
+  var campAlerted=new Set(alerts.map(function(a){return a.camp;})).size;
+  var campOk=Math.max(0,campCount-campAlerted);
+
+  // Summary bar
+  h+='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px">';
+  h+='<div style="background:linear-gradient(135deg,#fef2f2,#fff);border:1.5px solid #fca5a5;border-radius:12px;padding:16px;text-align:center"><div style="font-size:2rem;font-weight:900;color:#dc2626">'+crits.length+'</div><div style="font-size:.72rem;color:#dc2626;font-weight:700;margin-top:2px">🔴 วิกฤต</div></div>';
+  h+='<div style="background:linear-gradient(135deg,#fffbeb,#fff);border:1.5px solid #fbbf24;border-radius:12px;padding:16px;text-align:center"><div style="font-size:2rem;font-weight:900;color:#d97706">'+warns.length+'</div><div style="font-size:.72rem;color:#d97706;font-weight:700;margin-top:2px">🟡 เตือน</div></div>';
+  h+='<div style="background:linear-gradient(135deg,#f0fdf4,#fff);border:1.5px solid #86efac;border-radius:12px;padding:16px;text-align:center"><div style="font-size:2rem;font-weight:900;color:#16a34a">'+campOk+'</div><div style="font-size:.72rem;color:#16a34a;font-weight:700;margin-top:2px">🟢 ปกติ</div></div>';
+  h+='</div>';
+
+  if(!lastDate){
+    h+='<div style="text-align:center;padding:60px;color:#94a3b8;font-size:.85rem">⚠️ ยังไม่มีข้อมูล — กรุณาไปหน้า Facebook Ads ก่อนเพื่อดึงข้อมูล</div>';
+  } else {
+    h+='<div style="font-size:.72rem;color:#94a3b8;margin-bottom:16px">📅 ข้อมูลวันล่าสุด: <b>'+lastDate+'</b> · '+campCount+' แคมเปญ · สแกนเมื่อ '+new Date().toLocaleTimeString('th-TH')+'</div>';
+
+    if(alerts.length===0){
+      h+='<div style="background:linear-gradient(135deg,#f0fdf4,#ecfdf5);border:2px solid #86efac;border-radius:16px;padding:48px;text-align:center">';
+      h+='<div style="font-size:3rem;margin-bottom:12px">✅</div>';
+      h+='<div style="font-size:1.05rem;font-weight:800;color:#16a34a;margin-bottom:6px">ทุกแคมเปญปกติดี</div>';
+      h+='<div style="font-size:.78rem;color:#4ade80">ROAS, CTR และงบอยู่ในเกณฑ์ทั้งหมด</div>';
+      h+='</div>';
+    } else {
+      var mkCards=function(arr,bg,border,tc){
+        return arr.map(function(a){
+          return '<div style="background:'+bg+';border:1.5px solid '+border+';border-radius:12px;padding:16px 20px;margin-bottom:10px">'
+            +'<div style="display:flex;align-items:flex-start;gap:12px">'
+            +'<div style="font-size:1.5rem;line-height:1.2;flex-shrink:0">'+a.icon+'</div>'
+            +'<div style="flex:1;min-width:0">'
+            +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap">'
+            +'<span style="font-size:.82rem;font-weight:800;color:'+tc+'">'+a.msg+'</span>'
+            +'<span style="font-size:.68rem;background:rgba(0,0,0,.07);padding:2px 8px;border-radius:10px;color:#475569;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+a.camp+'</span>'
+            +'</div>'
+            +'<div style="font-size:.79rem;font-weight:600;color:#0f172a;margin-bottom:3px">'+a.detail+'</div>'
+            +'<div style="font-size:.72rem;color:#64748b">'+a.sub+'</div>'
+            +'</div></div></div>';
+        }).join('');
+      };
+      if(crits.length>0){
+        h+='<div style="font-size:.78rem;font-weight:800;color:#dc2626;margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px">🔴 วิกฤต — ต้องแก้ไขทันที</div>';
+        h+=mkCards(crits,'linear-gradient(135deg,#fef2f2,#fff)','#fca5a5','#dc2626');
+      }
+      if(warns.length>0){
+        h+='<div style="font-size:.78rem;font-weight:800;color:#d97706;margin-bottom:10px;'+(crits.length?'margin-top:20px;':'')+' text-transform:uppercase;letter-spacing:.5px">🟡 เตือน — ควรตรวจสอบ</div>';
+        h+=mkCards(warns,'linear-gradient(135deg,#fffbeb,#fff)','#fbbf24','#d97706');
+      }
+      if(infos.length>0){
+        h+='<div style="font-size:.78rem;font-weight:800;color:#64748b;margin-bottom:10px;margin-top:20px;text-transform:uppercase;letter-spacing:.5px">⚪ ข้อมูลเพิ่มเติม</div>';
+        h+=mkCards(infos,'#f8fafc','#e2e8f0','#374151');
+      }
+    }
+  }
+
+  el.innerHTML=h;
+}
+// ═══════════════════════════════════════════════════════════════════════════
 
 function _renderChartRank(el){
   if(!el)el=document.getElementById('chartrankView');
