@@ -2260,6 +2260,7 @@ function renderCommission(){
 function switchView(view,el){
   var _db=document.querySelector('.dbar');if(_db)_db.style.display='none';
   var _umv=document.getElementById('userMgmtView');if(_umv)_umv.style.display='none';
+  var _alv=document.getElementById('alertView');if(_alv)_alv.style.display='none';
   var _auth=sessionStorage.getItem('rb_auth'),_acc=sessionStorage.getItem('rb_access');
   if(_auth==='hr'&&view!=='commission')return;
   if(_auth==='limited'&&_acc){var _accParsed;try{_accParsed=JSON.parse(_acc);}catch(e){_accParsed=_acc;}var _accKeys=Array.isArray(_accParsed)?_accParsed:[_accParsed];var _allowed=[];_accKeys.forEach(function(k){var v=_viewAccessMap[k]||[];v.forEach(function(vn){if(_allowed.indexOf(vn)<0)_allowed.push(vn);});});if(_allowed.indexOf(view)<0)return;}
