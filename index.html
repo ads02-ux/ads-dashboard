@@ -3045,6 +3045,28 @@ function _renderFBProducts(el){
   h+=kpiCard('ROAS',gRoas.toFixed(2)+'x','linear-gradient(135deg,#a855f7,#6d28d9)','🎯');
   h+='</div>';
 
+  // ── Overview trend chart ──
+  (function(){
+    var _ovAllRows=[];
+    productData.forEach(function(x){
+      x.allAccNames.forEach(function(n){if(fbDataMap[n])_ovAllRows=_ovAllRows.concat(fbDataMap[n]);});
+    });
+    var _ovFiltered=_fbFilterRows(_ovAllRows);
+    var _ovByDate={};
+    _ovFiltered.forEach(function(r){
+      if(!r.date)return;
+      if(!_ovByDate[r.date])_ovByDate[r.date]={date:r.date,spend:0,revenue:0};
+      _ovByDate[r.date].spend+=r.spend;_ovByDate[r.date].revenue+=r.revenue;
+    });
+    var _ovDaily=Object.keys(_ovByDate).sort().map(function(d){return _ovByDate[d];});
+    if(_ovDaily.length>1){
+      h+='<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px 20px;margin-bottom:22px;box-shadow:0 2px 8px rgba(15,23,42,.04)">';
+      h+='<div style="font-size:.7rem;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">📊 Spend &amp; ROAS รายวัน — ภาพรวมทุกกลุ่ม</div>';
+      h+=_ovTrendChart(_ovDaily);
+      h+='</div>';
+    }
+  })();
+
   // ── Product cards grid ──
   h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:22px">';
   productData.forEach(function(x){
@@ -6631,6 +6653,68 @@ function _renderCampDetailContent(campName,campId,days){
     +'</div>';
 
   el.innerHTML=html;
+}
+
+function _ovTrendChart(dailyArr){
+  if(!dailyArr||!dailyArr.length)return'';
+  var W=860,H=160,PL=52,PR=60,PT=12,PB=28;
+  var cW=W-PL-PR,cH=H-PT-PB;
+  var maxSpend=Math.max.apply(null,dailyArr.map(function(d){return d.spend;}));
+  if(maxSpend<=0)return'<div style="color:#64748b;font-size:.75rem;text-align:center;padding:16px">ไม่มี Spend ในช่วงนี้</div>';
+  var roasArr=dailyArr.map(function(d){return d.spend>0?d.revenue/d.spend:0;});
+  var maxRoas=Math.max.apply(null,roasArr);
+  var n=dailyArr.length;
+  var bw=Math.max(4,Math.floor(cW/n)-4);
+  var svg='<svg viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg" style="width:100%;border-radius:8px;background:#f8faff;border:1px solid #e8edf6">';
+  // Grid lines
+  [0,0.25,0.5,0.75,1].forEach(function(f){
+    var y=PT+cH*(1-f);
+    svg+='<line x1="'+PL+'" y1="'+y+'" x2="'+(PL+cW)+'" y2="'+y+'" stroke="rgba(203,213,225,.6)" stroke-width="1"/>';
+    if(f>0){
+      var lbl=maxSpend*f>=10000?'฿'+Math.round(maxSpend*f/1000)+'K':'฿'+Math.round(maxSpend*f);
+      svg+='<text x="'+(PL-4)+'" y="'+(y+4)+'" text-anchor="end" font-size="9" fill="#64748b">'+lbl+'</text>';
+    }
+  });
+  // Bars + ROAS line
+  var rPts=[];
+  dailyArr.forEach(function(d,i){
+    var xc=PL+(i+0.5)*(cW/n);
+    var x=xc-bw/2;
+    var h=(maxSpend>0?d.spend/maxSpend:0)*cH;
+    var y=PT+cH-h;
+    svg+='<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+bw+'" height="'+Math.max(h,0).toFixed(1)+'" fill="rgba(24,119,242,.7)" rx="2">'
+      +'<title>'+d.date+' | Spend: ฿'+Math.round(d.spend).toLocaleString()+'</title></rect>';
+    if(maxRoas>0){
+      var roas=d.spend>0?d.revenue/d.spend:0;
+      var ry=PT+cH*(1-(roas/maxRoas));
+      rPts.push({x:xc,y:ry,roas:roas,date:d.date});
+    }
+  });
+  if(rPts.length>1){
+    var pts=rPts.map(function(p){return p.x.toFixed(1)+','+p.y.toFixed(1);}).join(' ');
+    svg+='<polyline points="'+pts+'" fill="none" stroke="#f59e0b" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>';
+    rPts.forEach(function(p){
+      svg+='<circle cx="'+p.x.toFixed(1)+'" cy="'+p.y.toFixed(1)+'" r="3.5" fill="#f59e0b" stroke="#fff" stroke-width="1.5">'
+        +'<title>'+p.date+' | ROAS: '+p.roas.toFixed(2)+'x</title></circle>';
+    });
+    svg+='<text x="'+(PL+cW+4)+'" y="'+(PT+8)+'" font-size="8.5" fill="#f59e0b" font-weight="700">ROAS</text>';
+    svg+='<text x="'+(PL+cW+4)+'" y="'+(PT+19)+'" font-size="8" fill="#f59e0b">'+maxRoas.toFixed(1)+'x</text>';
+  }
+  // X-axis labels
+  var step=n<=7?1:n<=14?2:Math.ceil(n/10);
+  dailyArr.forEach(function(d,i){
+    if(i%step===0||i===n-1){
+      var x=PL+(i+0.5)*(cW/n);
+      svg+='<text x="'+x.toFixed(1)+'" y="'+(H-4)+'" text-anchor="middle" font-size="8.5" fill="#64748b">'+(d.date?d.date.slice(5):'')+'</text>';
+    }
+  });
+  // Legend
+  svg+='<rect x="'+PL+'" y="'+PT+'" width="10" height="10" fill="rgba(24,119,242,.7)" rx="1"/>';
+  svg+='<text x="'+(PL+13)+'" y="'+(PT+9)+'" font-size="8.5" fill="#475569">Spend</text>';
+  svg+='<circle cx="'+(PL+55)+'" cy="'+(PT+5)+'" r="3.5" fill="#f59e0b"/>';
+  svg+='<text x="'+(PL+62)+'" y="'+(PT+9)+'" font-size="8.5" fill="#475569">ROAS</text>';
+  svg+='</svg>';
+  return svg;
 }
 
 function _campDetailChart(dailyArr){
