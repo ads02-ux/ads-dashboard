@@ -6000,7 +6000,34 @@ function _alertSaveCfg(){
   var alv=document.getElementById('alertView');if(alv)_renderAlert(alv);
 }
 
+function _alertRefresh(el){
+  // Force re-fetch from Facebook API
+  fbLoadedMap[fbAccount]=false;
+  fbDataMap[fbAccount]=null;
+  _fbLoadingMap[fbAccount]=false;
+  _renderAlert(el);
+}
 function _renderAlert(el){
+  var accMeta=FB_ACCOUNTS_META.find(function(a){return a.name===fbAccount;})||FB_ACCOUNTS_META[0];
+
+  // ── Auto-fetch if data not loaded ─────────────────────────────────────────
+  if(!fbLoadedMap[fbAccount]){
+    el.innerHTML='<div style="text-align:center;padding:80px 40px">'
+      +'<div style="font-size:2.5rem;margin-bottom:16px;animation:spin 1s linear infinite;display:inline-block">⏳</div>'
+      +'<div style="font-size:1rem;font-weight:700;color:#0f172a;margin-bottom:8px">กำลังดึงข้อมูลจาก Facebook API...</div>'
+      +'<div style="font-size:.78rem;color:#64748b">บัญชี: '+fbAccount+'</div>'
+      +'</div>';
+    if(!_fbLoadingMap[fbAccount]&&accMeta){
+      _fbLoadingMap[fbAccount]=true;
+      _loadFBFromAPI(accMeta,fbAccount);
+    }
+    var _alertPoll=setInterval(function(){
+      if(fbLoadedMap[fbAccount]){clearInterval(_alertPoll);_renderAlert(el);}
+    },600);
+    return;
+  }
+  // ──────────────────────────────────────────────────────────────────────────
+
   var cfg={};try{cfg=JSON.parse(localStorage.getItem('rb_alert_cfg')||'{}');}catch(e){}
   var roasWarn=cfg.roasWarn||1.5,roasCrit=cfg.roasCrit||1.0,ctrWarn=cfg.ctrWarn||0.5,spendMax=cfg.spendMax||10000;
   var roasScale=cfg.roasScale||2.0,newCampDays=cfg.newCampDays||2;
