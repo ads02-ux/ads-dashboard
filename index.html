@@ -544,6 +544,13 @@ canvas{filter:none}
     <input id="pw-input" type="password" placeholder="รหัสผ่าน" onkeydown="if(event.key==='Enter')pwCheck()">
     <button id="pw-btn" onclick="pwCheck()">เข้าสู่ระบบ</button>
     <div id="pw-err"></div>
+    <div style="margin-top:12px">
+      <span onclick="var w=document.getElementById('pw-import-wrap');w.style.display=w.style.display==='none'?'block':'none'" style="font-size:.65rem;color:#94a3b8;cursor:pointer;text-decoration:underline">🔑 ใช้ Export code จาก Admin</span>
+      <div id="pw-import-wrap" style="display:none;margin-top:8px">
+        <textarea id="pw-import-code" placeholder="วาง code ที่ได้จาก Admin ที่นี่..." style="width:100%;height:70px;font-size:.7rem;border-radius:7px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#e2e8f0;padding:6px;font-family:monospace;resize:none;box-sizing:border-box"></textarea>
+        <button onclick="pwImportUsers()" style="margin-top:4px;width:100%;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;border:none;border-radius:7px;padding:7px;font-size:.75rem;font-weight:700;cursor:pointer;font-family:inherit">นำเข้า Users</button>
+      </div>
+    </div>
   </div>
 </div>
 <script>
@@ -581,6 +588,25 @@ function pwCheck(){
   } else {
     document.getElementById('pw-err').textContent='รหัสผ่านไม่ถูกต้อง';
     document.getElementById('pw-input').value='';document.getElementById('pw-input').focus();
+  }
+}
+
+function pwImportUsers(){
+  var code=(document.getElementById('pw-import-code').value||'').trim();
+  try{
+    var decoded=atob(code);
+    var users=JSON.parse(decoded);
+    if(!Array.isArray(users)||!users.length)throw new Error('invalid');
+    localStorage.setItem('rb_access_users',JSON.stringify(users));
+    document.getElementById('pw-import-wrap').style.display='none';
+    document.getElementById('pw-import-code').value='';
+    var err=document.getElementById('pw-err');
+    err.style.color='#10b981';
+    err.textContent='✅ นำเข้า '+users.length+' users สำเร็จ — กรอกรหัสผ่านได้เลย';
+  }catch(e){
+    var err=document.getElementById('pw-err');
+    err.style.color='#ef4444';
+    err.textContent='❌ Code ไม่ถูกต้อง';
   }
 }
 
@@ -7582,6 +7608,21 @@ window._umAddUser=function(){
   var el=document.getElementById('userMgmtView');if(el)_renderUserMgmt(el);
   document.getElementById('umAddForm').style.display='none';
   document.getElementById('umNewName').value='';document.getElementById('umNewPw').value='';
+};
+window._umExportCode=function(){
+  var u=_getAccessUsers();
+  var code=btoa(JSON.stringify(u));
+  var modal=document.createElement('div');
+  modal.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.55);z-index:9999;display:flex;align-items:center;justify-content:center';
+  modal.innerHTML='<div style="background:#fff;border-radius:14px;padding:28px 28px 20px;width:420px;max-width:95vw;box-shadow:0 24px 60px rgba(0,0,0,.25)">'
+    +'<div style="font-weight:800;font-size:1rem;color:#1e293b;margin-bottom:6px">📋 Export Code</div>'
+    +'<div style="font-size:.75rem;color:#64748b;margin-bottom:12px">แชร์ code นี้ให้ผู้ใช้ใหม่ — ให้วางใน Login page เพื่อ Import</div>'
+    +'<textarea id="export-code-ta" readonly style="width:100%;height:100px;font-size:.7rem;font-family:monospace;border:1px solid #e2e8f0;border-radius:7px;padding:8px;resize:none;box-sizing:border-box;background:#f8fafc;color:#334155">'+code+'</textarea>'
+    +'<div style="display:flex;gap:8px;margin-top:12px">'
+    +'<button onclick="var ta=document.getElementById('export-code-ta');ta.select();document.execCommand('copy');this.textContent='✅ Copied!'" style="flex:1;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;border:none;border-radius:8px;padding:9px;font-weight:700;font-size:.8rem;cursor:pointer;font-family:inherit">📋 Copy</button>'
+    +'<button onclick="this.closest('div[style*=fixed]').remove()" style="flex:1;background:#f1f5f9;border:1px solid #e2e8f0;color:#374151;border-radius:8px;padding:9px;font-weight:700;font-size:.8rem;cursor:pointer;font-family:inherit">ปิด</button>'
+    +'</div></div>';
+  document.body.appendChild(modal);
 };
 </script>
 </div><!-- /content-wrap -->
