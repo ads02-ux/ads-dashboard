@@ -1699,22 +1699,30 @@ function commLive(aid,dkc,pi,p){
   var comEl=document.getElementById('ccom_'+aid+'_'+dkc+'_'+pi);
   if(pctEl)pctEl.innerHTML=(sp>0||rv>0)?'<span class="comm-pct-lbl '+commPctCls(res.pct)+'">'+res.pct.toFixed(2)+'%<\/span>':'<span class="comm-dash">—<\/span>';
   if(comEl)comEl.innerHTML=(sp>0||rv>0)?(res.com>0?'<span class="comm-com-val">'+res.com+'<\/span>':'<span class="comm-com-zero">0<\/span>'):'<span class="comm-dash">—<\/span>';
-  // ── Auto-save debounce ──
+  // ── Auto-save debounce (saves ALL rows → localStorage + NPoint) ──
   clearTimeout(commLive._saveTimer);
   commLive._saveTimer=setTimeout(function(){
-    // Get analyst name from card DOM
-    var _el=document.getElementById('csp_'+aid+'_'+dkc+'_'+pi);if(!_el)return;
-    var _card=_el.closest('[id^="cdetail_"]');if(!_card)return;
-    var _analyst=_card.id.replace('cdetail_','');
-    var _dk=dkc.slice(0,4)+'-'+dkc.slice(4,6)+'-'+dkc.slice(6,8);
-    var _data=commLoad(commYear,commMonth);
-    if(!_data[_analyst])_data[_analyst]={};
-    if(!_data[_analyst][p])_data[_analyst][p]={};
-    if(!_data[_analyst][p][_dk])_data[_analyst][p][_dk]={s:0,r:0};
-    _data[_analyst][p][_dk].s=parseFloat((document.getElementById('csp_'+aid+'_'+dkc+'_'+pi).value||'').replace(/[,\s]/g,''))||0;
-    _data[_analyst][p][_dk].r=parseFloat((document.getElementById('crv_'+aid+'_'+dkc+'_'+pi).value||'').replace(/[,\s]/g,''))||0;
+    var _data={};
+    document.querySelectorAll('#commissionViewInner .comm-edit[data-a]').forEach(function(el){
+      var _a=el.getAttribute('data-a');
+      var _p=el.getAttribute('data-p');
+      var _d=el.getAttribute('data-d');
+      var _f=el.getAttribute('data-f');
+      var _v=parseFloat((el.value||'').replace(/[,\s]/g,''))||0;
+      if(!_a||!_p||!_d||!_f||_v<=0)return;
+      if(!_data[_a])_data[_a]={};
+      if(!_data[_a][_p])_data[_a][_p]={};
+      if(!_data[_a][_p][_d])_data[_a][_p][_d]={s:0,r:0};
+      _data[_a][_p][_d][_f]=_v;
+    });
+    // 1. Save to localStorage
     commSave(commYear,commMonth,_data);
+    // 2. Update _commNpointData in memory so commLoad reads correctly
+    var _moKey=commYear+'-'+('0'+commMonth).slice(-2);
+    _commNpointData[_moKey]=_data;
     commSheetData={};
+    // 3. Sync to NPoint so other users see the data
+    _leavePost(window._leaveCache||{});
   },400);
 }
 // ─── BENCHMARK: มาตรวัดแอด ───────────────────────────────────────────
@@ -2225,7 +2233,8 @@ function renderCommission(){
         var comHtml=hasData?(res.com>0?'<span class="comm-com-val">'+res.com+'</span>':'<span class="comm-com-zero">0</span>'):'<span class="comm-dash">—</span>';
         rowTot+=res.com;
         var uid=_aid+'_'+dkc+'_'+pi;var cb='commLive(\''+_aid+'\',\''+dkc+'\','+pi+',\''+p+'\')';
-        cells+='<td style="border-left:2px solid rgba(21,101,192,.1);padding:4px 6px"><input class="comm-edit" id="csp_'+uid+'" value="'+(sp>0?sp:'')+'" oninput="'+cb+'"></td>'+'<td style="padding:4px 6px"><input class="comm-edit" id="crv_'+uid+'" value="'+(rv>0?rv:'')+'" oninput="'+cb+'"></td>'+'<td id="cpct_'+uid+'">'+pctHtml+'</td>'+'<td id="ccom_'+uid+'">'+comHtml+'</td>';
+        var _da=a.replace(/'/g,"\\'"),_dp=p.replace(/'/g,"\\'");
+        cells+='<td style="border-left:2px solid rgba(21,101,192,.1);padding:4px 6px"><input class="comm-edit" id="csp_'+uid+'" data-a="'+_da+'" data-p="'+_dp+'" data-d="'+dk+'" data-f="s" value="'+(sp>0?sp:'')+'" oninput="'+cb+'"></td>'+'<td style="padding:4px 6px"><input class="comm-edit" id="crv_'+uid+'" data-a="'+_da+'" data-p="'+_dp+'" data-d="'+dk+'" data-f="r" value="'+(rv>0?rv:'')+'" oninput="'+cb+'"></td>'+'<td id="cpct_'+uid+'">'+pctHtml+'</td>'+'<td id="ccom_'+uid+'">'+comHtml+'</td>';
         atot+=res.com;
       });
       tbRows+='<tr class="'+(rowTot>0?'':'comm-row-empty')+'"><td style="text-align:left;color:var(--text3);font-size:.71rem;position:sticky;left:0;background:var(--panel)">'+day.label+'</td>'+cells+'</tr>';
@@ -5542,8 +5551,22 @@ async function _leaveFetch(){
         if(_k.indexOf('rb_comm_')<0)continue;
         var _moKey=_k.replace('rb_comm_','').replace('_','-'); // rb_comm_2026_07 → 2026-07
         var _local=JSON.parse(localStorage.getItem(_k)||'null');
-        if(_local&&(!_commNpointData[_moKey]||!Object.keys(_commNpointData[_moKey]).length)){
-          _commNpointData[_moKey]=_local;
+        if(_local){
+          if(!_commNpointData[_moKey]||!Object.keys(_commNpointData[_moKey]).length){
+            _commNpointData[_moKey]=_local;
+          } else {
+            // Deep merge: local entries that NPoint doesn't have yet
+            Object.keys(_local).forEach(function(an){
+              if(!_commNpointData[_moKey][an])_commNpointData[_moKey][an]={};
+              Object.keys(_local[an]).forEach(function(pr){
+                if(!_commNpointData[_moKey][an][pr])_commNpointData[_moKey][an][pr]={};
+                Object.keys(_local[an][pr]).forEach(function(dk){
+                  if(!_commNpointData[_moKey][an][pr][dk])
+                    _commNpointData[_moKey][an][pr][dk]=_local[an][pr][dk];
+                });
+              });
+            });
+          }
         }
       }
     }catch(e){}
