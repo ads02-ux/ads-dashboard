@@ -1688,8 +1688,35 @@ function commCalc(sp,rv,prod){
   var idx=pct>=52?0:pct>=50?1:pct>=48?2:pct>=45?3:pct>=42?4:pct>=38?5:6;
   return{com:row.r[idx],pct:pct};
 }
-function commLive(aid,dkc,pi,p){var spEl=document.getElementById('csp_'+aid+'_'+dkc+'_'+pi);var rvEl=document.getElementById('crv_'+aid+'_'+dkc+'_'+pi);if(!spEl||!rvEl)return;var sp=parseFloat((spEl.value||'').replace(/[,\s]/g,''))||0;var rv=parseFloat((rvEl.value||'').replace(/[,\s]/g,''))||0;var res=commCalc(sp,rv,p);var pctEl=document.getElementById('cpct_'+aid+'_'+dkc+'_'+pi);var comEl=document.getElementById('ccom_'+aid+'_'+dkc+'_'+pi);if(pctEl)pctEl.innerHTML=(sp>0||rv>0)?'<span class="comm-pct-lbl '+commPctCls(res.pct)+'">'+res.pct.toFixed(2)+'%<\/span>':'<span class="comm-dash">—<\/span>';if(comEl)comEl.innerHTML=(sp>0||rv>0)?(res.com>0?'<span class="comm-com-val">'+res.com+'<\/span>':'<span class="comm-com-zero">0<\/span>'):'<span class="comm-dash">—<\/span>';}
-
+function commLive(aid,dkc,pi,p){
+  var spEl=document.getElementById('csp_'+aid+'_'+dkc+'_'+pi);
+  var rvEl=document.getElementById('crv_'+aid+'_'+dkc+'_'+pi);
+  if(!spEl||!rvEl)return;
+  var sp=parseFloat((spEl.value||'').replace(/[,\s]/g,''))||0;
+  var rv=parseFloat((rvEl.value||'').replace(/[,\s]/g,''))||0;
+  var res=commCalc(sp,rv,p);
+  var pctEl=document.getElementById('cpct_'+aid+'_'+dkc+'_'+pi);
+  var comEl=document.getElementById('ccom_'+aid+'_'+dkc+'_'+pi);
+  if(pctEl)pctEl.innerHTML=(sp>0||rv>0)?'<span class="comm-pct-lbl '+commPctCls(res.pct)+'">'+res.pct.toFixed(2)+'%<\/span>':'<span class="comm-dash">—<\/span>';
+  if(comEl)comEl.innerHTML=(sp>0||rv>0)?(res.com>0?'<span class="comm-com-val">'+res.com+'<\/span>':'<span class="comm-com-zero">0<\/span>'):'<span class="comm-dash">—<\/span>';
+  // ── Auto-save debounce ──
+  clearTimeout(commLive._saveTimer);
+  commLive._saveTimer=setTimeout(function(){
+    // Get analyst name from card DOM
+    var _el=document.getElementById('csp_'+aid+'_'+dkc+'_'+pi);if(!_el)return;
+    var _card=_el.closest('[id^="cdetail_"]');if(!_card)return;
+    var _analyst=_card.id.replace('cdetail_','');
+    var _dk=dkc.slice(0,4)+'-'+dkc.slice(4,6)+'-'+dkc.slice(6,8);
+    var _data=commLoad(commYear,commMonth);
+    if(!_data[_analyst])_data[_analyst]={};
+    if(!_data[_analyst][p])_data[_analyst][p]={};
+    if(!_data[_analyst][p][_dk])_data[_analyst][p][_dk]={s:0,r:0};
+    _data[_analyst][p][_dk].s=parseFloat((document.getElementById('csp_'+aid+'_'+dkc+'_'+pi).value||'').replace(/[,\s]/g,''))||0;
+    _data[_analyst][p][_dk].r=parseFloat((document.getElementById('crv_'+aid+'_'+dkc+'_'+pi).value||'').replace(/[,\s]/g,''))||0;
+    commSave(commYear,commMonth,_data);
+    commSheetData={};
+  },400);
+}
 // ─── BENCHMARK: มาตรวัดแอด ───────────────────────────────────────────
 var _bmMode='msg', _bmDays=30, _bmProd='all';
 var _bmDonut=null, _bmBar=null;
