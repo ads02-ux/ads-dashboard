@@ -546,5 +546,29 @@
     },
     "savedAt": "2026-07-04T03:32:39.257Z",
     "analysis": "<div style=\"background:#fef2f2;border:1.5px solid #fecaca;border-radius:9px;padding:10px 13px;margin-bottom:8px\"><div style=\"font-size:.73rem;font-weight:800;color:#dc2626;margin-bottom:5px\">⚠️ ต่ำกว่าที่คาด</div><div style=\"display:flex;gap:16px;flex-wrap:wrap\"><div><div style=\"font-size:.58rem;color:#64748b\">ROAS จริง</div><div style=\"font-size:.82rem;font-weight:800;color:#dc2626;font-family:Rajdhani,sans-serif\">0.67×</div></div><div><div style=\"font-size:.58rem;color:#64748b\">คาดไว้</div><div style=\"font-size:.82rem;font-weight:800;color:#7c3aed;font-family:Rajdhani,sans-serif\">2.97×</div></div><div><div style=\"font-size:.58rem;color:#64748b\">ต่าง</div><div style=\"font-size:.82rem;font-weight:800;color:#dc2626;font-family:Rajdhani,sans-serif\">-2.30× (-77%)</div></div></div></div><div style=\"display:flex;flex-direction:column;gap:6px;margin-bottom:8px\"><div style=\"background:#eff6ff;border:1px solid #bfdbfe;border-radius:7px;padding:8px 11px;display:flex;gap:8px\"><span>💰</span><div><div style=\"font-size:.7rem;font-weight:700;color:#0369a1\">งบจริงสูงกว่าแผน ฿11K</div><div style=\"font-size:.66rem;color:#475569;line-height:1.4\">Lifetime Budget ให้ Facebook ปรับเองตาม Auction</div></div></div><div style=\"background:#fef2f2;border:1px solid #fecaca;border-radius:7px;padding:8px 11px;display:flex;gap:8px\"><span>📉</span><div><div style=\"font-size:.7rem;font-weight:700;color:#dc2626\">ROAS ต่ำกว่าคาด 77%</div><div style=\"font-size:.66rem;color:#475569;line-height:1.4\">Ad Fatigue, Audience Overlap สูง หรือ Competition ดัน CPM ขึ้น</div></div></div><div style=\"background:#fffbeb;border:1px solid #fde68a;border-radius:7px;padding:8px 11px;display:flex;gap:8px\"><span>🛒</span><div><div style=\"font-size:.7rem;font-weight:700;color:#d97706\">Revenue ต่ำกว่าคาด ฿39K</div><div style=\"font-size:.66rem;color:#475569;line-height:1.4\">Conversion Rate ต่ำ — ตรวจ Landing Page / ราคา / Checkout</div></div></div></div><div style=\"background:#f8fafc;border:1px solid #e2e8f0;border-radius:7px;padding:8px 11px;font-size:.68rem;color:#334155\"><b style=\"color:#0f172a\">💡 ปรับแผนวันนี้:</b> ลดงบรวม 10–20% และหยุดแคมเปญ ROAS ต่ำสุด</div>"
+  },
+  {
+    "id": "adsai_h_เจ้าขุน_2026-07-07",
+    "label": "เจ้าขุน 7/7/69",
+    "product": "เจ้าขุน",
+    "date": "2026-07-07",
+    "thaiDate": "7/7/69",
+    "totalBudget": 19000,
+    "predictedRoas": 3.56,
+    "predictedRevenue": 67722,
+    "campaigns": [
+      {
+        "name": "(02.)** ผู้เชี่ยวชาญ เจ้าขุน MJ 3 Noedit แค่พกซองเดียว 03/06/69 ลุมยิง 11/06/69 ver1 122106972873314313  การซื้อ 2 (ยศ)",
+        "alloc": 686,
+        "expectedRoas": 2.79
+      },
+      {
+        "name": "01. ผู้เชี่ยวชาญ เจ้าขุน MJ 1  Noedit ปลุกมะเขือเผาของคุณ 23/05/69 ลุมยิง 28/05/69 ver1 122104689765314313 การซื้อ 1 (ยศ)",
+        "alloc": 44,
+        "expectedRoas": 1.92
+      }
+    ],
+    "actual": null,
+    "savedAt": "2026-07-07T03:08:32.718Z"
   }
 ]
