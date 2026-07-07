@@ -7048,7 +7048,7 @@ function _fbCompareChecked(){
   _fbSendCheckedCEO();
 }
 
-function fbLoadAdCreatives(campId){
+async function fbLoadAdCreatives(campId){
   var box=document.getElementById('fbAdCreativesBox');
   if(!box)return;
   box.innerHTML='<div style="color:#64748b;font-size:.75rem;text-align:center;padding:20px">⏳ กำลังดึง…</div>';
