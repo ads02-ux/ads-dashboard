@@ -7036,7 +7036,7 @@ function _fbSendCheckedCEO(){
   var json=JSON.stringify(payload);
   var encoded;
   try{if(window.LZString){encoded=LZString.compressToEncodedURIComponent(json);}else{encoded=btoa(unescape(encodeURIComponent(json)));}}catch(e){alert('Error: '+e.message);return;}
-  var base=(window.location.href.split('#')[0]).replace(//[^/]*$/,'/');
+  var base=(window.location.href.split('#')[0]).replace(/\/[^\/]*$/,'/');
   var url=base+'ceo-report.html#'+encoded;
   var w=window.open(url,'_blank');
   if(!w){prompt('Copy ลิงก์ส่ง CEO:',url);}
