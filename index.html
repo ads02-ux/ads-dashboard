@@ -2211,7 +2211,7 @@ function renderCommission(){
     });
 
     // Build tbody rows
-    var tbRows='';var _aid=a.replace(/[^a-z0-9]/gi,'');
+    var tbRows='';var _aid='a'+ai;// use index to avoid Thai name collision
     dayArr.forEach(function(day,di){
       var dk=day.dk;var dkc=dk.replace(/[^0-9]/g,'');
       var rowTot=0;
