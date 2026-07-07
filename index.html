@@ -1723,6 +1723,9 @@ function commLive(aid,dkc,pi,p){
     commSheetData={};
     // 3. Sync to NPoint so other users see the data
     _leavePost(window._leaveCache||{});
+    // 4. Show save indicator
+    var _si=document.getElementById('commSaveIndicator');
+    if(_si){_si.textContent='✓ บันทึกแล้ว';_si.style.opacity='1';clearTimeout(_si._t);_si._t=setTimeout(function(){_si.style.opacity='0';},2000);}
   },400);
 }
 // ─── BENCHMARK: มาตรวัดแอด ───────────────────────────────────────────
@@ -1916,15 +1919,30 @@ function commStorageKey(yr,mo){return 'rb_comm_'+yr+'_'+('0'+mo).slice(-2);}
 function commLoad(yr,mo){
   var key=yr+'-'+pad2(mo);
   if(commSheetData[key]&&Object.keys(commSheetData[key]).length>0)return commSheetData[key];
-  if(_commNpointData[key]&&Object.keys(_commNpointData[key]).length>0)return _commNpointData[key];
-  try{return JSON.parse(localStorage.getItem(commStorageKey(yr,mo))||'null')||{};}catch(e){return{};}
+  // Base = NPoint data (shared across users)
+  var base={};
+  if(_commNpointData[key]){
+    try{base=JSON.parse(JSON.stringify(_commNpointData[key]));}catch(e){base={};}
+  }
+  // Deep merge localStorage ON TOP — local save always wins for any specific day
+  try{
+    var _loc=JSON.parse(localStorage.getItem(commStorageKey(yr,mo))||'null');
+    if(_loc){
+      Object.keys(_loc).forEach(function(an){
+        if(!base[an])base[an]={};
+        Object.keys(_loc[an]).forEach(function(pr){
+          if(!base[an][pr])base[an][pr]={};
+          Object.keys(_loc[an][pr]).forEach(function(dk){
+            base[an][pr][dk]=_loc[an][pr][dk];
+          });
+        });
+      });
+    }
+  }catch(e){}
+  return base;
 }
 function commSave(yr,mo,data){
   try{localStorage.setItem(commStorageKey(yr,mo),JSON.stringify(data));}catch(e){}
-  // sync to npoint real-time
-  var key=yr+'-'+pad2(mo);
-  _commNpointData[key]=data;
-  _leavePost(window._leaveCache||{});
 }
 
 function cb_comm(resp){
@@ -2057,6 +2075,7 @@ function renderCommission(){
   out+='<div class="comm-topbar">'
     +'<button class="comm-btn" onclick="switchView(\'top\',document.getElementById(\'sb-home\'))">← หน้าหลัก</button>'
     +'<div class="stitle" style="margin:0"><div class="stitle-bar"></div>💰 ค่าคอมมิชชั่น</div>'
+    +'<span id="commSaveIndicator" style="font-size:.72rem;color:#16a34a;font-weight:700;opacity:0;transition:opacity .4s;margin-left:auto"></span>'
     +'</div>';
 
   // Month nav
