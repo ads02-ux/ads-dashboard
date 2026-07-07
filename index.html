@@ -2050,7 +2050,7 @@ function renderCommission(){
   var pmo2=mo===1?12:mo-1;var pyr2=mo===1?yr-1:yr;
   var prevData=commLoad(pyr2,pmo2);
   var curKey=yr+'-'+pad2(mo);
-  function _dd(a,p,dk){var d=dk.slice(0,7)===curKey?data:prevData;return(d[a]&&d[a][p]&&d[a][p][dk])?d[a][p][dk]:null;}
+  function _dd(a,p,dk){if(data[a]&&data[a][p]&&data[a][p][dk])return data[a][p][dk];if(prevData[a]&&prevData[a][p]&&prevData[a][p][dk])return prevData[a][p][dk];return null;}
   var analysts=commGetAnalysts();
   var dayArr=commDays(yr,mo);
   var periodLbl=commPeriodLabel(yr,mo);
@@ -2415,7 +2415,7 @@ function openCommDetail(analyst){
   var pmo2=mo===1?12:mo-1,pyr2=mo===1?yr-1:yr;
   var prevData=commLoad(pyr2,pmo2);
   var curKey=yr+'-'+pad2(mo);
-  function _dd2(a,p,dk){var d=dk.slice(0,7)===curKey?data:prevData;return(d[a]&&d[a][p]&&d[a][p][dk])?d[a][p][dk]:null;}
+  function _dd2(a,p,dk){if(data[a]&&data[a][p]&&data[a][p][dk])return data[a][p][dk];if(prevData[a]&&prevData[a][p]&&prevData[a][p][dk])return prevData[a][p][dk];return null;}
   var dayArr=commDays(yr,mo);
   var prods=COMM_ANALYST_PRODUCTS[analyst]||[];
   var DOT_COL=['#f59e0b','#00e5ff','#4ade80','#a78bfa','#ff5252','#fb923c','#38bdf8','#ffd700'];
