@@ -7201,6 +7201,7 @@ async function _fbToggleAdPreview(adId){
 
 function _renderFBInner(el){
   if(!el)return;
+  window._fbChecked={};
   var filtered=_fbFilterRows(fbDataMap[fbAccount]||[]);
   var accMeta=FB_ACCOUNTS_META.find(function(a){return a.name===fbAccount;})||FB_ACCOUNTS_META[0];
   var campInfoMap=fbCampaignsMap[fbAccount]||{};
