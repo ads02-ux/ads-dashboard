@@ -6967,7 +6967,88 @@ function _openCEOReport(){
     prompt('กรุณา copy ลิงก์นี้ส่งให้ CEO:',url);
   }
 }
-async function fbLoadAdCreatives(campId){
+async window._fbChecked={};
+
+function _fbOnCheck(cb){
+  var camp=cb.getAttribute('data-camp');
+  if(!camp)return;
+  if(cb.checked){window._fbChecked[camp]=true;}else{delete window._fbChecked[camp];}
+  document.querySelectorAll('.fb-camp-row').forEach(function(tr){
+    var c=tr.getAttribute('data-camp');
+    var sel=window._fbChecked&&window._fbChecked[c];
+    var bg=sel?'rgba(21,101,192,.1)':'rgba(21,101,192,.05)';
+    var sel2=sel?'rgba(21,101,192,.13)':'#eef3fd';
+    tr.style.background=bg;
+    tr.querySelectorAll('td').forEach(function(td,i){if(i<3)td.style.background=sel2;});
+  });
+  _fbUpdateCheckBar();
+  var all=document.querySelectorAll('.fbCampCb');
+  var checked=document.querySelectorAll('.fbCampCb:checked');
+  var ca=document.getElementById('fbCheckAll');
+  if(ca){ca.indeterminate=(checked.length>0&&checked.length<all.length);ca.checked=checked.length===all.length&&all.length>0;}
+}
+
+function _fbCheckAll(val){
+  window._fbChecked={};
+  document.querySelectorAll('.fbCampCb').forEach(function(cb){
+    cb.checked=val;
+    var camp=cb.getAttribute('data-camp');
+    if(val&&camp)window._fbChecked[camp]=true;
+  });
+  document.querySelectorAll('.fb-camp-row').forEach(function(tr){
+    var c=tr.getAttribute('data-camp');
+    var sel=window._fbChecked&&window._fbChecked[c];
+    var bg=sel?'rgba(21,101,192,.1)':'rgba(21,101,192,.05)';
+    var sel2=sel?'rgba(21,101,192,.13)':'#eef3fd';
+    tr.style.background=bg;
+    tr.querySelectorAll('td').forEach(function(td,i){if(i<3)td.style.background=sel2;});
+  });
+  _fbUpdateCheckBar();
+}
+
+function _fbUpdateCheckBar(){
+  var n=Object.keys(window._fbChecked||{}).length;
+  var bar=document.getElementById('fbCheckBar');
+  if(!bar)return;
+  if(n>0){bar.style.display='flex';var lbl=bar.querySelector('.fbCheckBarLbl');if(lbl)lbl.textContent='เลือก '+n+' แคมเปญ';}
+  else{bar.style.display='none';}
+}
+
+function _fbSendCheckedCEO(){
+  var keys=Object.keys(window._fbChecked||{});
+  if(!keys.length){alert('ยังไม่ได้เลือกแคมเปญ');return;}
+  var campaigns=[];
+  keys.forEach(function(cname){
+    var allRows=(fbDataMap[fbAccount]||[]).filter(function(r){return r.campaign===cname;});
+    var agg={spend:0,revenue:0,impressions:0,clicks:0,purchases:0,conversations:0,roas:0};
+    allRows.forEach(function(r){agg.spend+=r.spend;agg.revenue+=r.revenue;agg.impressions+=r.impressions;agg.clicks+=r.clicks;agg.purchases+=r.purchases;agg.conversations+=r.conversations;});
+    if(agg.spend>0)agg.roas=agg.revenue/agg.spend;
+    var byDate={};
+    allRows.forEach(function(r){
+      if(!r.date)return;
+      if(!byDate[r.date])byDate[r.date]={date:r.date,spend:0,revenue:0,impressions:0,clicks:0,purchases:0,conversations:0};
+      var b=byDate[r.date];b.spend+=r.spend;b.revenue+=r.revenue;b.impressions+=r.impressions;b.clicks+=r.clicks;b.purchases+=r.purchases;b.conversations+=r.conversations;
+    });
+    var daily=Object.keys(byDate).sort().map(function(d){return byDate[d];});
+    campaigns.push({name:cname,agg:agg,daily:daily});
+  });
+  var payload={campaigns:campaigns};
+  var json=JSON.stringify(payload);
+  var encoded;
+  try{if(window.LZString){encoded=LZString.compressToEncodedURIComponent(json);}else{encoded=btoa(unescape(encodeURIComponent(json)));}}catch(e){alert('Error: '+e.message);return;}
+  var base=(window.location.href.split('#')[0]).replace(//[^/]*$/,'/');
+  var url=base+'ceo-report.html#'+encoded;
+  var w=window.open(url,'_blank');
+  if(!w){prompt('Copy ลิงก์ส่ง CEO:',url);}
+}
+
+function _fbCompareChecked(){
+  var keys=Object.keys(window._fbChecked||{});
+  if(keys.length<2){alert('เลือกอย่างน้อย 2 แคมเปญเพื่อเปรียบเทียบ');return;}
+  _fbSendCheckedCEO();
+}
+
+function fbLoadAdCreatives(campId){
   var box=document.getElementById('fbAdCreativesBox');
   if(!box)return;
   box.innerHTML='<div style="color:#64748b;font-size:.75rem;text-align:center;padding:20px">⏳ กำลังดึง…</div>';
@@ -7330,9 +7411,13 @@ function _renderFBInner(el){
     // Campaign row
     // Active = FB API status ACTIVE (primary). Fallback = has spend in CURRENT filtered period only
     var campActive=campInfo?(campInfo.status==='ACTIVE'):(cagg.spend>0);
-    tbody+='<tr style="background:rgba(21,101,192,.05);cursor:pointer;border-top:1px solid rgba(21,101,192,.12)" onclick="fbToggleExpand(\''+cname.replace(/'/g,"\\'")+'\')">'
-      +'<td style="padding:10px 14px;position:sticky;left:0;z-index:2;background:#eef3fd">'+statusBadge(campActive,false,cname,campInfo?campInfo.id:'',campInfo?campInfo.status:'',(fbFilter==='today'||fbFilter==='yesterday')?cagg.spend>0:undefined)+'</td>'
-      +'<td style="padding:10px 12px;font-size:.8rem;font-weight:700;color:#0f172a;white-space:nowrap;position:sticky;left:130px;z-index:2;background:#eef3fd;box-shadow:4px 0 8px -2px rgba(21,101,192,.18);">'
+    var _cbg=(window._fbChecked&&window._fbChecked[cname])?'rgba(21,101,192,.1)':'rgba(21,101,192,.05)';
+    var _csel=(window._fbChecked&&window._fbChecked[cname])?'rgba(21,101,192,.13)':'#eef3fd';
+    var _cchked=(window._fbChecked&&window._fbChecked[cname])?'checked':' ';
+    tbody+='<tr class="fb-camp-row" data-camp="'+cname.replace(/"/g,'&quot;')+'" style="background:'+_cbg+';cursor:pointer;border-top:1px solid rgba(21,101,192,.12)" onclick="fbToggleExpand(\''+cname.replace(/'/g,"\\'")+'\')">'
+      +'<td style="padding:0 0 0 12px;width:32px;position:sticky;left:0;z-index:3;background:'+_csel+'" onclick="event.stopPropagation()"><input type="checkbox" class="fbCampCb" data-camp="'+cname.replace(/"/g,'&quot;')+'" '+_cchked+' onchange="_fbOnCheck(this)" style="width:15px;height:15px;cursor:pointer;accent-color:#1565c0;vertical-align:middle"></td>'
+      +'<td style="padding:10px 14px;position:sticky;left:44px;z-index:2;background:'+_csel+'">'+statusBadge(campActive,false,cname,campInfo?campInfo.id:'',campInfo?campInfo.status:'',(fbFilter==='today'||fbFilter==='yesterday')?cagg.spend>0:undefined)+'</td>'
+      +'<td style="padding:10px 12px;font-size:.8rem;font-weight:700;color:#0f172a;white-space:nowrap;position:sticky;left:174px;z-index:2;background:'+_csel+';box-shadow:4px 0 8px -2px rgba(21,101,192,.18);">'
         +'<span style="color:#1565c0;margin-right:6px;font-size:.8rem">'+arrow+'</span>'
         +'<span title="คลิกเพื่อดูรายละเอียด" onclick="event.stopPropagation();fbOpenCampDetail(\''+cname.replace(/'/g,"\\'")+'\',\''+(campInfo?campInfo.id:'')+'\');" style="cursor:pointer;text-decoration:underline;text-decoration-color:rgba(21,101,192,.4);text-underline-offset:2px;transition:.15s" onmouseover="this.style.color=\'#1565c0\'" onmouseout="this.style.color=\'\'">'+shortName+'</span>'
         +'<span style="margin-left:8px;font-size:.65rem;color:#1565c0;background:rgba(21,101,192,.1);border-radius:4px;padding:1px 6px">แคมเปญ</span>'
@@ -7360,8 +7445,9 @@ function _renderFBInner(el){
         var aagg=_fbAgg(arows);
         var shortA=aname.length>50?aname.slice(0,50)+'…':aname;
         tbody+='<tr style="background:#ffffff;border-top:1px solid #eef2fc" onmouseover="this.style.background=\'#f0f5ff\'" onmouseout="this.style.background=\'#ffffff\'">'
-          +'<td style="padding:8px 14px;position:sticky;left:0;z-index:2;background:#fff">'+statusBadge(aagg.isActive,true)+'</td>'
-          +'<td style="padding:8px 12px;font-size:.75rem;color:#475569;position:sticky;left:130px;z-index:2;background:#fff;box-shadow:4px 0 8px -2px rgba(21,101,192,.18);">'
+          +'<td style="width:44px;position:sticky;left:0;z-index:2;background:#fff"></td>'
+          +'<td style="padding:8px 14px;position:sticky;left:44px;z-index:2;background:#fff">'+statusBadge(aagg.isActive,true)+'</td>'
+          +'<td style="padding:8px 12px;font-size:.75rem;color:#475569;position:sticky;left:174px;z-index:2;background:#fff;box-shadow:4px 0 8px -2px rgba(21,101,192,.18);">'
             +'<span style="display:inline-block;width:20px;margin-right:4px;color:#94a3b8">└</span>'
             +'<span title="'+aname+'">'+shortA+'</span>'
             +'<span style="margin-left:8px;font-size:.62rem;color:#64748b;background:rgba(100,116,139,.08);border-radius:4px;padding:1px 5px">ชุดโฆษณา</span>'
@@ -7408,11 +7494,19 @@ function _renderFBInner(el){
     // KPI bar
     +kpiBar
     // Table
+    +'<div style="position:relative">'
     +'<div style="overflow-x:auto;border-radius:8px;border:1px solid rgba(21,101,192,.15);box-shadow:0 1px 8px rgba(15,23,42,.06)">'
     +'<table style="width:100%;border-collapse:separate;border-spacing:0;min-width:900px">'
     +thead
     +'<tbody>'+tbody+'</tbody>'
     +'</table>'
+    +'</div>'
+    +'<div id="fbCheckBar" style="display:none;position:sticky;bottom:0;left:0;right:0;z-index:99;background:rgba(21,101,192,.97);color:#fff;padding:10px 16px;border-radius:0 0 8px 8px;align-items:center;gap:10px;font-size:.85rem;font-weight:600;box-shadow:0 -2px 12px rgba(0,0,0,.2)">'
+    +'<span class="fbCheckBarLbl" style="flex:1">เลือก 0 แคมเปญ</span>'
+    +'<button onclick="_fbSendCheckedCEO()" style="background:#fff;color:#1565c0;border:none;padding:6px 14px;border-radius:6px;font-size:.82rem;font-weight:700;cursor:pointer">📊 ส่ง CEO Report</button>'
+    +'<button onclick="_fbCompareChecked()" style="background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.5);padding:6px 14px;border-radius:6px;font-size:.82rem;font-weight:700;cursor:pointer">⚖️ เปรียบเทียบ</button>'
+    +'<button onclick="window._fbChecked={};_fbCheckAll(false)" style="background:none;color:rgba(255,255,255,.75);border:none;font-size:1.1rem;cursor:pointer;padding:4px 8px;line-height:1">✕</button>'
+    +'</div>'
     +'</div>'
     +'<div style="margin-top:8px;display:flex;justify-content:space-between;font-size:.68rem;color:#475569">'
     +'<span>คลิกชื่อแคมเปญ → ดูรายละเอียด + AI แนะนำ · คลิกแถว → ขยาย/ย่อ · ✏️ แก้งบ</span>'
