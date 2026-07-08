@@ -1180,6 +1180,7 @@ function buildAnalystFilter(){
   var analysts=[];(s1data||[]).forEach(function(r){if(r.analyst&&analysts.indexOf(r.analyst)<0)analysts.push(r.analyst);});
   var ab=document.getElementById('abar'),c=document.getElementById('analystPills');
   if(!analysts.length){ab.style.display='none';return;}
+  var curSb=document.querySelector('.sb-item.active');if(!curSb||curSb.id!=='sb-chartrank'){ab.style.display='none';return;}
   ab.style.display='flex';c.innerHTML='';
   function mkA(l,v,av){var b=document.createElement('button');b.className='apill'+(filterAnalyst===v?' active':'');b.innerHTML=av+'<span>'+l+'</span>';b.onclick=function(){filterAnalyst=v;buildAnalystFilter();renderAll();};c.appendChild(b);}
   mkA('All Analysts <small style="opacity:.5;font-weight:400">('+analysts.length+')</small>',null,'<span class="av" style="font-size:.6rem">⚡</span>');
