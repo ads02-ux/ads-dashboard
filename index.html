@@ -892,7 +892,7 @@ function disableCommInputs(){
   <div class="dinfo" id="dinfo">— Mission</div>
 </div>
 <div class="pbar" id="pbar" style="display:none"><span class="bar-label">🛡️ Product</span><div class="pill-wrap" id="productPills"></div></div>
-<div class="abar" id="abar">
+<div class="abar" id="abar" style="display:none">
   <span class="bar-label">Hunter</span>
   <div class="pill-wrap" id="analystPills"></div>
   <button class="photo-manage-btn" onclick="openPhotoManager()">📷 Player Profile</button>
@@ -2383,7 +2383,7 @@ function renderCommission(){
 // ============================================================
 
 function switchView(view,el){
-  var _db=document.querySelector('.dbar');if(_db)_db.style.display='none';
+  var _db=document.querySelector('.dbar');if(_db)_db.style.display='none';var _ab=document.getElementById('abar');if(_ab)_ab.style.display='none';
   var _umv=document.getElementById('userMgmtView');if(_umv)_umv.style.display='none';
   var _alv=document.getElementById('alertView');if(_alv)_alv.style.display='none';
   var _auth=sessionStorage.getItem('rb_auth'),_acc=sessionStorage.getItem('rb_access');
@@ -2395,7 +2395,7 @@ function switchView(view,el){
   var dtv2=document.getElementById('dailyTaskView');if(dtv2)dtv2.style.display='none';
   if(view==='cohort'){
     mv.style.display='none';cv.style.display='block';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var trv2=document.getElementById('trackView');if(trv2)trv2.style.display='none';var lv2=document.getElementById('leaveView');if(lv2)lv2.style.display='none';
-    renderCohort();window.scrollTo({top:0,behavior:'smooth'});
+    renderCohort();if(_ab)_ab.style.display='flex';window.scrollTo({top:0,behavior:'smooth'});
   } else if(view==='commission'){
     mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='block';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var trv2=document.getElementById('trackView');if(trv2)trv2.style.display='none';var lv2=document.getElementById('leaveView');if(lv2)lv2.style.display='none';
     _leaveFetch().then(function(){renderCommission();});window.scrollTo({top:0,behavior:'smooth'});
@@ -2433,7 +2433,7 @@ function switchView(view,el){
     var alv=document.getElementById('alertView');if(alv){alv.style.display='block';_renderAlert(alv);}
     window.scrollTo({top:0,behavior:'smooth'});
   } else {
-    if(_db)_db.style.display='flex';
+    if(_db)_db.style.display='flex';if(_ab)_ab.style.display='flex';
     mv.style.display='block';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var trv2=document.getElementById('trackView');if(trv2)trv2.style.display='none';var lv2=document.getElementById('leaveView');if(lv2)lv2.style.display='none';
     if(view!=='top')setTimeout(function(){var t=document.getElementById(view);if(t){var y=t.getBoundingClientRect().top+window.scrollY-100;window.scrollTo({top:y,behavior:'smooth'});}},50);
   }
