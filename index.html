@@ -4487,7 +4487,7 @@ var _taskData={}; // {date: {analyst: [task,...]}}
 // ── shared helpers (global so _adsaiCalcBudget can use them) ──
 function _aiFmtB(v){return '฿'+(v>=1000000?(v/1000000).toFixed(1)+'M':v>=1000?Math.round(v/1000)+'K':Math.round(v));}
 function _aiRoasGrade(r){
-  if(r>=3)  return{grade:'S',icon:'⭐'️',color:'#f59e0b',bg:'#fffbeb',label:'Excellent'};
+  if(r>=3)  return{grade:'S',icon:'⭐',color:'#f59e0b',bg:'#fffbeb',label:'Excellent'};
   if(r>=2)  return{grade:'A',icon:'🗡️',color:'#22c55e',bg:'#f0fdf4',label:'ดีมาก'};
   if(r>=1.5)return{grade:'B',icon:'🛡️',color:'#3b82f6',bg:'#eff6ff',label:'พอใช้ได้'};
   if(r>=1)  return{grade:'C',icon:'⚡',color:'#f97316',bg:'#fff7ed',label:'เกือบคุ้มทุน'};
