@@ -77,8 +77,8 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;min-height:100vh;overflow-x:hidden}
-body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 70% 50% at 50% -10%,rgba(25,118,210,.08) 0%,transparent 65%),radial-gradient(ellipse 50% 40% at 90% 70%,rgba(109,40,217,.05) 0%,transparent 55%),radial-gradient(ellipse 40% 30% at 10% 80%,rgba(2,132,199,.04) 0%,transparent 50%);pointer-events:none;z-index:0}
-body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 40px,rgba(25,118,210,.012) 40px,rgba(25,118,210,.012) 41px);pointer-events:none;z-index:0;opacity:1}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 70% 50% at 50% -10%,rgba(25,118,210,.08) 0%,transparent 65%),radial-gradient(ellipse 50% 40% at 90% 70%,rgba(109,40,217,.05) 0%,transparent 55%),radial-gradient(ellipse 40% 30% at 10% 80%,rgba(2,132,199,.04) 0%,transparent 50%);opacity:0;pointer-events:none;z-index:0}
+body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 40px,rgba(25,118,210,.012) 40px,rgba(25,118,210,.012) 41px);pointer-events:none;z-index:0;opacity:0}
 
 /* === OVERLAY === */
 #overlay{position:fixed;inset:0;background:radial-gradient(ellipse 100% 100% at 50% 50%,#e0eaff 0%,#c8d8f8 100%);z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:28px;animation:ovHide .4s 8s forwards}
@@ -3141,12 +3141,13 @@ function _renderFBProducts(el){
 
   // ── 5 KPI summary cards ──
   function kpiCard(label,value,grad,icon){
-    return '<div style="background:'+grad+';border-radius:14px;padding:18px 20px;color:#fff;position:relative;overflow:hidden">'
-      +'<div style="position:absolute;right:-8px;top:-8px;font-size:3.8rem;opacity:.13;line-height:1">'+icon+'</div>'
-      +'<div style="font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;opacity:.88;margin-bottom:10px">'+label+'</div>'
-      +'<div style="font-size:1.85rem;font-weight:900;font-family:Rajdhani,sans-serif;line-height:1">'+value+'</div>'
-      +'</div>';
-  }
+  var c=(grad.match(/#[0-9a-f]{6}/i)||['#9B7E4A'])[0];
+  return '<div style="background:#fff;border:1px solid '+c+'28;border-top:3px solid '+c+';border-radius:12px;padding:20px 22px;position:relative;overflow:hidden;box-shadow:0 1px 4px rgba(28,23,20,.07)">'
+    +'<div style="font-size:2.8rem;opacity:.07;line-height:1;position:absolute;right:14px;top:8px">'+icon+'</div>'
+    +'<div style="font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#8B7B6A;margin-bottom:10px">'+label+'</div>'
+    +'<div style="font-size:1.9rem;font-weight:900;font-family:Rajdhani,sans-serif;line-height:1;color:'+c+'">'+value+'</div>'
+    +'</div>';
+}
   h+='<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:22px">';
   h+=kpiCard('กลุ่มทั้งหมด',FB_HIERARCHY.length,'linear-gradient(135deg,#3b82f6,#1d4ed8)','🏷');
   h+=kpiCard('SPEND รวม','฿'+fmt(gSpend),'linear-gradient(135deg,#f97316,#c2410c)','💸');
