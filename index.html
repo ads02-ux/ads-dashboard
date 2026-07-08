@@ -3865,7 +3865,7 @@ function _fbAccountTabs(){
 function _fetchFBCampaigns(accountId,accName){
   if(fbCampaignsLoadedMap[accName])return;
   // ดึงจาก Facebook Graph API โดยตรง — รวม daily_budget + lifetime_budget
-  var url=FB_API+accountId+'/campaigns?fields=name,id,daily_budget,lifetime_budget,effective_status&limit=500&access_token='+(FB_TOKENS[accName]||FB_TOKEN);
+  var url=FB_API+accountId+'/campaigns?fields=name,id,daily_budget,lifetime_budget,effective_status,start_time,stop_time&limit=500&access_token='+(FB_TOKENS[accName]||FB_TOKEN);
   fetch(url)
     .then(function(r){return r.json();})
     .then(function(d){
@@ -3881,7 +3881,9 @@ function _fetchFBCampaigns(accountId,accName){
             lifetime_budget:lb,
             has_budget:db>0||lb>0,
             is_daily:db>0,
-            status:c.effective_status
+            status:c.effective_status,
+            start_time:c.start_time||null,
+            stop_time:c.stop_time||null
           };
         });
         fbCampaignsLoadedMap[accName]=true;
@@ -3932,24 +3934,64 @@ async function fbToggleStatus(campName,campId,isActive){
   }catch(e){showBanner('❌ '+e.message);}
 }
 
-function fbUpdateBudget(campName,campId,currentBudget){
+async function fbUpdateBudget(campName,campId,currentBudget){
   var newBudget=prompt('งบประมาณต่อวัน (฿) สำหรับ:\n'+campName,currentBudget||'');
   if(newBudget===null||newBudget==='')return;
   var b=parseInt(newBudget);
   if(isNaN(b)||b<1){alert('กรุณากรอกตัวเลขที่ถูกต้อง');return;}
   showBanner('⏳ กำลังอัปเดต budget '+campName+'...');
-  fetch(WEBAPP_URL,{method:'POST',body:JSON.stringify({action:'updateFBBudget',campaignId:campId,budget:b})})
-    .then(function(r){return r.json();})
-    .then(function(d){
-      if(d.ok){
-        showBanner('✅ อัปเดต budget ฿'+fmt(b)+' สำเร็จ');
-        if(fbCampaignsMap[fbAccount]&&fbCampaignsMap[fbAccount][campName])
-          fbCampaignsMap[fbAccount][campName].daily_budget=b;
-        _renderFBInner(document.getElementById('fbViewInner'));
-      } else {
-        showBanner('❌ Error: '+(d.err||'unknown'));
-      }
-    }).catch(function(e){showBanner('❌ '+e.message);});
+  var tok=FB_TOKENS[fbAccount]||FB_TOKEN;
+  try{
+    var r=await fetch('https://graph.facebook.com/v20.0/'+campId,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({daily_budget:b*100,access_token:tok})
+    });
+    var d=await r.json();
+    if(d.success||d.id){
+      showBanner('✅ อัปเดต budget ฿'+fmt(b)+' สำเร็จ');
+      if(fbCampaignsMap[fbAccount]&&fbCampaignsMap[fbAccount][campName])
+        fbCampaignsMap[fbAccount][campName].daily_budget=b;
+      _renderFBInner(document.getElementById('fbViewInner'));
+    } else {
+      showBanner('❌ '+(d.error?d.error.message:'ไม่สำเร็จ'));
+    }
+  }catch(e){showBanner('❌ '+e.message);}
+}
+
+async function fbChangeStopDate(campName,campId){
+  var campInfo=(fbCampaignsMap[fbAccount]||{})[campName]||{};
+  var currentStop=campInfo.stop_time||null;
+  var cur=currentStop?new Date(currentStop).toISOString().slice(0,10):'';
+  var newDate=prompt('วันสิ้นสุดแคมเปญ (YYYY-MM-DD) สำหรับ:\n'+campName+'\n\n(เว้นว่างเพื่อไม่กำหนดวันหยุด)',cur);
+  if(newDate===null)return;
+  var tok=FB_TOKENS[fbAccount]||FB_TOKEN;
+  var body={access_token:tok};
+  if(newDate.trim()===''){
+    body.stop_time=0;
+  } else {
+    var ts=new Date(newDate.trim()+'T23:59:59+07:00');
+    if(isNaN(ts.getTime())){alert('วันที่ไม่ถูกต้อง กรุณาใส่รูปแบบ YYYY-MM-DD');return;}
+    body.stop_time=Math.floor(ts.getTime()/1000);
+  }
+  showBanner('⏳ กำลังอัปเดตวันสิ้นสุด...');
+  try{
+    var r=await fetch('https://graph.facebook.com/v20.0/'+campId,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(body)
+    });
+    var d=await r.json();
+    if(d.success||d.id){
+      var dispDate=newDate.trim()||'ไม่มีกำหนด';
+      showBanner('✅ อัปเดตวันสิ้นสุด: '+dispDate+' สำเร็จ');
+      if(fbCampaignsMap[fbAccount]&&fbCampaignsMap[fbAccount][campName])
+        fbCampaignsMap[fbAccount][campName].stop_time=newDate.trim()?new Date(newDate.trim()+'T23:59:59+07:00').toISOString():null;
+      _renderFBInner(document.getElementById('fbViewInner'));
+    } else {
+      showBanner('❌ '+(d.error?d.error.message:'ไม่สำเร็จ'));
+    }
+  }catch(e){showBanner('❌ '+e.message);}
 }
 
 var fbExpanded={}; // campaign name → bool
@@ -7355,7 +7397,7 @@ function _renderFBInner(el){
     var todaySpend=todayData.reduce(function(s,r){return s+r.spend;},0);
     var budgetCell;
     if(campInfo){
-      var cid=campInfo.id,bud=campInfo.daily_budget;
+      var cid=campInfo.id,bud=campInfo.daily_budget,stopTime=campInfo.stop_time||null;
       var pct=bud>0?Math.round(todaySpend/bud*100):0;
       var barColor=pct>=90?'#ef4444':pct>=60?'#f59e0b':'#22c55e';
       budgetCell='<td style="padding:8px 12px;white-space:nowrap;min-width:140px" onclick="event.stopPropagation()">'
@@ -7372,6 +7414,8 @@ function _renderFBInner(el){
         +'</div>'
         +' <button onclick="fbUpdateBudget(\''+cname.replace(/'/g,"\\'")+'\',\''+cid+'\','+bud+')" '
         +'style="background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.3);color:#fbbf24;border-radius:4px;padding:2px 6px;font-size:.65rem;cursor:pointer;font-family:inherit" title="แก้ไขงบ">✏️</button>'
+        +' <button onclick="fbChangeStopDate(\''+cname.replace(/'/g,"\\'")+'\'\,\''+cid+'\')" '
+        +'style="background:rgba(14,165,233,.1);border:1px solid rgba(14,165,233,.3);color:#0ea5e9;border-radius:4px;padding:2px 6px;font-size:.65rem;cursor:pointer;font-family:inherit" title="'+(stopTime?('หยุด: '+new Date(stopTime).toLocaleDateString('th-TH',{day:\'numeric\',month:\'short\',year:\'2-digit\'})):'ตั้งวันหยุด')+'">📅</button>'
         +'</div>'
         +'</td>';
     } else {
