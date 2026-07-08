@@ -3939,52 +3939,57 @@ function fbUpdateBudget(campName,campId){
   var isDaily=ci.daily_budget>0;
   var curBud=isDaily?(ci.daily_budget||0):(ci.lifetime_budget||0);
   var budType=isDaily?'วัน':'ตลอดชีพ';
-  var shortName=campName.length>42?campName.slice(0,42)+'…':campName;
+  var shortName=campName.length>42?campName.slice(0,42)+'\u2026':campName;
   var ov=document.createElement('div');
   ov.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(15,23,42,.55);z-index:99999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(2px)';
   ov.innerHTML='<div style="background:#fff;border-radius:14px;padding:22px 24px;width:300px;box-shadow:0 24px 64px rgba(15,23,42,.3);font-family:inherit">'
-    +'<div style="font-size:.95rem;font-weight:800;color:#0f172a;margin-bottom:12px">✏️ แก้ไขงบประมาณ</div>'
+    +'<div style="font-size:.95rem;font-weight:800;color:#0f172a;margin-bottom:12px">\u270f\ufe0f \u0e41\u0e01\u0e49\u0e44\u0e02\u0e07\u0e1a\u0e1b\u0e23\u0e30\u0e21\u0e32\u0e13</div>'
     +'<div style="font-size:.7rem;color:#64748b;margin-bottom:14px;line-height:1.5">'+shortName+'</div>'
     +'<div style="background:#fef3c7;border:1px solid #fde68a;border-radius:8px;padding:10px 14px;margin-bottom:16px">'
-      +'<div style="font-size:.62rem;color:#92400e;margin-bottom:3px">งบปัจจุบัน / '+budType+'</div>'
-      +'<div style="font-size:1.3rem;font-weight:900;color:#b45309;font-family:Rajdhani,sans-serif">฿'+curBud.toLocaleString()+'</div>'
+      +'<div style="font-size:.62rem;color:#92400e;margin-bottom:3px">\u0e07\u0e1a\u0e1b\u0e31\u0e08\u0e08\u0e38\u0e1a\u0e31\u0e19 / '+budType+'</div>'
+      +'<div style="font-size:1.3rem;font-weight:900;color:#b45309;font-family:Rajdhani,sans-serif">\u0e3f'+curBud.toLocaleString()+'</div>'
     +'</div>'
     +'<div style="margin-bottom:16px">'
-      +'<label style="font-size:.68rem;color:#64748b;display:block;margin-bottom:6px;font-weight:600">ปรับงบเป็น (฿ / '+budType+')</label>'
-      +'<input id="fbBudgetInp" type="number" min="1" placeholder="กรอกงบใหม่..." style="width:100%;box-sizing:border-box;border:2px solid #cbd5e1;border-radius:8px;padding:10px 12px;font-size:1rem;font-weight:700;color:#0f172a;outline:none;font-family:Rajdhani,sans-serif" onfocus="this.style.borderColor='#1565c0'" onblur="this.style.borderColor='#cbd5e1'">'
+      +'<label style="font-size:.68rem;color:#64748b;display:block;margin-bottom:6px;font-weight:600">\u0e1b\u0e23\u0e31\u0e1a\u0e07\u0e1a\u0e40\u0e1b\u0e47\u0e19 (\u0e3f / '+budType+')</label>'
+      +'<input id="fbBudgetInp" type="number" min="1" style="width:100%;box-sizing:border-box;border:2px solid #cbd5e1;border-radius:8px;padding:10px 12px;font-size:1rem;font-weight:700;color:#0f172a;outline:none;font-family:Rajdhani,sans-serif">'
     +'</div>'
     +'<div style="display:flex;gap:8px">'
-      +'<button id="fbBudCancel" style="flex:1;padding:9px;border:1px solid #e2e8f0;border-radius:8px;background:#fff;color:#64748b;cursor:pointer;font-family:inherit;font-size:.82rem">ยกเลิก</button>'
-      +'<button id="fbBudConfirm" style="flex:2;padding:9px;border:none;border-radius:8px;background:#1565c0;color:#fff;cursor:pointer;font-family:inherit;font-size:.85rem;font-weight:700">ยืนยัน ✓</button>'
+      +'<button id="fbBudCancel" style="flex:1;padding:9px;border:1px solid #e2e8f0;border-radius:8px;background:#fff;color:#64748b;cursor:pointer;font-family:inherit;font-size:.82rem">\u0e22\u0e01\u0e40\u0e25\u0e34\u0e01</button>'
+      +'<button id="fbBudConfirm" style="flex:2;padding:9px;border:none;border-radius:8px;background:#1565c0;color:#fff;cursor:pointer;font-family:inherit;font-size:.85rem;font-weight:700">\u0e22\u0e37\u0e19\u0e22\u0e31\u0e19 \u2713</button>'
     +'</div>'
   +'</div>';
   document.body.appendChild(ov);
-  setTimeout(function(){var inp=document.getElementById('fbBudgetInp');if(inp)inp.focus();},60);
+  var inp=document.getElementById('fbBudgetInp');
+  if(inp){
+    inp.focus();
+    inp.addEventListener('focus',function(){this.style.borderColor='#1565c0';});
+    inp.addEventListener('blur',function(){this.style.borderColor='#cbd5e1';});
+  }
   function close_(){if(ov.parentNode)ov.parentNode.removeChild(ov);}
   ov.addEventListener('click',function(e){if(e.target===ov)close_();});
   document.getElementById('fbBudCancel').onclick=close_;
   document.getElementById('fbBudConfirm').onclick=async function(){
-    var inp=document.getElementById('fbBudgetInp');
-    var b=parseInt(inp.value);
-    if(isNaN(b)||b<1){inp.style.borderColor='#ef4444';inp.focus();return;}
+    var inp2=document.getElementById('fbBudgetInp');
+    var b=parseInt(inp2.value);
+    if(isNaN(b)||b<1){inp2.style.borderColor='#ef4444';inp2.focus();return;}
     close_();
-    showBanner('⏳ กำลังอัปเดตงบ...');
+    showBanner('\u23f3 \u0e01\u0e33\u0e25\u0e31\u0e07\u0e2d\u0e31\u0e1b\u0e40\u0e14\u0e15\u0e07\u0e1a...');
     var tok=FB_TOKENS[fbAccount]||FB_TOKEN;
     var payload=isDaily?{daily_budget:b*100,access_token:tok}:{lifetime_budget:b*100,access_token:tok};
     try{
       var r=await fetch('https://graph.facebook.com/v20.0/'+campId,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
       var d=await r.json();
       if(d.success||d.id){
-        showBanner('✅ ปรับงบเป็น ฿'+b.toLocaleString()+'/'+budType+' สำเร็จ');
+        showBanner('\u2705 \u0e1b\u0e23\u0e31\u0e1a\u0e07\u0e1a\u0e40\u0e1b\u0e47\u0e19 \u0e3f'+b.toLocaleString()+'/'+budType+' \u0e2a\u0e33\u0e40\u0e23\u0e47\u0e08');
         if(fbCampaignsMap[fbAccount]&&fbCampaignsMap[fbAccount][campName]){
           if(isDaily)fbCampaignsMap[fbAccount][campName].daily_budget=b;
           else fbCampaignsMap[fbAccount][campName].lifetime_budget=b;
         }
         _renderFBInner(document.getElementById('fbViewInner'));
-      } else {showBanner('❌ '+(d.error?d.error.message:'ไม่สำเร็จ'));}
-    }catch(e){showBanner('❌ '+e.message);}
+      } else {showBanner('\u274c '+(d.error?d.error.message:'\u0e44\u0e21\u0e48\u0e2a\u0e33\u0e40\u0e23\u0e47\u0e08'));}
+    }catch(e){showBanner('\u274c '+e.message);}
   };
-  document.getElementById('fbBudgetInp').addEventListener('keydown',function(e){
+  inp.addEventListener('keydown',function(e){
     if(e.key==='Enter')document.getElementById('fbBudConfirm').click();
     if(e.key==='Escape')close_();
   });
