@@ -869,7 +869,7 @@ function disableCommInputs(){
   <circle cx="625" cy="65" r="1" fill="#7c3aed" opacity=".3"/>
   <line x1="550" y1="89" x2="750" y2="89" stroke="#1976d2" stroke-width=".8" opacity=".25"/>
 </svg>
-  <div class="hlogo"><div class="hicon" style="padding:0;overflow:hidden"><svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" width="36" height="36" style="display:block;flex-shrink:0"><rect width="36" height="36" rx="7" fill="#fff3ec"/><path d="M10 7h10.5c3.6 0 6.5 2.9 6.5 6.5 0 2.6-1.5 4.8-3.7 5.9l4.5 8.6H23l-4-7.8H14v7.8H10V7zm4 3.2v6.4h6c1.8 0 3.2-1.4 3.2-3.2 0-1.8-1.4-3.2-3.2-3.2H14z" fill="#f97316"/></svg></div><div><div class="htitle">Ads Mission Dashboard</div><div class="hsub">Rich Biotech &bull; Ads Analytics Platform</div></div></div>
+  <div class="hlogo"><div class="hicon" style="padding:0;overflow:hidden"><svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" width="36" height="36" style="display:block;flex-shrink:0"><rect width="36" height="36" rx="7" fill="#fff3ec"/><path d="M10 7h10.5c3.6 0 6.5 2.9 6.5 6.5 0 2.6-1.5 4.8-3.7 5.9l4.5 8.6H23l-4-7.8H14v7.8H10V7zm4 3.2v6.4h6c1.8 0 3.2-1.4 3.2-3.2 0-1.8-1.4-3.2-3.2-3.2H14z" fill="#f97316"/></svg></div><div><div class="htitle">Ads Analytics Dashboard</div><div class="hsub">Rich Biotech &bull; Ads Analytics Platform</div></div></div>
   <div class="hright"><div class="live-badge"><div class="dot"></div><span>Online</span></div><div class="upd" id="upd">กำลังโหลด...</div><div class="cdwn" id="cdwn"></div><button id="theme-toggle" onclick="toggleTheme()" title="เปลี่ยน Theme" style="background:none;border:1px solid var(--panel-border);border-radius:8px;padding:5px 10px;cursor:pointer;color:var(--text2);font-size:1.05rem;transition:var(--t);display:flex;align-items:center;line-height:1">🌙</button></div>
 </header>
 <div class="dbar" style="display:none">
@@ -1391,7 +1391,7 @@ function renderAll(){
     h1+='<tr class="cl" onclick="openDetail('+i+')">'+'<td><b style="color:var(--text)">'+g.campaign+'</b>'+tb2+'</td>'+'<td><span class="abadge">'+avHtml(g.analyst,20,'')+'<span>'+g.analyst+'</span></span></td>'+'<td style="color:var(--text3)">'+g.platform+'</td><td>'+dr+'</td><td style="text-align:center"><span class="rank-badge '+rr.cls+'">'+rr.label+'</span></td>'+'<td style="color:var(--text2)">'+fmt(g.budget)+'</td><td style="color:var(--text2)">'+fmt(g.reach)+'</td><td style="color:var(--text2)">'+fmt(g.conv)+'</td><td>'+fmt(g.revenue)+'</td>'+'<td '+rc(g.roas)+'>'+g.roas.toFixed(2)+'×</td><td>'+sb2(g.score)+'</td><td>'+rp(g.result)+'</td></tr>';
   });
   document.getElementById('t1').innerHTML=h1+'</tbody>';
-  var h2='<thead><tr><th>Mission</th><th>Platform</th><th>Type</th><th>Reach</th><th>Likes</th><th>Comments</th><th>Shares</th><th>Eng.Rate%</th><th>Sentiment</th><th>Score</th><th>Result</th></tr></thead><tbody>';
+  var h2='<thead><tr><th>Campaign</th><th>Platform</th><th>Type</th><th>Reach</th><th>Likes</th><th>Comments</th><th>Shares</th><th>Eng.Rate%</th><th>Sentiment</th><th>Score</th><th>Result</th></tr></thead><tbody>';
   s2.forEach(function(r){h2+='<tr><td><b>'+r.campaign+'</b></td><td>'+r.platform+'</td><td>'+r.ctype+'</td><td>'+fmt(r.reach)+'</td><td>'+fmt(r.likes)+'</td><td>'+fmt(r.comments)+'</td><td>'+fmt(r.shares)+'</td><td>'+r.eng_rate.toFixed(2)+'%</td><td>'+sp2(r.sentiment)+'</td><td>'+sb2(r.score)+'</td><td>'+rp(r.result)+'</td></tr>';});
   document.getElementById('t2').innerHTML=h2+'</tbody>';
   document.getElementById('upd').textContent='Updated: '+new Date().toLocaleString('th-TH');
@@ -1664,8 +1664,8 @@ function renderCohort(){
   var rcf=function(v){return 'style="font-weight:800;color:'+(v>=1?'var(--green)':'var(--red)')+'"';};
   var missionRows='';
   grouped.forEach(function(g,i){var rr2=roasRank(g.roas);missionRows+='<tr class="cl" onclick="switchView(\'top\',document.getElementById(\'sb-home\')); setTimeout(function(){openDetail('+i+');},300)">'+'<td><b style="color:var(--text)">'+g.campaign+'</b><span class="tests-badge">⚡ '+g.test_days+' runs</span></td>'+'<td><span class="abadge">'+avHtml(g.analyst,20,'')+'<span>'+g.analyst+'</span></span></td>'+'<td style="color:var(--text3)">'+g.platform+'</td>'+'<td style="color:var(--text2)">฿'+fmtK(g.budget)+'</td>'+'<td '+rcf(g.roas)+'>'+g.roas.toFixed(2)+'×</td>'+'<td>'+rpf(g.result)+'</td></tr>';});
-  var mTbl='<div class="stitle" style="margin:20px 0 12px"><div class="stitle-bar"></div>📋 Mission Log <span style="font-size:.7rem;font-weight:400;color:var(--text3);text-transform:none;letter-spacing:0;font-family:Inter">คลิกเพื่อดูรายละเอียด ▶</span></div>'
-    +'<div class="tw"><table><thead><tr><th>Mission</th><th>Hunter</th><th>Platform</th><th>Budget</th><th>ROAS</th><th>Result</th></tr></thead><tbody>'+missionRows+'</tbody></table></div>';
+  var mTbl='<div class="stitle" style="margin:20px 0 12px"><div class="stitle-bar"></div>📋 Campaign Log <span style="font-size:.7rem;font-weight:400;color:var(--text3);text-transform:none;letter-spacing:0;font-family:Inter">คลิกเพื่อดูรายละเอียด ▶</span></div>'
+    +'<div class="tw"><table><thead><tr><th>Campaign</th><th>Analyst</th><th>Platform</th><th>Budget</th><th>ROAS</th><th>Result</th></tr></thead><tbody>'+missionRows+'</tbody></table></div>';
   wrap.innerHTML=backBtn+'<div class="cohort-wrap">'+legend+tbl+'</div>'+mTbl;
 }
 function fmtK(n){if(n>=1000)return (n/1000).toFixed(1)+'K';return String(Math.round(n));}
