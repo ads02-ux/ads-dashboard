@@ -3501,7 +3501,8 @@ function _renderFBAccounts(el){
     h+=_pgKpi('ROAS',_pgAgg.roas>0?_pgAgg.roas.toFixed(2)+'x':'—',_fbRoasColor(_pgAgg.roas));
     h+=_pgKpi('CTR',_pgAgg.ctr>0?_pgAgg.ctr.toFixed(2)+'%':'—','#38bdf8');
     h+=_pgKpi('การซื้อ',_pgAgg.purchases>0?fmt(_pgAgg.purchases,0)+' ครั้ง':'—','#00e676');
-    h+='</div>';
+       h+=_pgKpi('การสนทนา',_pgAgg.conversations>0?fmt(_pgAgg.conversations,0)+' ราย':'—','#7C3AED');
+h+='</div>';
 
     // Cohort table — campaign × day, tagged by account
     var _filteredDates={};_pgFiltered.forEach(function(r){if(r.date)_filteredDates[r.date]=1;});
