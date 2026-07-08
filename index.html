@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>⚔️ System — Ads Mission Dashboard</title>
+<title>Richbiotech Ads DashboardAds Analytics Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -556,9 +556,9 @@ canvas{filter:none}
 </style>
 <div id="pw-gate">
   <div id="pw-box">
-    <div id="pw-logo">⚔️</div>
+    <div id="pw-logo">📊</div>
     <div id="pw-title">ADS MISSION DASHBOARD</div>
-    <div id="pw-sub">Rich Biotech · Hunter System</div>
+    <div id="pw-sub">Rich Biotech · Ads Analytics</div>
     <input id="pw-email" type="email" placeholder="อีเมล" autocomplete="email" onkeydown="if(event.key==='Enter')document.getElementById('pw-input').focus()">
     <input id="pw-input" type="password" placeholder="รหัสผ่าน" onkeydown="if(event.key==='Enter')pwCheck()">
     <button id="pw-btn" onclick="pwCheck()">เข้าสู่ระบบ</button>
@@ -724,7 +724,7 @@ function disableCommInputs(){
 <button class="sb-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰</button>
 <div class="sidebar" id="sidebar">
   <div class="sb-logo">
-    <div class="sb-logo-icon">⚔️</div>
+    <div class="sb-logo-icon">📊</div>
     <div class="sb-logo-text">
       <div class="sb-logo-name">RICHBIOTECH</div>
       <div class="sb-logo-sub">Ads System</div>
@@ -756,7 +756,7 @@ function disableCommInputs(){
       <span class="sb-icon">🔔</span><span>Alert การแจ้งเตือน</span>
     </div>
     <div class="sb-sep"></div>
-    <div class="sb-section">Hunter<span style="display:block;font-size:.6rem;font-weight:400;opacity:.55;margin-top:1px;letter-spacing:.02em">ดึงข้อมูลจาก Google Sheets</span></div>
+    <div class="sb-section">Analytics<span style="display:block;font-size:.6rem;font-weight:400;opacity:.55;margin-top:1px;letter-spacing:.02em">ระบบวิเคราะห์โฆษณา</span></div>
     <div class="sb-item" onclick="sbNav(this,'top')" id="sb-home">
       <span class="sb-icon">🎯</span><span>กลุ่มเป้าหมาย<span style="display:block;font-size:.6rem;font-weight:400;opacity:.55;margin-top:1px">TEST ทุกสัปดาห์</span></span><span class="sb-dot" style="margin-left:auto"></span>
     </div>
@@ -764,7 +764,7 @@ function disableCommInputs(){
       <span class="sb-icon">📊</span><span>KPI Overview</span>
     </div>
     <div class="sb-item" onclick="sbNav(this,'lbSection')">
-      <span class="sb-icon">🏆</span><span>Hunter Ranking</span>
+      <span class="sb-icon">🏆</span><span>Analyst Ranking</span>
     </div>
     <div class="sb-item" onclick="sbNav(this,'chartSection')">
       <span class="sb-icon">📈</span><span>กราฟ</span>
@@ -773,7 +773,7 @@ function disableCommInputs(){
       <span class="sb-icon">📊</span><span>วิเคราะห์ Cohort</span>
     </div>
     <div class="sb-item" onclick="sbNav(this,'t1wrap')">
-      <span class="sb-icon">📋</span><span>Mission Log</span>
+      <span class="sb-icon">📋</span><span>Campaign Log</span>
     </div>
     <div class="sb-item" onclick="sbNav(this,'t2wrap')">
       <span class="sb-icon">📡</span><span>Content Intel</span>
@@ -805,15 +805,15 @@ function disableCommInputs(){
   <div class="sb-bottom">
     <div class="sb-user">
       <div class="sb-user-av">RB</div>
-      <div><div class="sb-user-name">Rich Biotech</div><div class="sb-user-role">ADS HUNTER</div></div>
+      <div><div class="sb-user-name">Rich Biotech</div><div class="sb-user-role">ADS ANALYST</div></div>
     </div>
   </div>
 </div>
 <div class="content-wrap">
 <div id="overlay">
-  <div class="sys-gate"><div class="gate-icon">⚔️</div></div>
-  <div class="sys-loading">System Loading...</div>
-  <div class="sys-sub">Connecting to Gate Data</div>
+  <div class="sys-gate"><div class="gate-icon">📊</div></div>
+  <div class="sys-loading">กำลังโหลด...</div>
+  <div class="sys-sub">กำลังเชื่อมต่อระบบ</div>
   <div class="sys-dots"><span></span><span></span><span></span></div>
 </div>
 <header style="position:relative;overflow:hidden">
@@ -838,7 +838,7 @@ function disableCommInputs(){
   <line x1="737" y1="14" x2="737" y2="76" stroke="#1976d2" stroke-width=".3" opacity=".15" stroke-dasharray="2,4"/>
   <line x1="706" y1="45" x2="768" y2="45" stroke="#1976d2" stroke-width=".3" opacity=".15" stroke-dasharray="2,4"/>
   <circle cx="737" cy="45" r="4" fill="#1976d2" opacity=".5"/>
-  <text x="737" y="49" text-anchor="middle" fill="#1565c0" font-size="5" letter-spacing="1" font-family="monospace" opacity=".7">GATE</text>
+  <text x="737" y="49" text-anchor="middle" fill="#1565c0" font-size="5" letter-spacing="1" font-family="monospace" opacity=".7">DATA</text>
   <g opacity=".45">
     <ellipse cx="660" cy="52" rx="7" ry="8" fill="#c8d8f0"/>
     <rect x="654" y="52" width="12" height="18" rx="1" fill="#c8d8f0"/>
@@ -869,7 +869,7 @@ function disableCommInputs(){
   <circle cx="625" cy="65" r="1" fill="#7c3aed" opacity=".3"/>
   <line x1="550" y1="89" x2="750" y2="89" stroke="#1976d2" stroke-width=".8" opacity=".25"/>
 </svg>
-  <div class="hlogo"><div class="hicon">⚔️</div><div><div class="htitle">Ads Mission Dashboard</div><div class="hsub">Rich Biotech &bull; Hunter Analytics System &bull; Mission Control</div></div></div>
+  <div class="hlogo"><div class="hicon">📊</div><div><div class="htitle">Ads Mission Dashboard</div><div class="hsub">Rich Biotech &bull; Ads Analytics Platform</div></div></div>
   <div class="hright"><div class="live-badge"><div class="dot"></div><span>Online</span></div><div class="upd" id="upd">กำลังโหลด...</div><div class="cdwn" id="cdwn"></div><button id="theme-toggle" onclick="toggleTheme()" title="เปลี่ยน Theme" style="background:none;border:1px solid var(--panel-border);border-radius:8px;padding:5px 10px;cursor:pointer;color:var(--text2);font-size:1.05rem;transition:var(--t);display:flex;align-items:center;line-height:1">🌙</button></div>
 </header>
 <div class="dbar" style="display:none">
@@ -889,20 +889,20 @@ function disableCommInputs(){
     <input type="date" id="dFrom"><span class="dsep">→</span><input type="date" id="dTo">
     <button class="dapply" onclick="applyCustom()">Execute</button>
   </div>
-  <div class="dinfo" id="dinfo">— Mission</div>
+  <div class="dinfo" id="dinfo">— Campaign</div>
 </div>
 <div class="pbar" id="pbar" style="display:none"><span class="bar-label">🛡️ Product</span><div class="pill-wrap" id="productPills"></div></div>
 <div class="abar" id="abar" style="display:none">
-  <span class="bar-label">Hunter</span>
+  <span class="bar-label">ทีม</span>
   <div class="pill-wrap" id="analystPills"></div>
   <button class="photo-manage-btn" onclick="openPhotoManager()">📷 Player Profile</button>
 </div>
 <div id="mainView" style="display:none">
 <div class="page">
   <div id="kpiGrid" class="kpi-grid" id="kpiGrid"></div>
-  <div id="lbSection" style="display:none"><div class="stitle"><div class="stitle-bar"></div>🏆 Hunter Leaderboard</div><div class="lb-outer" id="lbWrap"></div></div>
+  <div id="lbSection" style="display:none"><div class="stitle"><div class="stitle-bar"></div>🏆 Analyst Leaderboard</div><div class="lb-outer" id="lbWrap"></div></div>
   <div id="chartSection" class="cgrid two">
-    <div class="card"><h3><span class="h3-dot"></span>ROAS Per Mission</h3><canvas id="cRoas" height="200"></canvas><div id="eRoas" class="chart-err" style="display:none">No Data</div></div>
+    <div class="card"><h3><span class="h3-dot"></span>ROAS Per Campaign</h3><canvas id="cRoas" height="200"></canvas><div id="eRoas" class="chart-err" style="display:none">No Data</div></div>
     <div class="card"><h3><span class="h3-dot"></span>Revenue vs Budget vs Cost (฿)</h3><canvas id="cRevBud" height="200"></canvas><div id="eRevBud" class="chart-err" style="display:none">No Data</div></div>
   </div>
   <div class="cgrid three">
@@ -912,7 +912,7 @@ function disableCommInputs(){
   </div>
   <div class="magic-div"><div class="magic-div-line"></div>
 <svg width="90" height="28" viewBox="0 0 90 28" xmlns="http://www.w3.org/2000/svg"><circle cx="45" cy="14" r="12" fill="none" stroke="#7c3aed" stroke-width=".8" stroke-dasharray="4,3"/><circle cx="45" cy="14" r="7" fill="none" stroke="#1976d2" stroke-width=".5" stroke-dasharray="2,4"/><circle cx="45" cy="14" r="3" fill="#7c3aed" opacity=".4"/><circle cx="45" cy="14" r="1.5" fill="#1976d2" opacity=".7"/><circle cx="45" cy="2" r="1.5" fill="#7c3aed" opacity=".6"/><circle cx="45" cy="26" r="1.5" fill="#7c3aed" opacity=".6"/><circle cx="33" cy="14" r="1.5" fill="#7c3aed" opacity=".6"/><circle cx="57" cy="14" r="1.5" fill="#7c3aed" opacity=".6"/><line x1="0" y1="14" x2="30" y2="14" stroke="#c7d7f0" stroke-width=".5"/><line x1="60" y1="14" x2="90" y2="14" stroke="#c7d7f0" stroke-width=".5"/></svg>
-<div class="magic-div-line r"></div></div><div class="stitle"><div class="stitle-bar"></div>📋 Mission Log <span style="font-size:.7rem;font-weight:400;color:var(--text3);margin-left:8px;letter-spacing:0;text-transform:none;font-family:Inter">คลิกเพื่อดูรายละเอียด ▶</span></div>
+<div class="magic-div-line r"></div></div><div class="stitle"><div class="stitle-bar"></div>📋 Campaign Log <span style="font-size:.7rem;font-weight:400;color:var(--text3);margin-left:8px;letter-spacing:0;text-transform:none;font-family:Inter">คลิกเพื่อดูรายละเอียด ▶</span></div>
   <div id="t1wrap" class="tw"><table id="t1"><tbody><tr><td style="padding:24px;color:var(--text3);font-family:Rajdhani,sans-serif;letter-spacing:1px">LOADING...</td></tr></tbody></table></div>
   <div class="magic-div"><div class="magic-div-line"></div>
 <svg width="90" height="28" viewBox="0 0 90 28" xmlns="http://www.w3.org/2000/svg"><circle cx="45" cy="14" r="12" fill="none" stroke="#7c3aed" stroke-width=".8" stroke-dasharray="4,3"/><circle cx="45" cy="14" r="7" fill="none" stroke="#1976d2" stroke-width=".5" stroke-dasharray="2,4"/><circle cx="45" cy="14" r="3" fill="#7c3aed" opacity=".4"/><circle cx="45" cy="14" r="1.5" fill="#1976d2" opacity=".7"/><circle cx="45" cy="2" r="1.5" fill="#7c3aed" opacity=".6"/><circle cx="45" cy="26" r="1.5" fill="#7c3aed" opacity=".6"/><circle cx="33" cy="14" r="1.5" fill="#7c3aed" opacity=".6"/><circle cx="57" cy="14" r="1.5" fill="#7c3aed" opacity=".6"/><line x1="0" y1="14" x2="30" y2="14" stroke="#c7d7f0" stroke-width=".5"/><line x1="60" y1="14" x2="90" y2="14" stroke="#c7d7f0" stroke-width=".5"/></svg>
@@ -921,13 +921,13 @@ function disableCommInputs(){
 </div>
 
 </div><!-- /page -->
-<footer>Rich Biotech &copy; 2569 &bull; Hunter System &bull; Auto-Refresh Every 5 Min</footer>
+<footer>Rich Biotech &copy; 2569 &bull; Ads Analytics &bull; Auto-Refresh Every 5 Min</footer>
 
 <!-- Photo Manager -->
 <div id="pm-bg" onclick="if(event.target===this)closePhotoManager()">
   <div id="pm-box">
     <div class="pm-head"><div><h3>📷 Player Profile Manager</h3><p>อัปโหลดรูปโปรไฟล์ — บันทึกไว้ในเบราว์เซอร์นี้</p></div><button class="pm-close" onclick="closePhotoManager()">✕</button></div>
-    <div class="pm-body"><div class="pm-note">💡 รูปจะแสดงใน Leaderboard, Hunter Filter, และ Mission Log</div><div class="pm-list" id="pmList"></div></div>
+    <div class="pm-body"><div class="pm-note">💡 รูปจะแสดงใน Leaderboard, Analyst Filter, และ Campaign Log</div><div class="pm-list" id="pmList"></div></div>
   </div>
 </div>
 
@@ -1176,7 +1176,7 @@ function buildAnalystFilter(){
   if(!analysts.length){ab.style.display='none';return;}
   ab.style.display='flex';c.innerHTML='';
   function mkA(l,v,av){var b=document.createElement('button');b.className='apill'+(filterAnalyst===v?' active':'');b.innerHTML=av+'<span>'+l+'</span>';b.onclick=function(){filterAnalyst=v;buildAnalystFilter();renderAll();};c.appendChild(b);}
-  mkA('All Hunters <small style="opacity:.5;font-weight:400">('+analysts.length+')</small>',null,'<span class="av" style="font-size:.6rem">⚡</span>');
+  mkA('All Analysts <small style="opacity:.5;font-weight:400">('+analysts.length+')</small>',null,'<span class="av" style="font-size:.6rem">⚡</span>');
   analysts.forEach(function(a){mkA(a,a,avHtml(a,24,''));});
 }
 
@@ -1302,7 +1302,7 @@ function renderLeaderboard(grouped){
   var medals=['🥇','🥈','🥉'];
   var borderC={S:'#ffd700',A:'#ff4444',B:'#a78bfa',C:'#60a5fa',D:'#4ade80',E:'#94a3b8'};
   var glowC={S:'rgba(255,215,0,.12)',A:'rgba(255,68,68,.1)',B:'rgba(167,139,250,.1)',C:'rgba(96,165,250,.1)',D:'rgba(74,222,128,.08)',E:'rgba(148,163,184,.06)'};
-  var h='<div class="lb-head"><div><div class="lb-head-title">⚔️ Shadow Hunter Leaderboard</div><div class="lb-head-sub">คลิก Card เพื่อกรอง &bull; คลิก Avatar เพื่อเปลี่ยนโปรไฟล์</div></div><div class="lb-subhead">'+stats.length+' Hunters</div></div>';
+  var h='<div class="lb-head"><div><div class="lb-head-title">📊 Analyst Leaderboard</div><div class="lb-head-sub">คลิก Card เพื่อกรอง &bull; คลิก Avatar เพื่อเปลี่ยนโปรไฟล์</div></div><div class="lb-subhead">'+stats.length+' Analysts</div></div>';
   h+='<div class="lb-cards">';
   stats.forEach(function(s,i){
     var rr=roasRank(s.roas),bc=borderC[rr.label]||'#1976d2',gc=glowC[rr.label]||'rgba(25,118,210,.08)';
@@ -1354,7 +1354,7 @@ function renderAll(){
    {l:'Reach',v:fmt(treach),u:'Total Players',c:'p',i:'👥'},
    {l:'Conversions',v:fmt(tc),u:'Total',c:'o',i:'🛒'},
    {l:'Total Runs',v:fmt(totalTests),u:grouped.length+' missions',c:'c',i:'📋'},
-   {l:'Win / Loss',v:pass+' / '+fail,u:'Mission Result',c:pass>fail?'g':'r',i:'⚔️'}
+   {l:'Win / Loss',v:pass+' / '+fail,u:'Campaign Result',c:pass>fail?'g':'r',i:'⚔️'}
   ].forEach(function(k){
     var d=document.createElement('div');d.className='kpi'+(k.c?' '+k.c:'');
     d.innerHTML='<div class="kicon">'+k.i+'</div><div class="klbl">'+k.l+'</div><div class="kval">'+k.v+'</div><div class="kunt">'+k.u+'</div>';
@@ -1383,7 +1383,7 @@ function renderAll(){
   var rp=function(v){return '<span class="pill '+(v.indexOf('ไม่')>=0?'fail':'pass')+'">'+v+'</span>';};
   var sp2=function(s){var c=s.indexOf('บวก')>=0?'pos':s.indexOf('ลบ')>=0?'neg':'neu';return '<span class="pill '+c+'">'+s+'</span>';};
   var rc=function(v){return 'style="font-weight:800;color:'+(v>=1?'var(--green)':'var(--red)')+'"';};
-  var h1='<thead><tr><th>Mission</th><th>Hunter</th><th>Platform</th><th>Date Range</th><th>Runs</th><th>Budget (฿)</th><th>Reach</th><th>Conv</th><th>Revenue (฿)</th><th>ROAS</th><th>Score</th><th>Result</th></tr></thead><tbody>';
+  var h1='<thead><tr><th>Campaign</th><th>Analyst</th><th>Platform</th><th>Date Range</th><th>Runs</th><th>Budget (฿)</th><th>Reach</th><th>Conv</th><th>Revenue (฿)</th><th>ROAS</th><th>Score</th><th>Result</th></tr></thead><tbody>';
   grouped.forEach(function(g,i){
     var rr=roasRank(g.roas);
     var dr='<span class="dchip">'+dfmt(g.date)+'</span>'+(g.test_days>1&&g.date_last?'<span class="dchip">'+dfmt(g.date_last)+'</span>':'');
@@ -1404,10 +1404,10 @@ function aiAdvice(r,ct){
   var avgEng=ct.length?ct.reduce(function(a,c){return a+c.eng_rate;},0)/ct.length:0;
   var sentScore=ct.reduce(function(a,c){return c.sentiment.indexOf('บวก')>=0?a+1:c.sentiment.indexOf('ลบ')>=0?a-1:a;},0);
   var dec,col,bg,border,icon;
-  if(r.roas>=2.5){dec='S-Rank Clear — เพิ่มงบ 30–50%';col='#ffd700';bg='rgba(255,215,0,.05)';border='rgba(255,215,0,.3)';icon='⚔️';}
+  if(r.roas>=2.5){dec='Top Performance — เพิ่มงบ 30–50%';col='#ffd700';bg='rgba(255,215,0,.05)';border='rgba(255,215,0,.3)';icon='⚔️';}
   else if(r.roas>=1.5){dec='A-Rank Clear — เพิ่มงบ 10–20%';col='#ff4444';bg='rgba(255,68,68,.05)';border='rgba(255,68,68,.25)';icon='🗡️';}
   else if(r.roas>=1){dec='C-Rank Clear — รักษางบ + ปรับปรุง';col='#60a5fa';bg='rgba(96,165,250,.05)';border='rgba(96,165,250,.25)';icon='🛡️';}
-  else{dec='Mission Failed — ลดงบ / Regroup';col='#ff5252';bg='rgba(255,82,82,.05)';border='rgba(255,82,82,.25)';icon='💀';}
+  else{dec='Underperform — ลดงบ / ปรับกลยุทธ์';col='#ff5252';bg='rgba(255,82,82,.05)';border='rgba(255,82,82,.25)';icon='💀';}
   var why=[],act=[];
   if(r.roas>=2.5)why.push('ROAS '+r.roas.toFixed(2)+'× — S-Rank ขยายได้ทันที');
   else if(r.roas>=1.5)why.push('ROAS '+r.roas.toFixed(2)+'× — กำไรดี สม่ำเสมอ');
@@ -1481,12 +1481,12 @@ function openDetail(idx){
   var rp=function(v){return '<span class="pill '+(v.indexOf('ไม่')>=0?'fail':'pass')+'">'+v+'</span>';};
   var sp2=function(s){var c=s.indexOf('บวก')>=0?'pos':s.indexOf('ลบ')>=0?'neg':'neu';return '<span class="pill '+c+'">'+s+'</span>';};
   var rc=function(v){return 'style="font-weight:800;color:'+(v>=1?'var(--green)':'var(--red)')+'"';};
-  document.getElementById('m-title').innerHTML='⚔️ '+g.campaign+' <span class="rank-badge '+rr.cls+'" style="font-size:.7rem">'+rr.label+'</span>';
+  document.getElementById('m-title').innerHTML='📊 '+g.campaign+' <span class="rank-badge '+rr.cls+'" style="font-size:.7rem">'+rr.label+'</span>';
   document.getElementById('m-meta').innerHTML='<span>📱 '+g.platform+'</span><span>🛡️ '+g.product+'</span><span>'+avHtml(g.analyst,18,'')+'&thinsp;'+g.analyst+'</span>'+(g.date?'<span>📅 '+dfmt(g.date)+(g.test_days>1&&g.date_last?' → '+dfmt(g.date_last):'')+'</span>':'')+(g.audience?'<span>🎯 '+g.audience+'</span>':'');
   var dayRows=g.days.map(function(d){var dr2=roasRank(d.roas);return '<tr><td><span class="test-lbl">'+d.test_day+'</span></td><td>'+dfmt(d.date)+'</td><td>'+fmt(d.budget)+'</td><td>'+fmt(d.reach)+'</td><td>'+fmt(d.clicks)+'</td><td>'+d.ctr.toFixed(2)+'%</td><td>'+fmt(d.conv)+'</td><td>'+fmt(d.revenue)+'</td><td '+rc(d.roas)+'>'+d.roas.toFixed(2)+'× <span class="rank-badge '+dr2.cls+'" style="font-size:.5rem;width:16px;height:16px">'+dr2.label+'</span></td><td>'+d.score+'</td></tr>';}).join('');
   var ctRows=ct.map(function(c){return '<tr><td>'+c.ctype+'</td><td>'+fmt(c.reach)+'</td><td>'+fmt(c.likes)+'</td><td>'+fmt(c.comments)+'</td><td>'+fmt(c.shares)+'</td><td>'+c.eng_rate.toFixed(2)+'%</td><td>'+sp2(c.sentiment)+'</td><td>'+rp(c.result)+'</td></tr>';}).join('');
   document.getElementById('m-body').innerHTML=
-    '<div class="msec"><h4>Mission Summary</h4><div class="mrow">'+
+    '<div class="msec"><h4>Campaign Summary</h4><div class="mrow">'+
     ['<div class="mcard"><div class="ml">Budget</div><div class="mv">฿'+fmt(g.budget)+'</div></div>',
      '<div class="mcard g"><div class="ml">Revenue</div><div class="mv">฿'+fmt(g.revenue)+'</div></div>',
      '<div class="mcard '+(profit>=0?'g':'r')+'"><div class="ml">P&L</div><div class="mv">'+(profit>=0?'+':'-')+'฿'+fmt(Math.abs(profit))+'</div></div>',
@@ -1502,9 +1502,9 @@ function openDetail(idx){
     '<table class="day-table"><thead><tr><th>Run</th><th>Date</th><th>Budget</th><th>Reach</th><th>Clicks</th><th>CTR%</th><th>Conv</th><th>Revenue</th><th>ROAS</th><th>Score</th></tr></thead><tbody>'+dayRows+'</tbody></table></div></div>'+
     '<div class="msec"><h4>📊 Charts</h4><div class="mchart-wrap"><div class="card" style="padding:10px"><canvas id="mc1" height="155"></canvas></div><div class="card" style="padding:10px"><canvas id="mc2" height="155"></canvas></div></div></div>'+
     renderMediaBlock(g.media)+
-    '<div class="msec"><h4>⚔️ System Recommendation</h4><div class="ai-box" style="background:'+adv.bg+';border-color:'+adv.border+'"><div class="ai-dec" style="color:'+adv.col+'">'+adv.icon+' '+adv.dec+'</div><div class="ai-sub">Analysis</div><ul class="ai-list why">'+adv.why.map(function(t){return '<li>'+t+'</li>';}).join('')+'</ul><div class="ai-sub" style="margin-top:12px">Next Action</div><ul class="ai-list act">'+adv.act.map(function(t){return '<li>'+t+'</li>';}).join('')+'</ul></div></div>'+
+    '<div class="msec"><h4>📊 AI Recommendationh4><div class="ai-box" style="background:'+adv.bg+';border-color:'+adv.border+'"><div class="ai-dec" style="color:'+adv.col+'">'+adv.icon+' '+adv.dec+'</div><div class="ai-sub">Analysis</div><ul class="ai-list why">'+adv.why.map(function(t){return '<li>'+t+'</li>';}).join('')+'</ul><div class="ai-sub" style="margin-top:12px">Next Action</div><ul class="ai-list act">'+adv.act.map(function(t){return '<li>'+t+'</li>';}).join('')+'</ul></div></div>'+
     (ct.length?'<div class="msec"><h4>📡 Content Intel ('+ct.length+')</h4><table class="ct-tbl"><thead><tr><th>Type</th><th>Reach</th><th>Likes</th><th>Comments</th><th>Shares</th><th>Eng%</th><th>Sentiment</th><th>Result</th></tr></thead><tbody>'+ctRows+'</tbody></table></div>':'')+
-    (g.note?'<div class="msec"><h4>📌 Next Mission</h4><div class="note-box">'+g.note+'</div></div>':'');
+    (g.note?'<div class="msec"><h4>📌 Next Campaign</h4><div class="note-box">'+g.note+'</div></div>':'');
   document.getElementById('modal-bg').classList.add('open');document.body.style.overflow='hidden';
   requestAnimationFrame(function(){
     Object.keys(modalCharts).forEach(function(k){modalCharts[k].destroy();});modalCharts={};
@@ -1529,7 +1529,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeModal(
 
 function openPhotoManager(){
   var analysts=[];(s1data||[]).forEach(function(r){if(r.analyst&&analysts.indexOf(r.analyst)<0)analysts.push(r.analyst);});
-  if(!analysts.length){alert('ยังไม่มีข้อมูล Hunter');return;}
+  if(!analysts.length){alert('ยังไม่มีข้อมูล Analyst');return;}
   renderPmList(analysts);document.getElementById('pm-bg').classList.add('open');document.body.style.overflow='hidden';
 }
 function closePhotoManager(){document.getElementById('pm-bg').classList.remove('open');document.body.style.overflow='';buildAnalystFilter();renderAll();}
@@ -1608,7 +1608,7 @@ function renderCohort(){
     +'<button onclick="switchView(\'top\',document.getElementById(\'sb-home\'))" style="background:rgba(21,101,192,.08);border:1px solid rgba(21,101,192,.25);color:#1565c0;border-radius:6px;padding:7px 14px;font-size:.75rem;font-weight:700;cursor:pointer;font-family:Rajdhani,sans-serif;letter-spacing:1px">← หน้าหลัก</button>'
     +'<div class="stitle" style="margin-bottom:0"><div class="stitle-bar"></div>📊 Cohort Analysis — ROAS รายวัน</div>'
     +'</div>'
-    +'<div style="font-size:.73rem;color:var(--text3);margin-bottom:16px">ROAS แต่ละวันของแต่ละแคมเปญ (D0=วันแรก, D1=วันที่ 2 ...) • คลิก Mission Log ด้านล่างเพื่อดูรายละเอียด</div>';
+    +'<div style="font-size:.73rem;color:var(--text3);margin-bottom:16px">ROAS แต่ละวันของแต่ละแคมเปญ (D0=วันแรก, D1=วันที่ 2 ...) • คลิก Campaign Log ด้านล่างเพื่อดูรายละเอียด</div>';
   var s1raw=applyFilter(s1data||[]),grouped=groupCampaigns(s1raw);
   if(!grouped.length){wrap.innerHTML='<div style="padding:32px;text-align:center;color:var(--text3);font-family:Rajdhani,sans-serif;letter-spacing:1px">NO MISSION DATA</div>';return;}
   var maxDays=0;grouped.forEach(function(g){if(g.days.length>maxDays)maxDays=g.days.length;});
@@ -1654,7 +1654,7 @@ function renderCohort(){
     +'<div class="cohort-legend-item" style="margin-left:auto;font-size:.65rem;color:var(--text3)">'+grouped.length+' missions &bull; max '+maxDays+' days</div>'
     +'</div>';
   var tbl='<table class="cohort-tbl"><thead><tr>'
-    +'<th style="min-width:200px">Mission / Hunter</th>'
+    +'<th style="min-width:200px">Campaign / Analyst</th>'
     +'<th style="text-align:right">งบรวม</th>'
     +'<th style="text-align:center">ROAS</th>'
     +dayHeaders+'</tr></thead><tbody>'+rows+'</tbody></table>';
@@ -4487,7 +4487,7 @@ var _taskData={}; // {date: {analyst: [task,...]}}
 // ── shared helpers (global so _adsaiCalcBudget can use them) ──
 function _aiFmtB(v){return '฿'+(v>=1000000?(v/1000000).toFixed(1)+'M':v>=1000?Math.round(v/1000)+'K':Math.round(v));}
 function _aiRoasGrade(r){
-  if(r>=3)  return{grade:'S',icon:'⚔️',color:'#f59e0b',bg:'#fffbeb',label:'Excellent'};
+  if(r>=3)  return{grade:'S',icon:'⭐'️',color:'#f59e0b',bg:'#fffbeb',label:'Excellent'};
   if(r>=2)  return{grade:'A',icon:'🗡️',color:'#22c55e',bg:'#f0fdf4',label:'ดีมาก'};
   if(r>=1.5)return{grade:'B',icon:'🛡️',color:'#3b82f6',bg:'#eff6ff',label:'พอใช้ได้'};
   if(r>=1)  return{grade:'C',icon:'⚡',color:'#f97316',bg:'#fff7ed',label:'เกือบคุ้มทุน'};
