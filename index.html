@@ -3149,7 +3149,7 @@ function _renderFBProducts(el){
     var isLoading=x.loadedCount<x.allAccNames.length&&x.allAccNames.length>0;
     var roasColor=agg.roas>=2?'#059669':agg.roas>=1?'#d97706':'#dc2626';
     var borderColor=agg.roas>=2?'#059669':agg.roas>=1?'#f59e0b':'#ef4444';
-    h+='<div style="background:#fff;border:1.5px solid #e8edf6;border-left:4px solid '+borderColor+';border-radius:12px;padding:18px 20px;box-shadow:0 2px 8px rgba(15,23,42,.04)">';
+    h+='<div style="background:#fff;border:1.5px solid #e8edf6;border-top:3px solid '+borderColor+';border-radius:12px;padding:18px 20px;box-shadow:0 2px 8px rgba(15,23,42,.04)">';
     // Header row
     h+='<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px">';
     h+='<div>';
@@ -3170,7 +3170,7 @@ function _renderFBProducts(el){
     h+=stat('Orders',fmt(agg.purchases));
     h+='</div>';
     // Detail button
-    h+='<button onclick="fbNavProduct=FB_HIERARCHY['+pi+'];fbNavPage=null;fbNavHolder=null;renderFB()" style="width:100%;padding:7px;background:linear-gradient(135deg,'+p.color+'18,'+p.color+'08);border:1.5px solid '+p.color+'35;color:'+p.color+';border-radius:8px;font-size:.74rem;font-weight:700;cursor:pointer;font-family:inherit">⚡ Live &nbsp; ดูรายละเอียด →</button>';
+    h+='<button onclick="fbNavProduct=FB_HIERARCHY['+pi+'];fbNavPage=null;fbNavHolder=null;renderFB()" style="width:100%;padding:7px;background:#EEF2FF;border:1.5px solid #4B56D2;color:#4B56D2;border-radius:8px;font-size:.74rem;font-weight:700;cursor:pointer;font-family:inherit">⚡ Live &nbsp; ดูรายละเอียด →</button>';
     h+='</div>';
   });
   h+='</div>';
