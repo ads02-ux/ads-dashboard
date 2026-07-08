@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#F2F4F2;--bg2:#FFFFFF;--bg3:#F8FAF8;--bg4:#EAF0EA;--panel:#FFFFFF;--panel2:#F8FAF8;--panel-border:#DDE8DD;--blue:#2E6B2E;--blue2:#256025;--blue-glow:#2E6B2E40;--blue-faint:#2E6B2E12;--purple:#3D8C3D;--purple2:#348234;--purple-glow:#3D8C3D35;--cyan:#2D9E2D;--cyan2:#258C25;--cyan-glow:#2D9E2D30;--gold:#4CAF4C;--gold2:#3D9E3D;--gold-glow:#4CAF4C30;--green:#22A022;--red:#E53935;--amber:#F57C00;--text:#1A2E1A;--text2:#2E5A2E;--text3:#6B8C6B;--rank-s:#4CAF4C;--rank-a:#E53935;--rank-b:#F57C00;--rank-c:#1976D2;--rank-d:#22A022;--rank-e:#6B8C6B;--shadow-glow:0 0 20px rgba(46,107,46,.12),0 0 60px rgba(46,107,46,.05);--shadow-panel:0 1px 4px rgba(26,46,26,.06),0 4px 16px rgba(26,46,26,.07);--r:6px;--r2:10px;--r3:14px;--t:.2s cubic-bezier(.4,0,.2,1)}
+:root{--bg:#F4F6FB;--bg2:#FFFFFF;--bg3:#F8FAFF;--bg4:#EBF0FF;--panel:#FFFFFF;--panel2:#F8FAFF;--panel-border:#E2E8F4;--blue:#4B56D2;--blue2:#3A45C0;--blue-glow:#4B56D240;--blue-faint:#4B56D212;--purple:#7C3AED;--purple2:#6D28D9;--purple-glow:#7C3AED35;--cyan:#0EA5E9;--cyan2:#0284C7;--cyan-glow:#0EA5E930;--gold:#6B7FE8;--gold2:#5A6EDA;--gold-glow:#6B7FE830;--green:#22C55E;--red:#EF4444;--amber:#F59E0B;--text:#0F172A;--text2:#334155;--text3:#64748B;--shadow-panel:0 1px 4px rgba(15,23,42,.06),0 4px 16px rgba(15,23,42,.07);--r:6px;--r2:10px;--r3:14px;--t:.2s cubic-bezier(.4,0,.2,1);}
 [data-theme="dark"]{--bg:#0F1010;--bg2:#171818;--bg3:#1E1F1F;--bg4:#252626;--panel:#171818;--panel2:#0F1010;--panel-border:#2A2D2A;--blue:#AAFF00;--blue2:#99EE00;--blue-glow:#AAFF0042;--blue-faint:#AAFF0016;--purple:#7ACC00;--purple2:#88DD00;--purple-glow:#7ACC0035;--cyan:#55CC55;--cyan2:#44BB44;--cyan-glow:#55CC5530;--gold:#AAFF00;--gold2:#88CC00;--gold-glow:#AAFF0030;--green:#44CC44;--red:#FF5252;--amber:#AAFF00;--text:#FFFFFF;--text2:#AAAAAA;--text3:#555555;--rank-s:#AAFF00;--rank-a:#FF5252;--rank-b:#FFAA00;--rank-c:#5588FF;--rank-d:#44CC44;--rank-e:#555555;--shadow-glow:0 0 20px rgba(170,255,0,.22),0 0 60px rgba(170,255,0,.08);--shadow-panel:0 1px 4px rgba(0,0,0,.7),0 4px 20px rgba(0,0,0,.5),0 0 0 1px rgba(42,45,42,.9)}
 [data-theme="dark"] header{background:#0F1010!important;border-bottom:1px solid #2A2D2A!important;box-shadow:0 1px 0 rgba(170,255,0,.1)!important}
 [data-theme="dark"] body::before{opacity:.3}
@@ -300,7 +300,7 @@ header .hlogo,.header .hright,.header>div{position:relative;z-index:1}
 
 /* ── SIDEBAR ── */
 .layout{display:flex;min-height:100vh}
-.sidebar{width:210px;background:#1C3A1C;border-right:none;position:fixed;top:0;left:0;bottom:0;display:flex;flex-direction:column;z-index:300;overflow-y:auto;transition:transform .25s ease;box-shadow:3px 0 20px rgba(0,0,0,.28)}
+.sidebar{width:210px;background:#0E1A3E;border-right:none;position:fixed;top:0;left:0;bottom:0;display:flex;flex-direction:column;z-index:300;overflow-y:auto;transition:transform .25s ease;box-shadow:3px 0 20px rgba(0,0,0,.28)}
 .sidebar::-webkit-scrollbar{width:3px}.sidebar::-webkit-scrollbar-thumb{background:#1e293b}
 .content-wrap{margin-left:210px;flex:1;min-width:0;display:flex;flex-direction:column}
 .sb-logo{padding:18px 16px 14px;border-bottom:1px solid #1e293b;display:flex;align-items:center;gap:10px;flex-shrink:0}
@@ -311,7 +311,7 @@ header .hlogo,.header .hright,.header>div{position:relative;z-index:1}
 .sb-section{padding:10px 16px 4px;font-family:'Rajdhani',sans-serif;font-size:.58rem;font-weight:700;color:#475569;letter-spacing:2.5px;text-transform:uppercase}
 .sb-item{display:flex;align-items:center;gap:10px;padding:9px 16px;border-radius:var(--r);font-size:.82rem;font-weight:500;color:rgba(255,255,255,.65);cursor:pointer;transition:all var(--t);white-space:nowrap;overflow:hidden;border-left:2px solid transparent}
 .sb-item:hover{background:rgba(255,255,255,.09);color:#FFFFFF}
-.sb-item.active{background:rgba(76,175,76,.22);color:#7FD97F;border-left:2px solid #4CAF4C}
+.sb-item.active{background:#4B56D2!important;color:#FFFFFF!important;font-weight:600!important;border-left:3px solid #4B56D2!important}
 .sb-item.active .sb-dot{background:#818cf8}
 .sb-icon{font-size:.95rem;width:18px;text-align:center;flex-shrink:0}
 .sb-dot{width:5px;height:5px;border-radius:50%;background:#cbd5e1;flex-shrink:0;transition:all .15s}
