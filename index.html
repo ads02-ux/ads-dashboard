@@ -7415,7 +7415,7 @@ function _renderFBInner(el){
         +' <button onclick="fbUpdateBudget(\''+cname.replace(/'/g,"\\'")+'\',\''+cid+'\','+bud+')" '
         +'style="background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.3);color:#fbbf24;border-radius:4px;padding:2px 6px;font-size:.65rem;cursor:pointer;font-family:inherit" title="แก้ไขงบ">✏️</button>'
         +' <button onclick="fbChangeStopDate(\''+cname.replace(/'/g,"\\'")+'\'\,\''+cid+'\')" '
-        +'style="background:rgba(14,165,233,.1);border:1px solid rgba(14,165,233,.3);color:#0ea5e9;border-radius:4px;padding:2px 6px;font-size:.65rem;cursor:pointer;font-family:inherit" title="'+(stopTime?('หยุด: '+new Date(stopTime).toLocaleDateString('th-TH',{day:\'numeric\',month:\'short\',year:\'2-digit\'})):'ตั้งวันหยุด')+'">📅</button>'
+        +'style="background:rgba(14,165,233,.1);border:1px solid rgba(14,165,233,.3);color:#0ea5e9;border-radius:4px;padding:2px 6px;font-size:.65rem;cursor:pointer;font-family:inherit" title="'+(stopTime?('หยุด: '+new Date(stopTime).toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'2-digit'})):'ตั้งวันหยุด')+'">📅</button>'
         +'</div>'
         +'</td>';
     } else {
