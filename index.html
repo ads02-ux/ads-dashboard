@@ -105,7 +105,7 @@ header::after{display:none}
 .hright{display:flex;align-items:center;gap:10px;flex-wrap:wrap;position:relative;z-index:1}
 .live-badge{display:flex;align-items:center;gap:7px;background:rgba(5,150,105,.07);border:1px solid rgba(5,150,105,.25);border-radius:var(--r);padding:5px 14px;font-size:.7rem;font-weight:700;letter-spacing:1px;color:var(--green);font-family:'Rajdhani',sans-serif}
 .dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s ease infinite;box-shadow:0 0 6px rgba(5,150,105,.5)}
-.upd{font-size:.65rem;color:var(--text3)}.cdwn{font-size:.65rem;color:var(--text3);min-width:95px;text-align:right;font-variant-numeric:tabular-nums}
+.upd{font-size:.65rem;color:var(--text3)}.cdwn{font-size:.65rem;color:var(--text3);min-width:95px;text-align:right;font-variant-numeric:tabular-numsdisplay:none;}
 
 /* === BARS === */
 .dbar{position:sticky;top:0;z-index:102;background:rgba(248,250,255,.97);border-bottom:1px solid var(--panel-border);padding:10px 28px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;backdrop-filter:blur(12px);box-shadow:0 1px 6px rgba(15,23,42,.05)}
@@ -7908,8 +7908,7 @@ loadJSONP(GID_S1,'A7:Z','cb_s1');loadJSONP(GID_S2,'A7:Y','cb_s2');
 loadJSONP(GID_COMM,'A2:E','cb_comm');
 loadJSONP(GID_CONFIG,'A2:B','cb_config');
 setTimeout(function(){if(loadedCount<2){showBanner('⚠ โหลด Sheet ช้า — แสดงข้อมูลที่มี');loadedCount=2;buildProductFilter();buildAnalystFilter();renderAll();}},15000);
-var countdown=REFRESH;
-setInterval(function(){countdown--;var el=document.getElementById('cdwn');if(el){var m=Math.floor(countdown/60),s=countdown%60;el.textContent='Refresh in '+(m>0?m+'m '+pad2(s)+'s':s+'s');}if(countdown<=0)location.reload();},1000);
+
 
 // ── User Management (Access Control) ──
 function _getAccessUsers(){
