@@ -535,12 +535,15 @@ canvas{filter:none}
 #pw-btn{width:100%;padding:11px;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;border:none;border-radius:8px;font-size:.95rem;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;transition:.2s;box-shadow:0 4px 16px rgba(79,70,229,.4)}
 #pw-btn:hover{background:linear-gradient(135deg,#4338ca,#6d28d9);box-shadow:0 6px 20px rgba(79,70,229,.5)}
 #pw-err{color:#dc2626;font-size:.78rem;margin-top:10px;min-height:1em}
+#pw-email{width:100%;box-sizing:border-box;border:1.5px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 14px;font-size:.9rem;font-family:Inter,sans-serif;color:#e2e8f0;background:rgba(255,255,255,.07);outline:none;margin-bottom:8px;text-align:center;letter-spacing:.02em}
+#pw-email:focus{border-color:rgba(99,102,241,.6);box-shadow:0 0 0 3px rgba(99,102,241,.15)}
 </style>
 <div id="pw-gate">
   <div id="pw-box">
     <div id="pw-logo">⚔️</div>
     <div id="pw-title">ADS MISSION DASHBOARD</div>
     <div id="pw-sub">Rich Biotech · Hunter System</div>
+    <input id="pw-email" type="email" placeholder="อีเมล" autocomplete="email" onkeydown="if(event.key==='Enter')document.getElementById('pw-input').focus()">
     <input id="pw-input" type="password" placeholder="รหัสผ่าน" onkeydown="if(event.key==='Enter')pwCheck()">
     <button id="pw-btn" onclick="pwCheck()">เข้าสู่ระบบ</button>
     <div id="pw-err"></div>
@@ -560,15 +563,20 @@ canvas{filter:none}
   else if(a==='hr'){document.getElementById('pw-gate').style.display='none';document.addEventListener('DOMContentLoaded',function(){switchView('commission',document.getElementById('sb-comm'));enableHrMode();});}
 })();
 function pwCheck(){
+  var email=(document.getElementById('pw-email').value||'').trim().toLowerCase();
   var v=(document.getElementById('pw-input').value||'').trim();
-  // Check localStorage user list first
   var stored=localStorage.getItem('rb_access_users');
   var users=[];
   if(stored){try{var p=JSON.parse(stored);if(p.length)users=p;}catch(e){}}
-  if(!users.length)users=[{name:'Admin',password:'rich01',access:'all'},{name:'HR',password:'hr01',access:'hr'}];
-  var found=users.find(function(u){return u.password===v;});
+  if(!users.length)users=[{name:'Admin',email:'ads02@richbiotech.com',password:'rich01',access:'all'},{name:'HR',email:'',password:'hr01',access:'hr'}];
+  var found=users.find(function(u){
+    if(u.password!==v)return false;
+    if(u.email)return email===u.email.toLowerCase();
+    return !email;
+  });
   if(found){
     sessionStorage.setItem('rb_username',found.name);
+    sessionStorage.setItem('rb_email',found.email||'');
     sessionStorage.setItem('rb_access',Array.isArray(found.access)?JSON.stringify(found.access):found.access);
     sessionStorage.setItem('rb_perm',found.perm||'edit');
     if(found.access==='all'){
@@ -586,10 +594,11 @@ function pwCheck(){
       if((found.perm||'edit')==='view')setTimeout(_applyReadOnly,800);
     }
   } else {
-    document.getElementById('pw-err').textContent='รหัสผ่านไม่ถูกต้อง';
-    document.getElementById('pw-input').value='';document.getElementById('pw-input').focus();
+    document.getElementById('pw-err').textContent='อีเมลหรือรหัสผ่านไม่ถูกต้อง';
+    document.getElementById('pw-input').value='';document.getElementById('pw-email').value='';document.getElementById('pw-email').focus();
   }
 }
+
 
 function pwImportUsers(){
   var code=(document.getElementById('pw-import-code').value||'').trim();
@@ -7866,7 +7875,7 @@ setInterval(function(){countdown--;var el=document.getElementById('cdwn');if(el)
 function _getAccessUsers(){
   var stored=localStorage.getItem('rb_access_users');
   if(stored){try{var p=JSON.parse(stored);if(p.length)return p;}catch(e){}}
-  return [{name:'Admin',password:'rich01',access:'all'},{name:'HR',password:'hr01',access:'hr'}];
+  return [{name:'Admin',email:'ads02@richbiotech.com',password:'rich01',access:'all'},{name:'HR',email:'',password:'hr01',access:'hr'}];
 }
 function _saveAccessUsers(u){localStorage.setItem('rb_access_users',JSON.stringify(u));}
 
@@ -7896,7 +7905,8 @@ function _renderUserMgmt(el){
     rows+='<tr style="border-bottom:1px solid #f1f5f9">'
       +'<td style="padding:13px 16px"><div style="display:flex;align-items:center;gap:10px">'
         +'<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#1e3a5f,#3730a3);display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:800;color:#e0e7ff;flex-shrink:0">'+av+'</div>'
-        +'<span style="font-weight:700;color:#0f172a;font-size:.82rem">'+u.name+'</span>'
+        +'<div><span style="font-weight:700;color:#0f172a;font-size:.82rem">'+u.name+'</span>'
+        +'<div style="font-size:.65rem;color:#64748b;margin-top:1px">'+(u.email||'—')+'</div></div>'
       +'</div></td>'
       +'<td style="padding:13px 16px"><div style="display:flex;align-items:center;gap:8px">'
         +'<code style="font-size:.8rem;color:#334155;background:#f1f5f9;padding:3px 10px;border-radius:5px;letter-spacing:1px" id="pw-display-'+i+'">'+maskedPw(u.password)+'</code>'
@@ -7924,7 +7934,7 @@ function _renderUserMgmt(el){
         +'<div style="font-family:Rajdhani,sans-serif;font-size:1.2rem;font-weight:700;color:#0f172a;letter-spacing:1.5px;text-transform:uppercase;display:flex;align-items:center;gap:10px">'
           +'<span style="width:4px;height:22px;background:linear-gradient(#4f46e5,#7c3aed);border-radius:2px;display:inline-block"></span>จัดการผู้ใช้ &amp; สิทธิ์'
         +'</div>'
-        +'<div style="font-size:.72rem;color:#94a3b8;margin-top:3px">ผู้ใช้ทั้งหมด '+users.length+' คน — รหัสผ่านใช้ตอนเข้าสู่ระบบ</div>'
+        +'<div style="font-size:.72rem;color:#94a3b8;margin-top:3px">ผู้ใช้ทั้งหมด '+users.length+' คน — เข้าสู่ระบบด้วยอีเมล + รหัสผ่าน</div>'
       +'</div>'
       +'<div style="display:flex;gap:8px">'
       +'<button onclick="_umExportCode()" style="background:#f1f5f9;border:1.5px solid #e2e8f0;color:#374151;border-radius:8px;padding:8px 14px;font-size:.75rem;font-weight:700;cursor:pointer;font-family:inherit">📋 Export code</button>'
@@ -7936,6 +7946,10 @@ function _renderUserMgmt(el){
       +'<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">'
         +'<div><label style="font-size:.67rem;color:#64748b;display:block;margin-bottom:4px;font-weight:600">ชื่อผู้ใช้</label>'
           +'<input id="umNewName" placeholder="เช่น มอส, ปาย" style="border:1.5px solid #e2e8f0;border-radius:7px;padding:7px 12px;font-size:.8rem;font-family:inherit;width:140px;color:#0f172a;outline:none"></div>'
+        ++'<div><label style="font-size:.67rem;color:#64748b;display:block;margin-bottom:4px;font-weight:600">ชื่อผู้ใช้</label>'
+          +'<input id="umNewName" placeholder="เช่น มอส, ปาย" style="border:1.5px solid #e2e8f0;border-radius:7px;padding:7px 12px;font-size:.8rem;font-family:inherit;width:140px;color:#0f172a;outline:none"></div>'
+        +'<div><label style="font-size:.67rem;color:#64748b;display:block;margin-bottom:4px;font-weight:600">อีเมล</label>'
+          +'<input id="umNewEmail" type="email" placeholder="example@email.com" style="border:1.5px solid #e2e8f0;border-radius:7px;padding:7px 12px;font-size:.8rem;font-family:inherit;width:200px;color:#0f172a;outline:none"></div>'
         +'<div><label style="font-size:.67rem;color:#64748b;display:block;margin-bottom:4px;font-weight:600">รหัสผ่าน</label>'
           +'<input id="umNewPw" placeholder="เช่น hunter01" style="border:1.5px solid #e2e8f0;border-radius:7px;padding:7px 12px;font-size:.8rem;font-family:inherit;width:140px;color:#0f172a;outline:none"></div>'
         +'<div style="flex-basis:100%"><label style="font-size:.67rem;color:#64748b;display:block;margin-bottom:4px;font-weight:600">สิทธิ์การเข้าถึง (เลือกได้หลายหน้า)</label>'
@@ -8009,17 +8023,20 @@ window._applyReadOnly=function(){
 window._umDelUser=function(i){var u=_getAccessUsers();if(!u[i])return;if(u[i].password==='rich01'||u[i].password==='hr01'){alert('ไม่สามารถลบ Default user ได้');return;}if(confirm('ลบผู้ใช้ "'+u[i].name+'" ?')){u.splice(i,1);_saveAccessUsers(u);var el=document.getElementById('userMgmtView');if(el)_renderUserMgmt(el);}};
 window._umAddUser=function(){
   var n=(document.getElementById('umNewName').value||'').trim();
+  var em=(document.getElementById('umNewEmail').value||'').trim().toLowerCase();
   var pw=(document.getElementById('umNewPw').value||'').trim();
   var pm=document.getElementById('umNewPerm')?document.getElementById('umNewPerm').value:'edit';
   var _pills=document.querySelectorAll('#umNewPagePills [data-nacc]');var _selKeys=[];_pills.forEach(function(p){if(p.getAttribute('data-active')==='1')_selKeys.push(p.getAttribute('data-nacc'));});var ac=_selKeys.length===0?'hr':(_selKeys.length===1?_selKeys[0]:_selKeys);
-  if(!n||!pw){alert('กรุณากรอกชื่อและรหัสผ่าน');return;}
+  if(!n||!em||!pw){alert('กรุณากรอกชื่อ อีเมล และรหัสผ่าน');return;}
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){alert('รูปแบบอีเมลไม่ถูกต้อง');return;}
   var u=_getAccessUsers();
+  if(u.find(function(x){return x.email&&x.email.toLowerCase()===em;})){alert('อีเมลนี้ถูกใช้แล้ว');return;}
   if(u.find(function(x){return x.password===pw;})){alert('รหัสผ่านนี้ถูกใช้แล้ว');return;}
-  u.push({name:n,password:pw,access:ac,perm:pm});
+  u.push({name:n,email:em,password:pw,access:ac,perm:pm});
   _saveAccessUsers(u);
   var el=document.getElementById('userMgmtView');if(el)_renderUserMgmt(el);
   document.getElementById('umAddForm').style.display='none';
-  document.getElementById('umNewName').value='';document.getElementById('umNewPw').value='';
+  document.getElementById('umNewName').value='';document.getElementById('umNewEmail').value='';document.getElementById('umNewPw').value='';
 };
 window._umExportCode=function(){
   var u=_getAccessUsers();
