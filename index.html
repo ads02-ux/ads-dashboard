@@ -21,7 +21,7 @@
 [data-theme="dark"] .sidebar{background:#111212!important;border-right:1px solid #2A2D2A!important}
 [data-theme="dark"] .sb-sep{background:#2A2D2A!important}
 [data-theme="dark"] .sb-item:hover{background:rgba(170,255,0,.08)!important;color:#AAFF00!important}
-[data-theme="dark"] .sb-item.active{background:rgba(170,255,0,.14)!important;border-left:2px solid #AAFF00!important;color:#AAFF00!important}
+[data-theme="dark"] .sb-item.active{background:#AAFF00!important;border-left:2px solid #AAFF00!important;color:#111111!important;font-weight:700!important}
 [data-theme="dark"] .card{background:#171818!important;border-color:#2A2D2A!important}
 [data-theme="dark"] .kpi{background:#171818!important;border-color:#2A2D2A!important}
 
@@ -525,7 +525,11 @@ canvas{filter:none}
 }
 
 header>svg{display:none!important}
-</style>
+
+[data-theme="dark"] [style*="background:#fff"]{background:#1C1C1C!important;border-color:#2A2D2A!important}
+[data-theme="dark"] [style*="background: #fff"]{background:#1C1C1C!important}
+[data-theme="dark"] [style*="background:#f8fafc"]{background:#1A1A1A!important}
+[data-theme="dark"] [style*="background:#FFFFFF"]{background:#1C1C1C!important}</style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/lz-string.min.js"></script>
 </head>
 <body>
