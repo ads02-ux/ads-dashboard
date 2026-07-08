@@ -7261,8 +7261,9 @@ function _renderFBInner(el){
   // Column headers (FB style)
   var TH='padding:9px 12px;font-size:.7rem;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;border-bottom:2px solid rgba(21,101,192,.15);';
   var thead='<thead><tr style="background:rgba(241,245,255,.8)">'
-    +'<th style="'+TH+'min-width:130px;text-align:left;padding-left:14px;position:sticky;left:0;z-index:3;background:#f1f5ff">การแสดงโฆษณา</th>'
-    +'<th style="'+TH+'text-align:left;min-width:200px;position:sticky;left:130px;z-index:3;background:#f1f5ff;box-shadow:4px 0 8px -2px rgba(21,101,192,.18);">แคมเปญ / ชุดโฆษณา</th>'
+    +'<th style="'+TH+'width:44px;text-align:center;padding:0 8px;position:sticky;left:0;z-index:4;background:#f1f5ff"><input type="checkbox" id="fbCheckAll" onclick="_fbCheckAll(this.checked)" style="width:15px;height:15px;cursor:pointer"></th>'
+    +'<th style="'+TH+'min-width:130px;text-align:left;padding-left:14px;position:sticky;left:44px;z-index:3;background:#f1f5ff">การแสดงโฆษณา</th>'
+    +'<th style="'+TH+'text-align:left;min-width:200px;position:sticky;left:174px;z-index:3;background:#f1f5ff;box-shadow:4px 0 8px -2px rgba(21,101,192,.18);">แคมเปญ / ชุดโฆษณา</th>'
     +'<th style="'+TH+'text-align:right;color:#b45309">งบ/วัน</th>'
     +'<th style="'+TH+'text-align:right;color:#059669">งบคงเหลือ</th>'
     +'<th style="'+TH+'text-align:right">ยอดยิงแอด</th>'
