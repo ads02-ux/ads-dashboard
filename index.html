@@ -3970,7 +3970,7 @@ async function fbUpdateBudget(campName,campId){
   // 2) ถ้ายังเป็น 0 → ลอง adsets (ABO = งบอยู่ระดับชุดโฆษณา)
   if(campId&&!ci.daily_budget&&!ci.lifetime_budget){
     try{
-      var _ar=await fetch('https://graph.facebook.com/v20.0/'+campId+'/adsets?fields=daily_budget,lifetime_budget,id,name&limit=20&access_token='+tok);
+      var _ar=await fetch('https://graph.facebook.com/v20.0/'+campId+'/adsets?fields=daily_budget,lifetime_budget,budget_remaining,id,name&limit=20&access_token='+tok);
       var _ad=await _ar.json();
       if(_ad.data&&_ad.data.length>0){
         adsetCount=_ad.data.length;
@@ -3986,6 +3986,7 @@ async function fbUpdateBudget(campName,campId){
         if(adsetCount===1)updateId=_firstId;
         // ถ้ามีหลาย adset → เก็บไว้ แต่ยังอัปเดต campaign (หรือบอกผู้ใช้)
         ci._adsets=_ad.data;
+        ci._budgetExhausted=!ci.is_daily&&_ad.data.every(function(a){return parseInt(a.budget_remaining||0)===0;});
       }
     }catch(e){}
   }
@@ -3994,6 +3995,7 @@ async function fbUpdateBudget(campName,campId){
   var curBud=isDaily?(ci.daily_budget||0):(ci.lifetime_budget||0);
   var budType=isDaily?'วัน':'ตลอดชีพ';
   var shortName=campName.length>42?campName.slice(0,42)+'\u2026':campName;
+  var budgetExhausted=!!(ci._budgetExhausted);
   var adsetNote=adsetCount>1?'<div style="font-size:.6rem;color:#0284c7;margin-top:6px">\u26a0\ufe0f '+adsetCount+' ชุดโฆษณา — งบรวมทั้งหมด</div>':
                 adsetCount===1?'<div style="font-size:.6rem;color:#64748b;margin-top:6px">งบระดับชุดโฆษณา (ABO)</div>':'';
   var ov=document.createElement('div');
@@ -4005,6 +4007,7 @@ async function fbUpdateBudget(campName,campId){
       +'<div style="font-size:.62rem;color:#92400e;margin-bottom:3px">\u0e07\u0e1a\u0e1b\u0e31\u0e08\u0e08\u0e38\u0e1a\u0e31\u0e19 / '+budType+'</div>'
       +'<div style="font-size:1.3rem;font-weight:900;color:#b45309;font-family:Rajdhani,sans-serif">\u0e3f'+(curBud>0?curBud.toLocaleString():'—')+'</div>'
       +adsetNote
+    +(budgetExhausted?'<div style="margin-top:8px;padding:8px 10px;background:#fef2f2;border:1px solid #fca5a5;border-radius:6px;font-size:.68rem;color:#dc2626;font-weight:700">⚠️ งบหมดแล้ว — ต้องเพิ่มงบก่อนแคมเปญจะยิงได้</div>':'')
     +'</div>'
     +'<div style="margin-bottom:16px">'
       +'<label style="font-size:.68rem;color:#64748b;display:block;margin-bottom:6px;font-weight:600">\u0e1b\u0e23\u0e31\u0e1a\u0e07\u0e1a\u0e40\u0e1b\u0e47\u0e19 (\u0e3f / '+budType+')</label>'
