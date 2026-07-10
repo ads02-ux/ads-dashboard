@@ -4077,7 +4077,7 @@ async function fbChangeStopDate(campName,campId){
   var newDate=prompt('วันสิ้นสุดแคมเปญ (YYYY-MM-DD) สำหรับ:\n'+campName+'\n\n(เว้นว่างเพื่อไม่กำหนดวันหยุด)',cur);
   if(newDate===null)return;
   var tok=FB_TOKENS[fbAccount]||FB_TOKEN;
-  var body={access_token:tok};
+  var body={};
   if(newDate.trim()===''){
     body.stop_time=0;
   } else {
@@ -4087,7 +4087,7 @@ async function fbChangeStopDate(campName,campId){
   }
   showBanner('⏳ กำลังอัปเดตวันสิ้นสุด...');
   try{
-    var r=await fetch('https://graph.facebook.com/v20.0/'+campId,{
+    var r=await fetch('https://graph.facebook.com/v20.0/'+campId+'?access_token='+encodeURIComponent(tok),{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify(body)
