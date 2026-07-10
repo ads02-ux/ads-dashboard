@@ -960,6 +960,7 @@ var FB_ACCOUNTS_META=[
   {name:'RomaRio',id:'act_2147089622529485',configKey:'FB_GID_RomaRio'},
   {name:'AngelicaEstrada',id:'act_950220307943505',configKey:'FB_GID_AngelicaEstrada'},
   {name:'LiupoldFlatdagger3',id:'act_120225057669400698',configKey:'FB_GID_LiupoldFlatdagger3'}
+  {name:'WonderPearl',id:'act_2056029698115072',configKey:'FB_GID_WonderPearl'},
 ];
 var WEBAPP_URL='https://script.google.com/macros/s/AKfycbz6l9ORjUnzbHrMgr0uNVPNOq3i2DeYAFAGKS0kErL-W6bFY4jBN1EMNxDvxPYuCYoc/exec';
 // ─── Facebook API (Real-time) ─────────────────────────────────────────────────
@@ -987,6 +988,7 @@ var FB_TOKENS={
   'RomaRio':'EAAOHeqVdn5kBRZBXebBpLNgqCSybXZAXcblWWZCNvhZAZBm2IlgOQ4zYmYi0n8NuUeZBSpH4JY7xSASSDGrgPlPCTITzE3ZAZA4sYfoeybBiSW9ySCNpTfxTEOH7DBT1ZCWSQckj5SGpZCO0yjY0Kdh45dsxTmPB55uF0QLrWhzlBHbUv7l4RujOBfn72QrCd8iwZDZD',
   'AngelicaEstrada':'EAAOHeqVdn5kBRZBXebBpLNgqCSybXZAXcblWWZCNvhZAZBm2IlgOQ4zYmYi0n8NuUeZBSpH4JY7xSASSDGrgPlPCTITzE3ZAZA4sYfoeybBiSW9ySCNpTfxTEOH7DBT1ZCWSQckj5SGpZCO0yjY0Kdh45dsxTmPB55uF0QLrWhzlBHbUv7l4RujOBfn72QrCd8iwZDZD',
   'LiupoldFlatdagger3':'EAAOHeqVdn5kBRZBXebBpLNgqCSybXZAXcblWWZCNvhZAZBm2IlgOQ4zYmYi0n8NuUeZBSpH4JY7xSASSDGrgPlPCTITzE3ZAZA4sYfoeybBiSW9ySCNpTfxTEOH7DBT1ZCWSQckj5SGpZCO0yjY0Kdh45dsxTmPB55uF0QLrWhzlBHbUv7l4RujOBfn72QrCd8iwZDZD',
+  'WonderPearl':FB_TOKEN,
 };
 var FB_API='https://graph.facebook.com/v20.0/';
 var s1data=null,s2data=null,loadedCount=0,chartInst={},modalCharts={};
@@ -3025,7 +3027,7 @@ var FB_HIERARCHY=[
         accounts:[
           {
             displayName:'I SURE PLUS',
-            adAccounts:[]
+            adAccounts:['WonderPearl']
           }
         ]
       }
