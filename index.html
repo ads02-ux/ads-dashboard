@@ -4089,8 +4089,8 @@ async function fbChangeStopDate(campName,campId){
   try{
     var r=await fetch('https://graph.facebook.com/v20.0/'+campId+'?access_token='+encodeURIComponent(tok),{
       method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify(body)
+      headers:{'Content-Type':'application/x-www-form-urlencoded'},
+      body:'stop_time='+body.stop_time
     });
     var d=await r.json();
     if(d.success||d.id){
@@ -4099,6 +4099,16 @@ async function fbChangeStopDate(campName,campId){
       if(fbCampaignsMap[fbAccount]&&fbCampaignsMap[fbAccount][campName])
         fbCampaignsMap[fbAccount][campName].stop_time=newDate.trim()?new Date(newDate.trim()+'T23:59:59+07:00').toISOString():null;
       _renderFBInner(document.getElementById('fbViewInner'));
+      try{
+        var aUrl='https://graph.facebook.com/v20.0/'+campId+'/adsets?fields=id&limit=100&access_token='+encodeURIComponent(tok);
+        var ar2=await fetch(aUrl);var ad2=await ar2.json();
+        if(ad2.data&&ad2.data.length){
+          var etBody='end_time='+body.stop_time;
+          await Promise.all(ad2.data.map(function(aset){
+            return fetch('https://graph.facebook.com/v20.0/'+aset.id+'?access_token='+encodeURIComponent(tok),{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:etBody});
+          }));
+        }
+      }catch(ae){console.warn('adset update:',ae);}
     } else {
       showBanner('❌ '+(d.error?d.error.message:'ไม่สำเร็จ'));
     }
