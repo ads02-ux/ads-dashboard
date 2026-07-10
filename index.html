@@ -4121,14 +4121,14 @@ function _fbFilterRows(rows){
   }
   if(fbFilter==='all')return rows;
   var cutoffDate=new Date(now);
-  if(fbFilter==='3d')cutoffDate.setDate(now.getDate()-2);
-  else if(fbFilter==='7d')cutoffDate.setDate(now.getDate()-6);
-  else if(fbFilter==='14d')cutoffDate.setDate(now.getDate()-13);
-  else if(fbFilter==='30d')cutoffDate.setDate(now.getDate()-29);
-  else if(fbFilter==='90d')cutoffDate.setDate(now.getDate()-89);
+  if(fbFilter==='3d')cutoffDate.setDate(now.getDate()-3);
+  else if(fbFilter==='7d')cutoffDate.setDate(now.getDate()-7);
+  else if(fbFilter==='14d')cutoffDate.setDate(now.getDate()-14);
+  else if(fbFilter==='30d')cutoffDate.setDate(now.getDate()-30);
+  else if(fbFilter==='90d')cutoffDate.setDate(now.getDate()-90);
   var cutoffStr=toYMD(cutoffDate);
   return rows.filter(function(r){
-    return r.date&&r.date>=cutoffStr;
+    return r.date&&r.date>=cutoffStr&&r.date<todayStr;
   });
 }
 
