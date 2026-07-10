@@ -4026,7 +4026,7 @@ async function fbUpdateBudget(campName,campId){
   ov.addEventListener('click',function(e){if(e.target===ov)close_();});
   document.getElementById('fbBudCancel').onclick=close_;
   document.getElementById('fbBudConfirm').onclick=async function(){
-    var inp2=document.getElementById('fbBudgetInp');
+    var inp2=document.getElementById('fbBudgetInp');if(!inp2)return;
     var b=parseInt(inp2.value);
     if(isNaN(b)||b<1){inp2.style.borderColor='#ef4444';inp2.focus();return;}
     close_();
@@ -4047,13 +4047,13 @@ async function fbUpdateBudget(campName,campId){
       targets.push({id:updateId,budget:b});
     }
     try{
-      var allOk=true;
+      var lastErr='';var allOk=true;
       for(var i=0;i<targets.length;i++){
         var t=targets[i];
         var tp=isDaily?{daily_budget:t.budget*100}:{lifetime_budget:t.budget*100};
         var r=await fetch('https://graph.facebook.com/v20.0/'+t.id+'?access_token='+encodeURIComponent(tok2),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(tp)});
         var d=await r.json();
-        if(!d.success&&!d.id)allOk=false;
+        if(!d.success&&!d.id){allOk=false;if(d.error)lastErr=d.error.message;}
       }
       if(allOk){
         showBanner('\u2705 \u0e1b\u0e23\u0e31\u0e1a\u0e07\u0e1a\u0e40\u0e1b\u0e47\u0e19 \u0e3f'+b.toLocaleString()+'/'+budType+' \u0e2a\u0e33\u0e40\u0e23\u0e47\u0e08');
@@ -4062,7 +4062,7 @@ async function fbUpdateBudget(campName,campId){
           else fbCampaignsMap[fbAccount][campName].lifetime_budget=b;
         }
         _renderFBInner(document.getElementById('fbViewInner'));
-      } else {showBanner('\u274c \u0e44\u0e21\u0e48\u0e2a\u0e33\u0e40\u0e23\u0e47\u0e08 \u2014 \u0e15\u0e23\u0e27\u0e08\u0e2a\u0e34\u0e17\u0e18\u0e34\u0e4c token');}
+      } else {showBanner('\u274c '+(lastErr||'\u0e44\u0e21\u0e48\u0e2a\u0e33\u0e40\u0e23\u0e47\u0e08'));}
     }catch(e){showBanner('\u274c '+e.message);}
   };
   inp.addEventListener('keydown',function(e){
