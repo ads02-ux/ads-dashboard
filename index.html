@@ -4050,8 +4050,8 @@ async function fbUpdateBudget(campName,campId){
       var allOk=true;
       for(var i=0;i<targets.length;i++){
         var t=targets[i];
-        var tp=isDaily?{daily_budget:t.budget*100,access_token:tok2}:{lifetime_budget:t.budget*100,access_token:tok2};
-        var r=await fetch('https://graph.facebook.com/v20.0/'+t.id,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(tp)});
+        var tp=isDaily?{daily_budget:t.budget*100}:{lifetime_budget:t.budget*100};
+        var r=await fetch('https://graph.facebook.com/v20.0/'+t.id+'?access_token='+encodeURIComponent(tok2),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(tp)});
         var d=await r.json();
         if(!d.success&&!d.id)allOk=false;
       }
