@@ -936,15 +936,15 @@ function disableCommInputs(){
 <div><h2 style="margin:0;font-size:1.4rem;font-weight:800;color:var(--txt)">🎬 วิเคราะห์วีดีโอ</h2>
 <p style="margin:.2rem 0 0;font-size:.78rem;color:var(--txt2)">วิดีโอทุกตัวเทียบกับค่ามาตรฐานของบัญชีคุณเอง — ทุกสูตร การดูต่อเนื่อง และการเปลี่ยนเป็นยอดขาย จัดอันดับด้วยคะแนนรวม</p></div>
 <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
-<select id="vai-acct" style="border:1px solid #e5e7eb;border-radius:8px;padding:.4rem .7rem;font-size:.8rem;background:var(--card);color:var(--txt);cursor:pointer" onchange="vaiLoad()"><option value="__all__">ทุกบัญชี</option></select>
-<select id="vai-date" style="border:1px solid #e5e7eb;border-radius:8px;padding:.4rem .7rem;font-size:.8rem;background:var(--card);color:var(--txt);cursor:pointer" onchange="vaiLoad()">
+<select id="vai-acct" style="border:1px solid #e5e7eb;border-radius:8px;padding:.4rem .7rem;font-size:.8rem;background:#ffffff;color:var(--txt);cursor:pointer" onchange="vaiLoad()"><option value="__all__">ทุกบัญชี</option></select>
+<select id="vai-date" style="border:1px solid #e5e7eb;border-radius:8px;padding:.4rem .7rem;font-size:.8rem;background:#ffffff;color:var(--txt);cursor:pointer" onchange="vaiLoad()">
 <option value="last_30d" selected>30 วันล่าสุด</option>
 <option value="last_7d">7 วันล่าสุด</option>
 <option value="last_14d">14 วันล่าสุด</option>
 <option value="last_90d">90 วันล่าสุด</option>
 </select>
 <button onclick="vaiCustomDate()" style="display:flex;align-items:center;gap:.3rem;padding:.3rem .75rem;border:1px solid #e5e7eb;border-radius:8px;background:var(--bg);color:var(--txt);font-size:.82rem;cursor:pointer;white-space:nowrap">📅 กำหนดเอง</button></div></div>
-<div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;background:var(--card);border:1px solid #e5e7eb;border-radius:10px;padding:.75rem 1rem;margin-bottom:1.25rem">
+<div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;background:#ffffff;border:1px solid #e5e7eb;border-radius:10px;padding:.75rem 1rem;margin-bottom:1.25rem">
 <div style="display:flex;gap:.4rem"><button id="vai-tab-all" class="vai-tab" onclick="vaiTab('all',this)" style="border:none;padding:.3rem .9rem;font-size:.82rem;cursor:pointer;border-radius:20px;background:var(--acc);color:#111827;font-weight:500;transition:.2s">ทั้งหมด</button><button id="vai-tab-eng" class="vai-tab" onclick="vaiTab('eng',this)" style="border:1px solid #e5e7eb;padding:.3rem .9rem;font-size:.82rem;cursor:pointer;border-radius:20px;background:transparent;color:var(--txt);font-weight:500;transition:.2s">การมีส่วนร่วม</button></div>
 <label style="font-size:.78rem;color:var(--txt2);display:flex;align-items:center;gap:.4rem">ยอดใช้จ่ายขั้นต่ำ<input id="vai-ms" type="number" value="1000" min="0" style="width:70px;border:1px solid #e5e7eb;border-radius:6px;padding:.25rem .4rem;font-size:.8rem;background:var(--bg);color:var(--txt)"></label>
 <label style="font-size:.78rem;color:var(--txt2);display:flex;align-items:center;gap:.4rem">อิมเพรสชันขั้นต่ำ<input id="vai-mi" type="number" value="1000" min="0" style="width:70px;border:1px solid #e5e7eb;border-radius:6px;padding:.25rem .4rem;font-size:.8rem;background:var(--bg);color:var(--txt)"></label>
@@ -954,7 +954,7 @@ function disableCommInputs(){
 <div id="vai-cards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:1.25rem"><div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--txt2)">คลิก "ทุกบัญชี" เพื่อเริ่มโหลดข้อมูล หรือเลือกบัญชีที่ต้องการ</div></div>
 <div id="vai-banner" style="display:none;margin-bottom:1rem"></div>
 <div id="vai-mini" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.75rem;margin-bottom:1.25rem"></div>
-<div id="vai-quad-wrap" style="background:var(--card);border:1.5px solid #d1d5db;border-radius:12px;padding:1.5rem;margin-bottom:1.5rem;display:none">
+<div id="vai-quad-wrap" style="background:#ffffff;border:1.5px solid #d1d5db;border-radius:12px;padding:1.5rem;margin-bottom:1.5rem;display:none">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
 <div><h3 style="margin:0;font-size:1rem;font-weight:700;color:var(--txt)">ควอดรันต์ฮุก × คอนเวอร์ชัน</h3>
 <p style="margin:.2rem 0 0;font-size:.72rem;color:var(--txt2)">แต่ละจุดคือหนึ่งวิดีโอ ขนาดจุด = งบที่ใช้ คลิกจุดเพื่อไปยังแถวนั้น</p></div>
@@ -971,7 +971,7 @@ function disableCommInputs(){
 <div><span style="color:#3b82f6">✓</span> แก้ฮุก — คอนเวิร์ตดีถ้าดูนานจำกัดการเข้าถึง</div>
 <div><span style="color:#f87171">✗</span> พิจารณาปิด — อ่อนทั้งฮุกและคอนเวอร์ชัน</div>
 </div></div></div></div>
-<div id="vai-tbl-wrap" style="background:var(--card);border:1px solid #e5e7eb;border-radius:12px;overflow:auto"></div>
+<div id="vai-tbl-wrap" style="background:#ffffff;border:1px solid #e5e7eb;border-radius:12px;overflow:auto"></div>
 </div>
 </div><div id="trackView" style="display:none;padding:28px 32px"></div>
 <div id="alertView" style="display:none;padding:28px 32px"></div>
@@ -8249,7 +8249,7 @@ function _vaiRender(){var d=_vaiFiltered();_vaiCards(d);_vaiBanner(d);_vaiMini(d
 function _vaiCards(d){
   var sp=d.reduce(function(s,x){return s+x.spend;},0),rs=d.reduce(function(s,x){return s+x.results;},0),medH=_vaiMed(d.map(function(x){return x.hookRate;}));
   var cards=[{icon:'💰',label:'ยอดใช้จ่ายวีดีโอ',val:_vaiFmtB(sp),sub:'รวมทุกบัญชีที่เลือก'},{icon:'🎯',label:'ค่ากลางอัตราฮุก',val:(medH*100).toFixed(1)+'%',sub:'จาก '+d.length+' วีดีโอที่ผ่านเกณฑ์'},{icon:'📈',label:'ผลลัพธ์',val:_vaiFmtN(rs),sub:'ต้นทุน/ผลลัพธ์: '+(rs>0?'฿'+(sp/rs).toFixed(2):'—')},{icon:'🎬',label:'วีดีโอที่วิเคราะห์แล้ว',val:d.length,sub:'ข้อมูลไม่พอ '+(_vai.data.length-d.length)+' ตัว'}];
-  document.getElementById('vai-cards').innerHTML=cards.map(function(c){return '<div style="background:var(--card);border:1.5px solid #e5e7eb;border-radius:12px;padding:1.25rem"><div style="font-size:.78rem;color:var(--txt2);margin-bottom:.5rem">'+c.icon+' '+c.label+'</div><div style="font-size:1.6rem;font-weight:800;color:var(--txt)">'+c.val+'</div><div style="font-size:.72rem;color:var(--txt2);margin-top:.25rem">'+c.sub+'</div></div>';}).join('');
+  document.getElementById('vai-cards').innerHTML=cards.map(function(c){return '<div style="background:#ffffff;border:1.5px solid #e5e7eb;border-radius:12px;padding:1.25rem"><div style="font-size:.78rem;color:var(--txt2);margin-bottom:.5rem">'+c.icon+' '+c.label+'</div><div style="font-size:1.6rem;font-weight:800;color:var(--txt)">'+c.val+'</div><div style="font-size:.72rem;color:var(--txt2);margin-top:.25rem">'+c.sub+'</div></div>';}).join('');
 }
 
 function _vaiBanner(d){
