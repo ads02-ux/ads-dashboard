@@ -8326,5 +8326,18 @@ function _vaiTbl(d){
 
 function vaiTab(t,el){_vai.tab=t;document.querySelectorAll('.vai-tab').forEach(function(b){b.style.background='transparent';b.style.color='var(--txt)';b.style.fontWeight='normal';});el.style.background='var(--acc)';el.style.color='#fff';el.style.fontWeight='600';_vaiRender();}
 function vaiQuadToggle(){_vai.collapsed=!_vai.collapsed;var inner=document.getElementById('vai-quad-inner'),tog=document.getElementById('vai-quad-tog');if(inner)inner.style.display=_vai.collapsed?'none':'';if(tog)tog.textContent=_vai.collapsed?'▼':'▲';}
-// END VIDEO AI</script>
+// END VIDEO AI
+// PATCH: add videoai to switchView
+(function(){
+  var _sv=window.switchView;
+  window.switchView=function(vw,el){
+    if(vw==='videoai'){
+      document.querySelectorAll('[id$="View"]').forEach(function(v){v.style.display='none';});
+      document.querySelectorAll('.sb-item').forEach(function(i){i.classList.remove('active');});
+      var vv=document.getElementById('videoaiView');
+      if(vv)vv.style.display='';
+      if(el)el.classList.add('active');
+    }else{_sv(vw,el);}
+  };
+})();</script>
 </div><!-- /content-wrap -->
