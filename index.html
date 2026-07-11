@@ -8254,7 +8254,7 @@ function _vaiCards(d){
 
 function _vaiBanner(d){
   var sc=d.filter(function(x){return x.quad==='ขยายผล';});var el=document.getElementById('vai-banner');
-  if(sc.length){el.style.display='';el.innerHTML='<div style="background:linear-gradient(135deg,#d1fae5,#a7f3d0);border:1px solid #6ee7b7;border-radius:10px;padding:.75rem 1.25rem;font-size:.82rem;font-weight:600;color:#065f46;cursor:pointer" onclick="var t=document.getElementById('vai-tbl-wrap');t&&t.scrollIntoView({behavior:'smooth'})">📈 วีดีโอที่พีสูงแล้วว่า '+sc.length+' ตัว — ขยายผลต่อได้เลย</div>';}else el.style.display='none';
+  if(sc.length){el.style.display='';el.innerHTML='<div style="background:linear-gradient(135deg,#d1fae5,#a7f3d0);border:1px solid #6ee7b7;border-radius:10px;padding:.75rem 1.25rem;font-size:.82rem;font-weight:600;color:#065f46;cursor:pointer" onclick="var t=document.getElementById(\'vai-tbl-wrap\');t&&t.scrollIntoView({behavior:\'smooth\'})">📈 วีดีโอที่พีสูงแล้วว่า '+sc.length+' ตัว — ขยายผลต่อได้เลย</div>';}else el.style.display='none';
 }
 
 function _vaiMini(d){
