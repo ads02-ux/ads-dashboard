@@ -8301,7 +8301,7 @@ function _vaiTbl(d){
   var srt=d.slice().sort(function(a,b){return b.score-a.score;});
   var hS='padding:.6rem .75rem;font-size:.7rem;font-weight:700;color:var(--txt2);background:var(--bg);border-bottom:2px solid #e5e7eb;white-space:nowrap;';
   var hdrs=[['left','ครีเอทีฟ'],['right','วันรัน'],['right','คะแนน'],['right','ผลประเมิน'],['right','ยอดใช้จ่าย'],['right','อิมเพรสชัน'],['right','ผู้ชม 3 วิ'],['right','อัตราฮุก %'],['right','25% (ผู้ชม)'],['right','50% (ผู้ชม)'],['right','75% (ผู้ชม)'],['right','95% (ผู้ชม)'],['right','อัตราสลิด/อิมเพรสชัน'],['right','ลิด/ผู้ชม'],['right','ต้นทุน/ผลลัพธ์']];
-  var html='<table style="min-width:1400px;border-collapse:collapse"><thead><tr>'+hdrs.map(function(h){return '<th style="'+hS+'text-align:'+h[0]+'">'+h[1]+'</th>';}).join('')+'</tr></thead><tbody>';
+  var html='<table style="min-width:1650px;border-collapse:collapse"><thead><tr>'+hdrs.map(function(h){return '<th style="'+hS+'text-align:'+h[0]+'">'+h[1]+'</th>';}).join('')+'</tr></thead><tbody>';
   srt.forEach(function(d){
     var sc=d.score>=55?'#10b981':d.score>=45?'#f59e0b':'#f87171';
     var p25=d.v3s>0?(d.p25/d.v3s*100).toFixed(1)+'%':'—',p50=d.v3s>0?(d.p50/d.v3s*100).toFixed(1)+'%':'—',p75=d.v3s>0?(d.p75/d.v3s*100).toFixed(1)+'%':'—',p95=d.v3s>0?(d.p95/d.v3s*100).toFixed(1)+'%':'—';
