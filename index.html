@@ -1201,7 +1201,8 @@ function buildProductFilter(){
   pb.style.display='flex';c.innerHTML='';
   function mk(l,v){var b=document.createElement('button');b.className='ppill'+(filterProduct===v?' active':'');b.textContent=l;b.onclick=function(){filterProduct=v;buildProductFilter();renderAll();};c.appendChild(b);}
   mk('All',null);prods.forEach(function(p){mk(p,p);});
-}
+
+  var _vaiProd=document.getElementById('vai-prod');if(_vaiProd){var _vaiProds=[...new Set((s1data||[]).map(function(r){return r.product;}).filter(Boolean))].sort();while(_vaiProd.options.length>1)_vaiProd.remove(1);_vaiProds.forEach(function(p){_vaiProd.innerHTML+='<option value="'+p+'">'+p+'</option>';})}}
 function buildAnalystFilter(){
   var analysts=[];(s1data||[]).forEach(function(r){if(r.analyst&&analysts.indexOf(r.analyst)<0)analysts.push(r.analyst);});
   var ab=document.getElementById('abar'),c=document.getElementById('analystPills');
