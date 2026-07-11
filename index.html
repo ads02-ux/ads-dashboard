@@ -8259,7 +8259,7 @@ function _vaiBanner(d){
 
 function _vaiMini(d){
   var sc=d.filter(function(x){return x.quad==='ขยายผล';}).length,wi=d.filter(function(x){return x.score>=55;}).length,t=d.length||1;
-  document.getElementById('vai-mini').innerHTML=[{icon:'🚀',label:'เปิดตัวใหม่',val:d.length},{icon:'📊',label:'ขยายแล้ว',val:sc},{icon:'🏆',label:'ตัวชนะ',val:wi},{icon:'🎯',label:'อัตราชนะ',val:wi+'/'+d.length+'·'+Math.round(wi/t*100)+'%'}].map(function(s){return '<div style="background:#fff;border:1.5px solid #d1d5db;border-radius:12px;padding:.85rem 1.1rem;display:flex;flex-direction:column;gap:.4rem;flex:1;min-width:100px"><div style="font-size:.72rem;color:#6b7280;font-weight:500;display:flex;align-items:center;gap:.3rem"><span>'+s.icon+'</span>'+s.label+'</div><div style="font-size:1.5rem;font-weight:700;color:#111827;line-height:1">'+s.val+'</div></div>';}';}).join('');
+  document.getElementById('vai-mini').innerHTML=[{icon:'🚀',label:'เปิดตัวใหม่',val:d.length},{icon:'📊',label:'ขยายแล้ว',val:sc},{icon:'🏆',label:'ตัวชนะ',val:wi},{icon:'🎯',label:'อัตราชนะ',val:wi+'/'+d.length+'·'+Math.round(wi/t*100)+'%'}].map(function(s){return '<div style="background:#fff;border:1.5px solid #d1d5db;border-radius:12px;padding:.85rem 1.1rem;display:flex;flex-direction:column;gap:.4rem;flex:1;min-width:100px"><div style="font-size:.72rem;color:#6b7280;font-weight:500;display:flex;align-items:center;gap:.3rem"><span>'+s.icon+'</span>'+s.label+'</div><div style="font-size:1.5rem;font-weight:700;color:#111827;line-height:1">'+s.val+'</div></div>';}).join('');
 }
 
 function _vaiQuad(d){
@@ -8303,7 +8303,7 @@ function _vaiTbl(d){
   var hdrs=[['left','ครีเอทีฟ'],['right','วันรัน'],['right','คะแนน'],['right','ผลประเมิน'],['right','ยอดใช้จ่าย'],['right','อิมเพรสชัน'],['right','ผู้ชม 3 วิ'],['right','อัตราฮุก %'],['right','25% (ผู้ชม)'],['right','50% (ผู้ชม)'],['right','75% (ผู้ชม)'],['right','95% (ผู้ชม)'],['right','อัตราสลิด/อิมเพรสชัน'],['right','ลิด/ผู้ชม'],['right','ต้นทุน/ผลลัพธ์']];
   var html='<table style="width:100%;border-collapse:collapse"><thead><tr>'+hdrs.map(function(h){return '<th style="'+hS+'text-align:'+h[0]+'">'+h[1]+'</th>';}).join('')+'</tr></thead><tbody>';
   srt.forEach(function(d){
-    var sc=d.score>=60?'#10b981':d.score>=40?'#f59e0b':'#f87171';
+    var sc=d.score>=55?'#10b981':d.score>=45?'#f59e0b':'#f87171';
     var p25=d.v3s>0?(d.p25/d.v3s*100).toFixed(1)+'%':'—',p50=d.v3s>0?(d.p50/d.v3s*100).toFixed(1)+'%':'—',p75=d.v3s>0?(d.p75/d.v3s*100).toFixed(1)+'%':'—',p95=d.v3s>0?(d.p95/d.v3s*100).toFixed(1)+'%':'—';
     var hook=(d.hookRate*100).toFixed(1)+'% '+d.qx.toFixed(1)+'×',slide=(d.slideRate*100).toFixed(2)+'%',lead=(d.leadRate*100).toFixed(2)+'%',cpa=d.cpa>0?'฿'+d.cpa.toFixed(2):'—';
     var qIcon=d.quad==='ขยายผล'?'📈 ':d.quad==='พิจารณาปิด'?'✗ ':'✓ ';
