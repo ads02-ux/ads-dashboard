@@ -720,7 +720,7 @@ function disableCommInputs(){
     <div class="sb-item" id="sb-adsai" onclick="switchView('adsai',this)">
       <span class="sb-icon">📈</span><span>AI วิเคราะห์ Ads</span>
     </div>
-    <div class="sb-item" id="sb-videoai" onclick="switchView('videoai',this)">
+    <div class="sb-item" id="sb-videoai" onclick="switchView('videoai',this);vaiLoad()"
       <span class="sb-icon">🎬</span><span>วิเคราะห์วีดีโอ</span>
     </div>
     <div class="sb-item" id="sb-track" onclick="switchView('track',this)">
@@ -931,22 +931,52 @@ function disableCommInputs(){
 <div id="aiView" style="display:none;padding:28px 32px"></div>
 <div id="adsaiView" style="display:none;padding:28px 32px"></div>
 <div id="videoaiView" style="display:none">
-  <div style="padding:2rem;max-width:900px;margin:0 auto">
-    <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1.5rem">
-      <span style="font-size:2rem">🎬</span>
-      <div>
-        <h2 style="margin:0;font-size:1.4rem;font-weight:700;color:var(--acc)">วิเคราะห์วีดีโอ</h2>
-        <p style="margin:0;font-size:.8rem;color:var(--txt2)">วิเคราะห์ประสิทธิภาพวิดีโอโฆษณา</p>
-      </div>
-    </div>
-    <div style="background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:2rem;text-align:center">
-      <div style="font-size:3rem;margin-bottom:1rem">🚧</div>
-      <h3 style="color:var(--txt);margin:0 0 .5rem">กำลังพัฒนา</h3>
-      <p style="color:var(--txt2);font-size:.85rem;margin:0">ระบบวิเคราะห์วีดีโอโฆษณาจะเปิดให้ใช้งานเร็วๆ นี้</p>
-    </div>
-  </div>
+<div style="padding:1.5rem 2rem">
+<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.25rem;flex-wrap:wrap;gap:1rem">
+<div><h2 style="margin:0;font-size:1.4rem;font-weight:800;color:var(--txt)">🎬 วิเคราะห์วีดีโอ</h2>
+<p style="margin:.2rem 0 0;font-size:.78rem;color:var(--txt2)">วิดีโอทุกตัวเทียบกับค่ามาตรฐานของบัญชีคุณเอง — ทุกสูตร การดูต่อเนื่อง และการเปลี่ยนเป็นยอดขาย จัดอันดับด้วยคะแนนรวม</p></div>
+<div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
+<select id="vai-acct" style="border:1px solid var(--bdr);border-radius:8px;padding:.4rem .7rem;font-size:.8rem;background:var(--card);color:var(--txt);cursor:pointer" onchange="vaiLoad()"><option value="__all__">ทุกบัญชี</option></select>
+<select id="vai-date" style="border:1px solid var(--bdr);border-radius:8px;padding:.4rem .7rem;font-size:.8rem;background:var(--card);color:var(--txt);cursor:pointer" onchange="vaiLoad()">
+<option value="last_30d" selected>30 วันล่าสุด</option>
+<option value="last_7d">7 วันล่าสุด</option>
+<option value="last_14d">14 วันล่าสุด</option>
+<option value="last_90d">90 วันล่าสุด</option>
+</select>
+</div></div>
+<div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;background:var(--card);border:1px solid var(--bdr);border-radius:10px;padding:.75rem 1rem;margin-bottom:1.25rem">
+<div style="display:flex;border-radius:8px;overflow:hidden;border:1px solid var(--bdr)">
+<button id="vai-tab-all" class="vai-tab" onclick="vaiTab('all',this)" style="border:none;padding:.3rem .85rem;font-size:.8rem;cursor:pointer;background:var(--acc);color:#fff;font-weight:600">ทั้งหมด</button>
+<button id="vai-tab-eng" class="vai-tab" onclick="vaiTab('engage',this)" style="border:none;padding:.3rem .85rem;font-size:.8rem;cursor:pointer;background:transparent;color:var(--txt)">การมีส่วนร่วม</button>
 </div>
-<div id="trackView" style="display:none;padding:28px 32px"></div>
+<label style="font-size:.78rem;color:var(--txt2);display:flex;align-items:center;gap:.4rem">ยอดใช้จ่ายขั้นต่ำ<input id="vai-ms" type="number" value="1000" min="0" style="width:70px;border:1px solid var(--bdr);border-radius:6px;padding:.25rem .4rem;font-size:.8rem;background:var(--bg);color:var(--txt)"></label>
+<label style="font-size:.78rem;color:var(--txt2);display:flex;align-items:center;gap:.4rem">อิมเพรสชันขั้นต่ำ<input id="vai-mi" type="number" value="1000" min="0" style="width:70px;border:1px solid var(--bdr);border-radius:6px;padding:.25rem .4rem;font-size:.8rem;background:var(--bg);color:var(--txt)"></label>
+<label style="font-size:.78rem;color:var(--txt2);display:flex;align-items:center;gap:.5rem"><input type="checkbox" id="vai-showlow" onchange="_vaiRender()"> แสดงวีดีโอที่ข้อมูลยังน้อย</label>
+<button onclick="_vaiRender()" style="border:1px solid var(--bdr);border-radius:6px;padding:.25rem .6rem;font-size:.78rem;background:var(--card);color:var(--txt);cursor:pointer">กรอง</button>
+</div>
+<div id="vai-cards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:1.25rem"><div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--txt2)">คลิก "ทุกบัญชี" เพื่อเริ่มโหลดข้อมูล หรือเลือกบัญชีที่ต้องการ</div></div>
+<div id="vai-banner" style="display:none;margin-bottom:1rem"></div>
+<div id="vai-mini" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.75rem;margin-bottom:1.25rem"></div>
+<div id="vai-quad-wrap" style="background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:1.5rem;margin-bottom:1.5rem;display:none">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+<div><h3 style="margin:0;font-size:1rem;font-weight:700;color:var(--txt)">ควอดรันต์ฮุก × คอนเวอร์ชัน</h3>
+<p style="margin:.2rem 0 0;font-size:.72rem;color:var(--txt2)">แต่ละจุดคือหนึ่งวิดีโอ ขนาดจุด = งบที่ใช้ คลิกจุดเพื่อไปยังแถวนั้น</p></div>
+<button id="vai-quad-tog" onclick="vaiQuadToggle()" style="border:1px solid var(--bdr);border-radius:6px;padding:.25rem .6rem;font-size:.8rem;background:var(--bg);color:var(--txt);cursor:pointer">▲</button>
+</div>
+<div id="vai-quad-inner" style="display:grid;grid-template-columns:1fr 260px;gap:1.5rem;align-items:start">
+<canvas id="vai-canvas" width="600" height="400" style="width:100%;border-radius:8px"></canvas>
+<div>
+<p style="font-size:.75rem;font-weight:700;margin:0 0 .75rem;color:var(--txt2)">การกระจายผลตัดสิน</p>
+<div id="vai-dist"></div>
+<div style="margin-top:1rem;font-size:.72rem;color:var(--txt2);line-height:2">
+<div><span style="color:#10b981">📈</span> ขยายผล — ฮุกดี คอนเวอร์ชันดี</div>
+<div><span style="color:#f59e0b">✓</span> แก้ CTA — คอนดี ไม่คอนเวิร์ต</div>
+<div><span style="color:#3b82f6">✓</span> แก้ฮุก — คอนเวิร์ตดีถ้าดูนานจำกัดการเข้าถึง</div>
+<div><span style="color:#f87171">✗</span> พิจารณาปิด — อ่อนทั้งฮุกและคอนเวอร์ชัน</div>
+</div></div></div></div>
+<div id="vai-tbl-wrap" style="background:var(--card);border:1px solid var(--bdr);border-radius:12px;overflow:auto"></div>
+</div>
+</div><div id="trackView" style="display:none;padding:28px 32px"></div>
 <div id="alertView" style="display:none;padding:28px 32px"></div>
 <div id="leaveView" style="display:none;padding:20px 24px"></div>
 <div id="dailyTaskView" style="display:none;padding:20px 24px"></div>
@@ -8129,5 +8159,172 @@ window._umExportCode=function(){
   modal.appendChild(inner);
   document.body.appendChild(modal);
 };
-</script>
+
+// ===== VIDEO AI MODULE =====
+var _vai={data:[],tab:'all',collapsed:false};
+function _vaiDp(s){return s==='last_7d'?'last_7_days':s==='last_14d'?'last_14_days':s==='last_90d'?'last_90_days':'last_30_days';}
+function _vaiFmtB(n){return n>=1000?'฿'+Math.round(n).toLocaleString():'฿'+n.toFixed(2);}
+function _vaiFmtN(n){return Math.round(n).toLocaleString();}
+function _vaiMed(arr){if(!arr.length)return 0;var s=arr.slice().sort(function(a,b){return a-b;});var m=Math.floor(s.length/2);return s.length%2?s[m]:(s[m-1]+s[m])/2;}
+
+function vaiInit(){
+  var sel=document.getElementById('vai-acct');
+  if(!sel||sel.options.length>1)return;
+  FB_ACCOUNTS_META.forEach(function(m){sel.innerHTML+='<option value="'+m.name+'">'+m.name+'</option>';});
+}
+
+async function vaiLoad(){
+  vaiInit();
+  var actVal=document.getElementById('vai-acct').value;
+  var dateVal=document.getElementById('vai-date').value||'last_30d';
+  var dp=_vaiDp(dateVal);
+  document.getElementById('vai-cards').innerHTML='<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--txt2)">⏳ กำลังโหลดข้อมูลวีดีโอ...</div>';
+  document.getElementById('vai-tbl-wrap').innerHTML='';
+  document.getElementById('vai-quad-wrap').style.display='none';
+  document.getElementById('vai-banner').style.display='none';
+  document.getElementById('vai-mini').innerHTML='';
+  var accts=actVal==='__all__'?FB_ACCOUNTS_META:FB_ACCOUNTS_META.filter(function(m){return m.name===actVal;});
+  var allData=[];
+  for(var i=0;i<accts.length;i++){
+    var am=accts[i];var tok=FB_TOKENS[am.name];
+    if(!tok)continue;
+    try{
+      var ins=await _vaiFetchIns(am.id,tok,dp);
+      var crvs=await _vaiFetchCrvs(am.id,tok,dp);
+      allData=allData.concat(_vaiMerge(ins,crvs,am.name));
+    }catch(e){console.warn('vai',am.name,e);}
+  }
+  _vai.data=allData.filter(function(d){return d.v3s>0;});
+  _vaiCalc(_vai.data);
+  _vaiRender();
+}
+
+async function _vaiFetchIns(actId,tok,dp){
+  var base='https://graph.facebook.com/v20.0/';
+  var f='ad_id,ad_name,spend,impressions,reach,actions,video_play_actions,video_p25_watched_actions,video_p50_watched_actions,video_p75_watched_actions,video_p95_watched_actions,video_thruplay_watched_actions,cost_per_action_type';
+  var r=await fetch(base+actId+'/insights?level=ad&fields='+f+'&date_preset='+dp+'&limit=200&access_token='+encodeURIComponent(tok));
+  var d=await r.json();return d.data||[];
+}
+
+async function _vaiFetchCrvs(actId,tok,dp){
+  var base='https://graph.facebook.com/v20.0/';
+  var r=await fetch(base+actId+'/ads?fields=id,name,created_time,creative{thumbnail_url,video_id}&date_preset='+dp+'&limit=200&access_token='+encodeURIComponent(tok));
+  var d=await r.json();return d.data||[];
+}
+
+function _vaiMerge(ins,crvs,acctKey){
+  var cm={};crvs.forEach(function(c){cm[c.id]=c;});
+  var getA=function(arr,type){if(!arr)return 0;var f=arr.find(function(a){return a.action_type===type;});return f?parseFloat(f.value):0;};
+  return ins.map(function(row){
+    var cr=cm[row.ad_id]||{};
+    var results=0;
+    var pri=['purchase','offsite_conversion.fb_pixel_purchase','lead','onsite_conversion.lead_grouped','link_click'];
+    if(row.actions){for(var p=0;p<pri.length;p++){var rv=getA(row.actions,pri[p]);if(rv>0){results=rv;break;}}}
+    var created=cr.created_time?new Date(cr.created_time):null;
+    var days=created?Math.floor((Date.now()-created.getTime())/86400000):0;
+    return{adId:row.ad_id,name:(cr.name||row.ad_name||'').substring(0,60),
+      thumb:cr.creative&&cr.creative.thumbnail_url?cr.creative.thumbnail_url:'',
+      spend:parseFloat(row.spend||0),imp:parseInt(row.impressions||0),reach:parseInt(row.reach||0),
+      v3s:getA(row.video_play_actions,'video_view'),p25:getA(row.video_p25_watched_actions,'video_view'),
+      p50:getA(row.video_p50_watched_actions,'video_view'),p75:getA(row.video_p75_watched_actions,'video_view'),
+      p95:getA(row.video_p95_watched_actions,'video_view'),thru:getA(row.video_thruplay_watched_actions,'video_view'),
+      results:results,acct:acctKey,days:days,score:0,verdict:'',vcolor:'',quad:''};
+  });
+}
+
+function _vaiCalc(data){
+  if(!data.length)return;
+  data.forEach(function(d){d.hookRate=d.imp>0?d.v3s/d.imp:0;d.convRate=d.imp>0?d.results/d.imp:0;d.cpa=d.results>0?d.spend/d.results:0;d.leadRate=d.v3s>0?d.results/d.v3s:0;d.slideRate=d.imp>0?d.results/d.imp:0;});
+  var avgH=data.reduce(function(s,d){return s+d.hookRate;},0)/data.length;
+  var avgC=data.reduce(function(s,d){return s+d.convRate;},0)/data.length;
+  var medH=_vaiMed(data.map(function(d){return d.hookRate;}));
+  data.forEach(function(d){
+    d.qx=avgH>0?d.hookRate/avgH:1;d.qy=avgC>0?d.convRate/avgC:1;
+    var hS=Math.min(50,medH>0?d.hookRate/medH*35:0);var cS=avgC>0?Math.min(40,d.convRate/avgC*30):0;var holdB=d.v3s>0?Math.min(10,d.p50/d.v3s*10):0;
+    d.score=Math.round(Math.min(100,hS+cS+holdB));
+    if(d.qx>=1&&d.qy>=1){d.verdict='พีสูงแล้วว่าดี';d.vcolor='#10b981';d.quad='ขยายผล';}
+    else if(d.qx>=1){d.verdict='ตามเกณฑ์บัญชี';d.vcolor='#f59e0b';d.quad='แก้ CTA';}
+    else if(d.qy>=1){d.verdict='ตามเกณฑ์บัญชี';d.vcolor='#3b82f6';d.quad='แก้ฮุก';}
+    else{d.verdict='เสียคนดูตั้งแต่ฮุก';d.vcolor='#f87171';d.quad='พิจารณาปิด';}
+  });
+}
+
+function _vaiFiltered(){
+  var showLow=(document.getElementById('vai-showlow')||{}).checked;
+  var d=_vai.data.slice().filter(function(x){return x.v3s>0;});
+  if(!showLow){var ms=parseFloat((document.getElementById('vai-ms')||{}).value||0);var mi=parseFloat((document.getElementById('vai-mi')||{}).value||0);d=d.filter(function(x){return x.spend>=ms&&x.imp>=mi;});}
+  if(_vai.tab==='engage')d=d.filter(function(x){return x.v3s>=1000;});
+  return d;
+}
+function _vaiRender(){var d=_vaiFiltered();_vaiCards(d);_vaiBanner(d);_vaiMini(d);_vaiQuad(d);_vaiTbl(d);}
+
+function _vaiCards(d){
+  var sp=d.reduce(function(s,x){return s+x.spend;},0),rs=d.reduce(function(s,x){return s+x.results;},0),medH=_vaiMed(d.map(function(x){return x.hookRate;}));
+  var cards=[{icon:'💰',label:'ยอดใช้จ่ายวีดีโอ',val:_vaiFmtB(sp),sub:'รวมทุกบัญชีที่เลือก'},{icon:'🎯',label:'ค่ากลางอัตราฮุก',val:(medH*100).toFixed(1)+'%',sub:'จาก '+d.length+' วีดีโอที่ผ่านเกณฑ์'},{icon:'📈',label:'ผลลัพธ์',val:_vaiFmtN(rs),sub:'ต้นทุน/ผลลัพธ์: '+(rs>0?'฿'+(sp/rs).toFixed(2):'—')},{icon:'🎬',label:'วีดีโอที่วิเคราะห์แล้ว',val:d.length,sub:'ข้อมูลไม่พอ '+(_vai.data.length-d.length)+' ตัว'}];
+  document.getElementById('vai-cards').innerHTML=cards.map(function(c){return '<div style="background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:1.25rem"><div style="font-size:.78rem;color:var(--txt2);margin-bottom:.5rem">'+c.icon+' '+c.label+'</div><div style="font-size:1.6rem;font-weight:800;color:var(--txt)">'+c.val+'</div><div style="font-size:.72rem;color:var(--txt2);margin-top:.25rem">'+c.sub+'</div></div>';}).join('');
+}
+
+function _vaiBanner(d){
+  var sc=d.filter(function(x){return x.quad==='ขยายผล';});var el=document.getElementById('vai-banner');
+  if(sc.length){el.style.display='';el.innerHTML='<div style="background:linear-gradient(135deg,#d1fae5,#a7f3d0);border:1px solid #6ee7b7;border-radius:10px;padding:.75rem 1.25rem;font-size:.82rem;font-weight:600;color:#065f46">📈 วีดีโอที่พีสูงแล้วว่า '+sc.length+' ตัว — ขยายผลต่อได้เลย</div>';}else el.style.display='none';
+}
+
+function _vaiMini(d){
+  var sc=d.filter(function(x){return x.quad==='ขยายผล';}).length,wi=d.filter(function(x){return x.score>=55;}).length,t=d.length||1;
+  document.getElementById('vai-mini').innerHTML=[{icon:'🚀',label:'เปิดตัวใหม่',val:d.length},{icon:'📊',label:'ขยายแล้ว',val:sc},{icon:'🏆',label:'ตัวชนะ',val:wi},{icon:'🎯',label:'อัตราชนะ',val:wi+'/'+d.length+'·'+Math.round(wi/t*100)+'%'}].map(function(s){return '<div style="background:var(--card);border:1px solid var(--bdr);border-radius:10px;padding:.75rem 1rem;display:flex;align-items:center;gap:.75rem"><span style="font-size:1.4rem">'+s.icon+'</span><div><div style="font-size:.7rem;color:var(--txt2)">'+s.label+'</div><div style="font-size:1.15rem;font-weight:800;color:var(--txt)">'+s.val+'</div></div></div>';}).join('');
+}
+
+function _vaiQuad(d){
+  if(!d.length){document.getElementById('vai-quad-wrap').style.display='none';return;}
+  document.getElementById('vai-quad-wrap').style.display='';
+  var canvas=document.getElementById('vai-canvas');if(!canvas)return;
+  var ctx=canvas.getContext('2d'),W=canvas.width,H=canvas.height,pad={l:55,r:25,t:20,b:45},pW=W-pad.l-pad.r,pH=H-pad.t-pad.b;
+  ctx.clearRect(0,0,W,H);
+  var mn=0.25,mx=3,toX=function(v){return pad.l+(Math.min(mx,Math.max(mn,v))-mn)/(mx-mn)*pW;},toY=function(v){return pad.t+pH-(Math.min(mx,Math.max(mn,v))-mn)/(mx-mn)*pH;};
+  var px=toX(1),py=toY(1);
+  ctx.fillStyle='rgba(16,185,129,.08)';ctx.fillRect(px,pad.t,W-px-pad.r,py-pad.t);
+  ctx.fillStyle='rgba(59,130,246,.08)';ctx.fillRect(pad.l,pad.t,px-pad.l,py-pad.t);
+  ctx.fillStyle='rgba(245,158,11,.08)';ctx.fillRect(px,py,W-px-pad.r,H-py-pad.b);
+  ctx.fillStyle='rgba(248,113,113,.08)';ctx.fillRect(pad.l,py,px-pad.l,H-py-pad.b);
+  ctx.font='bold 11px sans-serif';
+  ctx.fillStyle='rgba(16,185,129,.8)';ctx.textAlign='right';ctx.fillText('ขยายผล',W-pad.r-5,pad.t+16);
+  ctx.fillStyle='rgba(59,130,246,.8)';ctx.textAlign='left';ctx.fillText('แก้ CTA',pad.l+5,pad.t+16);
+  ctx.fillStyle='rgba(245,158,11,.8)';ctx.textAlign='right';ctx.fillText('แก้ฮุก',W-pad.r-5,H-pad.b-5);
+  ctx.fillStyle='rgba(248,113,113,.8)';ctx.textAlign='left';ctx.fillText('พิจารณาปิด',pad.l+5,H-pad.b-5);
+  ctx.strokeStyle='rgba(150,150,150,.12)';ctx.lineWidth=1;
+  [.5,1,1.5,2,2.5,3].forEach(function(v){ctx.beginPath();ctx.moveTo(toX(v),pad.t);ctx.lineTo(toX(v),pad.t+pH);ctx.stroke();ctx.beginPath();ctx.moveTo(pad.l,toY(v));ctx.lineTo(pad.l+pW,toY(v));ctx.stroke();});
+  ctx.strokeStyle='rgba(100,100,100,.35)';ctx.setLineDash([4,4]);ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(px,pad.t);ctx.lineTo(px,pad.t+pH);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(pad.l,py);ctx.lineTo(pad.l+pW,py);ctx.stroke();ctx.setLineDash([]);
+  ctx.font='10px sans-serif';ctx.fillStyle='#999';
+  [.25,.95,1.65,3].forEach(function(v){ctx.textAlign='center';ctx.fillText(v,toX(v),H-pad.b+14);ctx.textAlign='right';ctx.fillText(v,pad.l-6,toY(v)+3);});
+  ctx.font='11px sans-serif';ctx.fillStyle='#888';ctx.textAlign='center';
+  ctx.fillText('อัตราฮุกเทียบค่าปกติของบัญชี (เท่า)',pad.l+pW/2,H-4);
+  ctx.save();ctx.translate(13,pad.t+pH/2);ctx.rotate(-Math.PI/2);ctx.fillText('คอนเวอร์ชันเทียบค่าปกติ (เท่า)',0,0);ctx.restore();
+  var maxSp=Math.max.apply(null,d.map(function(x){return x.spend||1;}));
+  d.forEach(function(p){var x=toX(p.qx),y=toY(p.qy),r=Math.max(8,Math.sqrt((p.spend||1)/maxSp)*28);ctx.beginPath();ctx.arc(x,y,r,0,2*Math.PI);ctx.fillStyle=p.vcolor+'bb';ctx.fill();ctx.strokeStyle=p.vcolor;ctx.lineWidth=1.5;ctx.stroke();});
+  var counts={'ขยายผล':0,'แก้ CTA':0,'แก้ฮุก':0,'พิจารณาปิด':0};d.forEach(function(x){counts[x.quad]=(counts[x.quad]||0)+1;});var tot=d.length||1;
+  document.getElementById('vai-dist').innerHTML='<div style="height:12px;border-radius:6px;overflow:hidden;display:flex;margin-bottom:.75rem"><div style="background:#10b981;width:'+(counts['ขยายผล']/tot*100).toFixed(1)+'%"></div><div style="background:#aaa;width:'+((counts['แก้ CTA']+counts['แก้ฮุก'])/tot*100).toFixed(1)+'%"></div><div style="background:#f87171;width:'+(counts['พิจารณาปิด']/tot*100).toFixed(1)+'%"></div></div><div style="font-size:.75rem;display:flex;flex-direction:column;gap:.4rem"><div>📈 '+counts['ขยายผล']+' พีสูงแล้วว่าดี</div><div>✓ '+(counts['แก้ CTA']+counts['แก้ฮุก'])+' ตามเกณฑ์บัญชี</div><div>✗ '+counts['พิจารณาปิด']+' เสียคนดูตั้งแต่ฮุก</div></div>';
+}
+
+function _vaiTbl(d){
+  if(!d.length){document.getElementById('vai-tbl-wrap').innerHTML='<div style="padding:3rem;text-align:center;color:var(--txt2)">ไม่พบวีดีโอที่ผ่านเกณฑ์</div>';return;}
+  var srt=d.slice().sort(function(a,b){return b.score-a.score;});
+  var hS='padding:.6rem .75rem;font-size:.7rem;font-weight:700;color:var(--txt2);background:var(--bg);border-bottom:2px solid var(--bdr);white-space:nowrap;';
+  var hdrs=[['left','ครีเอทีฟ'],['right','วันรัน'],['right','คะแนน'],['right','ผลประเมิน'],['right','ยอดใช้จ่าย'],['right','อิมเพรสชัน'],['right','ผู้ชม 3 วิ'],['right','อัตราฮุก %'],['right','25% (ผู้ชม)'],['right','50% (ผู้ชม)'],['right','75% (ผู้ชม)'],['right','95% (ผู้ชม)'],['right','อัตราสลิด/อิมเพรสชัน'],['right','ลิด/ผู้ชม'],['right','ต้นทุน/ผลลัพธ์']];
+  var html='<table style="width:100%;border-collapse:collapse"><thead><tr>'+hdrs.map(function(h){return '<th style="'+hS+'text-align:'+h[0]+'">'+h[1]+'</th>';}).join('')+'</tr></thead><tbody>';
+  srt.forEach(function(d){
+    var sc=d.score>=60?'#10b981':d.score>=40?'#f59e0b':'#f87171';
+    var p25=d.v3s>0?(d.p25/d.v3s*100).toFixed(1)+'%':'—',p50=d.v3s>0?(d.p50/d.v3s*100).toFixed(1)+'%':'—',p75=d.v3s>0?(d.p75/d.v3s*100).toFixed(1)+'%':'—',p95=d.v3s>0?(d.p95/d.v3s*100).toFixed(1)+'%':'—';
+    var hook=(d.hookRate*100).toFixed(1)+'% '+d.qx.toFixed(1)+'×',slide=(d.slideRate*100).toFixed(2)+'%',lead=(d.leadRate*100).toFixed(2)+'%',cpa=d.cpa>0?'฿'+d.cpa.toFixed(2):'—';
+    var qIcon=d.quad==='ขยายผล'?'📈 ':d.quad==='พิจารณาปิด'?'✗ ':'✓ ';
+    var cS='padding:.55rem .75rem;font-size:.77rem;border-bottom:1px solid var(--bdr);color:var(--txt);text-align:right;',c0='padding:.55rem .75rem;font-size:.77rem;border-bottom:1px solid var(--bdr);color:var(--txt);text-align:left;';
+    html+='<tr onmouseenter="this.style.background=\'var(--bg)\'" onmouseleave="this.style.background=\'\'"><td style="'+c0+'max-width:220px"><div style="display:flex;align-items:center;gap:.6rem"><span style="color:var(--txt2)">›</span>'+(d.thumb?'<img src="'+d.thumb+'" style="width:42px;height:42px;object-fit:cover;border-radius:6px;flex-shrink:0" onerror="this.style.display=\'none\'">':'<div style="width:42px;height:42px;background:var(--bdr);border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center">🎬</div>')+'<span style="font-size:.73rem;line-height:1.3">'+d.name+'<br><span style="color:var(--txt2);font-size:.68rem">'+d.acct+'</span></span></div></td><td style="'+cS+'">'+d.days+'</td><td style="'+cS+'"><span style="background:'+sc+'22;color:'+sc+';padding:2px 8px;border-radius:20px;font-weight:700;font-size:.75rem">'+d.score+'</span></td><td style="'+cS+'"><span style="font-size:.72rem;font-weight:600;color:'+d.vcolor+'">'+qIcon+d.verdict+'</span></td><td style="'+cS+'">'+( d.spend>0?'฿'+d.spend.toLocaleString('th',{maximumFractionDigits:2}):'—')+'</td><td style="'+cS+'">'+d.imp.toLocaleString()+'</td><td style="'+cS+'">'+d.v3s.toLocaleString()+'</td><td style="'+cS+'">'+hook+'</td><td style="'+cS+'">'+p25+'</td><td style="'+cS+'">'+p50+'</td><td style="'+cS+'">'+p75+'</td><td style="'+cS+'">'+p95+'</td><td style="'+cS+'"><span style="color:#10b981">⊙ </span>'+slide+'</td><td style="'+cS+'">'+lead+'</td><td style="'+cS+'">'+cpa+'</td></tr>';
+  });
+  document.getElementById('vai-tbl-wrap').innerHTML=html+'</tbody></table>';
+}
+
+function vaiTab(t,el){_vai.tab=t;document.querySelectorAll('.vai-tab').forEach(function(b){b.style.background='transparent';b.style.color='var(--txt)';b.style.fontWeight='normal';});el.style.background='var(--acc)';el.style.color='#fff';el.style.fontWeight='600';_vaiRender();}
+function vaiQuadToggle(){_vai.collapsed=!_vai.collapsed;var inner=document.getElementById('vai-quad-inner'),tog=document.getElementById('vai-quad-tog');if(inner)inner.style.display=_vai.collapsed?'none':'';if(tog)tog.textContent=_vai.collapsed?'▼':'▲';}
+// END VIDEO AI</script>
 </div><!-- /content-wrap -->
