@@ -8181,16 +8181,7 @@ async function vaiLoad(){
   document.getElementById('vai-banner').style.display='none';
   document.getElementById('vai-mini').innerHTML='';
   var accts=actVal==='__all__'?FB_ACCOUNTS_META:FB_ACCOUNTS_META.filter(function(m){return m.name===actVal;});
-  var allData=[];
-  for(var i=0;i<accts.length;i++){
-    var am=accts[i];var tok=FB_TOKENS[am.name];
-    if(!tok)continue;
-    try{
-      var ins=await _vaiFetchIns(am.id,tok,dp);
-      var crvs=await _vaiFetchCrvs(am.id,tok,dp);
-      allData=allData.concat(_vaiMerge(ins,crvs,am.name));
-    }catch(e){console.warn('vai',am.name,e);}
-  }
+  var allData=[].concat.apply([],await Promise.all(accts.map(async function(am){var tok=FB_TOKENS[am.name];if(!tok)return [];try{var ins=await _vaiFetchIns(am.id,tok,dp);var crvs=await _vaiFetchCrvs(am.id,tok,dp);return _vaiMerge(ins,crvs,am.name);}catch(e){console.warn('vai',am.name,e);return [];}})));
   _vai.data=allData.filter(function(d){return d.v3s>0;});
   _vaiCalc(_vai.data);
   _vaiRender();
