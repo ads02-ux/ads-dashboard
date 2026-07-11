@@ -936,8 +936,11 @@ function disableCommInputs(){
 <div><h2 style="margin:0;font-size:1.4rem;font-weight:800;color:var(--txt)">🎬 วิเคราะห์วีดีโอ</h2>
 <p style="margin:.2rem 0 0;font-size:.78rem;color:var(--txt2)">วิดีโอทุกตัวเทียบกับค่ามาตรฐานของบัญชีคุณเอง — ทุกสูตร การดูต่อเนื่อง และการเปลี่ยนเป็นยอดขาย จัดอันดับด้วยคะแนนรวม</p></div>
 <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
+<select id="vai-prod" style="border:1px solid #e5e7eb;border-radius:8px;padding:.4rem .7rem;font-size:.8rem;background:#ffffff;color:var(--txt);cursor:pointer" onchange="vaiLoad()"><option value="__all__">ทุกสินค้า</option><option value="judo">judo</option><option value="The lord">The lord</option><option value="เจ้าขุน">เจ้าขุน</option><option value="ขุนแผน">ขุนแผน</option></select>
 <select id="vai-acct" style="border:1px solid #e5e7eb;border-radius:8px;padding:.4rem .7rem;font-size:.8rem;background:#ffffff;color:var(--txt);cursor:pointer" onchange="vaiLoad()"><option value="__all__">ทุกบัญชี</option></select>
 <select id="vai-date" style="border:1px solid #e5e7eb;border-radius:8px;padding:.4rem .7rem;font-size:.8rem;background:#ffffff;color:var(--txt);cursor:pointer" onchange="vaiLoad()">
+<option value="today">วันนี้</option>
+<option value="last_3d">3 วันล่าสุด</option>
 <option value="last_30d" selected>30 วันล่าสุด</option>
 <option value="last_7d">7 วันล่าสุด</option>
 <option value="last_14d">14 วันล่าสุด</option>
@@ -8240,6 +8243,7 @@ function _vaiCalc(data){
 function _vaiFiltered(){
   var showLow=(document.getElementById('vai-showlow')||{}).checked;
   var d=_vai.data.slice().filter(function(x){return x.v3s>0;});
+  var prodVal=(document.getElementById('vai-prod')||{}).value||'__all__';if(prodVal!=='__all__'){d=d.filter(function(x){return x.name&&x.name.toLowerCase().indexOf(prodVal.toLowerCase())!==-1;});}
   if(!showLow){var ms=parseFloat((document.getElementById('vai-ms')||{}).value||0);var mi=parseFloat((document.getElementById('vai-mi')||{}).value||0);d=d.filter(function(x){return x.spend>=ms&&x.imp>=mi;});}
   if(_vai.tab==='engage')d=d.filter(function(x){return x.v3s>=1000;});
   return d;
