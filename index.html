@@ -1252,6 +1252,7 @@ function loadJSONP(gid,range,cb){
 
 function cb_s1(resp){
   try{s1data=parseS1(resp.table.rows||[]);}catch(e){s1data=[];console.error(e);}
+  var _vp=document.getElementById('vai-prod');if(_vp&&(s1data||[]).length){var _vps=[...new Set(s1data.map(function(r){return r.product;}).filter(Boolean))].sort();while(_vp.options.length>1)_vp.remove(1);_vps.forEach(function(p){var o=document.createElement('option');o.value=p;o.text=p;_vp.add(o);})}
   loadedCount++;if(loadedCount>=2){buildProductFilter();buildAnalystFilter();renderAll();}
 }
 function cb_s2(resp){
