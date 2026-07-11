@@ -954,7 +954,7 @@ function disableCommInputs(){
 <div id="vai-cards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:1.25rem"><div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--txt2)">คลิก "ทุกบัญชี" เพื่อเริ่มโหลดข้อมูล หรือเลือกบัญชีที่ต้องการ</div></div>
 <div id="vai-banner" style="display:none;margin-bottom:1rem"></div>
 <div id="vai-mini" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.75rem;margin-bottom:1.25rem"></div>
-<div id="vai-quad-wrap" style="background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:1.5rem;margin-bottom:1.5rem;display:none">
+<div id="vai-quad-wrap" style="background:var(--card);border:1.5px solid #d1d5db;border-radius:12px;padding:1.5rem;margin-bottom:1.5rem;display:none">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
 <div><h3 style="margin:0;font-size:1rem;font-weight:700;color:var(--txt)">ควอดรันต์ฮุก × คอนเวอร์ชัน</h3>
 <p style="margin:.2rem 0 0;font-size:.72rem;color:var(--txt2)">แต่ละจุดคือหนึ่งวิดีโอ ขนาดจุด = งบที่ใช้ คลิกจุดเพื่อไปยังแถวนั้น</p></div>
@@ -8291,7 +8291,7 @@ function _vaiQuad(d){
   ctx.save();ctx.translate(13,pad.t+pH/2);ctx.rotate(-Math.PI/2);ctx.fillText('คอนเวอร์ชันเทียบค่าปกติ (เท่า)',0,0);ctx.restore();
   var maxSp=Math.max.apply(null,d.map(function(x){return x.spend||1;}));
   d=d.slice().sort(function(a,b){return b.score-a.score;}).slice(0,60);
-  d.forEach(function(p,pi){var _a=pi*2.3999632,_rj=Math.sqrt(pi+1)*10,jx=Math.cos(_a)*_rj,jy=Math.sin(_a)*_rj,x=toX(p.qx)+jx,y=toY(p.qy)+jy,r=Math.max(2,Math.sqrt((p.spend||1)/maxSp)*4);ctx.beginPath();ctx.arc(x,y,r,0,2*Math.PI);ctx.fillStyle=p.vcolor+'bb';ctx.fill();ctx.strokeStyle=p.vcolor;ctx.lineWidth=1.5;ctx.stroke();});
+  d.forEach(function(p,pi){var _a=pi*2.3999632,_rj=Math.sqrt(pi+1)*10,jx=Math.cos(_a)*_rj,jy=Math.sin(_a)*_rj,x=toX(p.qx)+jx,y=toY(p.qy)+jy,r=Math.max(2,Math.sqrt((p.spend||1)/maxSp)*3);ctx.beginPath();ctx.arc(x,y,r,0,2*Math.PI);ctx.fillStyle=p.vcolor+'bb';ctx.fill();ctx.strokeStyle=p.vcolor;ctx.lineWidth=1.5;ctx.stroke();});
   var counts={'ขยายผล':0,'แก้ CTA':0,'แก้ฮุก':0,'พิจารณาปิด':0};d.forEach(function(x){counts[x.quad]=(counts[x.quad]||0)+1;});var tot=d.length||1;
   document.getElementById('vai-dist').innerHTML='<div style="height:12px;border-radius:6px;overflow:hidden;display:flex;margin-bottom:.75rem"><div style="background:#10b981;width:'+(counts['ขยายผล']/tot*100).toFixed(1)+'%"></div><div style="background:#aaa;width:'+((counts['แก้ CTA']+counts['แก้ฮุก'])/tot*100).toFixed(1)+'%"></div><div style="background:#f87171;width:'+(counts['พิจารณาปิด']/tot*100).toFixed(1)+'%"></div></div><div style="font-size:.75rem;display:flex;flex-direction:column;gap:.4rem"><div>📈 '+counts['ขยายผล']+' พีสูงแล้วว่าดี</div><div>✓ '+(counts['แก้ CTA']+counts['แก้ฮุก'])+' ตามเกณฑ์บัญชี</div><div>✗ '+counts['พิจารณาปิด']+' เสียคนดูตั้งแต่ฮุก</div></div>';
 }
