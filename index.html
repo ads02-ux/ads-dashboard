@@ -936,18 +936,18 @@ function disableCommInputs(){
 <div><h2 style="margin:0;font-size:1.4rem;font-weight:800;color:var(--txt)">🎬 วิเคราะห์วีดีโอ</h2>
 <p style="margin:.2rem 0 0;font-size:.78rem;color:var(--txt2)">วิดีโอทุกตัวเทียบกับค่ามาตรฐานของบัญชีคุณเอง — ทุกสูตร การดูต่อเนื่อง และการเปลี่ยนเป็นยอดขาย จัดอันดับด้วยคะแนนรวม</p></div>
 <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
-<select id="vai-acct" style="border:1px solid var(--bdr);border-radius:8px;padding:.4rem .7rem;font-size:.8rem;background:var(--card);color:var(--txt);cursor:pointer" onchange="vaiLoad()"><option value="__all__">ทุกบัญชี</option></select>
-<select id="vai-date" style="border:1px solid var(--bdr);border-radius:8px;padding:.4rem .7rem;font-size:.8rem;background:var(--card);color:var(--txt);cursor:pointer" onchange="vaiLoad()">
+<select id="vai-acct" style="border:1px solid #e5e7eb;border-radius:8px;padding:.4rem .7rem;font-size:.8rem;background:var(--card);color:var(--txt);cursor:pointer" onchange="vaiLoad()"><option value="__all__">ทุกบัญชี</option></select>
+<select id="vai-date" style="border:1px solid #e5e7eb;border-radius:8px;padding:.4rem .7rem;font-size:.8rem;background:var(--card);color:var(--txt);cursor:pointer" onchange="vaiLoad()">
 <option value="last_30d" selected>30 วันล่าสุด</option>
 <option value="last_7d">7 วันล่าสุด</option>
 <option value="last_14d">14 วันล่าสุด</option>
 <option value="last_90d">90 วันล่าสุด</option>
 </select>
-<button onclick="vaiCustomDate()" style="display:flex;align-items:center;gap:.3rem;padding:.3rem .75rem;border:1px solid var(--bdr);border-radius:8px;background:var(--bg);color:var(--txt);font-size:.82rem;cursor:pointer;white-space:nowrap">📅 กำหนดเอง</button></div></div>
-<div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;background:var(--card);border:1px solid var(--bdr);border-radius:10px;padding:.75rem 1rem;margin-bottom:1.25rem">
-<div style="display:flex;gap:.4rem"><button id="vai-tab-all" class="vai-tab" onclick="vaiTab('all',this)" style="border:none;padding:.3rem .9rem;font-size:.82rem;cursor:pointer;border-radius:20px;background:var(--acc);color:#fff;font-weight:500;transition:.2s">ทั้งหมด</button><button id="vai-tab-eng" class="vai-tab" onclick="vaiTab('eng',this)" style="border:1px solid var(--bdr);padding:.3rem .9rem;font-size:.82rem;cursor:pointer;border-radius:20px;background:transparent;color:var(--txt);font-weight:500;transition:.2s">การมีส่วนร่วม</button></div>
-<label style="font-size:.78rem;color:var(--txt2);display:flex;align-items:center;gap:.4rem">ยอดใช้จ่ายขั้นต่ำ<input id="vai-ms" type="number" value="1000" min="0" style="width:70px;border:1px solid var(--bdr);border-radius:6px;padding:.25rem .4rem;font-size:.8rem;background:var(--bg);color:var(--txt)"></label>
-<label style="font-size:.78rem;color:var(--txt2);display:flex;align-items:center;gap:.4rem">อิมเพรสชันขั้นต่ำ<input id="vai-mi" type="number" value="1000" min="0" style="width:70px;border:1px solid var(--bdr);border-radius:6px;padding:.25rem .4rem;font-size:.8rem;background:var(--bg);color:var(--txt)"></label>
+<button onclick="vaiCustomDate()" style="display:flex;align-items:center;gap:.3rem;padding:.3rem .75rem;border:1px solid #e5e7eb;border-radius:8px;background:var(--bg);color:var(--txt);font-size:.82rem;cursor:pointer;white-space:nowrap">📅 กำหนดเอง</button></div></div>
+<div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;background:var(--card);border:1px solid #e5e7eb;border-radius:10px;padding:.75rem 1rem;margin-bottom:1.25rem">
+<div style="display:flex;gap:.4rem"><button id="vai-tab-all" class="vai-tab" onclick="vaiTab('all',this)" style="border:none;padding:.3rem .9rem;font-size:.82rem;cursor:pointer;border-radius:20px;background:var(--acc);color:#fff;font-weight:500;transition:.2s">ทั้งหมด</button><button id="vai-tab-eng" class="vai-tab" onclick="vaiTab('eng',this)" style="border:1px solid #e5e7eb;padding:.3rem .9rem;font-size:.82rem;cursor:pointer;border-radius:20px;background:transparent;color:var(--txt);font-weight:500;transition:.2s">การมีส่วนร่วม</button></div>
+<label style="font-size:.78rem;color:var(--txt2);display:flex;align-items:center;gap:.4rem">ยอดใช้จ่ายขั้นต่ำ<input id="vai-ms" type="number" value="1000" min="0" style="width:70px;border:1px solid #e5e7eb;border-radius:6px;padding:.25rem .4rem;font-size:.8rem;background:var(--bg);color:var(--txt)"></label>
+<label style="font-size:.78rem;color:var(--txt2);display:flex;align-items:center;gap:.4rem">อิมเพรสชันขั้นต่ำ<input id="vai-mi" type="number" value="1000" min="0" style="width:70px;border:1px solid #e5e7eb;border-radius:6px;padding:.25rem .4rem;font-size:.8rem;background:var(--bg);color:var(--txt)"></label>
 <label style="font-size:.78rem;color:var(--txt2);display:flex;align-items:center;gap:.5rem;cursor:pointer"><input type="checkbox" id="vai-showlow" onchange="_vaiRender();var s=document.getElementById('_vsw');s.style.background=this.checked?'#2196f3':'#ccc';s.querySelector('span').style.transform=this.checked?'translateX(16px)':'none'" style="display:none"><span id="_vsw" style="width:34px;height:18px;border-radius:9px;background:#ccc;position:relative;display:inline-block;transition:.2s;flex-shrink:0"><span style="position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#fff;transition:.2s"></span></span> แสดงวีดีโอที่ข้อมูลยังน้อย</label>
 
 </div>
@@ -958,7 +958,7 @@ function disableCommInputs(){
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
 <div><h3 style="margin:0;font-size:1rem;font-weight:700;color:var(--txt)">ควอดรันต์ฮุก × คอนเวอร์ชัน</h3>
 <p style="margin:.2rem 0 0;font-size:.72rem;color:var(--txt2)">แต่ละจุดคือหนึ่งวิดีโอ ขนาดจุด = งบที่ใช้ คลิกจุดเพื่อไปยังแถวนั้น</p></div>
-<button id="vai-quad-tog" onclick="vaiQuadToggle()" style="border:1px solid var(--bdr);border-radius:6px;padding:.25rem .6rem;font-size:.8rem;background:var(--bg);color:var(--txt);cursor:pointer">▲</button>
+<button id="vai-quad-tog" onclick="vaiQuadToggle()" style="border:1px solid #e5e7eb;border-radius:6px;padding:.25rem .6rem;font-size:.8rem;background:var(--bg);color:var(--txt);cursor:pointer">▲</button>
 </div>
 <div id="vai-quad-inner" style="display:grid;grid-template-columns:1fr 260px;gap:1.5rem;align-items:start">
 <canvas id="vai-canvas" width="600" height="220" style="width:100%;border-radius:8px"></canvas>
@@ -971,7 +971,7 @@ function disableCommInputs(){
 <div><span style="color:#3b82f6">✓</span> แก้ฮุก — คอนเวิร์ตดีถ้าดูนานจำกัดการเข้าถึง</div>
 <div><span style="color:#f87171">✗</span> พิจารณาปิด — อ่อนทั้งฮุกและคอนเวอร์ชัน</div>
 </div></div></div></div>
-<div id="vai-tbl-wrap" style="background:var(--card);border:1px solid var(--bdr);border-radius:12px;overflow:auto"></div>
+<div id="vai-tbl-wrap" style="background:var(--card);border:1px solid #e5e7eb;border-radius:12px;overflow:auto"></div>
 </div>
 </div><div id="trackView" style="display:none;padding:28px 32px"></div>
 <div id="alertView" style="display:none;padding:28px 32px"></div>
