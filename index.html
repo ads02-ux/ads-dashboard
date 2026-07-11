@@ -951,7 +951,7 @@ function disableCommInputs(){
 </div>
 <label style="font-size:.78rem;color:var(--txt2);display:flex;align-items:center;gap:.4rem">ยอดใช้จ่ายขั้นต่ำ<input id="vai-ms" type="number" value="1000" min="0" style="width:70px;border:1px solid var(--bdr);border-radius:6px;padding:.25rem .4rem;font-size:.8rem;background:var(--bg);color:var(--txt)"></label>
 <label style="font-size:.78rem;color:var(--txt2);display:flex;align-items:center;gap:.4rem">อิมเพรสชันขั้นต่ำ<input id="vai-mi" type="number" value="1000" min="0" style="width:70px;border:1px solid var(--bdr);border-radius:6px;padding:.25rem .4rem;font-size:.8rem;background:var(--bg);color:var(--txt)"></label>
-<label style="font-size:.78rem;color:var(--txt2);display:flex;align-items:center;gap:.5rem"><input type="checkbox" id="vai-showlow" onchange="_vaiRender()"> แสดงวีดีโอที่ข้อมูลยังน้อย</label>
+<label style="font-size:.78rem;color:var(--txt2);display:flex;align-items:center;gap:.5rem;cursor:pointer"><input type="checkbox" id="vai-showlow" onchange="_vaiRender();var s=document.getElementById('_vsw');s.style.background=this.checked?'#2196f3':'#ccc';s.querySelector('span').style.transform=this.checked?'translateX(16px)':'none'" style="display:none"><span id="_vsw" style="width:34px;height:18px;border-radius:9px;background:#ccc;position:relative;display:inline-block;transition:.2s;flex-shrink:0"><span style="position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#fff;transition:.2s"></span></span> แสดงวีดีโอที่ข้อมูลยังน้อย</label>
 <button onclick="_vaiRender()" style="border:1px solid var(--bdr);border-radius:6px;padding:.25rem .6rem;font-size:.78rem;background:var(--card);color:var(--txt);cursor:pointer">กรอง</button>
 </div>
 <div id="vai-cards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:1.25rem"><div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--txt2)">คลิก "ทุกบัญชี" เพื่อเริ่มโหลดข้อมูล หรือเลือกบัญชีที่ต้องการ</div></div>
@@ -8162,7 +8162,7 @@ window._umExportCode=function(){
 
 // ===== VIDEO AI MODULE =====
 var _vai={data:[],tab:'all',collapsed:false};
-function _vaiDp(s){return s==='last_7d'?'last_7_days':s==='last_14d'?'last_14_days':s==='last_90d'?'last_90_days':'last_30_days';}
+function _vaiDp(s){return s||'last_30d';}
 function _vaiFmtB(n){return n>=1000?'฿'+Math.round(n).toLocaleString():'฿'+n.toFixed(2);}
 function _vaiFmtN(n){return Math.round(n).toLocaleString();}
 function _vaiMed(arr){if(!arr.length)return 0;var s=arr.slice().sort(function(a,b){return a-b;});var m=Math.floor(s.length/2);return s.length%2?s[m]:(s[m-1]+s[m])/2;}
