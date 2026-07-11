@@ -8259,7 +8259,7 @@ function _vaiBanner(d){
 
 function _vaiMini(d){
   var sc=d.filter(function(x){return x.quad==='ขยายผล';}).length,wi=d.filter(function(x){return x.score>=55;}).length,t=d.length||1;
-  document.getElementById('vai-mini').innerHTML=[{icon:'🚀',label:'เปิดตัวใหม่',val:d.length},{icon:'📊',label:'ขยายแล้ว',val:sc},{icon:'🏆',label:'ตัวชนะ',val:wi},{icon:'🎯',label:'อัตราชนะ',val:wi+'/'+d.length+'·'+Math.round(wi/t*100)+'%'}].map(function(s){return '<div style="background:var(--card);border:1px solid var(--bdr);border-radius:10px;padding:.75rem 1rem;display:flex;align-items:center;gap:.75rem"><span style="font-size:1.4rem">'+s.icon+'</span><div><div style="font-size:.7rem;color:var(--txt2)">'+s.label+'</div><div style="font-size:1.15rem;font-weight:800;color:var(--txt)">'+s.val+'</div></div></div>';}).join('');
+  document.getElementById('vai-mini').innerHTML=[{icon:'🚀',label:'เปิดตัวใหม่',val:d.length},{icon:'📊',label:'ขยายแล้ว',val:sc},{icon:'🏆',label:'ตัวชนะ',val:wi},{icon:'🎯',label:'อัตราชนะ',val:wi+'/'+d.length+'·'+Math.round(wi/t*100)+'%'}].map(function(s){return '<div style="background:#fff;border:1.5px solid #d1d5db;border-radius:12px;padding:.85rem 1.1rem;display:flex;flex-direction:column;gap:.4rem;flex:1;min-width:100px"><div style="font-size:.72rem;color:#6b7280;font-weight:500;display:flex;align-items:center;gap:.3rem"><span>'+s.icon+'</span>'+s.label+'</div><div style="font-size:1.5rem;font-weight:700;color:#111827;line-height:1">'+s.val+'</div></div>';}';}).join('');
 }
 
 function _vaiQuad(d){
