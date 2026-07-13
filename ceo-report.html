@@ -267,10 +267,10 @@ function render(periodDays){
     var campTabBar='';
   if(isMulti){
     campTabBar='<div class="camp-tab-bar no-print">';
-    campTabBar+='<button class="camp-tab all-tab'+(currentCampIdx===-1?' active':'')+' onclick="switchCamp(-1)">&#9776; ภาพรวม '+campaigns.length+' แคมเปญ</button>';
+    campTabBar+='<button class="camp-tab all-tab'+(currentCampIdx===-1?' active':'')+'" onclick="switchCamp(-1)">&#9776; ภาพรวม '+campaigns.length+' แคมเปญ</button>';
     campaigns.forEach(function(c,i){
       var sn=c.name.length>30?c.name.slice(0,28)+'..':c.name;
-      campTabBar+='<button class="camp-tab'+(currentCampIdx===i?' active':'')+' title="'+c.name+'" onclick="switchCamp('+i+')">'+(i+1)+'. '+sn+'</button>';
+      campTabBar+='<button class="camp-tab'+(currentCampIdx===i?' active':'')+' title="'+c.name+'" onclick="switchCamp('+i+')">'+sn+'</button>';
     });
     campTabBar+='</div>';
     if(currentCampIdx>=0){
@@ -312,7 +312,7 @@ function render(periodDays){
   document.getElementById('app').innerHTML=h;
 }
 
-window.switchPeriod=function(d){render(d);};
+window.switchPeriod=function(d){window.scrollTo(0,0);render(d);};
 window.switchCamp=function(i){currentCampIdx=i;render(currentPeriod);window.scrollTo(0,0);};
 window.copyLink=function(){
   var url=location.href;
