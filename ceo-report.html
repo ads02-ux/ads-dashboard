@@ -264,15 +264,19 @@ function render(periodDays){
     periodBar+='</div>';
   }
 
-  var campTabBar='';
+    var campTabBar='';
   if(isMulti){
     campTabBar='<div class="camp-tab-bar no-print">';
-    campTabBar+='<button class="camp-tab all-tab'+(currentCampIdx===-1?' active':'')+'" onclick="switchCamp(-1)">Overview '+campaigns.length+' Campaigns</button>';
+    campTabBar+='<button class="camp-tab all-tab'+(currentCampIdx===-1?' active':'')+' onclick="switchCamp(-1)">&#9776; ภาพรวม '+campaigns.length+' แคมเปญ</button>';
     campaigns.forEach(function(c,i){
-      var sn=c.name.length>28?c.name.slice(0,26)+'..':c.name;
-      campTabBar+='<button class="camp-tab'+(currentCampIdx===i?' active':'')+'" title="'+c.name+'" onclick="switchCamp('+i+')">'+sn+'</button>';
+      var sn=c.name.length>30?c.name.slice(0,28)+'..':c.name;
+      campTabBar+='<button class="camp-tab'+(currentCampIdx===i?' active':'')+' title="'+c.name+'" onclick="switchCamp('+i+')">'+(i+1)+'. '+sn+'</button>';
     });
     campTabBar+='</div>';
+    if(currentCampIdx>=0){
+      var activeName=campaigns[currentCampIdx].name.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      campTabBar+='<div style="background:#e8f0fe;border-left:4px solid #1565c0;padding:10px 48px;font-size:.78rem;color:#1565c0;font-weight:700">&#128204; กำลังดู: แคมเปญที่ '+(currentCampIdx+1)+' — '+activeName+'</div>';
+    }
   }
 
   var h='<div class="page">'
