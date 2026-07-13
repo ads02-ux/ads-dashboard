@@ -778,6 +778,9 @@ function disableCommInputs(){
     <div class="sb-item" id="sb-usermgmt" onclick="switchView('usermgmt',this)">
       <span class="sb-icon">👥</span><span>จัดการผู้ใช้</span>
     </div>
+    <div class="sb-item" id="sb-budgetlog" onclick="switchView('budgetlog',this)">
+      <span class="sb-icon">📋</span><span>ประวัติการแก้ไข</span>
+    </div>
     <div class="sb-item" style="opacity:.4;cursor:not-allowed">
       <span class="sb-icon">📤</span><span>Export</span><span class="sb-badge">Soon</span>
     </div>
@@ -981,6 +984,7 @@ function disableCommInputs(){
 <div id="leaveView" style="display:none;padding:20px 24px"></div>
 <div id="dailyTaskView" style="display:none;padding:20px 24px"></div>
 <div id="userMgmtView" style="display:none;padding:28px 32px"></div>
+<div id="budgetLogView" style="display:none;padding:28px 32px"></div>
 
 <script>
 var SHEET_ID='1Qs57OO-tDRAsikHulJSKw6S0tfbMqgUuNbmiRHN1POI',GID_S1='997286503',GID_S2='1472268717',GID_COMM='1688902080',GID_CONFIG='388205387',REFRESH=1800;
@@ -2420,6 +2424,7 @@ function switchView(view,el){
   var _db=document.querySelector('.dbar');if(_db)_db.style.display='none';var _ab=document.getElementById('abar');if(_ab)_ab.style.display='none';
   var _umv=document.getElementById('userMgmtView');if(_umv)_umv.style.display='none';
   var _alv=document.getElementById('alertView');if(_alv)_alv.style.display='none';
+  var _blv=document.getElementById('budgetLogView');if(_blv)_blv.style.display='none';
   var _auth=sessionStorage.getItem('rb_auth'),_acc=sessionStorage.getItem('rb_access');
   if(_auth==='hr'&&view!=='commission')return;
   if(_auth==='limited'&&_acc){var _accParsed;try{_accParsed=JSON.parse(_acc);}catch(e){_accParsed=_acc;}var _accKeys=Array.isArray(_accParsed)?_accParsed:[_accParsed];var _allowed=[];_accKeys.forEach(function(k){var v=_viewAccessMap[k]||[];v.forEach(function(vn){if(_allowed.indexOf(vn)<0)_allowed.push(vn);});});if(_allowed.indexOf(view)<0)return;}
@@ -2458,6 +2463,10 @@ function switchView(view,el){
   } else if(view==='usermgmt'){
     mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var trv2=document.getElementById('trackView');if(trv2)trv2.style.display='none';var lv2=document.getElementById('leaveView');if(lv2)lv2.style.display='none';
     var umv=document.getElementById('userMgmtView');if(umv){umv.style.display='block';_renderUserMgmt(umv);}
+    window.scrollTo({top:0,behavior:'smooth'});
+  } else if(view==='budgetlog'){
+    mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var trv2=document.getElementById('trackView');if(trv2)trv2.style.display='none';var lv2=document.getElementById('leaveView');if(lv2)lv2.style.display='none';
+    var blv2=document.getElementById('budgetLogView');if(blv2){blv2.style.display='block';_renderBudgetLog(blv2);}
     window.scrollTo({top:0,behavior:'smooth'});
   } else if(view==='benchmark'){
     mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='block';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var trv2=document.getElementById('trackView');if(trv2)trv2.style.display='none';var lv2=document.getElementById('leaveView');if(lv2)lv2.style.display='none';
@@ -2717,6 +2726,29 @@ var chartrankGroupBy='account',chartrankMetric='roas',chartrankDirection='top',c
 var fbCampaignsMap={},fbCampaignsLoadedMap={};
 var _fbLoadingMap={},_prodCharts={};
 var fbBudgetChangesToday={}; // {accId: {objName: {diff, isUp, label}}}
+
+
+// ─── Budget / Date Change Log ──────────────────────────────────────────────
+var _RB_LOG_KEY='rb_budget_log';
+function _rbLogSave(entry){
+  try{
+    var log=JSON.parse(localStorage.getItem(_RB_LOG_KEY)||'[]');
+    log.unshift(entry);
+    if(log.length>300)log=log.slice(0,300);
+    localStorage.setItem(_RB_LOG_KEY,JSON.stringify(log));
+  }catch(e){}
+}
+function _rbLogGet(){try{return JSON.parse(localStorage.getItem(_RB_LOG_KEY)||'[]');}catch(e){return[];}}
+function _rbLogUser(){try{return JSON.parse(localStorage.getItem('currentUser')||'{}').name||'Unknown';}catch(e){return'Unknown';}}
+function _rbLogNow(){
+  var n=new Date();
+  function p(x){return x<10?'0'+x:x;}
+  return{
+    ts:n.getTime(),
+    date:p(n.getDate())+'/'+p(n.getMonth()+1)+'/'+n.getFullYear(),
+    time:p(n.getHours())+':'+p(n.getMinutes())
+  };
+}
 var _fbNotes={};var _fbNotesPushTimer=null;
 function _fbNotesDateKey(){var now=new Date();function p(n){return n<10?'0'+n:n;}
   if(fbFilter==='today'){return now.getFullYear()+'-'+p(now.getMonth()+1)+'-'+p(now.getDate());}
@@ -4142,6 +4174,7 @@ async function fbUpdateBudget(campName,campId){
           if(isDaily)fbCampaignsMap[fbAccount][campName].daily_budget=b;
           else fbCampaignsMap[fbAccount][campName].lifetime_budget=b;
         }
+        var _lt=_rbLogNow();_rbLogSave({ts:_lt.ts,date:_lt.date,time:_lt.time,user:_rbLogUser(),account:fbAccount,campaign:campName,type:'budget',budType:budType,oldVal:curBud,newVal:b,diff:b-curBud,isUp:b>curBud});
         _renderFBInner(document.getElementById('fbViewInner'));
       } else {showBanner('\u274c '+(lastErr||'\u0e44\u0e21\u0e48\u0e2a\u0e33\u0e40\u0e23\u0e47\u0e08'));}
     }catch(e){showBanner('\u274c '+e.message);}
@@ -4179,6 +4212,7 @@ async function fbChangeStopDate(campName,campId){
       showBanner('✅ อัปเดตวันสิ้นสุด: '+dispDate+' สำเร็จ');
       if(fbCampaignsMap[fbAccount]&&fbCampaignsMap[fbAccount][campName])
         fbCampaignsMap[fbAccount][campName].stop_time=newDate.trim()?new Date(newDate.trim()+'T23:59:59+07:00').toISOString():null;
+      var _lt2=_rbLogNow();_rbLogSave({ts:_lt2.ts,date:_lt2.date,time:_lt2.time,user:_rbLogUser(),account:fbAccount,campaign:campName,type:'date',oldVal:cur||'ไม่มีกำหนด',newVal:dispDate});
       _renderFBInner(document.getElementById('fbViewInner'));
       try{
         var aUrl='https://graph.facebook.com/v20.0/'+campId+'/adsets?fields=id&limit=100&access_token='+encodeURIComponent(tok);
@@ -7974,6 +8008,87 @@ function _getAccessUsers(){
   return [{name:'Admin',email:'ads02@richbiotech.com',password:'rich01',access:'all'},{name:'HR',email:'',password:'hr01',access:'hr'}];
 }
 function _saveAccessUsers(u){localStorage.setItem('rb_access_users',JSON.stringify(u));}
+
+// ─── ประวัติการแก้ไข Budget/Date ─────────────────────────────────────────────
+function _renderBudgetLog(el){
+  var log=_rbLogGet();
+  // filter state
+  var filterAcc=el._filterAcc||'';
+  var filterType=el._filterType||'';
+
+  // collect unique accounts
+  var accs=[...new Set(log.map(function(e){return e.account;}))].sort();
+
+  // filter
+  var filtered=log.filter(function(e){
+    if(filterAcc&&e.account!==filterAcc)return false;
+    if(filterType&&e.type!==filterType)return false;
+    return true;
+  });
+
+  function fmtB(v){if(!v&&v!==0)return'—';return'฿'+Number(v).toLocaleString('th-TH');}
+
+  var rows=filtered.map(function(e){
+    var typeTag=e.type==='budget'
+      ?'<span style="background:#dbeafe;color:#1d4ed8;padding:2px 8px;border-radius:12px;font-size:.65rem;font-weight:700">💰 งบ</span>'
+      :'<span style="background:#dcfce7;color:#166534;padding:2px 8px;border-radius:12px;font-size:.65rem;font-weight:700">📅 วันที่</span>';
+    var changeCell='';
+    if(e.type==='budget'){
+      var arrow=e.isUp
+        ?'<span style="color:#16a34a;font-weight:800">▲ +'+Number(e.diff).toLocaleString('th-TH')+'</span>'
+        :'<span style="color:#dc2626;font-weight:800">▼ '+Number(e.diff).toLocaleString('th-TH')+'</span>';
+      changeCell=fmtB(e.oldVal)+' → '+fmtB(e.newVal)+'<br>'+arrow+' ('+e.budType+'ละ)';
+    } else {
+      changeCell=(e.oldVal||'—')+' → '+(e.newVal||'—');
+    }
+    return '<tr>'
+      +'<td style="white-space:nowrap;color:#475569">'+e.date+'<br><span style="font-size:.7rem;color:#94a3b8">'+e.time+'</span></td>'
+      +'<td><span style="font-weight:700;color:#1565c0">'+e.user+'</span></td>'
+      +'<td><span style="background:#f1f5f9;border:1px solid #e2e8f0;padding:2px 8px;border-radius:6px;font-size:.72rem;font-weight:700;color:#334155">'+e.account+'</span></td>'
+      +'<td style="max-width:240px;overflow:hidden;text-overflow:ellipsis;font-size:.78rem;color:#334155" title="'+e.campaign+'">'+e.campaign+'</td>'
+      +'<td>'+typeTag+'</td>'
+      +'<td style="font-size:.8rem;line-height:1.5">'+changeCell+'</td>'
+      +'</tr>';
+  }).join('');
+
+  var accOpts='<option value="">ทุกบัญชี</option>'+accs.map(function(a){return'<option value="'+a+'"'+(filterAcc===a?' selected':'')+'>'+a+'</option>';}).join('');
+
+  el.innerHTML=''
+    +'<div style="max-width:1100px;margin:0 auto">'
+    +'<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:24px">'
+      +'<div>'
+        +'<div style="font-size:1.3rem;font-weight:900;color:#0f172a;font-family:Rajdhani,sans-serif">📋 ประวัติการแก้ไข</div>'
+        +'<div style="font-size:.8rem;color:#64748b;margin-top:2px">บันทึกทุกครั้งที่ปรับงบ / ปรับวันที่แคมเปญ</div>'
+      +'</div>'
+      +'<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">'
+        +'<select id="bl-acc" onchange="(function(){var e=document.getElementById(\'budgetLogView\');e._filterAcc=this.value;_renderBudgetLog(e);})()" style="border:1px solid #e2e8f0;border-radius:8px;padding:7px 12px;font-family:inherit;font-size:.8rem;color:#334155;background:#fff;cursor:pointer">'+accOpts+'</select>'
+        +'<select id="bl-type" onchange="(function(){var e=document.getElementById(\'budgetLogView\');e._filterType=this.value;_renderBudgetLog(e);})()" style="border:1px solid #e2e8f0;border-radius:8px;padding:7px 12px;font-family:inherit;font-size:.8rem;color:#334155;background:#fff;cursor:pointer">'
+          +'<option value="">ทุกประเภท</option>'
+          +'<option value="budget"'+(filterType==='budget'?' selected':'')+'>💰 งบ</option>'
+          +'<option value="date"'+(filterType==='date'?' selected':'')+'>📅 วันที่</option>'
+        +'</select>'
+        +'<button onclick="if(confirm(\'ล้างประวัติทั้งหมด?\')){{localStorage.removeItem(\''+_RB_LOG_KEY+'\');_renderBudgetLog(document.getElementById(\'budgetLogView\'));}}" style="border:1px solid #fca5a5;border-radius:8px;padding:7px 14px;background:#fff;color:#dc2626;font-family:inherit;font-size:.8rem;font-weight:600;cursor:pointer">🗑 ล้างประวัติ</button>'
+      +'</div>'
+    +'</div>'
+    +(filtered.length===0
+      ?'<div style="text-align:center;padding:80px;color:#94a3b8;font-size:.95rem">ยังไม่มีประวัติการแก้ไข<br><span style="font-size:.8rem">เมื่อปรับงบหรือวันที่แคมเปญ จะบันทึกที่นี่อัตโนมัติ</span></div>'
+      :'<div style="background:#fff;border-radius:12px;border:1px solid #e2e8f0;overflow:hidden;box-shadow:0 1px 4px rgba(15,23,42,.06)">'
+        +'<div style="padding:12px 16px;background:#f8faff;border-bottom:1px solid #e2e8f0;font-size:.75rem;color:#64748b;font-weight:600">'+filtered.length+' รายการ</div>'
+        +'<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:.82rem">'
+          +'<thead><tr style="background:#f1f5f9">'
+            +'<th style="padding:10px 14px;text-align:left;font-weight:700;color:#475569;white-space:nowrap">วัน/เวลา</th>'
+            +'<th style="padding:10px 14px;text-align:left;font-weight:700;color:#475569">ผู้แก้ไข</th>'
+            +'<th style="padding:10px 14px;text-align:left;font-weight:700;color:#475569">บัญชี</th>'
+            +'<th style="padding:10px 14px;text-align:left;font-weight:700;color:#475569">แคมเปญ</th>'
+            +'<th style="padding:10px 14px;text-align:left;font-weight:700;color:#475569">ประเภท</th>'
+            +'<th style="padding:10px 14px;text-align:left;font-weight:700;color:#475569">การเปลี่ยนแปลง</th>'
+          +'</tr></thead>'
+          +'<tbody>'+rows+'</tbody>'
+        +'</table></div></div>'
+    )
+    +'</div>';
+}
+// ─────────────────────────────────────────────────────────────────────────────
 
 function _renderUserMgmt(el){
   var users=_getAccessUsers();
