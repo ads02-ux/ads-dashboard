@@ -37,6 +37,7 @@ body{font-family:Sarabun,sans-serif;background:#eef2f7;color:#0f172a;-webkit-pri
 .camp-tab:hover{border-color:#93c5fd;color:#1565c0}
 .camp-tab.active{background:#1565c0;color:#fff;border-color:#1565c0}
 .camp-tab.all-tab{background:linear-gradient(135deg,#1e3a5f,#1565c0);color:#fff;border:none}
+.camp-tab.all-tab.active{background:linear-gradient(135deg,#1565c0,#42a5f5);box-shadow:0 0 0 2px rgba(255,255,255,.5)}
 .cmp-table{width:100%;border-collapse:collapse;font-size:.8rem}
 .cmp-table th{padding:10px 14px;background:#f1f5ff;font-weight:700;color:#475569;font-size:.72rem;text-align:right;border:1px solid #e2e8f0}
 .cmp-table th:first-child{text-align:left}
@@ -270,7 +271,7 @@ function render(periodDays){
     campTabBar+='<button class="camp-tab all-tab'+(currentCampIdx===-1?' active':'')+'" onclick="switchCamp(-1)">&#9776; ภาพรวม '+campaigns.length+' แคมเปญ</button>';
     campaigns.forEach(function(c,i){
       var sn=c.name.length>30?c.name.slice(0,28)+'..':c.name;
-      campTabBar+='<button class="camp-tab'+(currentCampIdx===i?' active':'')+' title="'+c.name+'" onclick="switchCamp('+i+')">'+sn+'</button>';
+      campTabBar+='<button class="camp-tab'+(currentCampIdx===i?' active':'')+'" title="'+c.name+'" onclick="switchCamp('+i+')">'+sn+'</button>';
     });
     campTabBar+='</div>';
     if(currentCampIdx>=0){
