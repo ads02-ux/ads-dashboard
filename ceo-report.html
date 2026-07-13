@@ -85,6 +85,20 @@ function calcAgg(arr){
   return a;
 }
 
+function getTargetDate(period){
+  var now=new Date();
+  var pad=function(n){return String(n).padStart(2,'0');};
+  if(period==='today')return now.getFullYear()+'-'+pad(now.getMonth()+1)+'-'+pad(now.getDate());
+  if(period==='yesterday'){var y=new Date(now-86400000);return y.getFullYear()+'-'+pad(y.getMonth()+1)+'-'+pad(y.getDate());}
+  return null;
+}
+function filterByPeriod(arr,period){
+  var td=getTargetDate(period);
+  if(td)return(arr||[]).filter(function(d){return d.date===td;});
+  if((arr||[]).length>=period)return arr.slice(-period);
+  return arr||[];
+}
+
 function getVerdict(roas){
   if(roas>=2)return{vrd:'Good — Keep Going',vColor:'#065f46',vBg:'linear-gradient(135deg,#d1fae5,#a7f3d0)',vIcon:'OK'};
   if(roas>=1)return{vrd:'Break-even — Optimize',vColor:'#92400e',vBg:'linear-gradient(135deg,#fef3c7,#fde68a)',vIcon:'WARN'};
@@ -177,8 +191,7 @@ function buildDetailTable(agg){
 
 function buildCompareTable(camps,periodDays){
   var aggs=camps.map(function(c){
-    var arr=c.daily||[];
-    if(arr.length>=periodDays)arr=arr.slice(-periodDays);
+    var arr=filterByPeriod(c.daily||[],periodDays);
     return{name:c.name,agg:calcAgg(arr)};
   });
   var cols=['spend','revenue','roas','ctr','purchases','costPerBuy'];
@@ -224,7 +237,7 @@ function mergeDaily(camps,periodDays){
   var byDate={};
   camps.forEach(function(c){
     var arr=c.daily||[];
-    if(arr.length>=periodDays)arr=arr.slice(-periodDays);
+    arr=filterByPeriod(arr,periodDays);
     arr.forEach(function(d){
       if(!d.date)return;
       if(!byDate[d.date])byDate[d.date]={date:d.date,spend:0,revenue:0,impressions:0,clicks:0,purchases:0,conversations:0};
@@ -243,7 +256,7 @@ function render(periodDays){
   var dailyArr,agg,title;
   if(activeCamp){
     var raw2=activeCamp.daily||[];
-    dailyArr=raw2.length>=periodDays?raw2.slice(-periodDays):raw2;
+    dailyArr=filterByPeriod(raw2,periodDays);
     agg=calcAgg(dailyArr);
     title=activeCamp.name;
   }else{
@@ -256,16 +269,19 @@ function render(periodDays){
   var eName=title.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
   var maxLen=Math.max.apply(null,campaigns.map(function(c){return(c.daily||[]).length;}).concat([0]));
+  var periodLabel=periodDays==='today'?'วันนี้':periodDays==='yesterday'?'เมื่อวาน':dailyArr.length+' days';
   var periodBar='';
   if(maxLen>0){
     periodBar='<div class="period-bar no-print">';
+    periodBar+='<button class="ptab'+(periodDays==='today'?' active':'')+'" onclick="switchPeriod(\'today\')">วันนี้</button>';
+    periodBar+='<button class="ptab'+(periodDays==='yesterday'?' active':'')+'" onclick="switchPeriod(\'yesterday\')">เมื่อวาน</button>';
     periodBar+='<button class="ptab'+(periodDays===3?' active':'')+'" onclick="switchPeriod(3)">3 Days</button>';
     periodBar+='<button class="ptab'+(periodDays===7?' active':'')+'" onclick="switchPeriod(7)">7 Days</button>';
     periodBar+='<button class="ptab'+(periodDays===30?' active':'')+'" onclick="switchPeriod(30)">30 Days</button>';
     periodBar+='</div>';
   }
 
-    var campTabBar='';
+  var campTabBar='';
   if(isMulti){
     campTabBar='<div class="camp-tab-bar no-print">';
     campTabBar+='<button class="camp-tab all-tab'+(currentCampIdx===-1?' active':'')+'" onclick="switchCamp(-1)">&#9776; ภาพรวม '+campaigns.length+' แคมเปญ</button>';
@@ -285,7 +301,7 @@ function render(periodDays){
     +'<div style="flex:1;min-width:0">'
     +'<div class="brand">Rich Biotech · Campaign Performance Report</div>'
     +'<div class="hd-title">'+eName+'</div>'
-    +'<div class="hd-meta">'+(isMulti&&currentCampIdx===-1?campaigns.length+' campaigns combined · ':'')+dailyArr.length+' days · Generated '+dtStr+'</div>'
+    +'<div class="hd-meta">'+(isMulti&&currentCampIdx===-1?campaigns.length+' campaigns combined · ':'')+periodLabel+' · Generated '+dtStr+'</div>'
     +'<div class="vrd" style="background:'+v.vBg+';color:'+v.vColor+'">'+v.vIcon+' '+v.vrd+'</div>'
     +'</div>'
     +'<div class="hd-btns no-print">'
@@ -304,7 +320,7 @@ function render(periodDays){
     h+='<div class="section"><div class="sec-ttl">Campaign Comparison</div>'+buildCompareTable(campaigns,periodDays)+'</div>';
   }
 
-  h+='<div class="section"><div class="sec-ttl">Spend &amp; ROAS Daily ('+dailyArr.length+' days)</div>'+buildChart(dailyArr)+'</div>'
+  h+='<div class="section"><div class="sec-ttl">Spend &amp; ROAS Daily ('+periodLabel+')</div>'+buildChart(dailyArr)+'</div>'
     +'<div class="section"><div class="sec-ttl">AI Analysis &amp; Recommendations</div>'+buildRecs(agg,dailyArr)+'</div>'
     +'<div class="section"><div class="sec-ttl">Detailed Data</div>'+buildDetailTable(agg)+'</div>'
     +'<div class="ft">Rich Biotech · Ads Mission Dashboard · '+dtStr+'</div>'
@@ -313,7 +329,7 @@ function render(periodDays){
   document.getElementById('app').innerHTML=h;
 }
 
-window.switchPeriod=function(d){window.scrollTo(0,0);render(d);};
+window.switchPeriod=function(d){render(d);window.scrollTo(0,0);};
 window.switchCamp=function(i){currentCampIdx=i;render(currentPeriod);window.scrollTo(0,0);};
 window.copyLink=function(){
   var url=location.href;
