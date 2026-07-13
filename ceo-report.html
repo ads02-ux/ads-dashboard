@@ -244,6 +244,7 @@ function render(periodDays){
     var raw2=activeCamp.daily||[];
     dailyArr=raw2.length>=periodDays?raw2.slice(-periodDays):raw2;
     agg=activeCamp.agg||calcAgg(dailyArr);
+    agg.roas=+(agg.roas)||0;agg.ctr=+(agg.ctr)||0;agg.spend=+(agg.spend)||0;agg.costPerBuy=+(agg.costPerBuy)||0;
     title=activeCamp.name;
   }else{
     dailyArr=mergeDaily(campaigns,periodDays);
