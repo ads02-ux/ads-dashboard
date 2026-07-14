@@ -605,17 +605,8 @@ header>svg{display:none!important}
 <body>
 <style>
 #pw-gate{position:fixed;inset:0;background:#0a0f1e;display:flex;align-items:center;justify-content:center;z-index:99999;font-family:Inter,sans-serif;overflow:hidden}
-#pw-bg{position:absolute;inset:0;z-index:0}
-#pw-bg .slide{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;animation:bgSlide 35s infinite}
-#pw-bg .slide:nth-child(1){background-image:url('images/slide1.jpg');animation-delay:0s}
-#pw-bg .slide:nth-child(2){background-image:url('images/slide2.jpg');animation-delay:5s}
-#pw-bg .slide:nth-child(3){background-image:url('images/slide3.jpg');animation-delay:10s}
-#pw-bg .slide:nth-child(4){background-image:url('images/slide4.jpg');animation-delay:15s}
-#pw-bg .slide:nth-child(5){background-image:url('images/slide5.jpg');animation-delay:20s}
-#pw-bg .slide:nth-child(6){background-image:url('images/slide6.jpg');animation-delay:25s}
-#pw-bg .slide:nth-child(7){background-image:url('images/slide7.jpg');animation-delay:30s}
-#pw-bg-ov{position:absolute;inset:0;background:rgba(5,8,20,.6);z-index:1}
-@keyframes bgSlide{0%{opacity:0;transform:scale(1)}3%{opacity:1}14%{opacity:1;transform:scale(1.08)}17%{opacity:0;transform:scale(1.1)}100%{opacity:0;transform:scale(1)}}
+#pw-bg-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;opacity:.85}
+#pw-bg-ov{position:absolute;inset:0;background:rgba(5,8,20,.45);z-index:1}
 #pw-box{position:relative;z-index:2;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:40px 36px;box-shadow:0 24px 60px rgba(0,0,0,.6);text-align:center;width:320px;backdrop-filter:blur(24px)}
 #pw-logo{font-size:2.4rem;margin-bottom:10px;filter:drop-shadow(0 0 12px rgba(99,102,241,.5))}
 #pw-title{font-size:1.25rem;font-weight:700;color:#e2e8f0;letter-spacing:.08em;margin-bottom:4px}
@@ -629,15 +620,9 @@ header>svg{display:none!important}
 #pw-email:focus{border-color:rgba(99,102,241,.6);box-shadow:0 0 0 3px rgba(99,102,241,.15)}
 </style>
 <div id="pw-gate">
-  <div id="pw-bg">
-    <div class="slide"></div>
-    <div class="slide"></div>
-    <div class="slide"></div>
-    <div class="slide"></div>
-    <div class="slide"></div>
-    <div class="slide"></div>
-    <div class="slide"></div>
-  </div>
+  <video id="pw-bg-video" autoplay muted loop playsinline>
+    <source src="images/bg-video.mp4" type="video/mp4">
+  </video>
   <div id="pw-bg-ov"></div>
   <div id="pw-box">
     <div id="pw-logo"><svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" width="60" height="60"><defs><linearGradient id="rbgL" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#c2410c"/><stop offset="100%" stop-color="#f97316"/></linearGradient></defs><rect width="60" height="60" rx="12" fill="url(#rbgL)"/><path d="M16 11h17.5c6 0 10.8 4.8 10.8 10.8 0 4.3-2.5 8-6.2 9.8l7.5 14.4H38.4l-6.6-13H23v13H16V11zm6.5 5.3V27h10c3 0 5.3-2.4 5.3-5.3 0-3-2.4-5.3-5.3-5.3H22.5z" fill="#ffffff"/></svg></div>
