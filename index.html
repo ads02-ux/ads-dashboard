@@ -950,7 +950,7 @@ function disableCommInputs(){
   <rect width="36" height="36" rx="7" fill="#fff3ec"/>
   <path d="M10 7h10.5c3.6 0 6.5 2.9 6.5 6.5 0 2.6-1.5 4.8-3.7 5.9l4.5 8.6H23l-4-7.8H14v7.8H10V7zm4 3.2v6.4h6c1.8 0 3.2-1.4 3.2-3.2 0-1.8-1.4-3.2-3.2-3.2H14z" fill="#f97316"/>
 </svg></div><div><div class="htitle">Ads Analytics Dashboard</div><div class="hsub">Rich Biotech &bull; Ads Analytics Platform</div></div></div>
-  <div class="hright"><div class="live-badge"><div class="dot"></div><span>Online</span></div><div class="upd" id="upd">กำลังโหลด...</div><div class="cdwn" id="cdwn"></div><button id="theme-toggle" onclick="toggleTheme()" title="เปลี่ยน Theme" style="background:none;border:1px solid var(--panel-border);border-radius:8px;padding:5px 10px;cursor:pointer;color:var(--text2);font-size:1.05rem;transition:var(--t);display:flex;align-items:center;line-height:1">🌙</button></div>
+  <div class="hright"><div class="live-badge"><div class="dot"></div><span>Online</span></div><div class="upd" id="upd">กำลังโหลด...</div><button id="theme-toggle" onclick="toggleTheme()" title="เปลี่ยน Theme" style="background:none;border:1px solid var(--panel-border);border-radius:8px;padding:5px 10px;cursor:pointer;color:var(--text2);font-size:1.05rem;transition:var(--t);display:flex;align-items:center;line-height:1">🌙</button></div>
 </header>
 <div class="dbar" style="display:none">
   <span class="bar-label">📅 ช่วงเวลา</span>
@@ -8136,8 +8136,6 @@ loadJSONP(GID_S1,'A7:Z','cb_s1');loadJSONP(GID_S2,'A7:Y','cb_s2');
 loadJSONP(GID_COMM,'A2:E','cb_comm');
 loadJSONP(GID_CONFIG,'A2:B','cb_config');
 setTimeout(function(){if(loadedCount<2){showBanner('⚠ โหลด Sheet ช้า — แสดงข้อมูลที่มี');loadedCount=2;buildProductFilter();buildAnalystFilter();renderAll();}},15000);
-var countdown=REFRESH;
-setInterval(function(){countdown--;var el=document.getElementById('cdwn');if(el){var m=Math.floor(countdown/60),s=countdown%60;el.textContent='Refresh in '+(m>0?m+'m '+pad2(s)+'s':s+'s');}if(countdown<=0)location.reload();},1000);
 
 // ── User Management (Access Control) ──
 function _getAccessUsers(){
