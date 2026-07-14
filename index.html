@@ -8302,7 +8302,7 @@ function _renderUserMgmt(el){
           +'<th style="padding:10px 16px;text-align:left;font-size:.63rem;font-weight:700;color:#94a3b8;letter-spacing:1px;text-transform:uppercase">สิทธิ์ปัจจุบัน</th>'
           +'<th style="padding:10px 16px;text-align:left;font-size:.63rem;font-weight:700;color:#94a3b8;letter-spacing:1px;text-transform:uppercase">เปลี่ยนสิทธิ์</th>'
           +'<th style="padding:10px 14px;text-align:left;font-size:.63rem;font-weight:700;color:#94a3b8;letter-spacing:1px;text-transform:uppercase">การใช้งาน</th>'
-          +'<th style="padding:10px 16px;text-align:right;font-size:.63rem;font-weight:700;color:#94a3b8;letter-spacing:1px;text-transform:uppercase">จัดการ</th>'
+           +'<th style="padding:10px 16px;text-align:right;font-size:.63rem;font-weight:700;color:#94a3b8;letter-spacing:1px;text-transform:uppercase">จัดการ</th>'
         +'</tr></thead>'
         +'<tbody>'+rows+'</tbody>'
       +'</table></div>'
@@ -8322,13 +8322,11 @@ window._umSetAllAccess=function(btn){var i=parseInt(btn.getAttribute('data-idx')
 window._umTogglePage=function(btn){var i=parseInt(btn.getAttribute('data-idx'));var key=btn.getAttribute('data-key');var u=_getAccessUsers();if(!u[i])return;var cur=u[i].access;var arr=cur==='all'?[]:Array.isArray(cur)?cur.slice():[cur];var idx=arr.indexOf(key);if(idx>=0){arr.splice(idx,1);}else{arr.push(key);}if(arr.length===0)arr=[key];u[i].access=arr.length===1?arr[0]:arr;_saveAccessUsers(u);var el=document.getElementById('userMgmtView');if(el)_renderUserMgmt(el);};
 window._umNewAccPillToggle=function(el){var key=el.getAttribute('data-nacc');var pills=document.querySelectorAll('#umNewPagePills [data-nacc]');var PI='cursor:pointer;display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;border:1px solid #4f46e5;background:#4f46e5;color:#fff;font-size:.65rem;font-weight:700';var PN='cursor:pointer;display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;border:1px solid #e2e8f0;background:#f8fafc;color:#64748b;font-size:.65rem;font-weight:400';var PM='cursor:pointer;display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;border:1px solid #3b82f6;background:#eff6ff;color:#1d4ed8;font-size:.65rem;font-weight:700';if(key==='all'){pills.forEach(function(p){p.setAttribute('data-active','0');p.style.cssText=PN;});el.setAttribute('data-active','1');el.style.cssText=PI;}else{var allPill=document.querySelector('#umNewPagePills [data-nacc="all"]');if(allPill){allPill.setAttribute('data-active','0');allPill.style.cssText=PN;}var isActive=el.getAttribute('data-active')==='1';if(isActive){el.setAttribute('data-active','0');el.style.cssText=PN;var anyActive=false;pills.forEach(function(p){if(p.getAttribute('data-nacc')!=='all'&&p.getAttribute('data-active')==='1')anyActive=true;});if(!anyActive&&allPill){allPill.setAttribute('data-active','1');allPill.style.cssText=PI;}}else{el.setAttribute('data-active','1');el.style.cssText=PM;}}};
 window._umChangePerm=function(i,v){var u=_getAccessUsers();if(u[i]){u[i].perm=v;_saveAccessUsers(u);}};
-// Apply read-only mode: disable all inputs/buttons/selects/textareas except in userMgmt
 window._applyReadOnly=function(){
   var style=document.createElement('style');
   style.id='ro-style';
   style.textContent='#mainView button:not(.apill):not(.photo-manage-btn),#mainView input,#mainView select,#mainView textarea,#fbView button:not([onclick*="switchView"]),#fbView input,#fbView select,#aiView button,#aiView input,#aiView select,#adsaiView button,#adsaiView input,#adsaiView select,#trackView button,#trackView input,#trackView select,#trackView textarea,#benchmarkView button,#benchmarkView input,#chartrankView button,#chartrankView input,#leaveView .leave-cell,#dailyTaskView button,#dailyTaskView input{pointer-events:none!important;opacity:.6!important;cursor:not-allowed!important}';
   document.head.appendChild(style);
-  // Add readonly badge to header
   var hright=document.querySelector('.hright');
   if(hright&&!document.getElementById('ro-badge')){
     var b=document.createElement('div');b.id='ro-badge';
@@ -8339,17 +8337,25 @@ window._applyReadOnly=function(){
 window._umDelUser=function(i){var u=_getAccessUsers();if(!u[i])return;if(u[i].password==='rich01'||u[i].password==='hr01'){alert('ไม่สามารถลบ Default user ได้');return;}if(confirm('ลบผู้ใช้ "'+u[i].name+'" ?')){u.splice(i,1);_saveAccessUsers(u);var el=document.getElementById('userMgmtView');if(el)_renderUserMgmt(el);}};
 window._umAddUser=function(){
   var n=(document.getElementById('umNewName').value||'').trim();
-  var em=(document.getElementById('umNewEmail').value||'').trim().toLowerCase();
+  var em=(document.getElementById('umNewEmail')?document.getElementById('umNewEmail').value||'':'').trim();
   var pw=(document.getElementById('umNewPw').value||'').trim();
   var pm=document.getElementById('umNewPerm')?document.getElementById('umNewPerm').value:'edit';
   var _pills=document.querySelectorAll('#umNewPagePills [data-nacc]');var _selKeys=[];_pills.forEach(function(p){if(p.getAttribute('data-active')==='1')_selKeys.push(p.getAttribute('data-nacc'));});var ac=_selKeys.length===0?'hr':(_selKeys.length===1?_selKeys[0]:_selKeys);
-  if(!n||!em||!pw){alert('กรุณากรอกชื่อ อีเมล และรหัสผ่าน');return;}
-  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){alert('รูปแบบอีเมลไม่ถูกต้อง');return;}
+  if(!n||!pw){alert('กรุณากรอกชื่อและรหัสผ่าน');return;}
   var u=_getAccessUsers();
-  if(u.find(function(x){return x.email&&x.email.toLowerCase()===em;})){alert('อีเมลนี้ถูกใช้แล้ว');return;}
   if(u.find(function(x){return x.password===pw;})){alert('รหัสผ่านนี้ถูกใช้แล้ว');return;}
-  u.push({name:n,email:em,password:pw,access:ac,perm:pm});
+  u.push({name:n,password:pw,access:ac,perm:pm,email:em});
   _saveAccessUsers(u);
+  var el=document.getElementById('userMgmtView');if(el)_renderUserMgmt(el);
+  document.getElementById('umAddForm').style.display='none';
+  document.getElementById('umNewName').value='';document.getElementById('umNewPw').value='';
+  if(document.getElementById('umNewEmail'))document.getElementById('umNewEmail').value='';
+};
+</script>
+</div><!-- /content-wrap -->
+</body>
+</html>
+sers(u);
   var el=document.getElementById('userMgmtView');if(el)_renderUserMgmt(el);
   document.getElementById('umAddForm').style.display='none';
   document.getElementById('umNewName').value='';document.getElementById('umNewEmail').value='';document.getElementById('umNewPw').value='';
