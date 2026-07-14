@@ -738,7 +738,7 @@ function _exportProductCSV(){
 }
 
 var _viewAccessMap={
-  fb:['fb'],ai:['ai'],adsai:['adsai'],track:['track'],benchmark:['benchmark'],
+  fb:['fb'],ai:['ai'],adsai:['adsai'],videoai:['videoai'],track:['track'],benchmark:['benchmark'],
   chartrank:['chartrank'],hunter:['top','kpiGrid','lbSection','chartSection','cohort','t1wrap','t2wrap'],
   hr:['commission'],leave:['leave'],dailytask:['dailytask']
 };
@@ -813,6 +813,9 @@ function disableCommInputs(){
     </div>
     <div class="sb-item" id="sb-adsai" onclick="switchView('adsai',this)">
       <span class="sb-icon">📈</span><span>AI วิเคราะห์ Ads</span>
+    </div>
+    <div class="sb-item" id="sb-videoai" onclick="switchView('videoai',this);vaiLoad()">
+      <span class="sb-icon">🎬</span><span>วิเคราะห์วีดีโอ</span>
     </div>
     <div class="sb-item" id="sb-track" onclick="switchView('track',this)">
       <span class="sb-icon">📊</span><span>ติดตามผล</span>
@@ -1027,6 +1030,29 @@ function disableCommInputs(){
 <div id="chartrankView" style="display:none;padding:28px 32px"></div>
 <div id="aiView" style="display:none;padding:28px 32px"></div>
 <div id="adsaiView" style="display:none;padding:28px 32px"></div>
+<div id="videoaiView" style="display:none">
+<div style="padding:1.5rem 2rem">
+<div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap">
+  <div><div style="font-family:Rajdhani,sans-serif;font-size:1.7rem;font-weight:900;color:#0f172a;letter-spacing:.3px;margin-bottom:4px">🎬 วิเคราะห์วีดีโอ</div>
+  <div style="font-size:.76rem;color:#64748b">วิเคราะห์ประสิทธิภาพวีดีโอโฆษณา · ThruPlay · Hook Rate · Completion Rate</div></div>
+  <div style="display:flex;gap:8px;margin-left:auto;flex-wrap:wrap;align-items:center">
+    <select id="vai-acct" onchange="vaiLoad()" style="padding:6px 12px;border:1px solid #dde3f4;border-radius:8px;font-size:.78rem;font-family:inherit;background:#fff"><option value="">-- ทุกบัญชี --</option></select>
+    <select id="vai-date" onchange="vaiLoad()" style="padding:6px 12px;border:1px solid #dde3f4;border-radius:8px;font-size:.78rem;font-family:inherit;background:#fff">
+      <option value="last_7d">7 วัน</option>
+      <option value="last_14d">14 วัน</option>
+      <option value="last_30d" selected>30 วัน</option>
+      <option value="last_60d">60 วัน</option>
+    </select>
+    <button onclick="vaiLoad()" style="background:#1565c0;color:#fff;border:none;border-radius:8px;padding:7px 16px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:inherit">🔍 วิเคราะห์</button>
+  </div>
+</div>
+<div id="vai-cards" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:20px"></div>
+<div id="vai-banner" style="margin-bottom:16px"></div>
+<div id="vai-mini" style="margin-bottom:16px"></div>
+<div id="vai-quad-wrap" style="margin-bottom:16px"></div>
+<div id="vai-tbl-wrap"></div>
+</div>
+</div>
 <div id="trackView" style="display:none;padding:28px 32px"></div>
 <div id="alertView" style="display:none;padding:28px 32px"></div>
 <div id="leaveView" style="display:none;padding:20px 24px"></div>
@@ -2469,6 +2495,7 @@ function switchView(view,el){
   var _umv=document.getElementById('userMgmtView');if(_umv)_umv.style.display='none';
   var _alv=document.getElementById('alertView');if(_alv)_alv.style.display='none';
   var _blv=document.getElementById('budgetLogView');if(_blv)_blv.style.display='none';
+  var _vaiv=document.getElementById('videoaiView');if(_vaiv)_vaiv.style.display='none';
   var _auth=sessionStorage.getItem('rb_auth'),_acc=sessionStorage.getItem('rb_access');
   if(_auth==='hr'&&view!=='commission')return;
   if(_auth==='limited'&&_acc){var _accParsed;try{_accParsed=JSON.parse(_acc);}catch(e){_accParsed=_acc;}var _accKeys=Array.isArray(_accParsed)?_accParsed:[_accParsed];var _allowed=[];_accKeys.forEach(function(k){var v=_viewAccessMap[k]||[];v.forEach(function(vn){if(_allowed.indexOf(vn)<0)_allowed.push(vn);});});if(_allowed.indexOf(view)<0)return;}
@@ -2518,6 +2545,10 @@ function switchView(view,el){
   } else if(view==='alert'){
     mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var trv2=document.getElementById('trackView');if(trv2)trv2.style.display='none';var lv2=document.getElementById('leaveView');if(lv2)lv2.style.display='none';
     var alv=document.getElementById('alertView');if(alv){alv.style.display='block';_renderAlert(alv);}
+    window.scrollTo({top:0,behavior:'smooth'});
+  } else if(view==='videoai'){
+    mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var trv2=document.getElementById('trackView');if(trv2)trv2.style.display='none';var lv2=document.getElementById('leaveView');if(lv2)lv2.style.display='none';
+    var vaiv=document.getElementById('videoaiView');if(vaiv)vaiv.style.display='block';
     window.scrollTo({top:0,behavior:'smooth'});
   } else {
     if(_db)_db.style.display='flex';if(_ab)_ab.style.display='flex';
@@ -8308,6 +8339,166 @@ function _renderUserMgmt(el){
       +'</table></div>'
     +'</div>';
 }
+
+// ═══ วิเคราะห์วีดีโอ (Video AI) ═════════════════════════════════════════════
+function _vaiDp(v){
+  var n=parseInt(v)||30;
+  var until=new Date();var since=new Date();since.setDate(since.getDate()-n);
+  var fmt=function(d){return d.toISOString().slice(0,10);};
+  return {since:fmt(since),until:fmt(until)};
+}
+function _vaiFmtB(n){if(!n&&n!==0)return '-';return '฿'+Number(n).toLocaleString('th-TH',{maximumFractionDigits:0});}
+function _vaiFmtN(n){if(!n&&n!==0)return '0';return Number(n).toLocaleString('th-TH',{maximumFractionDigits:0});}
+function _vaiMed(arr){if(!arr||!arr.length)return 0;var s=[...arr].sort(function(a,b){return a-b;});var m=Math.floor(s.length/2);return s.length%2?s[m]:(s[m-1]+s[m])/2;}
+function vaiInit(){
+  var sel=document.getElementById('vai-acct');
+  if(!sel||sel.options.length>1)return;
+  (FB_ACCOUNTS_META||[]).forEach(function(m){sel.innerHTML+='<option value="'+m.name+'">'+m.name+'</option>';});
+}
+async function vaiLoad(){
+  vaiInit();
+  var actVal=document.getElementById('vai-acct')?document.getElementById('vai-acct').value:'';
+  var dateVal=document.getElementById('vai-date')?document.getElementById('vai-date').value||'last_30d':'last_30d';
+  var dp=_vaiDp(dateVal);
+  var loading='<div style="grid-column:1/-1;text-align:center;padding:40px;color:#94a3b8;font-size:.9rem">⏳ กำลังโหลดข้อมูลวีดีโอ...</div>';
+  if(document.getElementById('vai-cards'))document.getElementById('vai-cards').innerHTML=loading;
+  if(document.getElementById('vai-banner'))document.getElementById('vai-banner').innerHTML='';
+  if(document.getElementById('vai-tbl-wrap'))document.getElementById('vai-tbl-wrap').innerHTML='';
+  if(document.getElementById('vai-mini'))document.getElementById('vai-mini').innerHTML='';
+  var accounts=actVal?(FB_ACCOUNTS_META||[]).filter(function(m){return m.name===actVal;}):(FB_ACCOUNTS_META||[]);
+  try{
+    var allAds=[];
+    await Promise.all(accounts.map(async function(accMeta){
+      var tok=(FB_TOKENS&&FB_TOKENS[accMeta.name])||FB_TOKEN;
+      var ins=await _vaiFetchIns(accMeta,dp,tok);
+      allAds=allAds.concat(ins);
+    }));
+    _vaiRender(_vaiCalc(allAds));
+  }catch(e){
+    if(document.getElementById('vai-cards'))document.getElementById('vai-cards').innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:#ef4444;font-size:.85rem">❌ โหลดข้อมูลไม่สำเร็จ: '+e.message+'</div>';
+  }
+}
+async function _vaiFetchIns(accMeta,dp,tok){
+  var fields='name,insights{spend,impressions,reach,video_play_actions,video_thruplay_watched_actions,video_avg_time_watched_actions,video_p25_watched_actions,video_p50_watched_actions,video_p75_watched_actions,video_p100_watched_actions}';
+  var url=FB_API+accMeta.id+'/ads?fields='+encodeURIComponent(fields)+'&time_range='+encodeURIComponent('{"since":"'+dp.since+'","until":"'+dp.until+'"}')+'&limit=200&access_token='+tok;
+  var r=await fetch(url);if(!r.ok){var e=await r.json();throw new Error((e.error&&e.error.message)||r.status);}
+  var d=await r.json();
+  return (d.data||[]).filter(function(ad){return ad.insights&&ad.insights.data&&ad.insights.data[0];}).map(function(ad){
+    var ins=ad.insights.data[0];
+    var gv=function(arr){return arr&&arr[0]?+(arr[0].value||0):0;};
+    return {id:ad.id,name:ad.name,accName:accMeta.name,
+      spend:+ins.spend||0,impressions:+ins.impressions||0,reach:+ins.reach||0,
+      plays:gv(ins.video_play_actions),thruplay:gv(ins.video_thruplay_watched_actions),
+      avgWatch:gv(ins.video_avg_time_watched_actions),
+      p25:gv(ins.video_p25_watched_actions),p50:gv(ins.video_p50_watched_actions),
+      p75:gv(ins.video_p75_watched_actions),p100:gv(ins.video_p100_watched_actions)};
+  });
+}
+function _vaiCalc(ads){
+  return ads.map(function(ad){
+    var hookRate=ad.impressions>0?ad.plays/ad.impressions*100:0;
+    var thruplayRate=ad.plays>0?ad.thruplay/ad.plays*100:0;
+    var completionRate=ad.plays>0?ad.p100/ad.plays*100:0;
+    var cpThruplay=ad.thruplay>0?ad.spend/ad.thruplay:0;
+    return Object.assign({},ad,{hookRate:hookRate,thruplayRate:thruplayRate,completionRate:completionRate,cpThruplay:cpThruplay});
+  });
+}
+function _vaiRender(ads){
+  _vaiCards(ads);_vaiBanner(ads);_vaiMini(ads);_vaiTbl(ads);
+}
+function _vaiCards(ads){
+  var tSpend=0,tImpr=0,tPlays=0,tThru=0;
+  ads.forEach(function(a){tSpend+=a.spend;tImpr+=a.impressions;tPlays+=a.plays;tThru+=a.thruplay;});
+  var avgHook=tImpr>0?tPlays/tImpr*100:0;var avgThru=tPlays>0?tThru/tPlays*100:0;
+  var cards=[
+    {icon:'💰',label:'ใช้งบรวม',val:_vaiFmtB(tSpend),sub:ads.length+' ads'},
+    {icon:'👁️',label:'Impressions',val:_vaiFmtN(tImpr),sub:'การแสดงผล'},
+    {icon:'▶️',label:'Video Plays',val:_vaiFmtN(tPlays),sub:'คลิกเล่นวีดีโอ'},
+    {icon:'🎯',label:'ThruPlay',val:_vaiFmtN(tThru),sub:'ดูจนจบ / 15+ วิ'},
+    {icon:'🪝',label:'Hook Rate',val:avgHook.toFixed(1)+'%',sub:'Plays/Impressions'},
+    {icon:'📊',label:'ThruPlay Rate',val:avgThru.toFixed(1)+'%',sub:'ThruPlay/Plays'},
+  ];
+  var h='';cards.forEach(function(c){
+    h+='<div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:14px 16px">';
+    h+='<div style="font-size:1.3rem;margin-bottom:4px">'+c.icon+'</div>';
+    h+='<div style="font-size:.72rem;color:#94a3b8;margin-bottom:2px">'+c.label+'</div>';
+    h+='<div style="font-size:1.1rem;font-weight:800;color:#0f172a">'+c.val+'</div>';
+    h+='<div style="font-size:.66rem;color:#cbd5e1;margin-top:2px">'+c.sub+'</div></div>';
+  });
+  if(document.getElementById('vai-cards'))document.getElementById('vai-cards').innerHTML=h;
+}
+function _vaiBanner(ads){
+  var el=document.getElementById('vai-banner');if(!el)return;
+  if(!ads.length){el.innerHTML='';return;}
+  var top=[...ads].sort(function(a,b){return b.thruplay-a.thruplay;})[0];
+  var h='<div style="background:linear-gradient(135deg,#1e3a5f,#2563eb);border-radius:14px;padding:18px 22px;color:#fff;margin-bottom:12px">';
+  h+='<div style="font-size:.72rem;font-weight:700;letter-spacing:1px;opacity:.7;margin-bottom:6px">🏆 TOP THRUPLAY VIDEO</div>';
+  h+='<div style="font-size:1rem;font-weight:800;margin-bottom:8px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+top.name+'</div>';
+  h+='<div style="display:flex;gap:24px;flex-wrap:wrap">';
+  [{l:'ThruPlay',v:_vaiFmtN(top.thruplay)},{l:'Hook Rate',v:top.hookRate.toFixed(1)+'%'},{l:'ThruPlay Rate',v:top.thruplayRate.toFixed(1)+'%'},{l:'Spend',v:_vaiFmtB(top.spend)},{l:'Avg Watch (s)',v:top.avgWatch.toFixed(1)}].forEach(function(x){
+    h+='<div><div style="font-size:.65rem;opacity:.7">'+x.l+'</div><div style="font-size:1.1rem;font-weight:700">'+x.v+'</div></div>';
+  });
+  h+='</div></div>';
+  el.innerHTML=h;
+}
+function _vaiMini(ads){
+  var el=document.getElementById('vai-mini');if(!el)return;
+  if(!ads.length){el.innerHTML='';return;}
+  var top3=[...ads].sort(function(a,b){return b.hookRate-a.hookRate;}).slice(0,3);
+  var h='<div style="font-size:.78rem;font-weight:700;color:#0f172a;margin-bottom:8px">🪝 Top Hook Rate Videos</div>';
+  h+='<div style="display:flex;gap:10px;flex-wrap:wrap">';
+  top3.forEach(function(ad,i){
+    h+='<div style="flex:1;min-width:160px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:10px 14px">';
+    h+='<div style="font-size:.65rem;color:#94a3b8;margin-bottom:2px">#'+(i+1)+' Hook Rate</div>';
+    h+='<div style="font-size:.78rem;font-weight:700;color:#0f172a;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="'+ad.name+'">'+ad.name+'</div>';
+    h+='<div style="font-size:1rem;font-weight:800;color:#1565c0">'+ad.hookRate.toFixed(1)+'%</div>';
+    h+='<div style="font-size:.66rem;color:#94a3b8">ThruPlay: '+_vaiFmtN(ad.thruplay)+'</div></div>';
+  });
+  h+='</div>';el.innerHTML=h;
+}
+function _vaiTbl(ads){
+  var el=document.getElementById('vai-tbl-wrap');if(!el)return;
+  if(!ads.length){el.innerHTML='<div style="text-align:center;padding:40px;color:#94a3b8">ไม่พบข้อมูลวีดีโอโฆษณา — กด วิเคราะห์ เพื่อโหลด</div>';return;}
+  var sorted=[...ads].sort(function(a,b){return b.spend-a.spend;});
+  var h='<div style="font-size:.78rem;font-weight:700;color:#0f172a;margin-bottom:8px">📋 ตารางประสิทธิภาพวีดีโอทั้งหมด</div>';
+  h+='<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:.74rem">';
+  h+='<thead><tr style="background:#f1f5f9;position:sticky;top:0">';
+  ['Ad Name','Account','Spend','Impressions','Plays','ThruPlay','Hook%','ThruPlay%','Completion%','CP ThruPlay','Avg Watch(s)'].forEach(function(c){h+='<th style="padding:8px 12px;text-align:left;font-weight:700;color:#475569;white-space:nowrap;border-bottom:2px solid #e2e8f0">'+c+'</th>';});
+  h+='</tr></thead><tbody>';
+  sorted.forEach(function(ad,i){
+    var bg=i%2===0?'#fff':'#f8fafc';
+    var hc=ad.hookRate>10?'#16a34a':ad.hookRate>5?'#d97706':'#dc2626';
+    h+='<tr style="background:'+bg+'">';
+    h+='<td style="padding:8px 12px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+ad.name+'">'+ad.name+'</td>';
+    h+='<td style="padding:8px 12px;white-space:nowrap;color:#64748b">'+ad.accName+'</td>';
+    h+='<td style="padding:8px 12px;white-space:nowrap;font-weight:700">'+_vaiFmtB(ad.spend)+'</td>';
+    h+='<td style="padding:8px 12px;white-space:nowrap">'+_vaiFmtN(ad.impressions)+'</td>';
+    h+='<td style="padding:8px 12px;white-space:nowrap">'+_vaiFmtN(ad.plays)+'</td>';
+    h+='<td style="padding:8px 12px;white-space:nowrap;font-weight:700;color:#1565c0">'+_vaiFmtN(ad.thruplay)+'</td>';
+    h+='<td style="padding:8px 12px;white-space:nowrap;font-weight:700;color:'+hc+'">'+ad.hookRate.toFixed(1)+'%</td>';
+    h+='<td style="padding:8px 12px;white-space:nowrap">'+ad.thruplayRate.toFixed(1)+'%</td>';
+    h+='<td style="padding:8px 12px;white-space:nowrap">'+ad.completionRate.toFixed(1)+'%</td>';
+    h+='<td style="padding:8px 12px;white-space:nowrap">'+_vaiFmtB(ad.cpThruplay)+'</td>';
+    h+='<td style="padding:8px 12px;white-space:nowrap">'+ad.avgWatch.toFixed(1)+'s</td>';
+    h+='</tr>';
+  });
+  h+='</tbody></table></div>';el.innerHTML=h;
+}
+function vaiTab(){}
+function vaiQuadToggle(){}
+
+window._umExportCode=function(){
+  try{
+    var u=_getAccessUsers();
+    var rows=[['ชื่อ','รหัสผ่าน','การเข้าถึง','สิทธิ์','อีเมล']];
+    u.forEach(function(usr){rows.push([usr.name||'',usr.password||'',Array.isArray(usr.access)?usr.access.join(';'):usr.access||'all',usr.perm||'edit',usr.email||'']);});
+    var csv=rows.map(function(r){return r.map(function(c){return '"'+String(c).replace(/"/g,'""')+'"';}).join(',');}).join('\n');
+    var blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8'});
+    var url=URL.createObjectURL(blob);
+    var a=document.createElement('a');a.href=url;a.download='users_export_'+new Date().toISOString().slice(0,10)+'.csv';
+    document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+  }catch(e){alert('Export ไม่สำเร็จ: '+e.message);}
+};
 
 window._umHideAdd=function(){document.getElementById('umAddForm').style.display='none';};
 window._umShowAddForm=function(){document.getElementById('umAddForm').style.display='block';document.getElementById('umNewName').focus();};
