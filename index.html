@@ -1010,6 +1010,7 @@ var FB_ACCOUNTS_META=[
   {name:'WonderPearl',id:'act_2056029698115072',configKey:'FB_GID_WonderPearl'},
   {name:'DilipSonune',id:'act_232225859298771',configKey:'FB_GID_DilipSonune'},
   {name:'EdwoldWillcottsBiz1',id:'act_120227713499370203',configKey:'FB_GID_EdwoldWillcottsBiz1'},
+  {name:'SolomonFaust',id:'act_1781482976549939',configKey:'FB_GID_SolomonFaust'},
 ];
 var WEBAPP_URL='https://script.google.com/macros/s/AKfycbz6l9ORjUnzbHrMgr0uNVPNOq3i2DeYAFAGKS0kErL-W6bFY4jBN1EMNxDvxPYuCYoc/exec';
 // ─── Facebook API (Real-time) ─────────────────────────────────────────────────
@@ -1040,6 +1041,7 @@ var FB_TOKENS={
     'DilipSonune':null,
 'WonderPearl':null,
   'EdwoldWillcottsBiz1':'EAAOHeqVdn5kBRZBXebBpLNgqCSybXZAXcblWWZCNvhZAZBm2IlgOQ4zYmYi0n8NuUeZBSpH4JY7xSASSDGrgPlPCTITzE3ZAZA4sYfoeybBiSW9ySCNpTfxTEOH7DBT1ZCWSQckj5SGpZCO0yjY0Kdh45dsxTmPB55uF0QLrWhzlBHbUv7l4RujOBfn72QrCd8iwZDZD',
+  'SolomonFaust':'EAAOHeqVdn5kBRZBXebBpLNgqCSybXZAXcblWWZCNvhZAZBm2IlgOQ4zYmYi0n8NuUeZBSpH4JY7xSASSDGrgPlPCTITzE3ZAZA4sYfoeybBiSW9ySCNpTfxTEOH7DBT1ZCWSQckj5SGpZCO0yjY0Kdh45dsxTmPB55uF0QLrWhzlBHbUv7l4RujOBfn72QrCd8iwZDZD',
 };
 FB_TOKENS['WonderPearl']=FB_TOKENS['NayTam'];
 FB_TOKENS['DilipSonune']=FB_TOKENS['NayTam'];
@@ -2855,7 +2857,12 @@ var FB_HIERARCHY=[
         name:'เจ้าขุน หอม เข้ม พร้อมลุย',
         manager:'-',
         phone:'-',
-        accounts:[]
+        accounts:[
+          {
+            displayName:'Solomon Faust',
+            adAccounts:['SolomonFaust']
+          }
+        ]
       }
     ]
   },
