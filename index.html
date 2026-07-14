@@ -3,28 +3,42 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Richbiotech Ads DashboardAds Analytics Dashboard</title>
+<title>Richbiotech Ads Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#F4F6FB;--bg2:#FFFFFF;--bg3:#F8FAFF;--bg4:#EBF0FF;--panel:#FFFFFF;--panel2:#F8FAFF;--panel-border:#E2E8F4;--blue:#4B56D2;--blue2:#3A45C0;--blue-glow:#4B56D240;--blue-faint:#4B56D212;--purple:#7C3AED;--purple2:#6D28D9;--purple-glow:#7C3AED35;--cyan:#0EA5E9;--cyan2:#0284C7;--cyan-glow:#0EA5E930;--gold:#6B7FE8;--gold2:#5A6EDA;--gold-glow:#6B7FE830;--green:#22C55E;--red:#EF4444;--amber:#F59E0B;--text:#0F172A;--text2:#334155;--text3:#64748B;--shadow-panel:0 1px 4px rgba(15,23,42,.06),0 4px 16px rgba(15,23,42,.07);--r:6px;--r2:10px;--r3:14px;--t:.2s cubic-bezier(.4,0,.2,1);}
-[data-theme="dark"]{--bg:#080E1C;--bg2:#0D1426;--bg3:#111D35;--bg4:#162340;--panel:#0D1426;--panel2:#080E1C;--panel-border:#1E3A5F;--blue:#6B7FFF;--blue2:#5A6EF0;--blue-glow:#6B7FFF40;--blue-faint:#6B7FFF18;--purple:#9D6FFF;--purple2:#8B5CF6;--purple-glow:#9D6FFF35;--cyan:#38BDF8;--cyan2:#0EA5E9;--cyan-glow:#38BDF830;--gold:#6B7FFF;--gold2:#5A6EF0;--gold-glow:#6B7FFF30;--green:#4ADE80;--red:#F87171;--amber:#FBBF24;--text:#E2E8F4;--text2:#94A3B8;--text3:#475569;--shadow-panel:0 1px 4px rgba(0,0,0,.7),0 4px 20px rgba(0,0,0,.5),0 0 0 1px rgba(30,58,95,.6);}
-[data-theme="dark"] header{background:#0F1010!important;border-bottom:1px solid #2A2D2A!important;box-shadow:0 1px 0 rgba(170,255,0,.1)!important}
+:root{
+  --bg:#f1f5f9;--bg2:#ffffff;--bg3:#f8fafc;--bg4:#e2e8f0;
+  --panel:#ffffff;--panel2:#f8fafc;--panel-border:#e2e8f0;
+  --blue:#1565c0;--blue2:#1976d2;--blue-glow:#1976d240;--blue-faint:#1976d212;
+  --purple:#6d28d9;--purple2:#7c3aed;--purple-glow:#7c3aed35;
+  --cyan:#0284c7;--cyan2:#0369a1;--cyan-glow:#0284c730;
+  --gold:#b45309;--gold2:#92400e;--gold-glow:#b4530930;
+  --green:#059669;--red:#dc2626;--amber:#d97706;
+  --text:#0f172a;--text2:#1e3a5f;--text3:#64748b;
+  --rank-s:#b45309;--rank-a:#dc2626;--rank-b:#7c3aed;--rank-c:#1976d2;--rank-d:#059669;--rank-e:#64748b;
+  --shadow-glow:0 0 20px rgba(25,118,210,.15),0 0 60px rgba(25,118,210,.06);
+  --shadow-panel:0 1px 3px rgba(15,23,42,.06),0 4px 16px rgba(15,23,42,.06);
+  --r:6px;--r2:10px;--r3:14px;
+  --t:.2s cubic-bezier(.4,0,.2,1);
+
+[data-theme="dark"]{
+  --bg:#0f172a;--bg2:#1e293b;--bg3:#1a2744;--bg4:#334155;
+  --panel:#1e293b;--panel2:#0f172a;--panel-border:#334155;
+  --blue-faint:#1976d21a;--blue-glow:#1976d250;
+  --text:#e2e8f0;--text2:#cbd5e1;--text3:#94a3b8;
+  --shadow-panel:0 1px 3px rgba(0,0,0,.4),0 4px 16px rgba(0,0,0,.35);
+}
+[data-theme="dark"] header{background:linear-gradient(180deg,rgba(15,23,42,.99) 0%,rgba(20,30,48,.98) 100%) !important;border-bottom-color:#334155}
 [data-theme="dark"] body::before{opacity:.3}
 [data-theme="dark"] body::after{opacity:.4}
-[data-theme="dark"] tbody tr:nth-child(even){background:rgba(255,255,255,.02)}
-[data-theme="dark"] tbody tr:hover{background:rgba(170,255,0,.04)}
-[data-theme="dark"] tbody td{border-bottom-color:#2A2D2A}
-[data-theme="dark"] .dcustom input[type=date]{background:#1E1F1F;color:#FFF;border-color:#2A2D2A}
-[data-theme="dark"] #pw-email,[data-theme="dark"] #pw-pass{background:#1E1F1F;color:#FFF;border-color:#2A2D2A}[data-theme="dark"] #pw-gate{background:#0F1010}[data-theme="dark"] .pw-card{background:#171818;border-color:#2A2D2A}
-[data-theme="dark"] #theme-toggle{background:rgba(170,255,0,.1);border-color:rgba(170,255,0,.3);color:#AAFF00}
-[data-theme="dark"] .sidebar{background:#111212!important;border-right:1px solid #2A2D2A!important}
-[data-theme="dark"] .sb-sep{background:#2A2D2A!important}
-[data-theme="dark"] .sb-item:hover{background:rgba(170,255,0,.08)!important;color:#AAFF00!important}
-[data-theme="dark"] .sb-item.active{background:#4B56D2!important;border-left:3px solid #6B7FFF!important;color:#FFFFFF!important;font-weight:700!important}
-[data-theme="dark"] .card{background:#171818!important;border-color:#2A2D2A!important}
-[data-theme="dark"] .kpi{background:#171818!important;border-color:#2A2D2A!important}
-
+[data-theme="dark"] tbody tr:nth-child(even){background:rgba(255,255,255,.025)}
+[data-theme="dark"] tbody tr:hover{background:rgba(25,118,210,.12)}
+[data-theme="dark"] tbody td{border-bottom-color:rgba(255,255,255,.05)}
+[data-theme="dark"] .dcustom input[type=date]{color-scheme:dark}
+[data-theme="dark"] #pw-email,[data-theme="dark"] #pw-input{background:rgba(255,255,255,.05)!important;border-color:rgba(255,255,255,.12)!important;color:#e2e8f0!important}
+[data-theme="dark"] #theme-toggle{background:rgba(255,255,255,.06)!important}
+}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes pulse{0%{box-shadow:0 0 0 0 var(--cyan-glow)}60%{box-shadow:0 0 0 10px transparent}100%{box-shadow:0 0 0 0 transparent}}
 @keyframes flicker{0%,100%{opacity:1}50%{opacity:.85}}
@@ -38,8 +52,8 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;min-height:100vh;overflow-x:hidden}
-body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 70% 50% at 50% -10%,rgba(25,118,210,.08) 0%,transparent 65%),radial-gradient(ellipse 50% 40% at 90% 70%,rgba(109,40,217,.05) 0%,transparent 55%),radial-gradient(ellipse 40% 30% at 10% 80%,rgba(2,132,199,.04) 0%,transparent 50%);opacity:0;pointer-events:none;z-index:0}
-body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 40px,rgba(25,118,210,.012) 40px,rgba(25,118,210,.012) 41px);pointer-events:none;z-index:0;opacity:0}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 70% 50% at 50% -10%,rgba(25,118,210,.08) 0%,transparent 65%),radial-gradient(ellipse 50% 40% at 90% 70%,rgba(109,40,217,.05) 0%,transparent 55%),radial-gradient(ellipse 40% 30% at 10% 80%,rgba(2,132,199,.04) 0%,transparent 50%);pointer-events:none;z-index:0}
+body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 40px,rgba(25,118,210,.012) 40px,rgba(25,118,210,.012) 41px);pointer-events:none;z-index:0;opacity:1}
 
 /* === OVERLAY === */
 #overlay{position:fixed;inset:0;background:radial-gradient(ellipse 100% 100% at 50% 50%,#e0eaff 0%,#c8d8f8 100%);z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:28px;animation:ovHide .4s 8s forwards}
@@ -57,7 +71,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .err-box button{background:var(--blue);color:#fff;border:none;border-radius:var(--r);padding:10px 24px;cursor:pointer;font-size:.88rem;font-weight:700;font-family:inherit;margin-top:14px}
 
 /* === HEADER === */
-header{position:relative;z-index:10;background:#FFFFFF;border-bottom:1px solid var(--panel-border);padding:14px 32px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;box-shadow:0 1px 8px rgba(26,46,26,.07)}
+header{position:relative;z-index:10;background:linear-gradient(180deg,rgba(255,255,255,.98) 0%,rgba(248,250,255,.97) 100%);border-bottom:1px solid var(--panel-border);padding:14px 32px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;box-shadow:0 1px 12px rgba(15,23,42,.07)}
 header::after{display:none}
 .hlogo{display:flex;align-items:center;gap:14px}
 .hicon{width:44px;height:44px;border:1.5px solid rgba(25,118,210,.2);border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:1.4rem;background:linear-gradient(135deg,rgba(25,118,210,.06),rgba(109,40,217,.04));box-shadow:0 1px 6px rgba(25,118,210,.1)}
@@ -66,7 +80,7 @@ header::after{display:none}
 .hright{display:flex;align-items:center;gap:10px;flex-wrap:wrap;position:relative;z-index:1}
 .live-badge{display:flex;align-items:center;gap:7px;background:rgba(5,150,105,.07);border:1px solid rgba(5,150,105,.25);border-radius:var(--r);padding:5px 14px;font-size:.7rem;font-weight:700;letter-spacing:1px;color:var(--green);font-family:'Rajdhani',sans-serif}
 .dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s ease infinite;box-shadow:0 0 6px rgba(5,150,105,.5)}
-.upd{font-size:.65rem;color:var(--text3)}.cdwn{font-size:.65rem;color:var(--text3);min-width:95px;text-align:right;font-variant-numeric:tabular-nums;display:none;}
+.upd{font-size:.65rem;color:var(--text3)}.cdwn{font-size:.65rem;color:var(--text3);min-width:95px;text-align:right;font-variant-numeric:tabular-nums}
 
 /* === BARS === */
 .dbar{position:sticky;top:0;z-index:102;background:rgba(248,250,255,.97);border-bottom:1px solid var(--panel-border);padding:10px 28px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;backdrop-filter:blur(12px);box-shadow:0 1px 6px rgba(15,23,42,.05)}
@@ -300,7 +314,7 @@ header .hlogo,.header .hright,.header>div{position:relative;z-index:1}
 
 /* ── SIDEBAR ── */
 .layout{display:flex;min-height:100vh}
-.sidebar{width:210px;background:#0E1A3E;border-right:none;position:fixed;top:0;left:0;bottom:0;display:flex;flex-direction:column;z-index:300;overflow-y:auto;transition:transform .25s ease;box-shadow:3px 0 20px rgba(0,0,0,.28)}
+.sidebar{width:210px;background:#0f172a;border-right:1px solid #1e293b;position:fixed;top:0;left:0;bottom:0;display:flex;flex-direction:column;z-index:300;overflow-y:auto;transition:transform .25s ease;box-shadow:2px 0 16px rgba(15,23,42,.06)}
 .sidebar::-webkit-scrollbar{width:3px}.sidebar::-webkit-scrollbar-thumb{background:#1e293b}
 .content-wrap{margin-left:210px;flex:1;min-width:0;display:flex;flex-direction:column}
 .sb-logo{padding:18px 16px 14px;border-bottom:1px solid #1e293b;display:flex;align-items:center;gap:10px;flex-shrink:0}
@@ -309,13 +323,13 @@ header .hlogo,.header .hright,.header>div{position:relative;z-index:1}
 .sb-logo-sub{font-size:.58rem;color:#475569;letter-spacing:2px;text-transform:uppercase}
 .sb-nav{flex:1;padding:10px 0}
 .sb-section{padding:10px 16px 4px;font-family:'Rajdhani',sans-serif;font-size:.58rem;font-weight:700;color:#475569;letter-spacing:2.5px;text-transform:uppercase}
-.sb-item{display:flex;align-items:center;gap:10px;padding:9px 16px;border-radius:var(--r);font-size:.82rem;font-weight:500;color:rgba(255,255,255,.65);cursor:pointer;transition:all var(--t);white-space:nowrap;overflow:hidden;border-left:2px solid transparent}
-.sb-item:hover{background:rgba(255,255,255,.09);color:#FFFFFF}
-.sb-item.active{background:#4B56D2!important;color:#FFFFFF!important;font-weight:600!important;border-left:3px solid #4B56D2!important}
+.sb-item{display:flex;align-items:center;gap:9px;padding:8px 14px;margin:1px 6px;border-radius:6px;cursor:pointer;transition:all .15s ease;color:#94a3b8;font-size:.77rem;font-weight:500;border:1px solid transparent;user-select:none}
+.sb-item:hover{background:rgba(255,255,255,.06);color:#e2e8f0;border-color:rgba(255,255,255,.1)}
+.sb-item.active{background:linear-gradient(90deg,rgba(99,102,241,.2),rgba(99,102,241,.08));color:#818cf8;border-color:rgba(99,102,241,.35);box-shadow:0 1px 8px rgba(99,102,241,.2)}
 .sb-item.active .sb-dot{background:#818cf8}
 .sb-icon{font-size:.95rem;width:18px;text-align:center;flex-shrink:0}
 .sb-dot{width:5px;height:5px;border-radius:50%;background:#cbd5e1;flex-shrink:0;transition:all .15s}
-.sb-sep{height:1px;margin:8px 16px;background:rgba(255,255,255,.15)}
+.sb-sep{height:1px;background:#1e293b;margin:8px 12px}
 .sb-badge{margin-left:auto;background:rgba(139,92,246,.15);color:#a78bfa;border:1px solid rgba(139,92,246,.3);border-radius:10px;padding:1px 7px;font-size:.6rem;font-weight:700;font-family:'Rajdhani',sans-serif}
 .sb-badge.live{background:rgba(16,185,129,.12);color:#34d399;border-color:rgba(16,185,129,.3)}
 .sb-bottom{border-top:1px solid #1e293b;padding:12px 14px;flex-shrink:0}
@@ -523,18 +537,7 @@ canvas{filter:none}
   /* Modal */
   #modal{width:96vw;margin:20px auto}
 }
-
-header>svg{display:none!important}
-
-[data-theme="dark"] [style*="background:#fff"]{background:#0D1426!important;border-color:#1E3A5F!important;color:#E2E8F4!important}
-[data-theme="dark"] [style*="background: #fff"]{background:#0D1426!important;color:#E2E8F4!important}
-[data-theme="dark"] [style*="background:#f8fafc"]{background:#111D35!important;color:#94A3B8!important}
-[data-theme="dark"] [style*="background:#FFFFFF"]{background:#0D1426!important;color:#E2E8F4!important}
-[data-theme="dark"] [style*="color:#0f172a"]{color:#E2E8F4!important}
-[data-theme="dark"] [style*="color:#0F172A"]{color:#E2E8F4!important}
-[data-theme="dark"] [style*="color:#94a3b8"]{color:#94A3B8!important}
-[data-theme="dark"] [style*="color:#94A3B8"]{color:#94A3B8!important}
-/* Dark Mode: comprehensive inline-style overrides */
+/* ─── Dark Mode: comprehensive inline-style overrides ─── */
 /* Class-based elements */
 [data-theme="dark"] .htitle{color:var(--text)!important}
 [data-theme="dark"] .dbar{background:rgba(15,23,42,.97)!important;border-bottom-color:#334155!important}
@@ -549,7 +552,7 @@ header>svg{display:none!important}
 [data-theme="dark"] .bm-tier.low{background:#220f0f!important}
 [data-theme="dark"] .bm-tier-badge.mid{background:#221a08!important;color:#fbbf24!important}
 [data-theme="dark"] .bm-tier-badge.low{background:#220f0f!important;color:#f87171!important}
-/* Inline background overrides */
+/* Inline background overrides — general first, specific colors after to win cascade */
 [data-theme="dark"] [style*="background:#fff"]{background:linear-gradient(135deg,#667eea,#764ba2)!important}
 [data-theme="dark"] [style*="background:#ffffff"]{background:linear-gradient(135deg,#667eea,#764ba2)!important}
 [data-theme="dark"] [style*="background:#f8fafc"]{background:#1e1b4b!important}
@@ -583,12 +586,12 @@ header>svg{display:none!important}
 [data-theme="dark"] [style*="border:1px solid #dde3f4"]{border-color:#334155!important}
 [data-theme="dark"] [style*="border:1.5px solid #dde3f4"]{border-color:#334155!important}
 [data-theme="dark"] [style*="border:1px solid #bfdbfe"]{border-color:#1e40af!important}
-[data-theme="dark"] [style*="border:1px solid #fca5a5"]{border-color:#991b1b!�mportant}
+[data-theme="dark"] [style*="border:1px solid #fca5a5"]{border-color:#991b1b!important}
 [data-theme="dark"] [style*="border-bottom:1px solid #f1f5f9"]{border-bottom-color:#334155!important}
 [data-theme="dark"] [style*="border-bottom:1.5px solid #e8edf6"]{border-bottom-color:#334155!important}
 /* thead row background */
 [data-theme="dark"] thead tr[style]{background:#162032!important}
-/* Mobile: inline-grid overrides via attribute selectors */
+/* ─── Mobile: inline-grid overrides (attribute selectors override inline styles) ─── */
 @media(max-width:640px){
   [style*="grid-template-columns:repeat(5,1fr)"]{grid-template-columns:repeat(2,1fr)!important}
   [style*="grid-template-columns:repeat(4,1fr)"]{grid-template-columns:repeat(2,1fr)!important}
@@ -599,23 +602,15 @@ header>svg{display:none!important}
   .pill-wrap{flex-wrap:nowrap}
   .tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
   .hright .user-badge span:last-child{display:none}
-}</style>
+}
+</style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/lz-string.min.js"></script>
 </head>
 <body>
 <style>
 #pw-gate{position:fixed;inset:0;background:#0a0f1e;display:flex;align-items:center;justify-content:center;z-index:99999;font-family:Inter,sans-serif;overflow:hidden}
-#pw-bg{position:absolute;inset:0;z-index:0}
-#pw-bg .slide{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;animation:bgSlide 35s infinite}
-#pw-bg .slide:nth-child(1){background-image:url('images/slide1.jpg');animation-delay:0s}
-#pw-bg .slide:nth-child(2){background-image:url('images/slide2.jpg');animation-delay:5s}
-#pw-bg .slide:nth-child(3){background-image:url('images/slide3.jpg');animation-delay:10s}
-#pw-bg .slide:nth-child(4){background-image:url('images/slide4.jpg');animation-delay:15s}
-#pw-bg .slide:nth-child(5){background-image:url('images/slide5.jpg');animation-delay:20s}
-#pw-bg .slide:nth-child(6){background-image:url('images/slide6.jpg');animation-delay:25s}
-#pw-bg .slide:nth-child(7){background-image:url('images/slide7.jpg');animation-delay:30s}
-#pw-bg-ov{position:absolute;inset:0;background:rgba(5,8,20,.6);z-index:1}
-@keyframes bgSlide{0%{opacity:0;transform:scale(1)}3%{opacity:1}14%{opacity:1;transform:scale(1.08)}17%{opacity:0;transform:scale(1.1)}100%{opacity:0;transform:scale(1)}}
+#pw-bg-video{position:absolute;inset:0;z-index:0;width:100%;height:100%;object-fit:cover}
+#pw-bg-ov{position:absolute;inset:0;background:rgba(5,8,20,.55);z-index:1}
 #pw-box{position:relative;z-index:2;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:40px 36px;box-shadow:0 24px 60px rgba(0,0,0,.6);text-align:center;width:320px;backdrop-filter:blur(24px)}
 #pw-logo{font-size:2.4rem;margin-bottom:10px;filter:drop-shadow(0 0 12px rgba(99,102,241,.5))}
 #pw-title{font-size:1.25rem;font-weight:700;color:#e2e8f0;letter-spacing:.08em;margin-bottom:4px}
@@ -625,23 +620,18 @@ header>svg{display:none!important}
 #pw-btn{width:100%;padding:11px;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;border:none;border-radius:8px;font-size:.95rem;font-weight:600;cursor:pointer;font-family:Inter,sans-serif;transition:.2s;box-shadow:0 4px 16px rgba(79,70,229,.4)}
 #pw-btn:hover{background:linear-gradient(135deg,#4338ca,#6d28d9);box-shadow:0 6px 20px rgba(79,70,229,.5)}
 #pw-err{color:#dc2626;font-size:.78rem;margin-top:10px;min-height:1em}
-#pw-email{width:100%;box-sizing:border-box;border:1.5px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 14px;font-size:.9rem;font-family:Inter,sans-serif;color:#e2e8f0;background:rgba(255,255,255,.07);outline:none;margin-bottom:8px;text-align:center;letter-spacing:.02em}
-#pw-email:focus{border-color:rgba(99,102,241,.6);box-shadow:0 0 0 3px rgba(99,102,241,.15)}
 </style>
 <div id="pw-gate">
-  <div id="pw-bg">
-    <div class="slide"></div>
-    <div class="slide"></div>
-    <div class="slide"></div>
-    <div class="slide"></div>
-    <div class="slide"></div>
-    <div class="slide"></div>
-    <div class="slide"></div>
-  </div>
+  <video id="pw-bg-video" autoplay muted loop playsinline>
+    <source src="images/bg-video-h264.mp4" type="video/mp4">
+  </video>
   <div id="pw-bg-ov"></div>
   <div id="pw-box">
-    <div id="pw-logo"><svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" width="60" height="60"><defs><linearGradient id="rbgL" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#c2410c"/><stop offset="100%" stop-color="#f97316"/></linearGradient></defs><rect width="60" height="60" rx="12" fill="url(#rbgL)"/><path d="M16 11h17.5c6 0 10.8 4.8 10.8 10.8 0 4.3-2.5 8-6.2 9.8l7.5 14.4H38.4l-6.6-13H23v13H16V11zm6.5 5.3V27h10c3 0 5.3-2.4 5.3-5.3 0-3-2.4-5.3-5.3-5.3H22.5z" fill="#ffffff"/></svg></div>
-    <div id="pw-title">ADS ANALYTICS DASHBOARD</div>
+    <div id="pw-logo"><svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" width="60" height="60">
+  <rect width="60" height="60" rx="12" fill="#fff3ec"/>
+  <path d="M16 11h17.5c6 0 10.8 4.8 10.8 10.8 0 4.3-2.5 8-6.2 9.8l7.5 14.4H38.4l-6.6-13H23v13H16V11zm6.5 5.3V27h10c3 0 5.3-2.4 5.3-5.3 0-3-2.4-5.3-5.3-5.3H22.5z" fill="#f97316"/>
+</svg></div>
+    <div id="pw-title">ADS MISSION DASHBOARD</div>
     <div id="pw-sub">Rich Biotech · Ads Analytics</div>
     <input id="pw-input" type="password" placeholder="รหัสผ่าน" onkeydown="if(event.key==='Enter')pwCheck()">
     <button id="pw-btn" onclick="pwCheck()">เข้าสู่ระบบ</button>
@@ -656,18 +646,39 @@ header>svg{display:none!important}
   </div>
 </div>
 <script>
-(function(){var t=localStorage.getItem('rb_theme')||'light';if(t!=='light')document.documentElement.setAttribute('data-theme',t);document.addEventListener('DOMContentLoaded',function(){var btn=document.getElementById('theme-toggle');var cur=document.documentElement.getAttribute('data-theme')||'light';if(btn)btn.textContent=cur==='dark'?'💫':'🌙';});})();
-function toggleTheme(){var themes=['light','dark'];var cur=document.documentElement.getAttribute('data-theme')||'light';var next=themes[(themes.indexOf(cur)+1)%3];document.documentElement.setAttribute('data-theme',next);localStorage.setItem('rb_theme',next);var btn=document.getElementById('theme-toggle');if(btn)btn.textContent=next==='dark'?'💫':'🌙';}
+(function(){
+  var a=sessionStorage.getItem('rb_auth');
+  if(a==='1'){document.getElementById('pw-gate').style.display='none';}
+  else if(a==='hr'){document.getElementById('pw-gate').style.display='none';document.addEventListener('DOMContentLoaded',function(){switchView('commission',document.getElementById('sb-comm'));enableHrMode();});}
+})();
+
+/* ── THEME TOGGLE ── */
+(function(){
+  var t=localStorage.getItem('rb_theme')||'light';
+  if(t==='dark')document.documentElement.setAttribute('data-theme','dark');
+  document.addEventListener('DOMContentLoaded',function(){
+    var btn=document.getElementById('theme-toggle');
+    if(btn)btn.textContent=document.documentElement.getAttribute('data-theme')==='dark'?'☀️':'🌙';
+  });
+})();
+function toggleTheme(){
+  var dark=document.documentElement.getAttribute('data-theme')==='dark';
+  document.documentElement.setAttribute('data-theme',dark?'light':'dark');
+  localStorage.setItem('rb_theme',dark?'light':'dark');
+  var btn=document.getElementById('theme-toggle');
+  if(btn)btn.textContent=dark?'🌙':'☀️';
+}
+
 function pwCheck(){
   var v=(document.getElementById('pw-input').value||'').trim();
+  // Check localStorage user list first
   var stored=localStorage.getItem('rb_access_users');
   var users=[];
   if(stored){try{var p=JSON.parse(stored);if(p.length)users=p;}catch(e){}}
-  if(!users.length)users=[{name:'Admin',email:'ads02@richbiotech.com',password:'rich01',access:'all'},{name:'HR',email:'',password:'hr01',access:'hr'}];
+  if(!users.length)users=[{name:'Admin',password:'rich01',access:'all'},{name:'HR',password:'hr01',access:'hr'}];
   var found=users.find(function(u){return u.password===v;});
   if(found){
     sessionStorage.setItem('rb_username',found.name);
-    sessionStorage.setItem('rb_email',found.email||'');
     sessionStorage.setItem('rb_access',Array.isArray(found.access)?JSON.stringify(found.access):found.access);
     sessionStorage.setItem('rb_perm',found.perm||'edit');
     if(found.access==='all'){
@@ -685,11 +696,10 @@ function pwCheck(){
       if((found.perm||'edit')==='view')setTimeout(_applyReadOnly,800);
     }
   } else {
-    document.getElementById('pw-err').textContent='อีเมลหรือรหัสผ่านไม่ถูกต้อง';
-    document.getElementById('pw-input').value='';document.getElementById('pw-email').value='';document.getElementById('pw-email').focus();
+    document.getElementById('pw-err').textContent='รหัสผ่านไม่ถูกต้อง';
+    document.getElementById('pw-input').value='';document.getElementById('pw-input').focus();
   }
 }
-
 
 function pwImportUsers(){
   var code=(document.getElementById('pw-import-code').value||'').trim();
@@ -782,7 +792,10 @@ function disableCommInputs(){
 <button class="sb-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰</button>
 <div class="sidebar" id="sidebar">
   <div class="sb-logo">
-    <div class="sb-logo-icon" style="display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" width="36" height="36" style="display:block"><defs><linearGradient id="rbtLG" x1="0%" y1="100%" x2="100%" y2="0%"><stop offset="0%" stop-color="#B83A00"/><stop offset="38%" stop-color="#E06500"/><stop offset="72%" stop-color="#FFA000"/><stop offset="100%" stop-color="#FFD400"/></linearGradient><radialGradient id="rbtRG" cx="28%" cy="22%" r="55%"><stop offset="0%" stop-color="#FFE880" stop-opacity="0.55"/><stop offset="100%" stop-color="#FF7700" stop-opacity="0"/></radialGradient></defs><path fill="#5A1A00" opacity="0.45" transform="translate(0.5,1.5)" fill-rule="evenodd" d="M3,3 L3,33 L10,33 L10,21 L19,33 L27,33 L18,20 C26,17 31,14 31,10 C31,5 26,3 18,3 Z M10,7 L18,7 C24,7 26,10 26,11 C26,14 24,16 18,16 L13,16 L17,20 L10,20 Z"/><path fill-rule="evenodd" fill="url(#rbtLG)" d="M3,3 L3,33 L10,33 L10,21 L19,33 L27,33 L18,20 C26,17 31,14 31,10 C31,5 26,3 18,3 Z M10,7 L18,7 C24,7 26,10 26,11 C26,14 24,16 18,16 L13,16 L17,20 L10,20 Z"/><path fill-rule="evenodd" fill="url(#rbtRG)" d="M3,3 L3,33 L10,33 L10,21 L19,33 L27,33 L18,20 C26,17 31,14 31,10 C31,5 26,3 18,3 Z M10,7 L18,7 C24,7 26,10 26,11 C26,14 24,16 18,16 L13,16 L17,20 L10,20 Z"/></svg></div>
+    <div class="sb-logo-icon" style="display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" width="36" height="36" style="display:block;flex-shrink:0">
+  <rect width="36" height="36" rx="7" fill="#fff3ec"/>
+  <path d="M10 7h10.5c3.6 0 6.5 2.9 6.5 6.5 0 2.6-1.5 4.8-3.7 5.9l4.5 8.6H23l-4-7.8H14v7.8H10V7zm4 3.2v6.4h6c1.8 0 3.2-1.4 3.2-3.2 0-1.8-1.4-3.2-3.2-3.2H14z" fill="#f97316"/>
+</svg></div>
     <div class="sb-logo-text">
       <div class="sb-logo-name">RICHBIOTECH</div>
       <div class="sb-logo-sub">Ads System</div>
@@ -800,9 +813,6 @@ function disableCommInputs(){
     </div>
     <div class="sb-item" id="sb-adsai" onclick="switchView('adsai',this)">
       <span class="sb-icon">📈</span><span>AI วิเคราะห์ Ads</span>
-    </div>
-    <div class="sb-item" id="sb-videoai" onclick="switchView('videoai',this);vaiLoad()"
-      <span class="sb-icon">🎬</span><span>วิเคราะห์วีดีโอ</span>
     </div>
     <div class="sb-item" id="sb-track" onclick="switchView('track',this)">
       <span class="sb-icon">📊</span><span>ติดตามผล</span>
@@ -933,7 +943,10 @@ function disableCommInputs(){
   <circle cx="625" cy="65" r="1" fill="#7c3aed" opacity=".3"/>
   <line x1="550" y1="89" x2="750" y2="89" stroke="#1976d2" stroke-width=".8" opacity=".25"/>
 </svg>
-  <div class="hlogo"><div class="hicon" style="padding:0;overflow:hidden"><svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" width="36" height="36" style="display:block;flex-shrink:0"><defs><linearGradient id="rbgS2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#c2410c"/><stop offset="100%" stop-color="#f97316"/></linearGradient></defs><rect width="36" height="36" rx="8" fill="url(#rbgS2)"/><path d="M10 7h10.5c3.6 0 6.5 2.9 6.5 6.5 0 2.6-1.5 4.8-3.7 5.9l4.5 8.6H23l-4-7.8H14v7.8H10V7zm4 3.2v6.4h6c1.8 0 3.2-1.4 3.2-3.2 0-1.8-1.4-3.2-3.2-3.2H14z" fill="#ffffff"/></svg></div><div><div class="htitle">Ads Analytics Dashboard</div><div class="hsub">Rich Biotech &bull; Ads Analytics Platform</div></div></div>
+  <div class="hlogo"><div class="hicon" style="padding:0;overflow:hidden"><svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" width="36" height="36" style="display:block;flex-shrink:0">
+  <rect width="36" height="36" rx="7" fill="#fff3ec"/>
+  <path d="M10 7h10.5c3.6 0 6.5 2.9 6.5 6.5 0 2.6-1.5 4.8-3.7 5.9l4.5 8.6H23l-4-7.8H14v7.8H10V7zm4 3.2v6.4h6c1.8 0 3.2-1.4 3.2-3.2 0-1.8-1.4-3.2-3.2-3.2H14z" fill="#f97316"/>
+</svg></div><div><div class="htitle">Ads Analytics Dashboard</div><div class="hsub">Rich Biotech &bull; Ads Analytics Platform</div></div></div>
   <div class="hright"><div class="live-badge"><div class="dot"></div><span>Online</span></div><div class="upd" id="upd">กำลังโหลด...</div><div class="cdwn" id="cdwn"></div><button id="theme-toggle" onclick="toggleTheme()" title="เปลี่ยน Theme" style="background:none;border:1px solid var(--panel-border);border-radius:8px;padding:5px 10px;cursor:pointer;color:var(--text2);font-size:1.05rem;transition:var(--t);display:flex;align-items:center;line-height:1">🌙</button></div>
 </header>
 <div class="dbar" style="display:none">
@@ -1014,53 +1027,7 @@ function disableCommInputs(){
 <div id="chartrankView" style="display:none;padding:28px 32px"></div>
 <div id="aiView" style="display:none;padding:28px 32px"></div>
 <div id="adsaiView" style="display:none;padding:28px 32px"></div>
-<div id="videoaiView" style="display:none">
-<div style="padding:1.5rem 2rem">
-<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.25rem;flex-wrap:wrap;gap:1rem">
-<div><h2 style="margin:0;font-size:1.4rem;font-weight:800;color:var(--txt)">🎬 วิเคราะห์วีดีโอ</h2>
-<p style="margin:.2rem 0 0;font-size:.78rem;color:var(--txt2)">วิดีโอทุกตัวเทียบกับค่ามาตรฐานของบัญชีคุณเอง — ทุกสูตร การดูต่อเนื่อง และการเปลี่ยนเป็นยอดขาย จัดอันดับด้วยคะแนนรวม</p></div>
-<div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
-<select id="vai-prod" style="border:1px solid #e5e7eb;border-radius:8px;padding:.4rem .7rem;font-size:.8rem;background:#ffffff;color:var(--txt);cursor:pointer" onchange="vaiLoad()"><option value="__all__">ทุกสินค้า</option></select>
-<select id="vai-acct" style="border:1px solid #e5e7eb;border-radius:8px;padding:.4rem .7rem;font-size:.8rem;background:#ffffff;color:var(--txt);cursor:pointer" onchange="vaiLoad()"><option value="__all__">ทุกบัญชี</option></select>
-<select id="vai-date" style="border:1px solid #e5e7eb;border-radius:8px;padding:.4rem .7rem;font-size:.8rem;background:#ffffff;color:var(--txt);cursor:pointer" onchange="vaiLoad()">
-<option value="today">วันนี้</option>
-<option value="last_3d">3 วันล่าสุด</option>
-<option value="last_30d" selected>30 วันล่าสุด</option>
-<option value="last_7d">7 วันล่าสุด</option>
-<option value="last_14d">14 วันล่าสุด</option>
-<option value="last_90d">90 วันล่าสุด</option>
-</select>
-<button onclick="vaiCustomDate()" style="display:flex;align-items:center;gap:.3rem;padding:.3rem .75rem;border:1px solid #e5e7eb;border-radius:8px;background:var(--bg);color:var(--txt);font-size:.82rem;cursor:pointer;white-space:nowrap">📅 กำหนดเอง</button></div></div>
-<div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;background:#ffffff;border:1px solid #e5e7eb;border-radius:10px;padding:.75rem 1rem;margin-bottom:1.25rem">
-<div style="display:flex;gap:.4rem"><button id="vai-tab-all" class="vai-tab" onclick="vaiTab('all',this)" style="border:none;padding:.3rem .9rem;font-size:.82rem;cursor:pointer;border-radius:20px;background:var(--acc);color:#111827;font-weight:500;transition:.2s">ทั้งหมด</button><button id="vai-tab-eng" class="vai-tab" onclick="vaiTab('eng',this)" style="border:1px solid #e5e7eb;padding:.3rem .9rem;font-size:.82rem;cursor:pointer;border-radius:20px;background:transparent;color:var(--txt);font-weight:500;transition:.2s">การมีส่วนร่วม</button></div>
-<label style="font-size:.78rem;color:var(--txt2);display:flex;align-items:center;gap:.4rem">ยอดใช้จ่ายขั้นต่ำ<input id="vai-ms" type="number" value="1000" min="0" style="width:70px;border:1px solid #e5e7eb;border-radius:6px;padding:.25rem .4rem;font-size:.8rem;background:var(--bg);color:var(--txt)"></label>
-<label style="font-size:.78rem;color:var(--txt2);display:flex;align-items:center;gap:.4rem">อิมเพรสชันขั้นต่ำ<input id="vai-mi" type="number" value="1000" min="0" style="width:70px;border:1px solid #e5e7eb;border-radius:6px;padding:.25rem .4rem;font-size:.8rem;background:var(--bg);color:var(--txt)"></label>
-<label style="font-size:.78rem;color:var(--txt2);display:flex;align-items:center;gap:.5rem;cursor:pointer"><input type="checkbox" id="vai-showlow" onchange="_vaiRender();var s=document.getElementById('_vsw');s.style.background=this.checked?'#2196f3':'#ccc';s.querySelector('span').style.transform=this.checked?'translateX(16px)':'none'" style="display:none"><span id="_vsw" style="width:34px;height:18px;border-radius:9px;background:#ccc;position:relative;display:inline-block;transition:.2s;flex-shrink:0"><span style="position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#fff;transition:.2s"></span></span> แสดงวีดีโอที่ข้อมูลยังน้อย</label>
-
-</div>
-<div id="vai-cards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:1.25rem"><div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--txt2)">คลิก "ทุกบัญชี" เพื่อเริ่มโหลดข้อมูล หรือเลือกบัญชีที่ต้องการ</div></div>
-<div id="vai-banner" style="display:none;margin-bottom:1rem"></div>
-<div id="vai-mini" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.75rem;margin-bottom:1.25rem"></div>
-<div id="vai-quad-wrap" style="background:#ffffff;border:1.5px solid #d1d5db;border-radius:12px;padding:1.5rem;margin-bottom:1.5rem;display:none">
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
-<div><h3 style="margin:0;font-size:1rem;font-weight:700;color:var(--txt)">ควอดรันต์ฮุก × คอนเวอร์ชัน</h3>
-<p style="margin:.2rem 0 0;font-size:.72rem;color:var(--txt2)">แต่ละจุดคือหนึ่งวิดีโอ ขนาดจุด = งบที่ใช้ คลิกจุดเพื่อไปยังแถวนั้น</p></div>
-<button id="vai-quad-tog" onclick="vaiQuadToggle()" style="border:1px solid #e5e7eb;border-radius:6px;padding:.25rem .6rem;font-size:.8rem;background:var(--bg);color:var(--txt);cursor:pointer">▲</button>
-</div>
-<div id="vai-quad-inner" style="display:grid;grid-template-columns:1fr 260px;gap:1.5rem;align-items:start">
-<canvas id="vai-canvas" width="600" height="220" style="width:100%;border-radius:8px"></canvas>
-<div>
-<p style="font-size:.75rem;font-weight:700;margin:0 0 .75rem;color:var(--txt2)">การกระจายผลตัดสิน</p>
-<div id="vai-dist"></div>
-<div style="margin-top:1rem;font-size:.72rem;color:var(--txt2);line-height:2">
-<div><span style="color:#10b981">📈</span> ขยายผล — ฮุกดี คอนเวอร์ชันดี</div>
-<div><span style="color:#f59e0b">✓</span> แก้ CTA — คอนดี ไม่คอนเวิร์ต</div>
-<div><span style="color:#3b82f6">✓</span> แก้ฮุก — คอนเวิร์ตดีถ้าดูนานจำกัดการเข้าถึง</div>
-<div><span style="color:#f87171">✗</span> พิจารณาปิด — อ่อนทั้งฮุกและคอนเวอร์ชัน</div>
-</div></div></div></div>
-<div id="vai-tbl-wrap" style="background:#ffffff;border:1px solid #e5e7eb;border-radius:12px;overflow:auto"></div>
-</div>
-</div><div id="trackView" style="display:none;padding:28px 32px"></div>
+<div id="trackView" style="display:none;padding:28px 32px"></div>
 <div id="alertView" style="display:none;padding:28px 32px"></div>
 <div id="leaveView" style="display:none;padding:20px 24px"></div>
 <div id="dailyTaskView" style="display:none;padding:20px 24px"></div>
@@ -1094,10 +1061,8 @@ var FB_ACCOUNTS_META=[
   {name:'RomaRio',id:'act_2147089622529485',configKey:'FB_GID_RomaRio'},
   {name:'AngelicaEstrada',id:'act_950220307943505',configKey:'FB_GID_AngelicaEstrada'},
   {name:'LiupoldFlatdagger3',id:'act_120225057669400698',configKey:'FB_GID_LiupoldFlatdagger3'},
-  {name:'WonderPearl',id:'act_2056029698115072',configKey:'FB_GID_WonderPearl'},
-  {name:'DilipSonune',id:'act_232225859298771',configKey:'FB_GID_DilipSonune'},
   {name:'EdwoldWillcottsBiz1',id:'act_120227713499370203',configKey:'FB_GID_EdwoldWillcottsBiz1'},
-  {name:'SolomonFaust',id:'act_1781482976549939',configKey:'FB_GID_SolomonFaust'},
+  {name:'SolomonFaust',id:'act_1781482976549939',configKey:'FB_GID_SolomonFaust'}
 ];
 var WEBAPP_URL='https://script.google.com/macros/s/AKfycbz6l9ORjUnzbHrMgr0uNVPNOq3i2DeYAFAGKS0kErL-W6bFY4jBN1EMNxDvxPYuCYoc/exec';
 // ─── Facebook API (Real-time) ─────────────────────────────────────────────────
@@ -1125,13 +1090,9 @@ var FB_TOKENS={
   'RomaRio':'EAAOHeqVdn5kBRZBXebBpLNgqCSybXZAXcblWWZCNvhZAZBm2IlgOQ4zYmYi0n8NuUeZBSpH4JY7xSASSDGrgPlPCTITzE3ZAZA4sYfoeybBiSW9ySCNpTfxTEOH7DBT1ZCWSQckj5SGpZCO0yjY0Kdh45dsxTmPB55uF0QLrWhzlBHbUv7l4RujOBfn72QrCd8iwZDZD',
   'AngelicaEstrada':'EAAOHeqVdn5kBRZBXebBpLNgqCSybXZAXcblWWZCNvhZAZBm2IlgOQ4zYmYi0n8NuUeZBSpH4JY7xSASSDGrgPlPCTITzE3ZAZA4sYfoeybBiSW9ySCNpTfxTEOH7DBT1ZCWSQckj5SGpZCO0yjY0Kdh45dsxTmPB55uF0QLrWhzlBHbUv7l4RujOBfn72QrCd8iwZDZD',
   'LiupoldFlatdagger3':'EAAOHeqVdn5kBRZBXebBpLNgqCSybXZAXcblWWZCNvhZAZBm2IlgOQ4zYmYi0n8NuUeZBSpH4JY7xSASSDGrgPlPCTITzE3ZAZA4sYfoeybBiSW9ySCNpTfxTEOH7DBT1ZCWSQckj5SGpZCO0yjY0Kdh45dsxTmPB55uF0QLrWhzlBHbUv7l4RujOBfn72QrCd8iwZDZD',
-    'DilipSonune':null,
-'WonderPearl':null,
   'EdwoldWillcottsBiz1':'EAAOHeqVdn5kBRZBXebBpLNgqCSybXZAXcblWWZCNvhZAZBm2IlgOQ4zYmYi0n8NuUeZBSpH4JY7xSASSDGrgPlPCTITzE3ZAZA4sYfoeybBiSW9ySCNpTfxTEOH7DBT1ZCWSQckj5SGpZCO0yjY0Kdh45dsxTmPB55uF0QLrWhzlBHbUv7l4RujOBfn72QrCd8iwZDZD',
   'SolomonFaust':'EAAOHeqVdn5kBRZBXebBpLNgqCSybXZAXcblWWZCNvhZAZBm2IlgOQ4zYmYi0n8NuUeZBSpH4JY7xSASSDGrgPlPCTITzE3ZAZA4sYfoeybBiSW9ySCNpTfxTEOH7DBT1ZCWSQckj5SGpZCO0yjY0Kdh45dsxTmPB55uF0QLrWhzlBHbUv7l4RujOBfn72QrCd8iwZDZD',
 };
-FB_TOKENS['WonderPearl']=FB_TOKENS['NayTam'];
-FB_TOKENS['DilipSonune']=FB_TOKENS['NayTam'];
 var FB_API='https://graph.facebook.com/v20.0/';
 var s1data=null,s2data=null,loadedCount=0,chartInst={},modalCharts={};
 var commSheetData={}; // keyed 'YYYY-MM' → {analyst:{product:{date:{s,r}}}}
@@ -1290,13 +1251,11 @@ function buildProductFilter(){
   pb.style.display='flex';c.innerHTML='';
   function mk(l,v){var b=document.createElement('button');b.className='ppill'+(filterProduct===v?' active':'');b.textContent=l;b.onclick=function(){filterProduct=v;buildProductFilter();renderAll();};c.appendChild(b);}
   mk('All',null);prods.forEach(function(p){mk(p,p);});
-
-  var _vaiProd=document.getElementById('vai-prod');if(_vaiProd){var _vaiProds=[...new Set((s1data||[]).map(function(r){return r.product;}).filter(Boolean))].sort();while(_vaiProd.options.length>1)_vaiProd.remove(1);_vaiProds.forEach(function(p){_vaiProd.innerHTML+='<option value="'+p+'">'+p+'</option>';})}}
+}
 function buildAnalystFilter(){
   var analysts=[];(s1data||[]).forEach(function(r){if(r.analyst&&analysts.indexOf(r.analyst)<0)analysts.push(r.analyst);});
   var ab=document.getElementById('abar'),c=document.getElementById('analystPills');
   if(!analysts.length){ab.style.display='none';return;}
-  var curSb=document.querySelector('.sb-item.active');if(!curSb||curSb.id!=='sb-chartrank'){ab.style.display='none';return;}
   ab.style.display='flex';c.innerHTML='';
   function mkA(l,v,av){var b=document.createElement('button');b.className='apill'+(filterAnalyst===v?' active':'');b.innerHTML=av+'<span>'+l+'</span>';b.onclick=function(){filterAnalyst=v;buildAnalystFilter();renderAll();};c.appendChild(b);}
   mkA('All Analysts <small style="opacity:.5;font-weight:400">('+analysts.length+')</small>',null,'<span class="av" style="font-size:.6rem">⚡</span>');
@@ -1341,7 +1300,7 @@ function loadJSONP(gid,range,cb){
 
 function cb_s1(resp){
   try{s1data=parseS1(resp.table.rows||[]);}catch(e){s1data=[];console.error(e);}
-  var _vp=document.getElementById('vai-prod');if(_vp&&typeof FB_HIERARCHY!=='undefined'&&FB_HIERARCHY.length){var _vps=FB_HIERARCHY.map(function(h){return h.product;}).filter(Boolean);while(_vp.options.length>1)_vp.remove(1);_vps.forEach(function(p){var o=document.createElement('option');o.value=p;o.text=p;_vp.add(o);})}  loadedCount++;if(loadedCount>=2){buildProductFilter();buildAnalystFilter();renderAll();}
+  loadedCount++;if(loadedCount>=2){buildProductFilter();buildAnalystFilter();renderAll();}
 }
 function cb_s2(resp){
   try{s2data=parseS2(resp.table.rows||[]);}catch(e){s2data=[];console.error(e);}
@@ -1514,7 +1473,7 @@ function renderAll(){
     h1+='<tr class="cl" onclick="openDetail('+i+')">'+'<td><b style="color:var(--text)">'+g.campaign+'</b>'+tb2+'</td>'+'<td><span class="abadge">'+avHtml(g.analyst,20,'')+'<span>'+g.analyst+'</span></span></td>'+'<td style="color:var(--text3)">'+g.platform+'</td><td>'+dr+'</td><td style="text-align:center"><span class="rank-badge '+rr.cls+'">'+rr.label+'</span></td>'+'<td style="color:var(--text2)">'+fmt(g.budget)+'</td><td style="color:var(--text2)">'+fmt(g.reach)+'</td><td style="color:var(--text2)">'+fmt(g.conv)+'</td><td>'+fmt(g.revenue)+'</td>'+'<td '+rc(g.roas)+'>'+g.roas.toFixed(2)+'×</td><td>'+sb2(g.score)+'</td><td>'+rp(g.result)+'</td></tr>';
   });
   document.getElementById('t1').innerHTML=h1+'</tbody>';
-  var h2='<thead><tr><th>Campaign</th><th>Platform</th><th>Type</th><th>Reach</th><th>Likes</th><th>Comments</th><th>Shares</th><th>Eng.Rate%</th><th>Sentiment</th><th>Score</th><th>Result</th></tr></thead><tbody>';
+  var h2='<thead><tr><th>Mission</th><th>Platform</th><th>Type</th><th>Reach</th><th>Likes</th><th>Comments</th><th>Shares</th><th>Eng.Rate%</th><th>Sentiment</th><th>Score</th><th>Result</th></tr></thead><tbody>';
   s2.forEach(function(r){h2+='<tr><td><b>'+r.campaign+'</b></td><td>'+r.platform+'</td><td>'+r.ctype+'</td><td>'+fmt(r.reach)+'</td><td>'+fmt(r.likes)+'</td><td>'+fmt(r.comments)+'</td><td>'+fmt(r.shares)+'</td><td>'+r.eng_rate.toFixed(2)+'%</td><td>'+sp2(r.sentiment)+'</td><td>'+sb2(r.score)+'</td><td>'+rp(r.result)+'</td></tr>';});
   document.getElementById('t2').innerHTML=h2+'</tbody>';
   document.getElementById('upd').textContent='Updated: '+new Date().toLocaleString('th-TH');
@@ -1625,7 +1584,7 @@ function openDetail(idx){
     '<table class="day-table"><thead><tr><th>Run</th><th>Date</th><th>Budget</th><th>Reach</th><th>Clicks</th><th>CTR%</th><th>Conv</th><th>Revenue</th><th>ROAS</th><th>Score</th></tr></thead><tbody>'+dayRows+'</tbody></table></div></div>'+
     '<div class="msec"><h4>📊 Charts</h4><div class="mchart-wrap"><div class="card" style="padding:10px"><canvas id="mc1" height="155"></canvas></div><div class="card" style="padding:10px"><canvas id="mc2" height="155"></canvas></div></div></div>'+
     renderMediaBlock(g.media)+
-    '<div class="msec"><h4>📊 AI Recommendationh4><div class="ai-box" style="background:'+adv.bg+';border-color:'+adv.border+'"><div class="ai-dec" style="color:'+adv.col+'">'+adv.icon+' '+adv.dec+'</div><div class="ai-sub">Analysis</div><ul class="ai-list why">'+adv.why.map(function(t){return '<li>'+t+'</li>';}).join('')+'</ul><div class="ai-sub" style="margin-top:12px">Next Action</div><ul class="ai-list act">'+adv.act.map(function(t){return '<li>'+t+'</li>';}).join('')+'</ul></div></div>'+
+    '<div class="msec"><h4>⚔️ System Recommendation</h4><div class="ai-box" style="background:'+adv.bg+';border-color:'+adv.border+'"><div class="ai-dec" style="color:'+adv.col+'">'+adv.icon+' '+adv.dec+'</div><div class="ai-sub">Analysis</div><ul class="ai-list why">'+adv.why.map(function(t){return '<li>'+t+'</li>';}).join('')+'</ul><div class="ai-sub" style="margin-top:12px">Next Action</div><ul class="ai-list act">'+adv.act.map(function(t){return '<li>'+t+'</li>';}).join('')+'</ul></div></div>'+
     (ct.length?'<div class="msec"><h4>📡 Content Intel ('+ct.length+')</h4><table class="ct-tbl"><thead><tr><th>Type</th><th>Reach</th><th>Likes</th><th>Comments</th><th>Shares</th><th>Eng%</th><th>Sentiment</th><th>Result</th></tr></thead><tbody>'+ctRows+'</tbody></table></div>':'')+
     (g.note?'<div class="msec"><h4>📌 Next Campaign</h4><div class="note-box">'+g.note+'</div></div>':'');
   document.getElementById('modal-bg').classList.add('open');document.body.style.overflow='hidden';
@@ -2519,7 +2478,7 @@ function switchView(view,el){
   var dtv2=document.getElementById('dailyTaskView');if(dtv2)dtv2.style.display='none';
   if(view==='cohort'){
     mv.style.display='none';cv.style.display='block';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var trv2=document.getElementById('trackView');if(trv2)trv2.style.display='none';var lv2=document.getElementById('leaveView');if(lv2)lv2.style.display='none';
-    renderCohort();if(_ab)_ab.style.display='none';window.scrollTo({top:0,behavior:'smooth'});
+    renderCohort();if(_ab)_ab.style.display='flex';window.scrollTo({top:0,behavior:'smooth'});
   } else if(view==='commission'){
     mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='block';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var trv2=document.getElementById('trackView');if(trv2)trv2.style.display='none';var lv2=document.getElementById('leaveView');if(lv2)lv2.style.display='none';
     _leaveFetch().then(function(){renderCommission();});window.scrollTo({top:0,behavior:'smooth'});
@@ -2527,7 +2486,7 @@ function switchView(view,el){
     mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='block';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var trv2=document.getElementById('trackView');if(trv2)trv2.style.display='none';var lv2=document.getElementById('leaveView');if(lv2)lv2.style.display='none';
     renderFB();window.scrollTo({top:0,behavior:'smooth'});
   } else if(view==='chartrank'){
-    mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv){crv.style.display='block';_renderChartRank(crv);}if(_ab)_ab.style.display='flex';
+    mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv){crv.style.display='block';_renderChartRank(crv);}
     window.scrollTo({top:0,behavior:'smooth'});
   } else if(view==='ai'){
     mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv){aiv.style.display='block';_renderAIContent(aiv);}
@@ -2561,7 +2520,7 @@ function switchView(view,el){
     var alv=document.getElementById('alertView');if(alv){alv.style.display='block';_renderAlert(alv);}
     window.scrollTo({top:0,behavior:'smooth'});
   } else {
-    if(_db)_db.style.display='flex';if(_ab)_ab.style.display='none';
+    if(_db)_db.style.display='flex';if(_ab)_ab.style.display='flex';
     mv.style.display='block';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv)aiv.style.display='none';var aav2=document.getElementById('adsaiView');if(aav2)aav2.style.display='none';var trv2=document.getElementById('trackView');if(trv2)trv2.style.display='none';var lv2=document.getElementById('leaveView');if(lv2)lv2.style.display='none';
     if(view!=='top')setTimeout(function(){var t=document.getElementById(view);if(t){var y=t.getBoundingClientRect().top+window.scrollY-100;window.scrollTo({top:y,behavior:'smooth'});}},50);
   }
@@ -2812,8 +2771,7 @@ var fbCampaignsMap={},fbCampaignsLoadedMap={};
 var _fbLoadingMap={},_prodCharts={};
 var fbBudgetChangesToday={}; // {accId: {objName: {diff, isUp, label}}}
 
-
-// ─── Budget / Date Change Log ──────────────────────────────────────────────
+// ─── Budget / Date Change Log ───────────────────────────────────────────────
 var _RB_LOG_KEY='rb_budget_log';
 function _rbLogSave(entry){
   try{
@@ -3200,29 +3158,7 @@ var FB_HIERARCHY=[
       }
     ]
   }
-,
-  {
-    product:'I SURE PLUS',
-    icon:'🩸',
-    color:'#059669',
-    desc:'ลดระดับน้ำตาล',
-    pages:[
-      {
-        name:'ISURE PLUS ลดระดับน้ำตาล',
-        phone:'02-114-7221',
-        accounts:[
-          {
-            displayName:'Wonder Pearl',
-            adAccounts:['WonderPearl']
-          },
-          {
-            displayName:'Dilip Sonune',
-            adAccounts:['DilipSonune']
-          }
-        ]
-      }
-    ]
-  }];
+];
 var fbNavProduct=null,fbNavPage=null,fbNavHolder=null,fbNavManager=null;
 
 function fbNavBack(level){
@@ -3321,7 +3257,13 @@ function _renderFBProducts(el){
   h+='</div></div>';
 
   // ── 5 KPI summary cards ──
-  function kpiCard(label,value,grad,icon){var c=(grad.match(/#[0-9a-f]{6}/i)||['#4B56D2'])[0];var isDark=document.documentElement.getAttribute('data-theme')==='dark';var bg=isDark?'#0D1426':'#fff';var accent=isDark?c:'#4B56D2';var bord=isDark?c+'40':'#E2E8F4';var sh=isDark?'0 1px 4px rgba(0,0,0,.5),0 0 0 1px rgba(42,45,42,.6)':'0 2px 8px rgba(15,23,42,.06),0 1px 2px rgba(15,23,42,.04)';var lc=isDark?'#888':'#64748B';return '<div style="background:'+bg+';border:1px solid '+bord+';border-top:3px solid '+accent+';border-radius:12px;padding:20px 22px;position:relative;overflow:hidden;box-shadow:'+sh+'">'+'<div style="font-size:2.8rem;opacity:.06;line-height:1;position:absolute;right:14px;top:8px">'+icon+'</div>'+'<div style="font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:'+lc+';margin-bottom:10px">'+label+'</div>'+'<div style="font-size:1.9rem;font-weight:900;font-family:Rajdhani,sans-serif;line-height:1;color:'+c+'">'+value+'</div>'+'</div>';}
+  function kpiCard(label,value,grad,icon){
+    return '<div style="background:'+grad+';border-radius:14px;padding:18px 20px;color:#fff;position:relative;overflow:hidden">'
+      +'<div style="position:absolute;right:-8px;top:-8px;font-size:3.8rem;opacity:.13;line-height:1">'+icon+'</div>'
+      +'<div style="font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;opacity:.88;margin-bottom:10px">'+label+'</div>'
+      +'<div style="font-size:1.85rem;font-weight:900;font-family:Rajdhani,sans-serif;line-height:1">'+value+'</div>'
+      +'</div>';
+  }
   h+='<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:22px">';
   h+=kpiCard('กลุ่มทั้งหมด',FB_HIERARCHY.length,'linear-gradient(135deg,#3b82f6,#1d4ed8)','🏷');
   h+=kpiCard('SPEND รวม','฿'+fmt(gSpend),'linear-gradient(135deg,#f97316,#c2410c)','💸');
@@ -3359,7 +3301,7 @@ function _renderFBProducts(el){
     var isLoading=x.loadedCount<x.allAccNames.length&&x.allAccNames.length>0;
     var roasColor=agg.roas>=2?'#059669':agg.roas>=1?'#d97706':'#dc2626';
     var borderColor=agg.roas>=2?'#059669':agg.roas>=1?'#f59e0b':'#ef4444';
-    h+='<div style="background:#fff;border:1.5px solid #e8edf6;border-top:3px solid '+borderColor+';border-radius:12px;padding:18px 20px;box-shadow:0 2px 8px rgba(15,23,42,.04)">';
+    h+='<div style="background:#fff;border:1.5px solid #e8edf6;border-left:4px solid '+borderColor+';border-radius:12px;padding:18px 20px;box-shadow:0 2px 8px rgba(15,23,42,.04)">';
     // Header row
     h+='<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px">';
     h+='<div>';
@@ -3380,7 +3322,7 @@ function _renderFBProducts(el){
     h+=stat('Orders',fmt(agg.purchases));
     h+='</div>';
     // Detail button
-    h+='<button onclick="fbNavProduct=FB_HIERARCHY['+pi+'];fbNavPage=null;fbNavHolder=null;renderFB()" style="width:100%;padding:7px;background:#EEF2FF;border:1.5px solid #4B56D2;color:#4B56D2;border-radius:8px;font-size:.74rem;font-weight:700;cursor:pointer;font-family:inherit">⚡ Live &nbsp; ดูรายละเอียด →</button>';
+    h+='<button onclick="fbNavProduct=FB_HIERARCHY['+pi+'];fbNavPage=null;fbNavHolder=null;renderFB()" style="width:100%;padding:7px;background:linear-gradient(135deg,'+p.color+'18,'+p.color+'08);border:1.5px solid '+p.color+'35;color:'+p.color+';border-radius:8px;font-size:.74rem;font-weight:700;cursor:pointer;font-family:inherit">⚡ Live &nbsp; ดูรายละเอียด →</button>';
     h+='</div>';
   });
   h+='</div>';
@@ -3711,8 +3653,7 @@ function _renderFBAccounts(el){
     h+=_pgKpi('ROAS',_pgAgg.roas>0?_pgAgg.roas.toFixed(2)+'x':'—',_fbRoasColor(_pgAgg.roas));
     h+=_pgKpi('CTR',_pgAgg.ctr>0?_pgAgg.ctr.toFixed(2)+'%':'—','#38bdf8');
     h+=_pgKpi('การซื้อ',_pgAgg.purchases>0?fmt(_pgAgg.purchases,0)+' ครั้ง':'—','#00e676');
-       h+=_pgKpi('การสนทนา',_pgAgg.conversations>0?fmt(_pgAgg.conversations,0)+' ราย':'—','#7C3AED');
-h+='</div>';
+    h+='</div>';
 
     // Cohort table — campaign × day, tagged by account
     var _filteredDates={};_pgFiltered.forEach(function(r){if(r.date)_filteredDates[r.date]=1;});
@@ -4180,7 +4121,7 @@ async function fbUpdateBudget(campName,campId){
   // 2) ถ้ายังเป็น 0 → ลอง adsets (ABO = งบอยู่ระดับชุดโฆษณา)
   if(campId&&!ci.daily_budget&&!ci.lifetime_budget){
     try{
-      var _ar=await fetch('https://graph.facebook.com/v20.0/'+campId+'/adsets?fields=daily_budget,lifetime_budget,budget_remaining,id,name&limit=20&access_token='+tok);
+      var _ar=await fetch('https://graph.facebook.com/v20.0/'+campId+'/adsets?fields=daily_budget,lifetime_budget,id,name&limit=20&access_token='+tok);
       var _ad=await _ar.json();
       if(_ad.data&&_ad.data.length>0){
         adsetCount=_ad.data.length;
@@ -4196,7 +4137,6 @@ async function fbUpdateBudget(campName,campId){
         if(adsetCount===1)updateId=_firstId;
         // ถ้ามีหลาย adset → เก็บไว้ แต่ยังอัปเดต campaign (หรือบอกผู้ใช้)
         ci._adsets=_ad.data;
-        ci._budgetExhausted=!ci.is_daily&&_ad.data.every(function(a){return parseInt(a.budget_remaining||0)===0;});
       }
     }catch(e){}
   }
@@ -4205,9 +4145,8 @@ async function fbUpdateBudget(campName,campId){
   var curBud=isDaily?(ci.daily_budget||0):(ci.lifetime_budget||0);
   var budType=isDaily?'วัน':'ตลอดชีพ';
   var shortName=campName.length>42?campName.slice(0,42)+'\u2026':campName;
-  var budgetExhausted=!!(ci._budgetExhausted);
   var adsetNote=adsetCount>1?'<div style="font-size:.6rem;color:#0284c7;margin-top:6px">\u26a0\ufe0f '+adsetCount+' ชุดโฆษณา — งบรวมทั้งหมด</div>':
-                adsetCount===1?'<div style="font-size:.6rem;color:#64748b;margin-top:6px">งบระดับชุดโฆษณา (ABO)</div>':'';
+                adsetCount===1?'<div style="font-size:.6rem;color:#64748b;margin-top:6px">\ud83d\udccb งบระดับชุดโฆษณา (ABO)</div>':'';
   var ov=document.createElement('div');
   ov.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(15,23,42,.55);z-index:99999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(2px)';
   ov.innerHTML='<div style="background:#fff;border-radius:14px;padding:22px 24px;width:310px;box-shadow:0 24px 64px rgba(15,23,42,.3);font-family:inherit">'
@@ -4217,7 +4156,6 @@ async function fbUpdateBudget(campName,campId){
       +'<div style="font-size:.62rem;color:#92400e;margin-bottom:3px">\u0e07\u0e1a\u0e1b\u0e31\u0e08\u0e08\u0e38\u0e1a\u0e31\u0e19 / '+budType+'</div>'
       +'<div style="font-size:1.3rem;font-weight:900;color:#b45309;font-family:Rajdhani,sans-serif">\u0e3f'+(curBud>0?curBud.toLocaleString():'—')+'</div>'
       +adsetNote
-    +(budgetExhausted?'<div style="margin-top:8px;padding:8px 10px;background:#fef2f2;border:1px solid #fca5a5;border-radius:6px;font-size:.68rem;color:#dc2626;font-weight:700">⚠️ งบหมดแล้ว — ต้องเพิ่มงบก่อนแคมเปญจะยิงได้</div>':'')
     +'</div>'
     +'<div style="margin-bottom:16px">'
       +'<label style="font-size:.68rem;color:#64748b;display:block;margin-bottom:6px;font-weight:600">\u0e1b\u0e23\u0e31\u0e1a\u0e07\u0e1a\u0e40\u0e1b\u0e47\u0e19 (\u0e3f / '+budType+')</label>'
@@ -4239,7 +4177,7 @@ async function fbUpdateBudget(campName,campId){
   ov.addEventListener('click',function(e){if(e.target===ov)close_();});
   document.getElementById('fbBudCancel').onclick=close_;
   document.getElementById('fbBudConfirm').onclick=async function(){
-    var inp2=document.getElementById('fbBudgetInp');if(!inp2)return;
+    var inp2=document.getElementById('fbBudgetInp');
     var b=parseInt(inp2.value);
     if(isNaN(b)||b<1){inp2.style.borderColor='#ef4444';inp2.focus();return;}
     close_();
@@ -4260,13 +4198,13 @@ async function fbUpdateBudget(campName,campId){
       targets.push({id:updateId,budget:b});
     }
     try{
-      var lastErr='';var allOk=true;
+      var allOk=true;
       for(var i=0;i<targets.length;i++){
         var t=targets[i];
-        var tp=isDaily?{daily_budget:t.budget*100}:{lifetime_budget:t.budget*100};
-        var r=await fetch('https://graph.facebook.com/v20.0/'+t.id+'?access_token='+encodeURIComponent(tok2),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(tp)});
+        var tp=isDaily?{daily_budget:t.budget*100,access_token:tok2}:{lifetime_budget:t.budget*100,access_token:tok2};
+        var r=await fetch('https://graph.facebook.com/v20.0/'+t.id,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(tp)});
         var d=await r.json();
-        if(!d.success&&!d.id){allOk=false;if(d.error)lastErr=d.error.message;}
+        if(!d.success&&!d.id)allOk=false;
       }
       if(allOk){
         showBanner('\u2705 \u0e1b\u0e23\u0e31\u0e1a\u0e07\u0e1a\u0e40\u0e1b\u0e47\u0e19 \u0e3f'+b.toLocaleString()+'/'+budType+' \u0e2a\u0e33\u0e40\u0e23\u0e47\u0e08');
@@ -4276,7 +4214,7 @@ async function fbUpdateBudget(campName,campId){
         }
         var _lt=_rbLogNow();_rbLogSave({ts:_lt.ts,date:_lt.date,time:_lt.time,user:_rbLogUser(),account:fbAccount,campaign:campName,type:'budget',budType:budType,oldVal:curBud,newVal:b,diff:b-curBud,isUp:b>curBud});
         _renderFBInner(document.getElementById('fbViewInner'));
-      } else {showBanner('\u274c '+(lastErr||'\u0e44\u0e21\u0e48\u0e2a\u0e33\u0e40\u0e23\u0e47\u0e08'));}
+      } else {showBanner('\u274c \u0e44\u0e21\u0e48\u0e2a\u0e33\u0e40\u0e23\u0e47\u0e08 — \u0e15\u0e23\u0e27\u0e08\u0e2a\u0e34\u0e17\u0e18\u0e34\u0e4c token');}
     }catch(e){showBanner('\u274c '+e.message);}
   };
   inp.addEventListener('keydown',function(e){
@@ -4291,7 +4229,7 @@ async function fbChangeStopDate(campName,campId){
   var newDate=prompt('วันสิ้นสุดแคมเปญ (YYYY-MM-DD) สำหรับ:\n'+campName+'\n\n(เว้นว่างเพื่อไม่กำหนดวันหยุด)',cur);
   if(newDate===null)return;
   var tok=FB_TOKENS[fbAccount]||FB_TOKEN;
-  var body={};
+  var body={access_token:tok};
   if(newDate.trim()===''){
     body.stop_time=0;
   } else {
@@ -4301,10 +4239,10 @@ async function fbChangeStopDate(campName,campId){
   }
   showBanner('⏳ กำลังอัปเดตวันสิ้นสุด...');
   try{
-    var r=await fetch('https://graph.facebook.com/v20.0/'+campId+'?access_token='+encodeURIComponent(tok),{
+    var r=await fetch('https://graph.facebook.com/v20.0/'+campId,{
       method:'POST',
-      headers:{'Content-Type':'application/x-www-form-urlencoded'},
-      body:'stop_time='+body.stop_time
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(body)
     });
     var d=await r.json();
     if(d.success||d.id){
@@ -4314,16 +4252,6 @@ async function fbChangeStopDate(campName,campId){
         fbCampaignsMap[fbAccount][campName].stop_time=newDate.trim()?new Date(newDate.trim()+'T23:59:59+07:00').toISOString():null;
       var _lt2=_rbLogNow();_rbLogSave({ts:_lt2.ts,date:_lt2.date,time:_lt2.time,user:_rbLogUser(),account:fbAccount,campaign:campName,type:'date',oldVal:cur||'ไม่มีกำหนด',newVal:dispDate});
       _renderFBInner(document.getElementById('fbViewInner'));
-      try{
-        var aUrl='https://graph.facebook.com/v20.0/'+campId+'/adsets?fields=id&limit=100&access_token='+encodeURIComponent(tok);
-        var ar2=await fetch(aUrl);var ad2=await ar2.json();
-        if(ad2.data&&ad2.data.length){
-          var etBody='end_time='+body.stop_time;
-          await Promise.all(ad2.data.map(function(aset){
-            return fetch('https://graph.facebook.com/v20.0/'+aset.id+'?access_token='+encodeURIComponent(tok),{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:etBody});
-          }));
-        }
-      }catch(ae){console.warn('adset update:',ae);}
     } else {
       showBanner('❌ '+(d.error?d.error.message:'ไม่สำเร็จ'));
     }
@@ -4346,14 +4274,14 @@ function _fbFilterRows(rows){
   }
   if(fbFilter==='all')return rows;
   var cutoffDate=new Date(now);
-  if(fbFilter==='3d')cutoffDate.setDate(now.getDate()-3);
-  else if(fbFilter==='7d')cutoffDate.setDate(now.getDate()-7);
-  else if(fbFilter==='14d')cutoffDate.setDate(now.getDate()-14);
-  else if(fbFilter==='30d')cutoffDate.setDate(now.getDate()-30);
-  else if(fbFilter==='90d')cutoffDate.setDate(now.getDate()-90);
+  if(fbFilter==='3d')cutoffDate.setDate(now.getDate()-2);
+  else if(fbFilter==='7d')cutoffDate.setDate(now.getDate()-6);
+  else if(fbFilter==='14d')cutoffDate.setDate(now.getDate()-13);
+  else if(fbFilter==='30d')cutoffDate.setDate(now.getDate()-29);
+  else if(fbFilter==='90d')cutoffDate.setDate(now.getDate()-89);
   var cutoffStr=toYMD(cutoffDate);
   return rows.filter(function(r){
-    return r.date&&r.date>=cutoffStr&&r.date<todayStr;
+    return r.date&&r.date>=cutoffStr;
   });
 }
 
@@ -4685,7 +4613,7 @@ var _taskData={}; // {date: {analyst: [task,...]}}
 // ── shared helpers (global so _adsaiCalcBudget can use them) ──
 function _aiFmtB(v){return '฿'+(v>=1000000?(v/1000000).toFixed(1)+'M':v>=1000?Math.round(v/1000)+'K':Math.round(v));}
 function _aiRoasGrade(r){
-  if(r>=3)  return{grade:'S',icon:'⭐',color:'#f59e0b',bg:'#fffbeb',label:'Excellent'};
+  if(r>=3)  return{grade:'S',icon:'⚔️',color:'#f59e0b',bg:'#fffbeb',label:'Excellent'};
   if(r>=2)  return{grade:'A',icon:'🗡️',color:'#22c55e',bg:'#f0fdf4',label:'ดีมาก'};
   if(r>=1.5)return{grade:'B',icon:'🛡️',color:'#3b82f6',bg:'#eff6ff',label:'พอใช้ได้'};
   if(r>=1)  return{grade:'C',icon:'⚡',color:'#f97316',bg:'#fff7ed',label:'เกือบคุ้มทุน'};
@@ -7110,8 +7038,9 @@ function _renderCampDetailContent(campName,campId,days){
     +'</div></div>';
 
   // CEO Report button
-  html+='<div style="margin-top:24px;padding-top:16px;border-top:1px solid rgba(100,116,139,.15)">'
-    +'<button onclick="event.stopPropagation();_openCEOReport()" style="width:100%;padding:12px 16px;background:linear-gradient(135deg,#0f172a,#1e3a5f);color:#fff;border:none;border-radius:10px;font-size:.8rem;font-weight:700;cursor:pointer;font-family:Rajdhani,sans-serif;letter-spacing:.5px;box-shadow:0 4px 16px rgba(15,23,42,.2);display:flex;align-items:center;justify-content:center;gap:8px">📊 สรุปให้ CEO</button>'
+  html+='<div style="margin-top:24px;padding-top:16px;border-top:1px solid rgba(100,116,139,.15);display:flex;flex-direction:column;gap:8px">'
+    +'<button onclick="event.stopPropagation();_openCEOReport()" style="width:100%;padding:11px 16px;background:linear-gradient(135deg,#0f172a,#1e3a5f);color:#fff;border:none;border-radius:10px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:Rajdhani,sans-serif;letter-spacing:.5px;box-shadow:0 4px 16px rgba(15,23,42,.2);display:flex;align-items:center;justify-content:center;gap:8px">📊 ส่งแคมเปญนี้เลย</button>'
+    +'<button class="ceo-add-btn" onclick="event.stopPropagation();_addToCEOCart();_updateCEOCartUI()" style="width:100%;padding:9px 16px;background:rgba(21,101,192,.06);border:1px dashed rgba(21,101,192,.3);border-radius:10px;font-size:.76rem;font-weight:700;cursor:pointer;font-family:Rajdhani,sans-serif;letter-spacing:.5px;color:#1565c0;display:flex;align-items:center;justify-content:center;gap:6px">➕ เพิ่มในรายงานรวม</button>'
     +'</div>';
 
   el.innerHTML=html;
@@ -7345,21 +7274,80 @@ function _openCEOReport(){
     prompt('กรุณา copy ลิงก์นี้ส่งให้ CEO:',url);
   }
 }
+// ─── CEO REPORT CART (multi-campaign) ───────────────────────────────────────
+window._ceoCart=[];
+function _addToCEOCart(){
+  var camp=window._fbDetailCamp;
+  if(!camp||!camp._agg){alert('กรุณาเลือกแคมเปญก่อน');return;}
+  var allRows=(fbDataMap[fbAccount]||[]).filter(function(r){return r.campaign===camp.name;});
+  var byDate={};
+  allRows.forEach(function(r){
+    if(!r.date)return;
+    if(!byDate[r.date])byDate[r.date]={date:r.date,spend:0,revenue:0,impressions:0,clicks:0,purchases:0,conversations:0};
+    var b=byDate[r.date];
+    b.spend+=r.spend;b.revenue+=r.revenue;b.impressions+=r.impressions;
+    b.clicks+=r.clicks;b.purchases+=r.purchases;b.conversations+=r.conversations;
+  });
+  var daily=Object.keys(byDate).sort().map(function(d){return byDate[d];});
+  var idx=_ceoCart.findIndex(function(c){return c.name===camp.name;});
+  if(idx>=0){
+    _ceoCart.splice(idx,1);
+    showBanner('ลบออกจากรายงานรวมแล้ว');
+  } else {
+    _ceoCart.push({name:camp.name,agg:camp._agg,daily:daily});
+    showBanner('➕ เพิ่ม '+_ceoCart.length+' แคมเปญในรายงาน CEO');
+  }
+  _updateCEOCartUI();
+}
+function _sendCEOCart(){
+  if(!_ceoCart.length){alert('ยังไม่มีแคมเปญ — กด ➕ เพิ่มในรายงานก่อน');return;}
+  var payload={campaigns:_ceoCart};
+  var json=JSON.stringify(payload);
+  var encoded;
+  try{
+    if(window.LZString){encoded=LZString.compressToEncodedURIComponent(json);}
+    else{encoded=btoa(unescape(encodeURIComponent(json)));}
+  }catch(e){alert('ไม่สามารถสร้างลิงก์ได้: '+e.message);return;}
+  var base=(window.location.href.split('#')[0]).replace(/\/[^\/]*$/,'/');
+  var url=base+'ceo-report.html#'+encoded;
+  var w=window.open(url,'_blank');
+  if(!w){prompt('กรุณา copy ลิงก์นี้ส่งให้ CEO:',url);}
+}
+function _updateCEOCartUI(){
+  var n=_ceoCart.length;
+  var bar=document.getElementById('ceoCartBar');
+  var badge=document.getElementById('ceoCartBadge');
+  var addBtns=document.querySelectorAll('.ceo-add-btn');
+  if(bar)bar.style.display=n>0?'flex':'none';
+  if(badge)badge.textContent=n+' แคมเปญ';
+  // Highlight add buttons based on cart state
+  addBtns.forEach(function(btn){
+    var inCart=_ceoCart.some(function(c){return c.name===(window._fbDetailCamp&&window._fbDetailCamp.name);});
+    btn.textContent=inCart?'✓ อยู่ในรายงานแล้ว':'➕ เพิ่มในรายงานรวม';
+    btn.style.background=inCart?'rgba(16,185,129,.15)':'rgba(21,101,192,.06)';
+    btn.style.color=inCart?'#059669':'#1565c0';
+    btn.style.borderColor=inCart?'rgba(16,185,129,.3)':'rgba(21,101,192,.3)';
+  });
+}
 window._fbChecked={};
 
 function _fbOnCheck(cb){
   var camp=cb.getAttribute('data-camp');
   if(!camp)return;
   if(cb.checked){window._fbChecked[camp]=true;}else{delete window._fbChecked[camp];}
+  // Refresh all rows' visual state without full re-render
   document.querySelectorAll('.fb-camp-row').forEach(function(tr){
     var c=tr.getAttribute('data-camp');
     var sel=window._fbChecked&&window._fbChecked[c];
     var bg=sel?'rgba(21,101,192,.1)':'rgba(21,101,192,.05)';
     var sel2=sel?'rgba(21,101,192,.13)':'#eef3fd';
     tr.style.background=bg;
-    tr.querySelectorAll('td').forEach(function(td,i){if(i<3)td.style.background=sel2;});
+    tr.querySelectorAll('td[style*="sticky"]').forEach(function(td,i){
+      if(i<3)td.style.background=sel2;
+    });
   });
   _fbUpdateCheckBar();
+  // update check-all state
   var all=document.querySelectorAll('.fbCampCb');
   var checked=document.querySelectorAll('.fbCampCb:checked');
   var ca=document.getElementById('fbCheckAll');
@@ -7379,17 +7367,25 @@ function _fbCheckAll(val){
     var bg=sel?'rgba(21,101,192,.1)':'rgba(21,101,192,.05)';
     var sel2=sel?'rgba(21,101,192,.13)':'#eef3fd';
     tr.style.background=bg;
-    tr.querySelectorAll('td').forEach(function(td,i){if(i<3)td.style.background=sel2;});
+    tr.querySelectorAll('td[style*="sticky"]').forEach(function(td,i){
+      if(i<3)td.style.background=sel2;
+    });
   });
   _fbUpdateCheckBar();
 }
 
 function _fbUpdateCheckBar(){
-  var n=Object.keys(window._fbChecked||{}).length;
+  var keys=Object.keys(window._fbChecked||{});
+  var n=keys.length;
   var bar=document.getElementById('fbCheckBar');
   if(!bar)return;
-  if(n>0){bar.style.display='flex';var lbl=bar.querySelector('.fbCheckBarLbl');if(lbl)lbl.textContent='เลือก '+n+' แคมเปญ';}
-  else{bar.style.display='none';}
+  if(n>0){
+    bar.style.display='flex';
+    var lbl=bar.querySelector('.fbCheckBarLbl');
+    if(lbl)lbl.textContent='เลือก '+n+' แคมเปญ';
+  } else {
+    bar.style.display='none';
+  }
 }
 
 function _fbSendCheckedCEO(){
@@ -7423,7 +7419,7 @@ function _fbSendCheckedCEO(){
 function _fbCompareChecked(){
   var keys=Object.keys(window._fbChecked||{});
   if(keys.length<2){alert('เลือกอย่างน้อย 2 แคมเปญเพื่อเปรียบเทียบ');return;}
-  _fbSendCheckedCEO();
+  _fbSendCheckedCEO(); // reuse same CEO page which shows comparison when multiple campaigns
 }
 
 async function fbLoadAdCreatives(campId){
@@ -7639,7 +7635,7 @@ function _renderFBInner(el){
   // Column headers (FB style)
   var TH='padding:9px 12px;font-size:.7rem;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;border-bottom:2px solid rgba(21,101,192,.15);';
   var thead='<thead><tr style="background:rgba(241,245,255,.8)">'
-    +'<th style="'+TH+'width:44px;text-align:center;padding:0 8px;position:sticky;left:0;z-index:4;background:#f1f5ff"><input type="checkbox" id="fbCheckAll" onclick="_fbCheckAll(this.checked)" style="width:15px;height:15px;cursor:pointer"></th>'
+    +'<th style="'+TH+'width:44px;text-align:center;padding:0 8px;position:sticky;left:0;z-index:4;background:#f1f5ff"><input type="checkbox" id="fbCheckAll" onchange="_fbCheckAll(this.checked)" style="width:15px;height:15px;cursor:pointer;accent-color:#1565c0"></th>'
     +'<th style="'+TH+'min-width:130px;text-align:left;padding-left:14px;position:sticky;left:44px;z-index:3;background:#f1f5ff">การแสดงโฆษณา</th>'
     +'<th style="'+TH+'text-align:left;min-width:200px;position:sticky;left:174px;z-index:3;background:#f1f5ff;box-shadow:4px 0 8px -2px rgba(21,101,192,.18);">แคมเปญ / ชุดโฆษณา</th>'
     +'<th style="'+TH+'text-align:right;color:#059669">งบคงเหลือ</th>'
@@ -7750,6 +7746,16 @@ function _renderFBInner(el){
         +'<div style="text-align:right">'
         +'<div style="font-size:.8rem;font-weight:700;color:#fbbf24">฿'+fmt(_bud_d,0)+'</div>'
         +'<div style="font-size:.58rem;color:#64748b">งบ/วัน</div>'
+        +'</div>'
+        +_editBtn+_dateBtn
+        +'</div>'
+        +'</td>';
+    } else if(campInfo&&_bud_lt>0){
+      budgetCell='<td style="padding:8px 12px;white-space:nowrap;min-width:140px" onclick="event.stopPropagation()">'
+        +'<div style="display:flex;align-items:center;gap:6px;justify-content:flex-end">'
+        +'<div style="text-align:right">'
+        +'<div style="font-size:.8rem;font-weight:700;color:#8b5cf6">฿'+fmt(_bud_lt,0)+'</div>'
+        +'<div style="font-size:.58rem;color:#8b5cf6;opacity:.75">ตลอดชีพ</div>'
         +'</div>'
         +_editBtn+_dateBtn
         +'</div>'
@@ -8098,14 +8104,15 @@ window.onerror=function(msg,src,line){try{document.getElementById('overlay').sty
 loadJSONP(GID_S1,'A7:Z','cb_s1');loadJSONP(GID_S2,'A7:Y','cb_s2');
 loadJSONP(GID_COMM,'A2:E','cb_comm');
 loadJSONP(GID_CONFIG,'A2:B','cb_config');
-setTimeout(function(){if(loadedCount<2){showBanner('⚠ โหลด Sheet ช้า — แสดงข้อมูลที่มี');loadedCount=2;buildProductFilter();var _vaiProd=document.getElementById('vai-prod');if(_vaiProd){var _vaiProds=[...new Set((s1data||[]).map(function(r){return r.product;}).filter(Boolean))].sort();while(_vaiProd.options.length>1)_vaiProd.remove(1);_vaiProds.forEach(function(p){_vaiProd.innerHTML+='<option value="'+p+'">'+p+'</option>';})}buildAnalystFilter();renderAll();}},15000);
-
+setTimeout(function(){if(loadedCount<2){showBanner('⚠ โหลด Sheet ช้า — แสดงข้อมูลที่มี');loadedCount=2;buildProductFilter();buildAnalystFilter();renderAll();}},15000);
+var countdown=REFRESH;
+setInterval(function(){countdown--;var el=document.getElementById('cdwn');if(el){var m=Math.floor(countdown/60),s=countdown%60;el.textContent='Refresh in '+(m>0?m+'m '+pad2(s)+'s':s+'s');}if(countdown<=0)location.reload();},1000);
 
 // ── User Management (Access Control) ──
 function _getAccessUsers(){
   var stored=localStorage.getItem('rb_access_users');
   if(stored){try{var p=JSON.parse(stored);if(p.length)return p;}catch(e){}}
-  return [{name:'Admin',email:'ads02@richbiotech.com',password:'rich01',access:'all'},{name:'HR',email:'',password:'hr01',access:'hr'}];
+  return [{name:'Admin',password:'rich01',access:'all'},{name:'HR',password:'hr01',access:'hr'}];
 }
 function _saveAccessUsers(u){localStorage.setItem('rb_access_users',JSON.stringify(u));}
 
@@ -8257,8 +8264,6 @@ function _renderUserMgmt(el){
       +'<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">'
         +'<div><label style="font-size:.67rem;color:#64748b;display:block;margin-bottom:4px;font-weight:600">ชื่อผู้ใช้</label>'
           +'<input id="umNewName" placeholder="เช่น มอส, ปาย" style="border:1.5px solid #e2e8f0;border-radius:7px;padding:7px 12px;font-size:.8rem;font-family:inherit;width:140px;color:#0f172a;outline:none"></div>'
-        +'<div><label style="font-size:.67rem;color:#64748b;display:block;margin-bottom:4px;font-weight:600">ชื่อผู้ใช้</label>'
-          +'<input id="umNewName" placeholder="เช่น มอส, ปาย" style="border:1.5px solid #e2e8f0;border-radius:7px;padding:7px 12px;font-size:.8rem;font-family:inherit;width:140px;color:#0f172a;outline:none"></div>'
         +'<div><label style="font-size:.67rem;color:#64748b;display:block;margin-bottom:4px;font-weight:600">อีเมล</label>'
           +'<input id="umNewEmail" type="email" placeholder="example@email.com" style="border:1.5px solid #e2e8f0;border-radius:7px;padding:7px 12px;font-size:.8rem;font-family:inherit;width:200px;color:#0f172a;outline:none"></div>'
         +'<div><label style="font-size:.67rem;color:#64748b;display:block;margin-bottom:4px;font-weight:600">รหัสผ่าน</label>'
@@ -8351,202 +8356,4 @@ window._umAddUser=function(){
 };
 window._umExportCode=function(){
   var u=_getAccessUsers();
-  var code=btoa(JSON.stringify(u));
-  var modal=document.createElement('div');
-  modal.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.55);z-index:9999;display:flex;align-items:center;justify-content:center';
-  var ta=document.createElement('textarea');
-  ta.id='export-code-ta';ta.readOnly=true;ta.value=code;
-  ta.style.cssText='width:100%;height:100px;font-size:.7rem;font-family:monospace;border:1px solid #e2e8f0;border-radius:7px;padding:8px;resize:none;box-sizing:border-box;background:#f8fafc;color:#334155';
-  var copyBtn=document.createElement('button');
-  copyBtn.textContent='📋 Copy';
-  copyBtn.style.cssText='flex:1;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;border:none;border-radius:8px;padding:9px;font-weight:700;font-size:.8rem;cursor:pointer;font-family:inherit';
-  copyBtn.onclick=function(){ta.select();document.execCommand('copy');this.textContent='✅ Copied!';};
-  var closeBtn=document.createElement('button');
-  closeBtn.textContent='ปิด';
-  closeBtn.style.cssText='flex:1;background:#f1f5f9;border:1px solid #e2e8f0;color:#374151;border-radius:8px;padding:9px;font-weight:700;font-size:.8rem;cursor:pointer;font-family:inherit';
-  closeBtn.onclick=function(){modal.remove();};
-  var btnRow=document.createElement('div');btnRow.style.cssText='display:flex;gap:8px;margin-top:12px';
-  btnRow.appendChild(copyBtn);btnRow.appendChild(closeBtn);
-  var inner=document.createElement('div');
-  inner.style.cssText='background:#fff;border-radius:14px;padding:28px 28px 20px;width:420px;max-width:95vw;box-shadow:0 24px 60px rgba(0,0,0,.25)';
-  inner.innerHTML='<div style="font-weight:800;font-size:1rem;color:#1e293b;margin-bottom:6px">📋 Export Code</div>'
-    +'<div style="font-size:.75rem;color:#64748b;margin-bottom:12px">แชร์ code ให้ผู้ใช้ใหม่ — วางใน Login page แล้วกด Import</div>';
-  inner.appendChild(ta);inner.appendChild(btnRow);
-  modal.appendChild(inner);
-  document.body.appendChild(modal);
-};
-
-// ===== VIDEO AI MODULE =====
-var _vai={data:[],tab:'all',collapsed:false};
-function _vaiDp(s){return s||'last_30d';}
-function _vaiFmtB(n){return n>=1000?'฿'+Math.round(n).toLocaleString():'฿'+n.toFixed(2);}
-function _vaiFmtN(n){return Math.round(n).toLocaleString();}
-function _vaiMed(arr){if(!arr.length)return 0;var s=arr.slice().sort(function(a,b){return a-b;});var m=Math.floor(s.length/2);return s.length%2?s[m]:(s[m-1]+s[m])/2;}
-
-function vaiInit(){
-  var sel=document.getElementById('vai-acct');
-  if(!sel||sel.options.length>1)return;
-  FB_ACCOUNTS_META.forEach(function(m){sel.innerHTML+='<option value="'+m.name+'">'+m.name+'</option>';});
-}
-
-async function vaiLoad(){
-  vaiInit();
-  var actVal=document.getElementById('vai-acct').value;
-  var dateVal=document.getElementById('vai-date').value||'last_30d';
-  var dp=_vaiDp(dateVal);
-  document.getElementById('vai-cards').innerHTML='<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--txt2)">⏳ กำลังโหลดข้อมูลวีดีโอ...</div>';
-  document.getElementById('vai-tbl-wrap').innerHTML='';
-  document.getElementById('vai-quad-wrap').style.display='none';
-  document.getElementById('vai-banner').style.display='none';
-  document.getElementById('vai-mini').innerHTML='';
-  var accts=actVal==='__all__'?FB_ACCOUNTS_META:FB_ACCOUNTS_META.filter(function(m){return m.name===actVal;});
-  var allData=[].concat.apply([],await Promise.all(accts.map(async function(am){var tok=FB_TOKENS[am.name];if(!tok)return [];try{var ins=await _vaiFetchIns(am.id,tok,dp);var crvs=await _vaiFetchCrvs(am.id,tok,dp);return _vaiMerge(ins,crvs,am.name);}catch(e){console.warn('vai',am.name,e);return [];}})));
-  _vai.data=allData.filter(function(d){return d.v3s>0;});
-  _vaiCalc(_vai.data);
-  _vaiRender();
-}
-
-async function _vaiFetchIns(actId,tok,dp){
-  var base='https://graph.facebook.com/v20.0/';
-  var f='ad_id,ad_name,spend,impressions,reach,actions,video_play_actions,video_p25_watched_actions,video_p50_watched_actions,video_p75_watched_actions,video_p95_watched_actions,video_thruplay_watched_actions,cost_per_action_type';
-  var r=await fetch(base+actId+'/insights?level=ad&fields='+f+'&date_preset='+dp+'&limit=200&access_token='+encodeURIComponent(tok));
-  var d=await r.json();return d.data||[];
-}
-
-async function _vaiFetchCrvs(actId,tok,dp){
-  var base='https://graph.facebook.com/v20.0/';
-  var r=await fetch(base+actId+'/ads?fields=id,name,created_time,creative{thumbnail_url,video_id}&date_preset='+dp+'&limit=200&access_token='+encodeURIComponent(tok));
-  var d=await r.json();return d.data||[];
-}
-
-function _vaiMerge(ins,crvs,acctKey){
-  var cm={};crvs.forEach(function(c){cm[c.id]=c;});
-  var getA=function(arr,type){if(!arr)return 0;var f=arr.find(function(a){return a.action_type===type;});return f?parseFloat(f.value):0;};
-  return ins.map(function(row){
-    var cr=cm[row.ad_id]||{};
-    var results=0;
-    var pri=['purchase','offsite_conversion.fb_pixel_purchase','lead','onsite_conversion.lead_grouped','link_click'];
-    if(row.actions){for(var p=0;p<pri.length;p++){var rv=getA(row.actions,pri[p]);if(rv>0){results=rv;break;}}}
-    var created=cr.created_time?new Date(cr.created_time):null;
-    var days=created?Math.floor((Date.now()-created.getTime())/86400000):0;
-    return{adId:row.ad_id,name:(cr.name||row.ad_name||'').substring(0,60),
-      thumb:cr.creative&&cr.creative.thumbnail_url?cr.creative.thumbnail_url:'',
-      spend:parseFloat(row.spend||0),imp:parseInt(row.impressions||0),reach:parseInt(row.reach||0),
-      v3s:getA(row.video_play_actions,'video_view'),p25:getA(row.video_p25_watched_actions,'video_view'),
-      p50:getA(row.video_p50_watched_actions,'video_view'),p75:getA(row.video_p75_watched_actions,'video_view'),
-      p95:getA(row.video_p95_watched_actions,'video_view'),thru:getA(row.video_thruplay_watched_actions,'video_view'),
-      results:results,acct:acctKey,days:days,score:0,verdict:'',vcolor:'',quad:''};
-  });
-}
-
-function _vaiCalc(data){
-  if(!data.length)return;
-  data.forEach(function(d){d.hookRate=d.imp>0?d.v3s/d.imp:0;d.convRate=d.imp>0?d.results/d.imp:0;d.cpa=d.results>0?d.spend/d.results:0;d.leadRate=d.v3s>0?d.results/d.v3s:0;d.slideRate=d.imp>0?d.results/d.imp:0;});
-  var avgH=data.reduce(function(s,d){return s+d.hookRate;},0)/data.length;
-  var avgC=data.reduce(function(s,d){return s+d.convRate;},0)/data.length;
-  var medH=_vaiMed(data.map(function(d){return d.hookRate;}));
-  data.forEach(function(d){
-    d.qx=avgH>0?d.hookRate/avgH:1;d.qy=avgC>0?d.convRate/avgC:1;
-    var hS=Math.min(50,medH>0?d.hookRate/medH*35:0);var cS=avgC>0?Math.min(40,d.convRate/avgC*30):0;var holdB=d.v3s>0?Math.min(10,d.p50/d.v3s*10):0;
-    d.score=Math.round(Math.min(100,hS+cS+holdB));
-    if(d.qx>=1&&d.qy>=1){d.verdict='พีสูงแล้วว่าดี';d.vcolor='#10b981';d.quad='ขยายผล';}
-    else if(d.qx>=1){d.verdict='ตามเกณฑ์บัญชี';d.vcolor='#f59e0b';d.quad='แก้ CTA';}
-    else if(d.qy>=1){d.verdict='ตามเกณฑ์บัญชี';d.vcolor='#3b82f6';d.quad='แก้ฮุก';}
-    else{d.verdict='เสียคนดูตั้งแต่ฮุก';d.vcolor='#f87171';d.quad='พิจารณาปิด';}
-  });
-}
-
-function _vaiFiltered(){
-  var showLow=(document.getElementById('vai-showlow')||{}).checked;
-  var d=_vai.data.slice().filter(function(x){return x.v3s>0;});
-  var prodVal=(document.getElementById('vai-prod')||{}).value||'__all__';if(prodVal!=='__all__'){d=d.filter(function(x){return x.name&&x.name.toLowerCase().indexOf(prodVal.toLowerCase())!==-1;});}
-  if(!showLow){var ms=parseFloat((document.getElementById('vai-ms')||{}).value||0);var mi=parseFloat((document.getElementById('vai-mi')||{}).value||0);d=d.filter(function(x){return x.spend>=ms&&x.imp>=mi;});}
-  if(_vai.tab==='engage')d=d.filter(function(x){return x.v3s>=1000;});
-  return d;
-}
-function _vaiRender(){var d=_vaiFiltered();_vaiCards(d);_vaiBanner(d);_vaiMini(d);_vaiQuad(d);_vaiTbl(d);}
-
-function _vaiCards(d){
-  var sp=d.reduce(function(s,x){return s+x.spend;},0),rs=d.reduce(function(s,x){return s+x.results;},0),medH=_vaiMed(d.map(function(x){return x.hookRate;}));
-  var cards=[{icon:'💰',label:'ยอดใช้จ่ายวีดีโอ',val:_vaiFmtB(sp),sub:'รวมทุกบัญชีที่เลือก'},{icon:'🎯',label:'ค่ากลางอัตราฮุก',val:(medH*100).toFixed(1)+'%',sub:'จาก '+d.length+' วีดีโอที่ผ่านเกณฑ์'},{icon:'📈',label:'ผลลัพธ์',val:_vaiFmtN(rs),sub:'ต้นทุน/ผลลัพธ์: '+(rs>0?'฿'+(sp/rs).toFixed(2):'—')},{icon:'🎬',label:'วีดีโอที่วิเคราะห์แล้ว',val:d.length,sub:'ข้อมูลไม่พอ '+(_vai.data.length-d.length)+' ตัว'}];
-  document.getElementById('vai-cards').innerHTML=cards.map(function(c){return '<div style="background:#ffffff;border:1.5px solid #e5e7eb;border-radius:12px;padding:1.25rem"><div style="font-size:.78rem;color:var(--txt2);margin-bottom:.5rem">'+c.icon+' '+c.label+'</div><div style="font-size:1.6rem;font-weight:800;color:var(--txt)">'+c.val+'</div><div style="font-size:.72rem;color:var(--txt2);margin-top:.25rem">'+c.sub+'</div></div>';}).join('');
-}
-
-function _vaiBanner(d){
-  var sc=d.filter(function(x){return x.quad==='ขยายผล';});var el=document.getElementById('vai-banner');
-  if(sc.length){el.style.display='';el.innerHTML='<div style="background:linear-gradient(135deg,#d1fae5,#a7f3d0);border:1px solid #6ee7b7;border-radius:10px;padding:.75rem 1.25rem;font-size:.82rem;font-weight:600;color:#065f46;cursor:pointer" onclick="var t=document.getElementById(\'vai-tbl-wrap\');t&&t.scrollIntoView({behavior:\'smooth\'})">📈 วีดีโอที่พีสูงแล้วว่า '+sc.length+' ตัว — ขยายผลต่อได้เลย</div>';}else el.style.display='none';
-}
-
-function _vaiMini(d){
-  var sc=d.filter(function(x){return x.quad==='ขยายผล';}).length,wi=d.filter(function(x){return x.score>=55;}).length,t=d.length||1;
-  document.getElementById('vai-mini').innerHTML=[{icon:'🚀',label:'เปิดตัวใหม่',val:d.length},{icon:'📊',label:'ขยายแล้ว',val:sc},{icon:'🏆',label:'ตัวชนะ',val:wi},{icon:'🎯',label:'อัตราชนะ',val:wi+'/'+d.length+'·'+Math.round(wi/t*100)+'%'}].map(function(s){return '<div style="background:#fff;border:1.5px solid #d1d5db;border-radius:12px;padding:.85rem 1.1rem;display:flex;flex-direction:column;gap:.4rem;flex:1;min-width:100px"><div style="font-size:.72rem;color:#6b7280;font-weight:500;display:flex;align-items:center;gap:.3rem"><span>'+s.icon+'</span>'+s.label+'</div><div style="font-size:1.5rem;font-weight:700;color:#111827;line-height:1">'+s.val+'</div></div>';}).join('');
-}
-
-function _vaiQuad(d){
-  if(!d.length){document.getElementById('vai-quad-wrap').style.display='none';return;}
-  document.getElementById('vai-quad-wrap').style.display='';
-  var canvas=document.getElementById('vai-canvas');if(!canvas)return;
-  var ctx=canvas.getContext('2d'),W=canvas.width,H=canvas.height,pad={l:55,r:25,t:20,b:45},pW=W-pad.l-pad.r,pH=H-pad.t-pad.b;
-  ctx.clearRect(0,0,W,H);
-  var mn=0.25,mx=3,toX=function(v){return pad.l+(Math.min(mx,Math.max(mn,v))-mn)/(mx-mn)*pW;},toY=function(v){return pad.t+pH-(Math.min(mx,Math.max(mn,v))-mn)/(mx-mn)*pH;};
-  var px=toX(1),py=toY(1);
-  ctx.fillStyle='rgba(16,185,129,.08)';ctx.fillRect(px,pad.t,W-px-pad.r,py-pad.t);
-  ctx.fillStyle='rgba(59,130,246,.08)';ctx.fillRect(pad.l,pad.t,px-pad.l,py-pad.t);
-  ctx.fillStyle='rgba(245,158,11,.08)';ctx.fillRect(px,py,W-px-pad.r,H-py-pad.b);
-  ctx.fillStyle='rgba(248,113,113,.08)';ctx.fillRect(pad.l,py,px-pad.l,H-py-pad.b);
-  ctx.font='bold 11px sans-serif';
-  ctx.fillStyle='rgba(16,185,129,.8)';ctx.textAlign='right';ctx.fillText('ขยายผล',W-pad.r-5,pad.t+16);
-  ctx.fillStyle='rgba(59,130,246,.8)';ctx.textAlign='left';ctx.fillText('แก้ CTA',pad.l+5,pad.t+16);
-  ctx.fillStyle='rgba(245,158,11,.8)';ctx.textAlign='right';ctx.fillText('แก้ฮุก',W-pad.r-5,H-pad.b-5);
-  ctx.fillStyle='rgba(248,113,113,.8)';ctx.textAlign='left';ctx.fillText('พิจารณาปิด',pad.l+5,H-pad.b-5);
-  ctx.strokeStyle='rgba(150,150,150,.12)';ctx.lineWidth=1;
-  [.5,1,1.5,2,2.5,3].forEach(function(v){ctx.beginPath();ctx.moveTo(toX(v),pad.t);ctx.lineTo(toX(v),pad.t+pH);ctx.stroke();ctx.beginPath();ctx.moveTo(pad.l,toY(v));ctx.lineTo(pad.l+pW,toY(v));ctx.stroke();});
-  ctx.strokeStyle='rgba(100,100,100,.35)';ctx.setLineDash([4,4]);ctx.lineWidth=1.5;
-  ctx.beginPath();ctx.moveTo(px,pad.t);ctx.lineTo(px,pad.t+pH);ctx.stroke();
-  ctx.beginPath();ctx.moveTo(pad.l,py);ctx.lineTo(pad.l+pW,py);ctx.stroke();ctx.setLineDash([]);
-  ctx.font='10px sans-serif';ctx.fillStyle='#999';
-  [.25,.95,1.65,3].forEach(function(v){ctx.textAlign='center';ctx.fillText(v,toX(v),H-pad.b+14);ctx.textAlign='right';ctx.fillText(v,pad.l-6,toY(v)+3);});
-  ctx.font='11px sans-serif';ctx.fillStyle='#888';ctx.textAlign='center';
-  ctx.fillText('อัตราฮุกเทียบค่าปกติของบัญชี (เท่า)',pad.l+pW/2,H-4);
-  ctx.save();ctx.translate(13,pad.t+pH/2);ctx.rotate(-Math.PI/2);ctx.fillText('คอนเวอร์ชันเทียบค่าปกติ (เท่า)',0,0);ctx.restore();
-  var maxSp=Math.max.apply(null,d.map(function(x){return x.spend||1;}));
-  d=d.slice().sort(function(a,b){return b.score-a.score;}).slice(0,60);
-  d.forEach(function(p,pi){var _a=pi*2.3999632,_rj=Math.sqrt(pi+1)*10,jx=Math.cos(_a)*_rj,jy=Math.sin(_a)*_rj,x=toX(p.qx)+jx,y=toY(p.qy)+jy,r=Math.max(1,Math.sqrt((p.spend||1)/maxSp)*1.5);ctx.beginPath();ctx.arc(x,y,r,0,2*Math.PI);ctx.fillStyle=p.vcolor+'bb';ctx.fill();ctx.strokeStyle=p.vcolor;ctx.lineWidth=1.5;ctx.stroke();});
-  var counts={'ขยายผล':0,'แก้ CTA':0,'แก้ฮุก':0,'พิจารณาปิด':0};d.forEach(function(x){counts[x.quad]=(counts[x.quad]||0)+1;});var tot=d.length||1;
-  document.getElementById('vai-dist').innerHTML='<div style="height:12px;border-radius:6px;overflow:hidden;display:flex;margin-bottom:.75rem"><div style="background:#10b981;width:'+(counts['ขยายผล']/tot*100).toFixed(1)+'%"></div><div style="background:#aaa;width:'+((counts['แก้ CTA']+counts['แก้ฮุก'])/tot*100).toFixed(1)+'%"></div><div style="background:#f87171;width:'+(counts['พิจารณาปิด']/tot*100).toFixed(1)+'%"></div></div><div style="font-size:.75rem;display:flex;flex-direction:column;gap:.4rem"><div>📈 '+counts['ขยายผล']+' พีสูงแล้วว่าดี</div><div>✓ '+(counts['แก้ CTA']+counts['แก้ฮุก'])+' ตามเกณฑ์บัญชี</div><div>✗ '+counts['พิจารณาปิด']+' เสียคนดูตั้งแต่ฮุก</div></div>';
-}
-
-function _vaiTbl(d){
-  if(!d.length){document.getElementById('vai-tbl-wrap').innerHTML='<div style="padding:3rem;text-align:center;color:var(--txt2)">ไม่พบวีดีโอที่ผ่านเกณฑ์</div>';return;}
-  var srt=d.slice().sort(function(a,b){return b.score-a.score;});
-  var hS='padding:.6rem .75rem;font-size:.7rem;font-weight:700;color:var(--txt2);background:var(--bg);border-bottom:2px solid #e5e7eb;white-space:nowrap;';
-  var hdrs=[['left','ครีเอทีฟ'],['right','วันรัน'],['right','คะแนน'],['right','ผลประเมิน'],['right','ยอดใช้จ่าย'],['right','อิมเพรสชัน'],['right','ผู้ชม 3 วิ'],['right','อัตราฮุก %'],['right','25% (ผู้ชม)'],['right','50% (ผู้ชม)'],['right','75% (ผู้ชม)'],['right','95% (ผู้ชม)'],['right','อัตราสลิด/อิมเพรสชัน'],['right','ลิด/ผู้ชม'],['right','ต้นทุน/ผลลัพธ์']];
-  var html='<table style="min-width:1650px;border-collapse:collapse"><thead><tr>'+hdrs.map(function(h){return '<th style="'+hS+'text-align:'+h[0]+'">'+h[1]+'</th>';}).join('')+'</tr></thead><tbody>';
-  srt.forEach(function(d){
-    var sc=d.score>=55?'#10b981':d.score>=45?'#f59e0b':'#f87171';
-    var p25=d.v3s>0?(d.p25/d.v3s*100).toFixed(1)+'%':'—',p50=d.v3s>0?(d.p50/d.v3s*100).toFixed(1)+'%':'—',p75=d.v3s>0?(d.p75/d.v3s*100).toFixed(1)+'%':'—',p95=d.v3s>0?(d.p95/d.v3s*100).toFixed(1)+'%':'—';
-    var hook=(d.hookRate*100).toFixed(1)+'% '+d.qx.toFixed(1)+'×',slide=(d.slideRate*100).toFixed(2)+'%',lead=(d.leadRate*100).toFixed(2)+'%',cpa=d.cpa>0?'฿'+d.cpa.toFixed(2):'—';
-    var qIcon=d.quad==='ขยายผล'?'📈 ':d.quad==='พิจารณาปิด'?'✗ ':'✓ ';
-    var cS='padding:.55rem .75rem;font-size:.77rem;border-bottom:1px solid #e5e7eb;color:var(--txt);text-align:right;',c0='padding:.55rem .75rem;font-size:.77rem;border-bottom:1px solid #e5e7eb;color:var(--txt);text-align:left;';
-    html+='<tr onmouseenter="this.style.background=\'var(--bg)\'" onmouseleave="this.style.background=\'\'"><td style="'+c0+'max-width:220px"><div style="display:flex;align-items:center;gap:.6rem"><span style="color:var(--txt2)">›</span>'+(d.thumb?'<img src="'+d.thumb+'" style="width:42px;height:42px;object-fit:cover;border-radius:6px;flex-shrink:0" onerror="this.style.display=\'none\'">':'<div style="width:42px;height:42px;background:#e5e7eb;border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center">🎬</div>')+'<span title="'+d.name+'" style="font-size:.73rem;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block;max-width:180px">'+d.name+'<br><span style="color:var(--txt2);font-size:.68rem">'+d.acct+'</span></span></div></td><td style="'+cS+'">'+d.days+'</td><td style="'+cS+'"><span style="background:'+sc+';color:#fff;width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:.72rem">'+d.score+'</span></td><td style="'+cS+'"><span style="font-size:.72rem;font-weight:600;color:'+d.vcolor+'">'+qIcon+d.verdict+'</span></td><td style="'+cS+'">'+( d.spend>0?'฿'+d.spend.toLocaleString('th',{maximumFractionDigits:2}):'—')+'</td><td style="'+cS+'">'+d.imp.toLocaleString()+'</td><td style="'+cS+'">'+d.v3s.toLocaleString()+'</td><td style="'+cS+'">'+hook+'</td><td style="'+cS+'">'+p25+'</td><td style="'+cS+'">'+p50+'</td><td style="'+cS+'">'+p75+'</td><td style="'+cS+'">'+p95+'</td><td style="'+cS+'"><span style="color:#10b981">⊙ </span>'+slide+'</td><td style="'+cS+'">'+lead+'</td><td style="'+cS+'">'+cpa+'</td></tr>';
-  });
-  document.getElementById('vai-tbl-wrap').innerHTML=html+'</tbody></table>';
-}
-
-function vaiTab(t,el){_vai.tab=t;document.querySelectorAll('.vai-tab').forEach(function(b){b.style.background='transparent';b.style.color='var(--txt)';b.style.fontWeight='normal';b.style.border='1px solid #e5e7eb';b.style.background='transparent';});el.style.background='var(--acc)';el.style.color='#fff';el.style.fontWeight='600';el.style.border='none';el.style.background='var(--acc)';_vaiRender();}
-function vaiQuadToggle(){_vai.collapsed=!_vai.collapsed;var inner=document.getElementById('vai-quad-inner'),tog=document.getElementById('vai-quad-tog');if(inner)inner.style.display=_vai.collapsed?'none':'';if(tog)tog.textContent=_vai.collapsed?'▼':'▲';}
-// END VIDEO AI
-// PATCH: add videoai to switchView
-(function(){
-  var _sv=window.switchView;
-  window.switchView=function(vw,el){
-    if(vw==='videoai'){
-      document.querySelectorAll('[id$="View"]').forEach(function(v){v.style.display='none';});
-      document.querySelectorAll('.sb-item').forEach(function(i){i.classList.remove('active');});
-      var vv=document.getElementById('videoaiView');
-      if(vv)vv.style.display='';
-      if(el)el.classList.add('active');
-    }else{_sv(vw,el);}
-  };
-})();</script>
-</div><!-- /content-wrap -->
+  var code=btoa(JSON.stringify(u
