@@ -533,7 +533,19 @@ header>svg{display:none!important}
 [data-theme="dark"] [style*="color:#0f172a"]{color:#E2E8F4!important}
 [data-theme="dark"] [style*="color:#0F172A"]{color:#E2E8F4!important}
 [data-theme="dark"] [style*="color:#94a3b8"]{color:#94A3B8!important}
-[data-theme="dark"] [style*="color:#94A3B8"]{color:#94A3B8!important}</style>
+[data-theme="dark"] [style*="color:#94A3B8"]{color:#94A3B8!important}
+/* Mobile: inline-grid overrides via attribute selectors */
+@media(max-width:640px){
+  [style*="grid-template-columns:repeat(5,1fr)"]{grid-template-columns:repeat(2,1fr)!important}
+  [style*="grid-template-columns:repeat(4,1fr)"]{grid-template-columns:repeat(2,1fr)!important}
+  [style*="grid-template-columns:1fr 1fr 1fr"]{grid-template-columns:1fr!important}
+  .bm-charts{grid-template-columns:1fr!important}
+  .bm-tier-row{grid-template-columns:1fr!important}
+  .pbar,.abar{padding:6px 10px;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .pill-wrap{flex-wrap:nowrap}
+  .tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .hright .user-badge span:last-child{display:none}
+}</style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/lz-string.min.js"></script>
 </head>
 <body>
