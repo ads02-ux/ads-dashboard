@@ -4145,8 +4145,8 @@ async function fbToggleStatus(campName,campId,isActive){
 }
 
 async function fbUpdateBudget(campName,campId){
-  var ci=Object.assign({},(fbCampaignsMap[fbAccount]||{})[campName]||{});
-  var tok=FB_TOKENS[fbAccount]||FB_TOKEN;
+  var _accForCamp=fbAccount;for(var _k in fbCampaignsMap){if(fbCampaignsMap[_k]&&fbCampaignsMap[_k][campName]){_accForCamp=_k;break;}}var ci=Object.assign({},(fbCampaignsMap[_accForCamp]||{})[campName]||{});
+  var tok=FB_TOKENS[_accForCamp]||FB_TOKEN;
   var updateId=campId; // ปกติอัปเดต campaign แต่ถ้า ABO จะเปลี่ยนเป็น adset id
   var adsetCount=0;
 
@@ -4229,7 +4229,7 @@ async function fbUpdateBudget(campName,campId){
     if(isNaN(b)||b<1){inp2.style.borderColor='#ef4444';inp2.focus();return;}
     close_();
     showBanner('\u23f3 \u0e01\u0e33\u0e25\u0e31\u0e07\u0e2d\u0e31\u0e1b\u0e40\u0e14\u0e15\u0e07\u0e1a...');
-    var tok2=FB_TOKENS[fbAccount]||FB_TOKEN;
+    var tok2=FB_TOKENS[_accForCamp]||FB_TOKEN;
     var payload=isDaily?{daily_budget:b*100,access_token:tok2}:{lifetime_budget:b*100,access_token:tok2};
     // ถ้ามีหลาย adset — อัปเดตทีละตัวตามสัดส่วน
     var targets=[];
