@@ -4216,6 +4216,7 @@ async function fbUpdateBudget(campName,campId){
       +'<div style="font-size:1.3rem;font-weight:900;color:#b45309;font-family:Rajdhani,sans-serif">\u0e3f'+(curBud>0?curBud.toLocaleString():'—')+'</div>'
       +adsetNote
     +(budgetExhausted?'<div style="margin-top:8px;padding:8px 10px;background:#fef2f2;border:1px solid #fca5a5;border-radius:6px;font-size:.68rem;color:#dc2626;font-weight:700">⚠️ งบหมดแล้ว — ต้องเพิ่มงบก่อนแคมเปญจะยิงได้</div>':'')
+    +'<div id="fbNewBudPreview" style="display:none;font-size:1.3rem;font-weight:900;color:#1565c0;font-family:Rajdhani,sans-serif;margin-top:6px;padding-top:6px;border-top:1px dashed #fde68a">฿<span id="fbNewBudVal"></span></div>'
     +'</div>'
     +'<div style="margin-bottom:16px">'
       +'<label style="font-size:.68rem;color:#64748b;display:block;margin-bottom:6px;font-weight:600">\u0e1b\u0e23\u0e31\u0e1a\u0e07\u0e1a\u0e40\u0e1b\u0e47\u0e19 (\u0e3f / '+budType+')</label>'
@@ -4232,6 +4233,7 @@ async function fbUpdateBudget(campName,campId){
     inp.focus();
     inp.addEventListener('focus',function(){this.style.borderColor='#1565c0';});
     inp.addEventListener('blur',function(){this.style.borderColor='#cbd5e1';});
+    inp.addEventListener('input',function(){var v=parseInt(this.value)||0;var el=document.getElementById('fbNewBudPreview');if(el){el.style.display=v?'':'none';if(v)document.getElementById('fbNewBudVal').textContent=v.toLocaleString();}});
   }
   function close_(){if(ov.parentNode)ov.parentNode.removeChild(ov);}
   ov.addEventListener('click',function(e){if(e.target===ov)close_();});
