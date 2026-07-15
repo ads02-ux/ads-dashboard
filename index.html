@@ -8531,7 +8531,7 @@ function vaiQuadToggle(){_vai.collapsed=!_vai.collapsed;var inner=document.getEl
       var vv=document.getElementById('videoaiView');
       if(vv)vv.style.display='';
       if(el)el.classList.add('active');
-    }else{_sv(vw,el);}
+    }else{var _vv=document.getElementById('videoaiView');if(_vv)_vv.style.display='none';_sv(vw,el);}
   };
 })();</script>
 </div><!-- /content-wrap -->
