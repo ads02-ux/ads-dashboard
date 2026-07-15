@@ -4145,7 +4145,7 @@ async function fbToggleStatus(campName,campId,isActive){
 }
 
 async function fbUpdateBudget(campName,campId){
-  var _accForCamp=fbAccount;for(var _k in fbCampaignsMap){if(fbCampaignsMap[_k]&&fbCampaignsMap[_k][campName]){_accForCamp=_k;break;}}var ci=Object.assign({},(fbCampaignsMap[_accForCamp]||{})[campName]||{});
+  var _accForCamp=fbAccount;outer:for(var _k in fbCampaignsMap){if(fbCampaignsMap[_k])for(var _cn in fbCampaignsMap[_k]){if(fbCampaignsMap[_k][_cn]&&String(fbCampaignsMap[_k][_cn].id)==String(campId)){_accForCamp=_k;break outer;}}}var ci=Object.assign({},(fbCampaignsMap[_accForCamp]||{})[campName]||{});
   var tok=FB_TOKENS[_accForCamp]||FB_TOKEN;
   var updateId=campId; // ปกติอัปเดต campaign แต่ถ้า ABO จะเปลี่ยนเป็น adset id
   var adsetCount=0;
