@@ -4212,7 +4212,7 @@ async function fbUpdateBudget(campName,campId){
     +'<div style="font-size:.95rem;font-weight:800;color:#0f172a;margin-bottom:12px">\u270f\ufe0f \u0e41\u0e01\u0e49\u0e44\u0e02\u0e07\u0e1a\u0e1b\u0e23\u0e30\u0e21\u0e32\u0e13</div>'
     +'<div style="font-size:.7rem;color:#64748b;margin-bottom:14px;line-height:1.5">'+shortName+'</div>'
     +'<div style="background:#fef3c7;border:1px solid #fde68a;border-radius:8px;padding:10px 14px;margin-bottom:16px">'
-      +'<div style="font-size:.62rem;color:#92400e;margin-bottom:3px">\u0e07\u0e1a\u0e1b\u0e31\u0e08\u0e08\u0e38\u0e1a\u0e31\u0e19 / '+budType+'<span id="fbNBP" style="display:none;font-weight:700;color:#1565c0;margin-left:8px;font-family:Rajdhani,sans-serif">฿<span id="fbNBV"></span></span></div>'
+      +'<div style="font-size:.62rem;color:#92400e;margin-bottom:3px">\u0e07\u0e1a\u0e1b\u0e31\u0e08\u0e08\u0e38\u0e1a\u0e31\u0e19 / '+budType+'<span id="fbNBP" style="display:none;font-weight:700;color:#1565c0;margin-left:8px;font-size:.85rem;font-family:Rajdhani,sans-serif">฿<span id="fbNBV"></span></span></div>'
       +'<div style="font-size:1.3rem;font-weight:900;color:#b45309;font-family:Rajdhani,sans-serif">\u0e3f'+(curBud>0?curBud.toLocaleString():'—')+'</div>'
       +adsetNote
     +(budgetExhausted?'<div style="margin-top:8px;padding:8px 10px;background:#fef2f2;border:1px solid #fca5a5;border-radius:6px;font-size:.68rem;color:#dc2626;font-weight:700">⚠️ งบหมดแล้ว — ต้องเพิ่มงบก่อนแคมเปญจะยิงได้</div>':'')
@@ -4232,7 +4232,7 @@ async function fbUpdateBudget(campName,campId){
     inp.focus();
     inp.addEventListener('focus',function(){this.style.borderColor='#1565c0';});
     inp.addEventListener('blur',function(){this.style.borderColor='#cbd5e1';});
-    inp.addEventListener('input',function(){var v=parseInt(this.value)||0;var el=document.getElementById('fbNBP');if(el){el.style.display=v?'block':'none';if(v)document.getElementById('fbNBV').textContent=v.toLocaleString();}});
+    inp.addEventListener('input',function(){var v=parseInt(this.value)||0;var el=document.getElementById('fbNBP');if(el){el.style.display=v?'inline':'none';if(v)document.getElementById('fbNBV').textContent=v.toLocaleString();}});
   }
   function close_(){if(ov.parentNode)ov.parentNode.removeChild(ov);}
   ov.addEventListener('click',function(e){if(e.target===ov)close_();});
