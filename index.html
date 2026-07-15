@@ -4207,7 +4207,7 @@ async function fbUpdateBudget(campName,campId){
   var adsetNote=adsetCount>1?'<div style="font-size:.6rem;color:#0284c7;margin-top:6px">\u26a0\ufe0f '+adsetCount+' ชุดโฆษณา — งบรวมทั้งหมด</div>':
                 adsetCount===1?'<div style="font-size:.6rem;color:#64748b;margin-top:6px">งบระดับชุดโฆษณา (ABO)</div>':'';
   var ov=document.createElement('div');
-  ov.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(15,23,42,.55);z-index:99999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(2px)';
+  ov.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(15,23,42,.55);z-index:99999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(2px)';
   ov.innerHTML='<div style="background:#fff;border-radius:14px;padding:22px 24px;width:310px;box-shadow:0 24px 64px rgba(15,23,42,.3);font-family:inherit">'
     +'<div style="font-size:.95rem;font-weight:800;color:#0f172a;margin-bottom:12px">\u270f\ufe0f \u0e41\u0e01\u0e49\u0e44\u0e02\u0e07\u0e1a\u0e1b\u0e23\u0e30\u0e21\u0e32\u0e13</div>'
     +'<div style="font-size:.7rem;color:#64748b;margin-bottom:14px;line-height:1.5">'+shortName+'</div>'
