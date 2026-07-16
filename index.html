@@ -4157,7 +4157,7 @@ async function fbToggleStatus(campName,campId,isActive){
   }catch(e){showBanner('❌ '+e.message);}
 }
 
-async function fbUpdateBudget(campName,campId){
+async function fbUpdateBudget(campName,campId){var _nbRow=document.querySelector('tr[data-camp="'+campId+'"'+']');var _nbAmt=_nbRow?(parseInt((_nbRow.querySelector('input[data-field="new"]')||{}).value)||0):0;
   var _accForCamp=fbAccount;outer:for(var _k in fbCampaignsMap){if(fbCampaignsMap[_k])for(var _cn in fbCampaignsMap[_k]){if(fbCampaignsMap[_k][_cn]&&String(fbCampaignsMap[_k][_cn].id)==String(campId)){_accForCamp=_k;break outer;}}}var ci=Object.assign({},(fbCampaignsMap[_accForCamp]||{})[campName]||{});
   var tok=FB_TOKENS[_accForCamp]||FB_TOKEN;
   var updateId=campId; // ปกติอัปเดต campaign แต่ถ้า ABO จะเปลี่ยนเป็น adset id
@@ -4215,6 +4215,7 @@ async function fbUpdateBudget(campName,campId){
       +'<div style="font-size:.62rem;color:#92400e;margin-bottom:3px">\u0e07\u0e1a\u0e1b\u0e31\u0e08\u0e08\u0e38\u0e1a\u0e31\u0e19 / '+budType+'<span id="fbNBP" style="display:none;font-weight:700;color:#1565c0;margin-left:8px;font-size:.85rem;font-family:Rajdhani,sans-serif">฿<span id="fbNBV"></span></span></div>'
       +'<div style="font-size:1.3rem;font-weight:900;color:#b45309;font-family:Rajdhani,sans-serif">\u0e3f'+(curBud>0?curBud.toLocaleString():'—')+'</div>'
       +adsetNote
++(_nbAmt>0?'<div style="margin-top:6px;padding:5px 8px;background:#fef08a;border-radius:5px;font-size:.72rem;color:#713f12;font-weight:700">ยอดใหม่ที่กรอก: ฿'+_nbAmt.toLocaleString()+'</div>':'')
     +(budgetExhausted?'<div style="margin-top:8px;padding:8px 10px;background:#fef2f2;border:1px solid #fca5a5;border-radius:6px;font-size:.68rem;color:#dc2626;font-weight:700">⚠️ งบหมดแล้ว — ต้องเพิ่มงบก่อนแคมเปญจะยิงได้</div>':'')
     +'</div>'
     +'<div style="margin-bottom:16px">'
