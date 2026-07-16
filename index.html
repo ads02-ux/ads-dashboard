@@ -4157,7 +4157,7 @@ async function fbToggleStatus(campName,campId,isActive){
   }catch(e){showBanner('❌ '+e.message);}
 }
 
-async function fbUpdateBudget(campName,campId){var _nbRow=document.querySelector('tr[data-camp="'+campId+'"'+']');var _nbAmt=_nbRow?(parseInt((_nbRow.querySelector('input[data-field="new"]')||{}).value)||0):0;
+async function fbUpdateBudget(campName,campId){var _nbRow=Array.from(document.querySelectorAll('tr[data-camp]')).find(function(r){return r.getAttribute('data-camp')===campName.replace(/\'/g,"'");});var _nbAmt=_nbRow?(parseInt((_nbRow.querySelector('input[data-field="new"]')||{}).value)||0):0;
   var _accForCamp=fbAccount;outer:for(var _k in fbCampaignsMap){if(fbCampaignsMap[_k])for(var _cn in fbCampaignsMap[_k]){if(fbCampaignsMap[_k][_cn]&&String(fbCampaignsMap[_k][_cn].id)==String(campId)){_accForCamp=_k;break outer;}}}var ci=Object.assign({},(fbCampaignsMap[_accForCamp]||{})[campName]||{});
   var tok=FB_TOKENS[_accForCamp]||FB_TOKEN;
   var updateId=campId; // ปกติอัปเดต campaign แต่ถ้า ABO จะเปลี่ยนเป็น adset id
