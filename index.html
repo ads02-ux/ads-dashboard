@@ -4203,7 +4203,7 @@ async function fbUpdateBudget(campName,campId){var _nbRow=Array.from(document.qu
   var curBud=isDaily?(ci.daily_budget||0):(ci.lifetime_budget||0);
   var budType=isDaily?'วัน':'ตลอดชีพ';
   var shortName=campName.length>42?campName.slice(0,42)+'\u2026':campName;
-  var budgetExhausted=!!(ci._budgetExhausted);
+  var budgetExhausted=!!(ci._budgetExhausted);var stopDateVal=ci.stop_time?ci.stop_time.substring(0,10):'';
   var adsetNote=adsetCount>1?'<div style="font-size:.6rem;color:#0284c7;margin-top:6px">\u26a0\ufe0f '+adsetCount+' ชุดโฆษณา — งบรวมทั้งหมด</div>':
                 adsetCount===1?'<div style="font-size:.6rem;color:#64748b;margin-top:6px">งบระดับชุดโฆษณา (ABO)</div>':'';
   var ov=document.createElement('div');
