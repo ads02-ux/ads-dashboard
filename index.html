@@ -4171,7 +4171,7 @@ async function fbUpdateBudget(campName,campId){var _nbRow=Array.from(document.qu
       var _db2=parseInt(_bd.daily_budget||0)/100;
       var _lb2=parseInt(_bd.lifetime_budget||0)/100;
       if(_db2>0){ci.daily_budget=_db2;ci.is_daily=true;}
-      var budgetExhausted=!!(ci._budgetExhausted);var stopDateVal=ci.stop_time?ci.stop_time.substringelse if(_lb2>0){ci.lifetime_budget=_lb2;ci.is_daily=false;}ci.stop_time=_bd.stop_timevar budgetExhausted=!!(ci._budgetExhausted);var stopDateVal=ci.stop_time?ci.stop_time.substring(0,10):'';||'';(0,10):'';var stopDateVal=ci.stop_time?ci.stop_time.substringelse if(_lb2>0){ci.lifetime_budget=_lb2;ci.is_daily=false;}ci.stop_time=_bd.stop_time||'';(0,10):'';
+      else if(_lb2>0){ci.lifetime_budget=_lb2;ci.is_daily=false;}ci.stop_time=_bd.stop_time||'';
     }catch(e){}
   }
   // 2) ถ้ายังเป็น 0 → ลอง adsets (ABO = งบอยู่ระดับชุดโฆษณา)
@@ -4202,7 +4202,7 @@ async function fbUpdateBudget(campName,campId){var _nbRow=Array.from(document.qu
   var curBud=isDaily?(ci.daily_budget||0):(ci.lifetime_budget||0);
   var budType=isDaily?'วัน':'ตลอดชีพ';
   var shortName=campName.length>42?campName.slice(0,42)+'\u2026':campName;
-  var budgetExhausted=!!(ci._budgetExhausted);var stopDateVal=ci.stop_time?ci.stop_time.substringelse if(_lb2>0){ci.lifetime_budget=_lb2;ci.is_daily=false;}ci.stop_time=_bd.stop_timevar budgetExhausted=!!(ci._budgetExhausted);var stopDateVal=ci.stop_time?ci.stop_time.substring(0,10):'';||'';(0,10):'';
+  var budgetExhausted=!!(ci._budgetExhausted);var stopDateVal=ci.stop_time?ci.stop_time.substring(0,10):'';
   var adsetNote=adsetCount>1?'<div style="font-size:.6rem;color:#0284c7;margin-top:6px">\u26a0\ufe0f '+adsetCount+' ชุดโฆษณา — งบรวมทั้งหมด</div>':
                 adsetCount===1?'<div style="font-size:.6rem;color:#64748b;margin-top:6px">งบระดับชุดโฆษณา (ABO)</div>':'';
   var ov=document.createElement('div');
@@ -4221,7 +4221,7 @@ async function fbUpdateBudget(campName,campId){var _nbRow=Array.from(document.qu
       +'<label style="font-size:.68rem;color:#64748b;display:block;margin-bottom:6px;font-weight:600">\u0e1b\u0e23\u0e31\u0e1a\u0e07\u0e1a\u0e40\u0e1b\u0e47\u0e19 (\u0e3f / '+budType+')</label>'
       +'<input id="fbBudgetInp" type="number" min="1" style="width:100%;box-sizing:border-box;border:2px solid #cbd5e1;border-radius:8px;padding:10px 12px;font-size:1rem;font-weight:700;color:#0f172a;outline:none;font-family:Rajdhani,sans-serif">'
     +'</div>'
-    var budgetExhausted=!!(ci._budgetExhausted);var stopDateVal=ci.stop_time?ci.stop_time.substringelse if(_lb2>0){ci.lifetime_budget=_lb2;ci.is_daily=false;}ci.stop_time=_bd.stop_timevar budgetExhausted=!!(ci._budgetExhausted);var stopDateVal=ci.stop_time?ci.stop_time.subs+'<div style="margin-bottom:14px">'+'<label style="font-size:.68rem;color:#64748b;display:block;margin-bottom:6px;font-weight:600">Stop Date</label>'+'<input id="fbStopDate" type="date" value="'+stopDateVal+'" style="width:100%;box-sizing:border-box;border:1.5px solid #d1d5db;border-radius:8px;padding:8px 10px;font-size:.88rem;color:#374151">'+'</div>'+'<div style="display:flex;gap:8px">'tring(0,10):'';||'';(0,10):'';
+    var budgetExhausted=!!(ci._budgetExhausted);var stopDateVal=ci.stop_time?ci.stop_time.substring(0,10):'';
       +'<button id="fbBudCancel" style="flex:1;padding:9px;border:1px solid #e2e8f0;border-radius:8px;background:#fff;color:#64748b;cursor:pointer;font-family:inherit;font-size:.82rem">\u0e22\u0e01\u0e40\u0e25\u0e34\u0e01</button>'
       +'<button id="fbBudConfirm" style="flex:2;padding:9px;border:none;border-radius:8px;background:#1565c0;color:#fff;cursor:pointer;font-family:inherit;font-size:.85rem;font-weight:700">\u0e22\u0e37\u0e19\u0e22\u0e31\u0e19 \u2713</button>'
     +'</div>'
