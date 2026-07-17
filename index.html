@@ -7041,12 +7041,12 @@ function _renderCampDetailContent(campName,campId,days){
   }
 
   var now=new Date();now.setHours(0,0,0,0);
-  var cutDays=new Date(now);cutDays.setDate(cutDays.getDate()-(days-1));
+  var cutDays=new Date(now);cutDays.setDate(cutDays.getDate()-days);
 
   var rows=campRows.filter(function(r){
     if(!r.date)return false;
     var d=new Date(r.date);d.setHours(0,0,0,0);
-    return d>=cutDays;
+        return d>=cutDays&&d<now;
   });
 
   var byDate={};
