@@ -4246,7 +4246,7 @@ async function fbUpdateBudget(campName,campId){var _nbRow=Array.from(document.qu
     if(isNaN(b)||b<1){inp2.style.borderColor='#ef4444';inp2.focus();return;}
     close_();
     showBanner('\u23f3 \u0e01\u0e33\u0e25\u0e31\u0e07\u0e2d\u0e31\u0e1b\u0e40\u0e14\u0e15\u0e07\u0e1a...');
-    var tok2=FB_TOKENS[_accForCamp]||FB_TOKEN;
+    var _sd2_=document.getElementById('fbStopDate')?.value||'';var tok2=FB_TOKENS[_accForCamp]||FB_TOKEN;
     var payload=isDaily?{daily_budget:b*100,access_token:tok2}:{lifetime_budget:b*100,access_token:tok2};
     // ถ้ามีหลาย adset — อัปเดตทีละตัวตามสัดส่วน
     var targets=[];
@@ -4265,7 +4265,7 @@ async function fbUpdateBudget(campName,campId){var _nbRow=Array.from(document.qu
       var lastErr='';var allOk=true;
       for(var i=0;i<targets.length;i++){
         var t=targets[i];
-        var tp=isDaily?{daily_budget:t.budget*100}:{lifetime_budget:t.budget*100};
+        var tp=isDaily?{daily_budget:t.budget*100}:{lifetime_budget:t.budget*100};if(_sd2_){tp.stop_time=_sd2_+'T23:59:59+0700';}
         var r=await fetch('https://graph.facebook.com/v20.0/'+t.id+'?access_token='+encodeURIComponent(tok2),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(tp)});
         var d=await r.json();
         if(!d.success&&!d.id){allOk=false;if(d.error)lastErr=d.error.message;}
