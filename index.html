@@ -4223,7 +4223,7 @@ async function fbUpdateBudget(campName,campId){var _nbRow=Array.from(document.qu
       +'<input id="fbBudgetInp" type="number" min="1" style="width:100%;box-sizing:border-box;border:2px solid #cbd5e1;border-radius:8px;padding:10px 12px;font-size:1rem;font-weight:700;color:#0f172a;outline:none;font-family:Rajdhani,sans-serif">'
     +'</div>'
 
-        +'<div style="margin-bottom:12px;"><label style="font-size:.68rem;color:#64748b;display:block;margin-bottom:4px;font-weight:600;">📅 วันสิ้นสุดแคมเปญ</label><input type="date" id="fbStopDate" value="'+stopDateVal+'" style="width:100%;box-sizing:border-box;border:1px solid #cbd5e1;border-radius:6px;padding:6px 8px;font-size:.85rem;"></div>'
+        +'<div style="margin-bottom:12px;"><label style="font-size:.68rem;color:#64748b;display:block;margin-bottom:4px;font-weight:600;">📅 วันสิ้นสุดแคมเปญ (ใหม่ v7) [v6]</label><input type="date" id="fbStopDate" value="'+stopDateVal+'" style="width:100%;box-sizing:border-box;border:1px solid #cbd5e1;border-radius:6px;padding:6px 8px;font-size:.85rem;"></div>'
     +'<div style="display:flex;gap:8px">'
       +'<button id="fbBudCancel" style="flex:1;padding:9px;border:1px solid #e2e8f0;border-radius:8px;background:#fff;color:#64748b;cursor:pointer;font-family:inherit;font-size:.82rem">\u0e22\u0e01\u0e40\u0e25\u0e34\u0e01</button>'
       +'<button id="fbBudConfirm" style="flex:2;padding:9px;border:none;border-radius:8px;background:#1565c0;color:#fff;cursor:pointer;font-family:inherit;font-size:.85rem;font-weight:700">\u0e22\u0e37\u0e19\u0e22\u0e31\u0e19 \u2713</button>'
@@ -4265,7 +4265,7 @@ async function fbUpdateBudget(campName,campId){var _nbRow=Array.from(document.qu
       var lastErr='';var allOk=true;
       for(var i=0;i<targets.length;i++){
         var t=targets[i];
-        var tp=isDaily?{daily_budget:t.budget*100}:{lifetime_budget:t.budget*100};if(_sd2_){tp.stop_time=_sd2_+'T23:59:59+0700';}
+        var tp=isDaily?{daily_budget:t.budget*100}:{lifetime_budget:t.budget*100};if(_sd2_){var _stopTs_=Math.floor(new Date(_sd2_+'T23:59:59+07:00').getTime()/1000);tp.end_time=_stopTs_;tp.stop_time=_stopTs_;}
         var r=await fetch('https://graph.facebook.com/v20.0/'+t.id+'?access_token='+encodeURIComponent(tok2),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(tp)});
         var d=await r.json();
         if(!d.success&&!d.id){allOk=false;if(d.error)lastErr=d.error.message;}
@@ -4274,7 +4274,7 @@ async function fbUpdateBudget(campName,campId){var _nbRow=Array.from(document.qu
         showBanner('\u2705 \u0e1b\u0e23\u0e31\u0e1a\u0e07\u0e1a\u0e40\u0e1b\u0e47\u0e19 \u0e3f'+b.toLocaleString()+'/'+budType+' \u0e2a\u0e33\u0e40\u0e23\u0e47\u0e08');
         if(fbCampaignsMap[fbAccount]&&fbCampaignsMap[fbAccount][campName]){
           if(isDaily)fbCampaignsMap[fbAccount][campName].daily_budget=b;
-          else fbCampaignsMap[fbAccount][campName].lifetime_budget=b;
+          else fbCampaignsMap[fbAccount][campName].lifetime_budget=b;if(_sd2_&&fbCampaignsMap[fbAccount]&&fbCampaignsMap[fbAccount][campName]){fbCampaignsMap[fbAccount][campName].stop_time=_sd2_+'T23:59:59+0700';}if(_sd2_){fetch('https://graph.facebook.com/v20.0/'+campId+'?access_token='+encodeURIComponent(tok2),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({stop_time:Math.floor(new Date(_sd2_+'T23:59:59+07:00').getTime()/1000)})}).then(function(r){return r.json();}).then(function(d){if(d&&d.error)showBanner('\u274c stop_time: '+d.error.message);else showBanner('\u2705 \u0e27\u0e31\u0e19\u0e17\u0e35\u0e48\u0e2d\u0e31\u0e1b\u0e40\u0e14\u0e15\u0e2a\u0e33\u0e40\u0e23\u0e47\u0e08');}).catch(function(e){showBanner('\u274c Network: '+e.message);});}
         }
         var _lt=_rbLogNow();_rbLogSave({ts:_lt.ts,date:_lt.date,time:_lt.time,user:_rbLogUser(),account:fbAccount,campaign:campName,type:'budget',budType:budType,oldVal:curBud,newVal:b,diff:b-curBud,isUp:b>curBud});
         _renderFBInner(document.getElementById('fbViewInner'));
@@ -4290,7 +4290,7 @@ async function fbChangeStopDate(campName,campId){
   var campInfo=(fbCampaignsMap[fbAccount]||{})[campName]||{};
   var currentStop=campInfo.stop_time||null;
   var cur=currentStop?new Date(currentStop).toISOString().slice(0,10):'';
-  var newDate=prompt('วันสิ้นสุดแคมเปญ (YYYY-MM-DD) สำหรับ:\n'+campName+'\n\n(เว้นว่างเพื่อไม่กำหนดวันหยุด)',cur);
+  var newDate=prompt('วันสิ้นสุดแคมเปญ (ใหม่ v7) [v6] (YYYY-MM-DD) สำหรับ:\n'+campName+'\n\n(เว้นว่างเพื่อไม่กำหนดวันหยุด)',cur);
   if(newDate===null)return;
   var tok=FB_TOKENS[fbAccount]||FB_TOKEN;
   var body={};
