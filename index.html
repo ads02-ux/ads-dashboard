@@ -7711,7 +7711,7 @@ function _renderFBInner(el){
   }
 
   // Build rows
-  var tbody='';
+  var tbody='';campOrder.sort(function(a,b){var na=parseInt((a.match(/^\((\d+)\.\)/)||[0,0])[1])||0;var nb=parseInt((b.match(/^\((\d+)\.\)/)||[0,0])[1])||0;if(na||nb)return na-nb;return a.localeCompare(b);});
   campOrder.forEach(function(cname){
     var cdata=campMap[cname];
     var cagg=_fbAgg(cdata.rows);
