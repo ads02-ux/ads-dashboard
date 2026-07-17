@@ -4271,7 +4271,7 @@ async function fbUpdateBudget(campName,campId){var _nbRow=Array.from(document.qu
         if(!d.success&&!d.id){allOk=false;if(d.error)lastErr=d.error.message;}
       }
       if(allOk){
-        if(_sd2_){var _stTs_=Math.floor(new Date(_sd2_+'T23:59:59+07:00').getTime()/1000);fetch('https://graph.facebook.com/v20.0/'+campId+'?access_token='+encodeURIComponent(tok2),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({stop_time:_stTs_})}).then(function(r){return r.json();}).then(function(d){if(d&&d.error){showBanner('❌ วันที่: '+d.error.message);}else{setTimeout(function(){showBanner('✅ วันที่ '+_sd2_+' อัปเดตแล้ว');},2500);}}).catch(function(e){showBanner('❌ Network: '+e.message);});}
+        if(_sd2_){var _stTs_=Math.floor(new Date(_sd2_+'T23:59:59+07:00').getTime()/1000);fetch('https://graph.facebook.com/v20.0/'+campId+'?access_token='+encodeURIComponent(tok2),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({stop_time:_stTs_})}).then(function(r){return r.json();}).then(function(d){if(d&&d.error){showBanner('❌ วันที่: '+d.error.message);}else{setTimeout(function(){showBanner(d&&d.error?'❌ '+d.error.message.substring(0,60):'✅ FB: '+JSON.stringify(d).substring(0,40));},2500);}}).catch(function(e){showBanner('❌ Network: '+e.message);});}
         showBanner('\u2705 \u0e1b\u0e23\u0e31\u0e1a\u0e07\u0e1a\u0e40\u0e1b\u0e47\u0e19 \u0e3f'+b.toLocaleString()+'/'+budType+' \u0e2a\u0e33\u0e40\u0e23\u0e47\u0e08');
         if(fbCampaignsMap[fbAccount]&&fbCampaignsMap[fbAccount][campName]){
           if(isDaily)fbCampaignsMap[fbAccount][campName].daily_budget=b;
