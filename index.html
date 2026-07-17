@@ -2813,7 +2813,7 @@ function _rbLogSave(entry){
   }catch(e){}
 }
 function _rbLogGet(){try{return JSON.parse(localStorage.getItem(_RB_LOG_KEY)||'[]');}catch(e){return[];}}
-function _rbLogUser(){try{return JSON.parse(localStorage.getItem('currentUser')||'{}').name||'Unknown';}catch(e){return'Unknown';}}
+function _rbLogUser(){try{return sessionStorage.getItem('rb_username')||'Unknown';}catch(e){return 'Unknown';}}
 function _rbLogNow(){
   var n=new Date();
   function p(x){return x<10?'0'+x:x;}
