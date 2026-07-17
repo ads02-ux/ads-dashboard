@@ -7331,7 +7331,7 @@ function _openCEOReport(){
     b.spend+=r.spend;b.revenue+=r.revenue;b.impressions+=r.impressions;
     b.clicks+=r.clicks;b.purchases+=r.purchases;b.conversations+=r.conversations;
   });
-  var allDailyArr=Object.keys(byDateAll).sort().map(function(d){return byDateAll[d];});
+      var _nt=new Date();var _nts=_nt.getFullYear()+'-'+(_nt.getMonth()+1<10?'0':'')+(_nt.getMonth()+1)+'-'+(_nt.getDate()<10?'0':'')+_nt.getDate();var allDailyArr=Object.keys(byDateAll).sort().filter(function(d){return d<_nts;}).map(function(d){return byDateAll[d];});
   var payload={name:camp.name,days:camp.days||7,agg:camp._agg,daily:allDailyArr};
   var encoded;
   try{
