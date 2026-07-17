@@ -95,8 +95,10 @@ function getTargetDate(period){
 function filterByPeriod(arr,period){
   var td=getTargetDate(period);
   if(td)return(arr||[]).filter(function(d){return d.date===td;});
-  if((arr||[]).length>=period)return arr.slice(-period);
-  return arr||[];
+    var _n=new Date(),_p=function(n){return String(n).padStart(2,'0');},_ts=_n.getFullYear()+'-'+_p(_n.getMonth()+1)+'-'+_p(_n.getDate());
+      var filtered=(arr||[]).filter(function(d){return!d.date||d.date<_ts;});
+        if(filtered.length>=period)return filtered.slice(-period);
+          return filtered;
 }
 
 function getVerdict(roas){
