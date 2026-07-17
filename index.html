@@ -7626,14 +7626,14 @@ function _renderFBInner(el){
   }
 
   var kpiBar='<div style="display:flex;flex-wrap:wrap;gap:20px 32px;padding:16px 20px;background:rgba(21,101,192,.04);border:1px solid rgba(21,101,192,.15);border-radius:10px;margin-bottom:18px;align-items:center">'
-    +kv('ยอดยิงแอด','฿'+fmt(tot.spend),'#f59e0b')
+    +kv('ยอดยิงแอด','฿'+fmt(tot.spend,2),'#f59e0b')
     +kv('การแสดง',fmt(tot.impressions,0),'#94a3b8')
     +kv('CTR',tot.ctr>0?tot.ctr.toFixed(2)+'%':'—','#38bdf8')
     +kv('การสนทนา',fmt(tot.conversations,0),'#0284c7')
-    +kv('ต้นทุน/สนทนา',tot.conversations>0?'฿'+fmt(tot.costPerConv,0):'—','#42a5f5')
+    +kv('ต้นทุน/สนทนา',tot.conversations>0?'฿'+fmt(tot.costPerConv,2):'—','#42a5f5')
     +kv('การซื้อ',fmt(tot.purchases,0),'#00e676')
-    +kv('ค่าคอนเวอร์ชั่น',tot.revenue>0?'฿'+fmt(tot.revenue,0):'—','#4ade80')
-    +kv('ต้นทุน/ซื้อ',tot.purchases>0?'฿'+fmt(tot.costPerBuy,0):'—','#a78bfa')
+    +kv('ค่าคอนเวอร์ชั่น',tot.revenue>0?'฿'+fmt(tot.revenue,2):'—','#4ade80')
+    +kv('ต้นทุน/ซื้อ',tot.purchases>0?'฿'+fmt(tot.costPerBuy,2):'—','#a78bfa')
     +kv('ROAS',(tot.roas||0).toFixed(2)+'x',_fbRoasColor(tot.roas))
     +kv('%ADS',tot.pctAds?tot.pctAds+'%':'—',_fbPctColor(tot.pctAds))
     +'<div style="margin-left:auto;font-size:.68rem;color:#1e3a5f">'+dateLabels[fbFilter]+'<br><span style="color:#64748b">'+campOrder.length+' แคมเปญ</span></div>'
@@ -7815,14 +7815,14 @@ function _renderFBInner(el){
         +'<span style="margin-left:8px;font-size:.65rem;color:#1565c0;background:rgba(21,101,192,.1);border-radius:4px;padding:1px 6px">แคมเปญ</span>'
       +'</td>'
       +remainCell
-      +_fbMetricCell(cagg.spend>0?cagg.spend:null,function(v){return '฿'+fmt(v);},'#f59e0b',true)
+      +_fbMetricCell(cagg.spend>0?cagg.spend:null,function(v){return '฿'+fmt(v,2);},'#f59e0b',true)
       +_fbMetricCell(cagg.impressions>0?cagg.impressions:null,function(v){return fmt(v,0);},'#94a3b8',false)
       +_fbMetricCell(cagg.ctr>0?cagg.ctr:null,function(v){return v.toFixed(2)+'%';},'#38bdf8',false)
       +_fbMetricCell(cagg.conversations>0?cagg.conversations:null,function(v){return fmt(v,0);},'#0284c7',true)
-      +_fbMetricCell(cagg.conversations>0?cagg.costPerConv:null,function(v){return '฿'+fmt(v,0);},'',false)
+      +_fbMetricCell(cagg.conversations>0?cagg.costPerConv:null,function(v){return '฿'+fmt(v,2);},'',false)
       +_fbMetricCell(cagg.purchases>0?cagg.purchases:null,function(v){return fmt(v,0);},'#00e676',true)
-      +_fbMetricCell(cagg.revenue>0?cagg.revenue:null,function(v){return '฿'+fmt(v,0);},'#4ade80',false)
-      +_fbMetricCell(cagg.purchases>0?cagg.costPerBuy:null,function(v){return '฿'+fmt(v,0);},'',false)
+      +_fbMetricCell(cagg.revenue>0?cagg.revenue:null,function(v){return '฿'+fmt(v,2);},'#4ade80',false)
+      +_fbMetricCell(cagg.purchases>0?cagg.costPerBuy:null,function(v){return '฿'+fmt(v,2);},'',false)
       +_fbMetricCell(cagg.roas>0?cagg.roas:null,function(v){return v.toFixed(2)+'x';},_fbRoasColor(cagg.roas),true)
       +_fbMetricCell(cagg.pctAds>0?cagg.pctAds:null,function(v){return v+'%';},_fbPctColor(cagg.pctAds),true)
       +(function(){var _bch=(fbBudgetChangesToday[_accId]||{})[cname];return _bch?'<td style="padding:8px 12px;text-align:right;white-space:nowrap"><span style="font-size:.7rem;font-weight:800;color:'+(_bch.isUp?'#059669':'#ef4444')+';background:'+(_bch.isUp?'rgba(5,150,105,.08)':'rgba(239,68,68,.08)')+';border-radius:5px;padding:3px 9px">'+_bch.label+'</span></td>':'<td style="padding:8px 12px;text-align:right"><span style="color:#cbd5e1;font-size:.7rem">—</span></td>';})()
@@ -7846,14 +7846,14 @@ function _renderFBInner(el){
           +'</td>'
           +'<td style="padding:8px 12px;text-align:right">'+(aagg.isActive?'':'<span style="font-size:.72rem;color:#64748b;background:rgba(100,116,139,.08);border:1px solid rgba(100,116,139,.2);border-radius:4px;padding:2px 8px">ปิด</span>')+'</td>'
           +'<td style="padding:8px 12px;text-align:right"><span style="color:#94a3b8;font-size:.7rem">—</span></td>'
-          +_fbMetricCell(aagg.spend>0?aagg.spend:null,function(v){return '฿'+fmt(v);},'#c47f00',false)
+          +_fbMetricCell(aagg.spend>0?aagg.spend:null,function(v){return '฿'+fmt(v,2);},'#c47f00',false)
           +_fbMetricCell(aagg.impressions>0?aagg.impressions:null,function(v){return fmt(v,0);},'#64748b',false)
           +_fbMetricCell(aagg.ctr>0?aagg.ctr:null,function(v){return v.toFixed(2)+'%';},'#38bdf8',false)
           +_fbMetricCell(aagg.conversations>0?aagg.conversations:null,function(v){return fmt(v,0);},'#0284c7',false)
-          +_fbMetricCell(aagg.conversations>0?aagg.costPerConv:null,function(v){return '฿'+fmt(v,0);},'',false)
+          +_fbMetricCell(aagg.conversations>0?aagg.costPerConv:null,function(v){return '฿'+fmt(v,2);},'',false)
           +_fbMetricCell(aagg.purchases>0?aagg.purchases:null,function(v){return fmt(v,0);},'#00c853',false)
-          +_fbMetricCell(aagg.revenue>0?aagg.revenue:null,function(v){return '฿'+fmt(v,0);},'#4ade80',false)
-          +_fbMetricCell(aagg.purchases>0?aagg.costPerBuy:null,function(v){return '฿'+fmt(v,0);},'',false)
+          +_fbMetricCell(aagg.revenue>0?aagg.revenue:null,function(v){return '฿'+fmt(v,2);},'#4ade80',false)
+          +_fbMetricCell(aagg.purchases>0?aagg.costPerBuy:null,function(v){return '฿'+fmt(v,2);},'',false)
           +_fbMetricCell(aagg.roas>0?aagg.roas:null,function(v){return v.toFixed(2)+'x';},_fbRoasColor(aagg.roas),false)
           +_fbMetricCell(aagg.pctAds>0?aagg.pctAds:null,function(v){return v+'%';},_fbPctColor(aagg.pctAds),false)
           +(function(){var _bch=(fbBudgetChangesToday[_accId]||{})[aname];return _bch?'<td style="padding:8px 12px;text-align:right;white-space:nowrap"><span style="font-size:.7rem;font-weight:800;color:'+(_bch.isUp?'#059669':'#ef4444')+';background:'+(_bch.isUp?'rgba(5,150,105,.08)':'rgba(239,68,68,.08)')+';border-radius:5px;padding:3px 9px">'+_bch.label+'</span></td>':'<td style="padding:8px 12px;text-align:right"><span style="color:#cbd5e1;font-size:.7rem">—</span></td>';})()
