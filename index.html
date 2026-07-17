@@ -4120,7 +4120,7 @@ function _fetchFBCampaigns(accountId,accName){
               fbCampaignsMap[accName]={};
               d2.campaigns.forEach(function(c){
                 var db=parseInt(c.daily_budget||0)/100;
-                fbCampaignsMap[accName][c.name]={id:c.id,daily_budget:db,lifetime_budget:0,has_budget:db>0,is_daily:db>0,status:c.effective_status};
+                fbCampaignsMap[accName][c.name]={id:c.id,daily_budget:db,lifetime_budget:0,has_budget:db>0,is_daily:db>0,status:c.effective_status,stop_time:c.stop_time||null};
               });
               fbCampaignsLoadedMap[accName]=true;
               if(fbLoadedMap[accName])renderFB();
