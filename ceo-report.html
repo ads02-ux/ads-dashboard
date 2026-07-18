@@ -326,7 +326,7 @@ function render(periodDays){
 
   h+='<div class="section"><div class="sec-ttl">Spend &amp; ROAS Daily ('+periodLabel+')</div>'+buildChart(dailyArr)+'</div>'
     +'<div class="section"><div class="sec-ttl">AI Analysis &amp; Recommendations</div>'+buildRecs(agg,dailyArr)+'</div>'
-      +(creatives.length?'<div class="section"><div class="sec-ttl">Active Ad Creatives</div>'+buildCreatives(creatives)+'</div>':'')
+      +'<div class="section"><div class="sec-ttl">Active Ad Creatives</div>'+(creatives.length?buildCreatives(creatives):'<p style="color:#94a3b8;font-size:.82rem;padding:20px;text-align:center">ไม่พบโฆษณา Active</p>')+'</div>'
       +'<div class="section"><div class="sec-ttl">Detailed Data</div>'+buildDetailTable(agg)+'</div>'
     +'<div class="ft">Rich Biotech · Ads Mission Dashboard · '+dtStr+'</div>'
     +'</div>';
