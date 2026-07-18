@@ -70,6 +70,7 @@ if(data.campaigns&&Array.isArray(data.campaigns)){campaigns=data.campaigns;}
 else if(data.name){campaigns=[{name:data.name,agg:data.agg,daily:data.daily||[]}];}
 if(!campaigns.length){document.getElementById('app').innerHTML='<div class="page"><div class="err">No campaigns</div></div>';return;}
 
+var creatives=data.creatives||[];
 var isMulti=campaigns.length>1;
 var currentCampIdx=-1;
 var currentPeriod=30;
@@ -250,6 +251,7 @@ function mergeDaily(camps,periodDays){
   return Object.keys(byDate).sort().map(function(d){return byDate[d];});
 }
 
+function buildCreatives(c){if(!c||!c.length)return'';return c.map(function(a){var th=a.thumbnail?'<img src="'+a.thumbnail+'" style="width:72px;height:72px;object-fit:cover;border-radius:8px;flex-shrink:0;border:1px solid #e2e8f0">':'<div style="width:72px;height:72px;background:#f1f5f9;border-radius:8px;flex-shrink:0"></div>';return'<div style="display:flex;gap:14px;align-items:flex-start;padding:14px;background:#f8faff;border:1px solid #e8f0ff;border-radius:10px;margin-bottom:10px">'+th+'<div style="flex:1;min-width:0"><div style="font-weight:700;margin-bottom:4px;font-size:.85rem">'+(a.name||'')+'</div>'+((a.body||'').slice(0,120)?'<div style="font-size:.78rem;color:#475569;margin-bottom:8px">'+(a.body||'').slice(0,120)+'</div>':'')+'<a href="'+a.url+'" target="_blank" style="font-size:.72rem;color:#1565c0;font-weight:700">Ads Manager</a></div></div>';}).join('');}
 function render(periodDays){
   currentPeriod=periodDays;
   var now=new Date();
@@ -324,7 +326,8 @@ function render(periodDays){
 
   h+='<div class="section"><div class="sec-ttl">Spend &amp; ROAS Daily ('+periodLabel+')</div>'+buildChart(dailyArr)+'</div>'
     +'<div class="section"><div class="sec-ttl">AI Analysis &amp; Recommendations</div>'+buildRecs(agg,dailyArr)+'</div>'
-    +'<div class="section"><div class="sec-ttl">Detailed Data</div>'+buildDetailTable(agg)+'</div>'
+      +(creatives.length?'<div class="section"><div class="sec-ttl">Active Ad Creatives</div>'+buildCreatives(creatives)+'</div>':'')
+      +'<div class="section"><div class="sec-ttl">Detailed Data</div>'+buildDetailTable(agg)+'</div>'
     +'<div class="ft">Rich Biotech · Ads Mission Dashboard · '+dtStr+'</div>'
     +'</div>';
 
