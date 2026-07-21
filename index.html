@@ -743,7 +743,7 @@ function enableHrMode(){
   var wrap=document.querySelector('.main-wrap');
   if(wrap){wrap.style.marginLeft='0';}
   // Disable all inputs in commission view after render
-  setTimeout(function(){disableCommInputs();},600);
+  setTimeout(function(){if(sessionStorage.getItem('rb_perm')!=='edit'){disableCommInputs();}},600);
 }
 function disableCommInputs(){
   var selectors=['.comm-inp','.comm-edit','.csum-goal-inp','#cdet-goal','[class*="comm"] input','[class*="csum"] input'];
@@ -2444,7 +2444,7 @@ function renderCommission(){
   });
 
   wrap.innerHTML='<div class="comm-wrap">'+out+'</div>';
-  if(sessionStorage.getItem('rb_auth')==='hr'){setTimeout(disableCommInputs,150);}
+  if(sessionStorage.getItem('rb_auth')==='hr'&&sessionStorage.getItem('rb_perm')!=='edit'){setTimeout(disableCommInputs,150);}
 
   // Render trend chart after DOM update
   requestAnimationFrame(function(){
