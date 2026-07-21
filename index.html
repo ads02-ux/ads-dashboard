@@ -8341,8 +8341,8 @@ window._umAddUser=function(){
   var pw=(document.getElementById('umNewPw').value||'').trim();
   var pm=document.getElementById('umNewPerm')?document.getElementById('umNewPerm').value:'edit';
   var _pills=document.querySelectorAll('#umNewPagePills [data-nacc]');var _selKeys=[];_pills.forEach(function(p){if(p.getAttribute('data-active')==='1')_selKeys.push(p.getAttribute('data-nacc'));});var ac=_selKeys.length===0?'hr':(_selKeys.length===1?_selKeys[0]:_selKeys);
-  if(!n||!em||!pw){alert('กรุณากรอกชื่อ อีเมล และรหัสผ่าน');return;}
-  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){alert('รูปแบบอีเมลไม่ถูกต้อง');return;}
+  if(!n||!pw){alert('กรุณากรอกชื่อและรหัสผ่าน');return;}
+  if(em&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){alert('รูปแบบอีเมลไม่ถูกต้อง');return;}
   var u=_getAccessUsers();
   if(u.find(function(x){return x.email&&x.email.toLowerCase()===em;})){alert('อีเมลนี้ถูกใช้แล้ว');return;}
   if(u.find(function(x){return x.password===pw;})){alert('รหัสผ่านนี้ถูกใช้แล้ว');return;}
