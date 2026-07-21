@@ -1788,9 +1788,9 @@ function fmtK(n){if(n>=1000)return (n/1000).toFixed(1)+'K';return String(Math.ro
 // COMMISSION PAGE
 // ============================================================
 var THAI_MO_SHORT=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
-var COMM_ANALYSTS=['ปาย','บุ๋มบิ๋ม'];
-var COMM_PRODUCTS=['judo','The lord','เจ้าขุน','ขุนแผน'];
-var COMM_ANALYST_PRODUCTS={'ปาย':['judo','The lord','เจ้าขุน'],'บุ๋มบิ๋ม':['ขุนแผน']};
+var COMM_ANALYSTS=['ปาย','บุ๋มบิ๋ม','พิมพ์'];
+var COMM_PRODUCTS=['judo','The lord','เจ้าขุน','ขุนแผน','Wolf','Sopink'];
+var COMM_ANALYST_PRODUCTS={'ปาย':['judo','The lord','เจ้าขุน'],'บุ๋มบิ๋ม':['ขุนแผน'],'พิมพ์':['Wolf','Sopink']};
 var commYear=new Date().getFullYear(),commMonth=new Date().getMonth()+1;
 
 function commDays(yr,mo){
@@ -1833,7 +1833,7 @@ var COMM_TABLE_LORD=[
 function commCalc(sp,rv,prod){
   if(!sp||!rv||sp<=0||rv<=0)return{com:0,pct:0};
   var pct=sp/rv*100;
-  var isLord=(prod==='The lord');
+  var isLord=(prod==='The lord'||prod==='Wolf'||prod==='Sopink');
   var tbl=isLord?COMM_TABLE_LORD:COMM_TABLE;
   if(pct>=70)return{com:0,pct:pct};
   var row=null;
