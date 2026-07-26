@@ -7636,7 +7636,7 @@ function _fbAutoFitTable(){var vp=document.getElementById('fbAccountViewport');v
     +kv('ต้นทุน/ซื้อ',tot.purchases>0?'฿'+fmt(tot.costPerBuy,2):'—','#a78bfa')
     +kv('ROAS',(tot.roas||0).toFixed(2)+'x',_fbRoasColor(tot.roas))
     +kv('%ADS',tot.pctAds?tot.pctAds+'%':'—',_fbPctColor(tot.pctAds))
-    +'<div style="margin-left:auto;font-size:.68rem;color:#1e3a5f">'+dateLabels[fbFilter]+'<br><span style="color:#64748b">'+campOrder.length+' แคมเปญ</span></div>'
+    +'<div style="font-size:.68rem;color:#1e3a5f">'+dateLabels[fbFilter]+'<br><span style="color:#64748b">'+campOrder.length+' แคมเปญ</span></div>'
     +'</div>';
 
   // Column headers (FB style)
