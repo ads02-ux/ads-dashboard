@@ -2192,7 +2192,7 @@ function commGetAnalysts(){
 }
 function commPrevMonth(){commMonth--;if(commMonth<1){commMonth=12;commYear--;}renderCommission();}
 function commNextMonth(){commMonth++;if(commMonth>12){commMonth=1;commYear++;}renderCommission();}
-function csumSaveGoal(name,yr,mo,val){
+function csumSaveClips(name,yr,mo,val){try{localStorage.setItem('rb_cclips_'+name+'_'+yr+'_'+pad2(mo),val||'0');}catch(e){}renderCommission();}function csumSaveGoal(name,yr,mo,val){
   try{localStorage.setItem('rb_cgoal_'+name+'_'+yr+'_'+pad2(mo),val||'0');}catch(e){}
   renderCommission();
 }
@@ -2284,7 +2284,7 @@ function renderCommission(){
       });
     }
     // Spark SVG
-    var sparkVals=dayArr.map(function(day){return sparkDaily[day.dk]||0;});
+    for(var _m3=1;_m3<=mo;_m3++){var _ck='rb_cclips_'+a+'_'+yr+'_'+pad2(_m3);var _cv=0;try{_cv=parseInt(localStorage.getItem(_ck)||0)||0;}catch(e){}ytd+=_cv*1000;}var sparkVals=dayArr.map(function(day){return sparkDaily[day.dk]||0;});
     var maxSpark=Math.max.apply(null,sparkVals)||1;
     var sw=220,sh=42,pts=sparkVals.map(function(v,i){
       var x=sw*i/Math.max(sparkVals.length-1,1);
@@ -2293,7 +2293,7 @@ function renderCommission(){
     }).join(' ');
     var hasSpark=sparkVals.some(function(v){return v>0;});
     var sparkSvg=hasSpark?'<svg width="100%" viewBox="0 0 '+sw+' '+sh+'" preserveAspectRatio="none" style="display:block;height:42px"><defs><linearGradient id="sg_'+a.replace(/\s/g,'_')+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#7c6ff7" stop-opacity=".35"/><stop offset="100%" stop-color="#7c6ff7" stop-opacity="0"/></linearGradient></defs><polyline points="'+pts+'" fill="none" stroke="#7c6ff7" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/></svg>':'<div style="height:42px;display:flex;align-items:center;justify-content:center;font-size:.7rem;color:var(--text3);opacity:.4">ยังไม่มีข้อมูล</div>';
-    sumData.push({a:a,atot:atot2,prevTot:prevTot,ytd:ytd,totalSpend:totalSpend,daysWorked:Object.keys(daysSet).length,brands:prods.filter(function(p){return prodBreak[p]>0;}).length||prods.length,prodBreak:prodBreak,sparkSvg:sparkSvg,prods:prods});
+    var clipsKey='rb_cclips_'+a+'_'+yr+'_'+pad2(mo);var clips=0;try{clips=parseInt(localStorage.getItem(clipsKey)||0)||0;}catch(e){}var clipBonus=clips*1000;atot2+=clipBonus;sumData.push({a:a,atot:atot2,prevTot:prevTot,ytd:ytd,totalSpend:totalSpend,daysWorked:Object.keys(daysSet).length,brands:prods.filter(function(p){return prodBreak[p]>0;}).length||prods.length,prodBreak:prodBreak,sparkSvg:sparkSvg,prods:prods,clips:clips,clipBonus:clipBonus});
   });
   // Sort by commission descending
   sumData.sort(function(a,b){return b.atot-a.atot;});
@@ -2317,7 +2317,7 @@ function renderCommission(){
     out+='<div class="csum-main">฿'+fmt(s.atot)+'</div>';
     out+='<div class="csum-ytd">สะสมปีนี้ <b>฿'+fmt(s.ytd)+'</b></div>';
     out+='<span class="csum-vs '+vsCls+'">'+vsLabel+' '+vsNote+'</span>';
-    out+='<div class="csum-goal-row"><span class="csum-goal-lbl">🎯 เป้า ฿</span><input class="csum-goal-inp" id="cgoal_'+a+'" type="number" value="'+(goal||'')+'" placeholder="0" onchange="csumSaveGoal(\''+a.replace(/'/g,"\\'")+"',"+yr+','+mo+',this.value)">'+' <span class="csum-goal-hint">(กรอกเอง)</span>'+pctHtml+'</div>';
+    out+='<div class="csum-goal-row"><span class="csum-goal-lbl">🎯 เป้า ฿</span><input class="csum-goal-inp" id="cgoal_'+a+'" type="number" value="'+(goal||'')+'" placeholder="0" onchange="csumSaveGoal(\''+a.replace(/'/g,"\\'")+"',"+yr+','+mo+',this.value)">'+' <span class="csum-goal-hint">(กรอกเอง)</span>'+pctHtml+'</div>';if(a==='บุ๋มบิ๋ม'){out+='<div class="csum-goal-row" style="margin-top:4px"><span class="csum-goal-lbl">👼 คลิปนางฟ้า</span><input class="csum-goal-inp" id="cclips_'+a+'" type="number" value="'+(s.clips||'')+'" placeholder="0" onchange="csumSaveClips(\''+a.replace(/'/g,"\'")+"',"+yr+','+mo+',this.value)">'+' <span class="csum-goal-hint">× ฿1,000'+(s.clipBonus?' = +฿'+fmt(s.clipBonus):'')+'</span></div>';}
     out+='<div class="csum-prog"><div class="csum-prog-bar" style="width:'+progW+'%;background:'+progColor+'"></div></div>';
     out+='<div class="csum-stats">';
     out+='<div class="csum-stat"><div class="csum-stat-v">'+( s.totalSpend>=1000000?'฿'+(s.totalSpend/1000000).toFixed(2)+' ล.':(s.totalSpend>=1000?'฿'+Math.round(s.totalSpend/1000)+'K':'฿'+fmt(s.totalSpend,0)))+'</div><div class="csum-stat-l">ยอดยิงแอด</div></div>';
