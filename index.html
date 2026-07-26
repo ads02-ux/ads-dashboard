@@ -7625,7 +7625,7 @@ function _fbAutoFitTable(){var vp=document.getElementById('fbAccountViewport');v
       +'</div>';
   }
 
-  var kpiBar='<div style="display:flex;flex-wrap:wrap;gap:20px 32px;padding:16px 20px;background:rgba(21,101,192,.04);border:1px solid rgba(21,101,192,.15);border-radius:10px;margin-bottom:18px;align-items:center">'
+  var kpiBar='<div style="display:flex;flex-wrap:wrap;gap:20px 32px;padding:16px 20px;background:rgba(21,101,192,.04);border:1px solid rgba(21,101,192,.15);border-radius:10px;margin-bottom:18px;align-items:center;justify-content:space-between">'
     +kv('ยอดยิงแอด','฿'+fmt(tot.spend,2),'#f59e0b')
     +kv('การแสดง',fmt(tot.impressions,0),'#94a3b8')
     +kv('CTR',tot.ctr>0?tot.ctr.toFixed(2)+'%':'—','#38bdf8')
