@@ -7580,7 +7580,7 @@ async function _fbToggleAdPreview(adId){
   }
 }
 
-function _fbAutoFitTable(){var wrap=document.getElementById('fbTableScrollWrap');var tbl=document.getElementById('fbTableEl');if(!wrap||!tbl)return;tbl.style.transform='none';wrap.style.height='';var sw=tbl.scrollWidth,cw=wrap.clientWidth;if(sw>cw&&sw>0){var ratio=cw/sw;tbl.style.transformOrigin='top left';tbl.style.transform='scale('+ratio+')';wrap.style.height=(tbl.offsetHeight*ratio)+'px';}if(!window._fbAutoFitBound){window._fbAutoFitBound=true;window.addEventListener('resize',function(){clearTimeout(window._fbFitTO);window._fbFitTO=setTimeout(_fbAutoFitTable,150);});}}function _renderFBInner(el){
+function _fbAutoFitTable(){var vp=document.getElementById('fbAccountViewport');var root=document.getElementById('fbAccountRoot');if(!vp||!root)return;root.style.transform='none';vp.style.height='';var rect=vp.getBoundingClientRect();var availW=vp.clientWidth||rect.width;var availH=window.innerHeight-rect.top-16;var natW=root.scrollWidth,natH=root.scrollHeight;var ratio=Math.min(availW/natW,availH/natH,1);if(ratio<1&&ratio>0){root.style.transformOrigin='top left';root.style.transform='scale('+ratio+')';vp.style.height=(natH*ratio)+'px';}if(!window._fbAutoFitBound){window._fbAutoFitBound=true;window.addEventListener('resize',function(){clearTimeout(window._fbFitTO);window._fbFitTO=setTimeout(_fbAutoFitTable,150);});}}function _renderFBInner(el){
   if(!el)return;
   window._fbChecked={};
   var filtered=_fbFilterRows(fbDataMap[fbAccount]||[]);
@@ -7866,7 +7866,7 @@ function _fbAutoFitTable(){var wrap=document.getElementById('fbTableScrollWrap')
 
   var holderName=fbNavHolder?fbNavHolder.displayName:'';
   var pageName=fbNavPage?fbNavPage.name+' · โทร. '+fbNavPage.phone:'';
-  el.innerHTML='<div style="padding:20px 24px">'
+  el.innerHTML='<div id="fbAccountViewport" style="overflow:hidden"><div id="fbAccountRoot" style="padding:20px 24px">'
     +_fbBreadcrumb()
     // Header bar
     +'<div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px">'
@@ -7908,7 +7908,7 @@ function _fbAutoFitTable(){var wrap=document.getElementById('fbTableScrollWrap')
     +'<div style="margin-top:14px">'
     +'<button onclick="fbShowHistory()" style="background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.25);color:#7c3aed;border-radius:7px;padding:7px 16px;font-size:.75rem;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px">📋 ประวัติการเปลี่ยนแปลงวันนี้</button>'
     +'</div>'
-    +'<div id="fbHistoryBox" style="margin-top:12px"></div>'
+    +'<div id="fbHistoryBox" style="margin-top:12px"></div></div>'
     +'</div>';
   // Auto-fetch today's budget changes if not cached yet
   (function(){
