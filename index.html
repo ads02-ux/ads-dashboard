@@ -3233,7 +3233,7 @@ function fbNavBack(level){
 
 function _fbBreadcrumb(){
   var s='<div style="display:flex;align-items:center;gap:6px;font-size:.72rem;margin-bottom:18px;flex-wrap:wrap;padding:10px 14px;background:rgba(21,101,192,.04);border-radius:8px;border:1px solid rgba(21,101,192,.1)">';
-  s+='<span onclick="fbNavBack(\'root\')" style="cursor:pointer;color:#1565c0;font-weight:700;display:flex;align-items:center;gap:4px">📦 สินค้า</span>';
+  s+='<span onclick="fbNavBack(\'root\')" style="cursor:pointer;display:flex;align-items:center;gap:5px;font-size:.72rem;font-weight:700;color:#334155;background:#fff;border:1px solid #cbd5e1;border-radius:7px;padding:5px 10px;margin-right:6px">← กลับไปหน้าสินค้า</span>';  s+='<span onclick="fbNavBack(\'root\')" style="cursor:pointer;color:#1565c0;font-weight:700;display:flex;align-items:center;gap:4px">📦 สินค้า</span>';
   if(fbNavProduct){
     s+='<span style="color:#94a3b8;font-size:.9rem">›</span>';
     var atProductLeaf=!fbNavPage&&!fbNavManager;
