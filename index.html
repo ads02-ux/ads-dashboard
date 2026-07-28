@@ -3311,7 +3311,7 @@ function _renderFBProducts(el){
   h+='<div style="display:flex;align-items:center;gap:6px;margin-bottom:22px;flex-wrap:wrap">';
   [{k:'today',l:'วันนี้'},{k:'yesterday',l:'เมื่อวาน'},{k:'3d',l:'3 วัน'},{k:'7d',l:'7 วัน'},{k:'14d',l:'14 วัน'},{k:'30d',l:'30 วัน'}].forEach(function(f){
     var act=fbFilter===f.k;
-    h+='<button onclick="fbFilter=\''+f.k+'\';renderFB()" style="background:'+(act?'#f97316':'#fff')+';border:1.5px solid '+(act?'#f97316':'#e2e8f0')+';color:'+(act?'#fff':'#475569')+';border-radius:7px;padding:5px 14px;font-size:.76rem;font-weight:700;cursor:pointer;font-family:inherit;transition:.15s">'+f.l+'</button>';
+    h+='<button onclick="fbFilter=\''+f.k+'\';renderFB()" style="background:'+(act?'#f97316':'#fff')+';border:1.5px solid '+(act?'#f97316':'#e2e8f0')+';color:'+(act?'#fff':'#475569')+';border-radius:9px;padding:11px 22px;font-size:1.02rem;font-weight:700;cursor:pointer;font-family:inherit;transition:.15s">'+f.l+'</button>';
   });
   h+='<div style="margin-left:auto;display:flex;gap:8px">';
   h+='<button onclick="fbRefresh()" title="Refresh" style="background:#f1f5f9;border:1px solid #e2e8f0;color:#475569;border-radius:7px;padding:5px 11px;font-size:.85rem;cursor:pointer">🔄</button>';
