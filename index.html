@@ -4164,7 +4164,7 @@ async function fbUpdateBudget(campName,campId){var _nbRow=Array.from(document.qu
   var adsetCount=0;
 
   // 1) ลองดึงงบจาก campaign ก่อน
-  if(campId&&!ci.daily_budget&&!ci.lifetime_budget){
+  if(campId){
     try{
       var _br=await fetch(FB_API+campId+'?fields=daily_budget,lifetime_budget&access_token='+tok);
       var _bd=await _br.json();
@@ -4176,7 +4176,7 @@ async function fbUpdateBudget(campName,campId){var _nbRow=Array.from(document.qu
   }
 
   // 2) ถ้ายังเป็น 0 → ลอง adsets (ABO = งบอยู่ระดับชุดโฆษณา)
-  if(campId&&!ci.daily_budget&&!ci.lifetime_budget){
+  if(campId&&!(_db2>0)&&!(_lb2>0)){
     try{
       var _ar=await fetch(FB_API+campId+'/adsets?fields=daily_budget,lifetime_budget,budget_remaining,id,name&limit=20&access_token='+tok);
       var _ad=await _ar.json();
