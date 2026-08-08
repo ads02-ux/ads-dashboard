@@ -4090,7 +4090,7 @@ function _renderBuyerDemoUI(el){
     var label = (BD_PLATFORM_LABELS[r.platform]||r.platform) + (r.position? ' &middot; '+r.position.replace(/_/g,' ') : '');
     return '<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--panel-border)">'
       + '<span style="font-size:.8rem;color:var(--text)">'+label+'</span>'
-      + '<span style="font-size:.78rem;color:var(--text3)">'+_bdInt(r.purchases)+' ออเดอร์ &middot; <b style="color:var(--blue)">'+fmtB(r.revenue)+'</b></span>'
+      + '<span style="font-size:.78rem;color:var(--text3)">'+_bdInt(r.purchases)+' ออเดอร์ &middot; <b style="color:var(--blue)">'+(r.revenue?('฿'+Number(r.revenue).toLocaleString('th-TH')):'—')+'</b></span>'
       + '</div>';
   }).join('') : '<div style="color:var(--text3);font-size:.85rem">ยังไม่มีข้อมูลแพลตฟอร์ม</div>';
 
