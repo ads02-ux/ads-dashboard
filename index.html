@@ -599,7 +599,8 @@ header>svg{display:none!important}
   a.pill-wrap{flex-wrap:nowrap}
   .tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
   .hright .user-badge span:last-child{display:none}
-}@keyframes fbNotesGlow{0%{box-shadow:0 0 0 0 rgba(34,211,238,.55);border-color:#22d3ee}50%{box-shadow:0 0 16px 3px rgba(34,211,238,.55);border-color:#67e8f9}100%{box-shadow:0 0 0 0 rgba(34,211,238,.55);border-color:#22d3ee}}@keyframes fbCardGlow{0%{box-shadow:0 0 0 0 rgba(34,211,238,.5)}50%{box-shadow:0 0 14px 3px rgba(34,211,238,.5)}100%{box-shadow:0 0 0 0 rgba(34,211,238,.5)}}.fb-notes-input2{transition:.15s}.fb-notes-input:placeholder-shown{animation:fbNotesGlow 2.2s ease-in-out infinite;border-color:#22d3ee!important}.fb-notes-input{border:1px dashed #22d3ee!important;background:#f0feff!important;color:#0e7490!important;text-align:center!important;font-weight:600!important;border-radius:6px!important;transition:.15s}.fb-notes-input::placeholder{color:#0e7490;opacity:.85}.fb-notes-input:not(:placeholder-shown){border:1px solid #cbd5e1!important;background:#fff!important;color:#0f172a!important;font-weight:400!important;animation:none!important}</style>
+}@keyframes fbNotesGlow{0%{box-shadow:0 0 0 0 rgba(34,211,238,.55);border-color:#22d3ee}50%{box-shadow:0 0 16px 3px rgba(34,211,238,.55);border-color:#67e8f9}100%{box-shadow:0 0 0 0 rgba(34,211,238,.55);border-color:#22d3ee}}@keyframes fbCardGlow{0%{box-shadow:0 0 0 0 rgba(34,211,238,.5)}50%{box-shadow:0 0 14px 3px rgba(34,211,238,.5)}100%{box-shadow:0 0 0 0 rgba(34,211,238,.5)}}.fb-notes-input2{transition:.15s}.fb-notes-input:placeholder-shown{animation:fbNotesGlow 2.2s ease-in-out infinite;border-color:#22d3ee!important}.fb-notes-input{border:1px dashed #22d3ee!important;background:#f0feff!important;color:#0e7490!important;text-align:center!important;font-weight:600!important;border-radius:6px!important;transition:.15s}.fb-notes-input::placeholder{color:#0e7490;opacity:.85}.fb-notes-input:not(:placeholder-shown){border:1px solid #cbd5e1!important;background:#fff!important;color:#0f172a!important;font-weight:400!important;animation:none!important}@media(max-width:820px){.bd-grid{grid-template-columns:1fr!important}}
+</style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/lz-string.min.js"></script>
 </head>
 <body>
@@ -801,6 +802,9 @@ function disableCommInputs(){
     <div class="sb-item" id="sb-alert" onclick="switchView('alert',this)">
       <span class="sb-icon">🔔</span><span>Alert การแจ้งเตือน</span>
     </div>
+    <div class="sb-item" id="sb-buyerdemo" onclick="switchView('buyerdemo',this)">
+      <span class="sb-icon">👥</span><span>ข้อมูลผู้ซื้อ</span>
+    </div>
     <div class="sb-sep"></div>
     <div class="sb-section">Analytics<span style="display:block;font-size:.6rem;font-weight:400;opacity:.55;margin-top:1px;letter-spacing:.02em">ระบบวิเคราะห์โฆษณา</span></div>
     <div class="sb-item" onclick="sbNav(this,'top')" id="sb-home">
@@ -997,6 +1001,7 @@ function disableCommInputs(){
 <div id="fbView"><div class="page" id="fbViewInner"></div></div>
 <div id="benchmarkView" style="display:none"><div class="page" id="benchmarkViewInner"></div></div>
 <div id="chartrankView" style="display:none;padding:28px 32px"></div>
+<div id="buyerDemoView" style="display:none;padding:28px 32px"></div>
 <div id="aiView" style="display:none;padding:28px 32px"></div>
 <div id="adsaiView" style="display:none;padding:28px 32px"></div>
 <div id="videoaiView" style="display:none">
@@ -2528,6 +2533,7 @@ function switchView(view,el){
   var _umv=document.getElementById('userMgmtView');if(_umv)_umv.style.display='none';
   var _alv=document.getElementById('alertView');if(_alv)_alv.style.display='none';
   var _blv=document.getElementById('budgetLogView');if(_blv)_blv.style.display='none';
+  var _bdvPre=document.getElementById('buyerDemoView');if(_bdvPre)_bdvPre.style.display='none';
   var _auth=sessionStorage.getItem('rb_auth'),_acc=sessionStorage.getItem('rb_access');
   if(_auth==='hr'&&view!=='commission')return;
   if(_auth==='limited'&&_acc){var _accParsed;try{_accParsed=JSON.parse(_acc);}catch(e){_accParsed=_acc;}var _accKeys=Array.isArray(_accParsed)?_accParsed:[_accParsed];var _allowed=[];_accKeys.forEach(function(k){var v=_viewAccessMap[k]||[];v.forEach(function(vn){if(_allowed.indexOf(vn)<0)_allowed.push(vn);});});if(_allowed.indexOf(view)<0)return;}
@@ -2546,6 +2552,9 @@ function switchView(view,el){
     renderFB();window.scrollTo({top:0,behavior:'smooth'});
   } else if(view==='chartrank'){
     mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv){crv.style.display='block';_renderChartRank(crv);}if(_ab)_ab.style.display='flex';
+    window.scrollTo({top:0,behavior:'smooth'});
+  } else if(view==='buyerdemo'){
+    mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv2=document.getElementById('benchmarkView');if(bv2)bv2.style.display='none';var crv2=document.getElementById('chartrankView');if(crv2)crv2.style.display='none';var bdv=document.getElementById('buyerDemoView');if(bdv){bdv.style.display='block';_renderBuyerDemo(bdv);}if(_ab)_ab.style.display='flex';
     window.scrollTo({top:0,behavior:'smooth'});
   } else if(view==='ai'){
     mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv){aiv.style.display='block';_renderAIContent(aiv);}
@@ -3945,6 +3954,192 @@ function fbSwitchAccount(name){
   renderFB();
 }
 
+function _bdToday(){
+  return new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Bangkok'});
+}
+function _bdAddDays(ymd, delta){
+  var d = new Date(ymd+'T00:00:00');
+  d.setDate(d.getDate()+delta);
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+function _bdInt(n){ return Math.round(n||0).toLocaleString('th-TH'); }
+function fbBreakdownUrl(accMeta, accName, breakdowns, days){
+  var today = _bdToday();
+  var start = days<=1 ? today : _bdAddDays(today, -(days-1));
+  var timeRange = encodeURIComponent(JSON.stringify({since:start, until:today}));
+  var fields = 'spend,impressions,actions,action_values';
+  return FB_API+accMeta.id+'/insights?fields='+fields
+    +'&level=account&breakdowns='+breakdowns
+    +'&time_range='+timeRange+'&limit=500&access_token='+(FB_TOKENS[accName]||FB_TOKEN);
+}
+function _bdExtractPA(ins){
+  var purchases = 0;
+  (ins.actions||[]).forEach(function(a){
+    if(a.action_type === 'omni_purchase') purchases += parseFloat(a.value)||0;
+    else if(a.action_type === 'purchase' && purchases === 0) purchases += parseFloat(a.value)||0;
+  });
+  var purchaseRev = 0, omniRev = 0;
+  (ins.action_values||[]).forEach(function(a){
+    if(a.action_type === 'purchase') purchaseRev += parseFloat(a.value)||0;
+    if(a.action_type === 'omni_purchase') omniRev += parseFloat(a.value)||0;
+  });
+  var revenue = omniRev > 0 ? omniRev : purchaseRev;
+  var impressions = parseInt(ins.impressions)||0;
+  return {purchases: purchases, revenue: revenue, impressions: impressions};
+}
+var BD_PLATFORM_LABELS = {facebook:'Facebook', instagram:'Instagram', messenger:'Messenger', audience_network:'Audience Network'};
+var BD_AGE_ORDER = ['13-17','18-24','25-34','35-44','45-54','55-64','65+'];
+var buyerDemoRangeDays = 30;
+var buyerDemoLoading = false;
+var buyerDemoData = null;
+var buyerDemoAccount = null;
+function _renderBuyerDemo(el){
+  if(!fbAccount){
+    el.innerHTML = '<div style="background:var(--panel);border:1px solid var(--panel-border);border-radius:var(--r3);padding:32px;text-align:center">'
+      + '<div style="font-size:1rem;color:var(--text);margin-bottom:10px">ยังไม่ได้เลือกบัญชี Facebook Ads</div>'
+      + '<div style="font-size:.85rem;color:var(--text3);margin-bottom:16px">กรุณาไปที่เมนู Facebook Ads แล้วเลือก สินค้า → เพจ → บัญชี ก่อน จึงจะดูข้อมูลผู้ซื้อของบัญชีนั้นได้</div>'
+      + '<button onclick="document.getElementById(\'sb-fb\').click()" style="border:1px solid var(--panel-border);background:var(--blue);color:#fff;padding:8px 18px;border-radius:var(--r2);cursor:pointer;font-size:.85rem">ไปที่ Facebook Ads</button>'
+      + '</div>';
+    return;
+  }
+  if(buyerDemoAccount !== fbAccount) buyerDemoData = null;
+  buyerDemoAccount = fbAccount;
+  if(buyerDemoData){ _renderBuyerDemoUI(el); return; }
+  _loadBuyerDemoData(el);
+}
+function _loadBuyerDemoData(el){
+  if(buyerDemoLoading) return;
+  buyerDemoLoading = true;
+  var accMeta = FB_ACCOUNTS_META.find(function(a){return a.name===fbAccount;})||FB_ACCOUNTS_META[0];
+  el.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text3);font-size:.9rem">⏳ กำลังโหลดข้อมูลผู้ซื้อ...</div>';
+  Promise.all([
+    fetch(fbBreakdownUrl(accMeta, fbAccount, 'age,gender', buyerDemoRangeDays)).then(function(r){return r.json();}),
+    fetch(fbBreakdownUrl(accMeta, fbAccount, 'region', buyerDemoRangeDays)).then(function(r){return r.json();}),
+    fetch(fbBreakdownUrl(accMeta, fbAccount, 'publisher_platform,platform_position', buyerDemoRangeDays)).then(function(r){return r.json();}),
+    fetch(fbBreakdownUrl(accMeta, fbAccount, 'hourly_stats_aggregated_by_advertiser_time_zone', buyerDemoRangeDays)).then(function(r){return r.json();})
+  ]).then(function(results){
+    buyerDemoLoading = false;
+    var errRes = results.filter(function(d){ return d && d.error; })[0];
+    if(errRes){
+      el.innerHTML = '<div style="padding:40px;text-align:center;color:var(--red);font-size:.9rem">❌ โหลดข้อมูลผู้ซื้อไม่สำเร็จ: '+(errRes.error.message||'')+'</div>';
+      return;
+    }
+    buyerDemoData = {
+      ageGender: (results[0].data||[]).map(function(ins){ var pa=_bdExtractPA(ins); pa.age=ins.age||'ไม่ระบุ'; pa.gender=ins.gender||'unknown'; return pa; }),
+      region: (results[1].data||[]).map(function(ins){ var pa=_bdExtractPA(ins); pa.region=ins.region||'ไม่ระบุ'; return pa; }),
+      platform: (results[2].data||[]).map(function(ins){ var pa=_bdExtractPA(ins); pa.platform=ins.publisher_platform||'ไม่ระบุ'; pa.position=ins.platform_position||''; return pa; }),
+      hourly: (results[3].data||[]).map(function(ins){ var pa=_bdExtractPA(ins); pa.hour=ins.hourly_stats_aggregated_by_advertiser_time_zone||''; return pa; })
+    };
+    _renderBuyerDemoUI(el);
+  }).catch(function(err){
+    buyerDemoLoading = false;
+    el.innerHTML = '<div style="padding:40px;text-align:center;color:var(--red);font-size:.9rem">❌ เชื่อมต่อ API ไม่สำเร็จ: '+err.message+'</div>';
+  });
+}
+function _renderBuyerDemoUI(el){
+  if(!buyerDemoData) return;
+  var accLabel = fbAccount;
+  var rangeOpts = [[7,'7 วัน'],[14,'14 วัน'],[30,'30 วัน'],[90,'90 วัน']];
+  var controlsHtml = '<div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap">'
+    + '<span style="font-size:.8rem;color:var(--text3)">บัญชี: <b style="color:var(--text)">'+accLabel+'</b> &middot; ช่วงเวลา:</span>'
+    + rangeOpts.map(function(o){
+        var active = o[0]===buyerDemoRangeDays;
+        return '<button class="bd-range" data-days="'+o[0]+'" style="border:1px solid var(--panel-border);background:'+(active?'var(--blue)':'var(--panel2)')+';color:'+(active?'#fff':'var(--text2)')+';padding:5px 12px;border-radius:var(--r2);cursor:pointer;font-size:.78rem">'+o[1]+'</button>';
+      }).join('') + '</div>';
+
+  var ageMap = {};
+  buyerDemoData.ageGender.forEach(function(r){
+    if(!ageMap[r.age]) ageMap[r.age] = {purchases:0, revenue:0};
+    ageMap[r.age].purchases += r.purchases;
+    ageMap[r.age].revenue += r.revenue;
+  });
+  var ageKeys = BD_AGE_ORDER.filter(function(k){return ageMap[k];}).concat(Object.keys(ageMap).filter(function(k){return BD_AGE_ORDER.indexOf(k)===-1;}));
+  var maxAgePurchase = Math.max.apply(null, ageKeys.map(function(k){return ageMap[k].purchases;}).concat([1]));
+  var ageBarsHtml = ageKeys.length ? ageKeys.map(function(k){
+    var v = ageMap[k];
+    var pct = Math.round((v.purchases/maxAgePurchase)*100);
+    return '<div style="flex:1;text-align:center">'
+      + '<div style="height:70px;display:flex;align-items:flex-end;justify-content:center"><div style="width:60%;background:var(--blue);border-radius:4px 4px 0 0;height:'+Math.max(pct,3)+'%"></div></div>'
+      + '<div style="font-size:.7rem;color:var(--text3);margin-top:4px">'+k+'</div>'
+      + '<div style="font-size:.7rem;font-weight:700;color:var(--text)">'+_bdInt(v.purchases)+'</div>'
+      + '</div>';
+  }).join('') : '<div style="color:var(--text3);font-size:.85rem">ยังไม่มีข้อมูลอายุ</div>';
+
+  var genderMap = {};
+  buyerDemoData.ageGender.forEach(function(r){
+    var g = r.gender==='male'?'ชาย':(r.gender==='female'?'หญิง':'ไม่ระบุ');
+    genderMap[g] = (genderMap[g]||0) + r.purchases;
+  });
+  var totalG = Object.keys(genderMap).reduce(function(a,k){return a+genderMap[k];},0) || 1;
+  var genderKeys = Object.keys(genderMap);
+  var genderHtml = genderKeys.length ? genderKeys.map(function(g){
+    var pct = Math.round(genderMap[g]/totalG*100);
+    return '<div style="display:flex;justify-content:space-between;align-items:center;font-size:.8rem;padding:6px 0;border-bottom:1px solid var(--panel-border)"><span style="color:var(--text)">'+g+'</span><span style="font-weight:700;color:var(--blue)">'+pct+'% &middot; '+_bdInt(genderMap[g])+' ออเดอร์</span></div>';
+  }).join('') : '<div style="color:var(--text3);font-size:.85rem">ยังไม่มีข้อมูลเพศ</div>';
+
+  var regionSorted = buyerDemoData.region.filter(function(r){return r.impressions>0;}).sort(function(a,b){return b.impressions-a.impressions;}).slice(0,10);
+  var regionHtml = regionSorted.length ? regionSorted.map(function(r,i){
+    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--panel-border)">'
+      + '<span style="font-size:.8rem;color:var(--text)">'+(i+1)+'. '+r.region+'</span>'
+      + '<span style="font-size:.78rem;color:var(--text3)"><b style="color:var(--blue)">'+_bdInt(r.impressions)+'</b> Impr.</span>'
+      + '</div>';
+  }).join('') : '<div style="color:var(--text3);font-size:.85rem">ยังไม่มีข้อมูลจังหวัด</div>';
+
+  var platSorted = buyerDemoData.platform.filter(function(r){return r.purchases>0;}).sort(function(a,b){return b.purchases-a.purchases;});
+  var platHtml = platSorted.length ? platSorted.map(function(r){
+    var label = (BD_PLATFORM_LABELS[r.platform]||r.platform) + (r.position? ' &middot; '+r.position.replace(/_/g,' ') : '');
+    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--panel-border)">'
+      + '<span style="font-size:.8rem;color:var(--text)">'+label+'</span>'
+      + '<span style="font-size:.78rem;color:var(--text3)">'+_bdInt(r.purchases)+' ออเดอร์ &middot; <b style="color:var(--blue)">'+fmtB(r.revenue)+'</b></span>'
+      + '</div>';
+  }).join('') : '<div style="color:var(--text3);font-size:.85rem">ยังไม่มีข้อมูลแพลตฟอร์ม</div>';
+
+  var hourMap = {};
+  buyerDemoData.hourly.forEach(function(r){
+    var hourLabel = (r.hour||'').split(':')[0] || '?';
+    hourMap[hourLabel] = (hourMap[hourLabel]||0) + r.purchases;
+  });
+  var hourKeys = Object.keys(hourMap).sort(function(a,b){return parseInt(a)-parseInt(b);});
+  var maxHour = Math.max.apply(null, hourKeys.map(function(k){return hourMap[k];}).concat([1]));
+  var hourBarsHtml = hourKeys.map(function(k){
+    var pct = Math.round((hourMap[k]/maxHour)*100);
+    return '<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:60px"><div style="width:55%;background:var(--blue);opacity:.75;border-radius:3px 3px 0 0;height:'+Math.max(pct,3)+'%"></div></div>';
+  }).join('');
+  var hourLabelsHtml = hourKeys.map(function(k){ return '<div style="flex:1;text-align:center;font-size:.6rem;color:var(--text3)">'+k+':00</div>'; }).join('');
+  var hourSection = hourKeys.length ? ('<div style="display:flex;gap:2px;margin-top:12px">'+hourBarsHtml+'</div><div style="display:flex;gap:2px;margin-top:2px">'+hourLabelsHtml+'</div>') : '<div style="color:var(--text3);font-size:.85rem">ยังไม่มีข้อมูลช่วงเวลา</div>';
+
+  var cardStyle = 'background:var(--panel);border:1px solid var(--panel-border);border-radius:var(--r3);padding:18px';
+
+  el.innerHTML = '<div style="font-size:1.1rem;font-weight:700;color:var(--text);margin-bottom:4px">👥 ข้อมูลผู้ซื้อ</div>'
+    + '<div style="font-size:.8rem;color:var(--text3);margin-bottom:16px">อายุ เพศ จังหวัด แพลตฟอร์ม และช่วงเวลาที่คนซื้อ (ประมาณการจาก Facebook Ads breakdown)</div>'
+    + controlsHtml
+    + '<div class="bd-grid" style="display:grid;grid-template-columns:1.3fr 1fr;gap:16px">'
+      + '<div style="'+cardStyle+'">'
+        + '<div style="font-size:.85rem;font-weight:700;color:var(--text)">ช่วงอายุผู้ซื้อ</div>'
+        + '<div style="display:flex;gap:4px;margin-top:12px">'+ageBarsHtml+'</div>'
+      + '</div>'
+      + '<div style="'+cardStyle+'">'
+        + '<div style="font-size:.85rem;font-weight:700;color:var(--text)">เพศผู้ซื้อ</div>'
+        + '<div style="margin-top:8px">'+genderHtml+'</div>'
+      + '</div>'
+    + '</div>'
+    + '<div class="bd-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px">'
+      + '<div style="'+cardStyle+'">'
+        + '<div style="font-size:.85rem;font-weight:700;color:var(--text)">จังหวัดที่เห็นโฆษณามากที่สุด (Reach, ไม่ใช่ยอดขาย)</div>'
+        + '<div style="margin-top:8px">'+regionHtml+'</div>'
+      + '</div>'
+      + '<div style="'+cardStyle+'">'
+        + '<div style="font-size:.85rem;font-weight:700;color:var(--text)">แพลตฟอร์ม/ตำแหน่งโฆษณา</div>'
+        + '<div style="margin-top:8px">'+platHtml+'</div>'
+      + '</div>'
+    + '</div>'
+    + '<div style="'+cardStyle+';margin-top:16px">'
+      + '<div style="font-size:.85rem;font-weight:700;color:var(--text)">ช่วงเวลาที่คนซื้อ (ตามชั่วโมง, เวลาไทย)</div>'
+      + hourSection
+    + '</div>';
+
+  document.querySelectorAll('.bd-range').forEach(function(b){ b.addEventListener('click', function(){ buyerDemoRangeDays = parseInt(this.dataset.days); buyerDemoData = null; _loadBuyerDemoData(el); }); });
+}
 function renderFB(){
   var el=document.getElementById('fbViewInner');if(!el)return;
   // 3-level navigation routing
