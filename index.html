@@ -3993,30 +3993,72 @@ var buyerDemoRangeDays = 30;
 var buyerDemoLoading = false;
 var buyerDemoData = null;
 var buyerDemoAccount = null;
+var buyerDemoScope = 'ALL';
+var buyerDemoErrCount = 0;
+var buyerDemoTotalAcc = 0;
 function _renderBuyerDemo(el){
-  if(!fbAccount){
-    el.innerHTML = '<div style="background:var(--panel);border:1px solid var(--panel-border);border-radius:var(--r3);padding:32px;text-align:center">'
-      + '<div style="font-size:1rem;color:var(--text);margin-bottom:10px">ยังไม่ได้เลือกบัญชี Facebook Ads</div>'
-      + '<div style="font-size:.85rem;color:var(--text3);margin-bottom:16px">กรุณาไปที่เมนู Facebook Ads แล้วเลือก สินค้า → เพจ → บัญชี ก่อน จึงจะดูข้อมูลผู้ซื้อของบัญชีนั้นได้</div>'
-      + '<button onclick="document.getElementById(\'sb-fb\').click()" style="border:1px solid var(--panel-border);background:var(--blue);color:#fff;padding:8px 18px;border-radius:var(--r2);cursor:pointer;font-size:.85rem">ไปที่ Facebook Ads</button>'
-      + '</div>';
-    return;
-  }
-  if(buyerDemoAccount !== fbAccount) buyerDemoData = null;
-  buyerDemoAccount = fbAccount;
+  if(buyerDemoAccount !== buyerDemoScope) buyerDemoData = null;
+  buyerDemoAccount = buyerDemoScope;
   if(buyerDemoData){ _renderBuyerDemoUI(el); return; }
   _loadBuyerDemoData(el);
+}
+function _bdFetchAllAccounts(days){
+  var seen = {};
+  var accounts = FB_ACCOUNTS_META.filter(function(a){ if(seen[a.id]) return false; seen[a.id]=true; return true; });
+  var agg = {ageGender:[], region:[], platform:[], hourly:[]};
+  var CONCURRENCY = 6;
+  var idx = 0;
+  var errCount = 0;
+  function pushRows(kind, data, mapFn){
+    (data||[]).forEach(function(ins){ agg[kind].push(mapFn(ins)); });
+  }
+  function worker(){
+    if(idx >= accounts.length) return Promise.resolve();
+    var accMeta = accounts[idx++];
+    return Promise.all([
+      fetch(fbBreakdownUrl(accMeta, accMeta.name, 'age,gender', days)).then(function(r){return r.json();}).catch(function(){return {error:true};}),
+      fetch(fbBreakdownUrl(accMeta, accMeta.name, 'region', days)).then(function(r){return r.json();}).catch(function(){return {error:true};}),
+      fetch(fbBreakdownUrl(accMeta, accMeta.name, 'publisher_platform,platform_position', days)).then(function(r){return r.json();}).catch(function(){return {error:true};}),
+      fetch(fbBreakdownUrl(accMeta, accMeta.name, 'hourly_stats_aggregated_by_advertiser_time_zone', days)).then(function(r){return r.json();}).catch(function(){return {error:true};})
+    ]).then(function(r){
+      var ag=r[0], rg=r[1], pl=r[2], hr=r[3];
+      var allBad = true;
+      if(ag && !ag.error && ag.data){ allBad=false; pushRows('ageGender', ag.data, function(ins){ var pa=_bdExtractPA(ins); pa.age=ins.age||'ไม่ระบุ'; pa.gender=ins.gender||'unknown'; return pa; }); }
+      if(rg && !rg.error && rg.data){ allBad=false; pushRows('region', rg.data, function(ins){ var pa=_bdExtractPA(ins); pa.region=ins.region||'ไม่ระบุ'; return pa; }); }
+      if(pl && !pl.error && pl.data){ allBad=false; pushRows('platform', pl.data, function(ins){ var pa=_bdExtractPA(ins); pa.platform=ins.publisher_platform||'ไม่ระบุ'; pa.position=ins.platform_position||''; return pa; }); }
+      if(hr && !hr.error && hr.data){ allBad=false; pushRows('hourly', hr.data, function(ins){ var pa=_bdExtractPA(ins); pa.hour=ins.hourly_stats_aggregated_by_advertiser_time_zone||''; return pa; }); }
+      if(allBad) errCount++;
+      return worker();
+    });
+  }
+  var workers = [];
+  for(var i=0;i<CONCURRENCY && i<accounts.length;i++) workers.push(worker());
+  return Promise.all(workers).then(function(){ return {data: agg, errCount: errCount, total: accounts.length}; });
 }
 function _loadBuyerDemoData(el){
   if(buyerDemoLoading) return;
   buyerDemoLoading = true;
-  var accMeta = FB_ACCOUNTS_META.find(function(a){return a.name===fbAccount;})||FB_ACCOUNTS_META[0];
+  if(buyerDemoScope === 'ALL'){
+    el.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text3);font-size:.9rem">⏳ กำลังโหลดข้อมูลผู้ซื้อจากทุกบัญชี (อาจใช้เวลาสักครู่)...</div>';
+    _bdFetchAllAccounts(buyerDemoRangeDays).then(function(res){
+      buyerDemoLoading = false;
+      buyerDemoData = res.data;
+      buyerDemoErrCount = res.errCount;
+      buyerDemoTotalAcc = res.total;
+      _renderBuyerDemoUI(el);
+    }).catch(function(err){
+      buyerDemoLoading = false;
+      el.innerHTML = '<div style="padding:40px;text-align:center;color:var(--red);font-size:.9rem">❌ เชื่อมต่อ API ไม่สำเร็จ: '+err.message+'</div>';
+    });
+    return;
+  }
+  var accMeta = FB_ACCOUNTS_META.find(function(a){return a.name===buyerDemoScope;})||FB_ACCOUNTS_META[0];
   el.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text3);font-size:.9rem">⏳ กำลังโหลดข้อมูลผู้ซื้อ...</div>';
   Promise.all([
-    fetch(fbBreakdownUrl(accMeta, fbAccount, 'age,gender', buyerDemoRangeDays)).then(function(r){return r.json();}),
-    fetch(fbBreakdownUrl(accMeta, fbAccount, 'region', buyerDemoRangeDays)).then(function(r){return r.json();}),
-    fetch(fbBreakdownUrl(accMeta, fbAccount, 'publisher_platform,platform_position', buyerDemoRangeDays)).then(function(r){return r.json();}),
-    fetch(fbBreakdownUrl(accMeta, fbAccount, 'hourly_stats_aggregated_by_advertiser_time_zone', buyerDemoRangeDays)).then(function(r){return r.json();})
+    fetch(fbBreakdownUrl(accMeta, buyerDemoScope, 'age,gender', buyerDemoRangeDays)).then(function(r){return r.json();}),
+    fetch(fbBreakdownUrl(accMeta, buyerDemoScope, 'region', buyerDemoRangeDays)).then(function(r){return r.json();}),
+    fetch(fbBreakdownUrl(accMeta, buyerDemoScope, 'publisher_platform,platform_position', buyerDemoRangeDays)).then(function(r){return r.json();}),
+    fetch(fbBreakdownUrl(accMeta, buyerDemoScope, 'hourly_stats_aggregated_by_advertiser_time_zone', buyerDemoRangeDays)).then(function(r){return r.json();})
   ]).then(function(results){
     buyerDemoLoading = false;
     var errRes = results.filter(function(d){ return d && d.error; })[0];
@@ -4024,6 +4066,8 @@ function _loadBuyerDemoData(el){
       el.innerHTML = '<div style="padding:40px;text-align:center;color:var(--red);font-size:.9rem">❌ โหลดข้อมูลผู้ซื้อไม่สำเร็จ: '+(errRes.error.message||'')+'</div>';
       return;
     }
+    buyerDemoErrCount = 0;
+    buyerDemoTotalAcc = 1;
     buyerDemoData = {
       ageGender: (results[0].data||[]).map(function(ins){ var pa=_bdExtractPA(ins); pa.age=ins.age||'ไม่ระบุ'; pa.gender=ins.gender||'unknown'; return pa; }),
       region: (results[1].data||[]).map(function(ins){ var pa=_bdExtractPA(ins); pa.region=ins.region||'ไม่ระบุ'; return pa; }),
@@ -4038,16 +4082,18 @@ function _loadBuyerDemoData(el){
 }
 function _renderBuyerDemoUI(el){
   if(!buyerDemoData) return;
-  var accLabel = fbAccount;
-  var rangeOpts = [[7,'7 วัน'],[14,'14 วัน'],[30,'30 วัน'],[90,'90 วัน']];
-  var controlsHtml = '<div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap">'
-    + '<span style="font-size:.8rem;color:var(--text3)">บัญชี: <b style="color:var(--text)">'+accLabel+'</b> &middot; ช่วงเวลา:</span>'
+  var accLabel = buyerDemoScope === 'ALL' ? ('รวม '+_bdInt(buyerDemoTotalAcc||0)+' บัญชี'+(buyerDemoErrCount?(' (ข้ามที่ดึงไม่ได้ '+buyerDemoErrCount+')'):'')) : '';
+var scopeOptions = '<option value="ALL"'+(buyerDemoScope==='ALL'?' selected':'')+'>🌐 ทุกบัญชี (รวม)</option>'
+    + FB_ACCOUNTS_META.map(function(a){ return '<option value="'+a.name+'"'+(buyerDemoScope===a.name?' selected':'')+'>'+a.name+'</option>'; }).join('');
+var rangeOpts = [[7,'7 วัน'],[14,'14 วัน'],[30,'30 วัน'],[90,'90 วัน']];
+var controlsHtml = '<div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap">'
+    + '<select id="bdScopeSelect" style="border:1px solid var(--panel-border);background:var(--panel2);color:var(--text);padding:5px 10px;border-radius:var(--r2);font-size:.78rem;max-width:220px">'+scopeOptions+'</select>'
+    + '<span style="font-size:.8rem;color:var(--text3)">'+(accLabel?accLabel+' &middot; ':'')+'ช่วงเวลา:</span>'
     + rangeOpts.map(function(o){
         var active = o[0]===buyerDemoRangeDays;
-        return '<button class="bd-range" data-days="'+o[0]+'" style="border:1px solid var(--panel-border);background:'+(active?'var(--blue)':'var(--panel2)')+';color:'+(active?'#fff':'var(--text2)')+';padding:5px 12px;border-radius:var(--r2);cursor:pointer;font-size:.78rem">'+o[1]+'</button>';
+        return '<button class="bd-range" data-days="'+o[0]+'" style="border:1px solid var(--panel-border);background:'+(active?"var(--blue)":"var(--panel2)")+';color:'+(active?"#fff":"var(--text2)")+';padding:5px 12px;border-radius:var(--r2);cursor:pointer;font-size:.78rem">'+o[1]+'</button>';
       }).join('') + '</div>';
-
-  var ageMap = {};
+var ageMap = {};
   buyerDemoData.ageGender.forEach(function(r){
     if(!ageMap[r.age]) ageMap[r.age] = {purchases:0, revenue:0};
     ageMap[r.age].purchases += r.purchases;
@@ -4139,6 +4185,8 @@ function _renderBuyerDemoUI(el){
     + '</div>';
 
   document.querySelectorAll('.bd-range').forEach(function(b){ b.addEventListener('click', function(){ buyerDemoRangeDays = parseInt(this.dataset.days); buyerDemoData = null; _loadBuyerDemoData(el); }); });
+  var bdScopeSelect = document.getElementById('bdScopeSelect');
+  if(bdScopeSelect) bdScopeSelect.addEventListener('change', function(){ buyerDemoScope = this.value; buyerDemoAccount = null; buyerDemoData = null; _loadBuyerDemoData(el); });
 }
 function renderFB(){
   var el=document.getElementById('fbViewInner');if(!el)return;
