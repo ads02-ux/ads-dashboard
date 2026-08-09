@@ -4123,7 +4123,16 @@ var ageMap = {};
     return '<div style="display:flex;justify-content:space-between;align-items:center;font-size:.8rem;padding:6px 0;border-bottom:1px solid var(--panel-border)"><span style="color:var(--text)">'+g+'</span><span style="font-weight:700;color:var(--blue)">'+pct+'% &middot; '+_bdInt(genderMap[g])+' ออเดอร์</span></div>';
   }).join('') : '<div style="color:var(--text3);font-size:.85rem">ยังไม่มีข้อมูลเพศ</div>';
 
-  var regionSorted = buyerDemoData.region.filter(function(r){return r.impressions>0;}).sort(function(a,b){return b.impressions-a.impressions;}).slice(0,10);
+  var _regionGroupMap = {};
+  buyerDemoData.region.forEach(function(r){
+    var k = r.region || 'ไม่ระบุ';
+    if(!_regionGroupMap[k]) _regionGroupMap[k] = {region:k, impressions:0, purchases:0, revenue:0};
+    _regionGroupMap[k].impressions += (r.impressions||0);
+    _regionGroupMap[k].purchases += (r.purchases||0);
+    _regionGroupMap[k].revenue += (r.revenue||0);
+  });
+  var _regionArr = Object.keys(_regionGroupMap).map(function(k){ return _regionGroupMap[k]; });
+  var regionSorted = _regionArr.filter(function(r){return r.impressions>0;}).sort(function(a,b){return b.impressions-a.impressions;}).slice(0,10);
   var regionHtml = regionSorted.length ? regionSorted.map(function(r,i){
     return '<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--panel-border)">'
       + '<span style="font-size:.8rem;color:var(--text)">'+(i+1)+'. '+r.region+'</span>'
@@ -4131,7 +4140,15 @@ var ageMap = {};
       + '</div>';
   }).join('') : '<div style="color:var(--text3);font-size:.85rem">ยังไม่มีข้อมูลจังหวัด</div>';
 
-  var platSorted = buyerDemoData.platform.filter(function(r){return r.purchases>0;}).sort(function(a,b){return b.purchases-a.purchases;});
+  var _platGroupMap = {};
+  buyerDemoData.platform.forEach(function(r){
+    var k = (r.platform||'') + '|' + (r.position||'');
+    if(!_platGroupMap[k]) _platGroupMap[k] = {platform:r.platform, position:r.position, purchases:0, revenue:0};
+    _platGroupMap[k].purchases += (r.purchases||0);
+    _platGroupMap[k].revenue += (r.revenue||0);
+  });
+  var _platArr = Object.keys(_platGroupMap).map(function(k){ return _platGroupMap[k]; });
+  var platSorted = _platArr.filter(function(r){return r.purchases>0;}).sort(function(a,b){return b.purchases-a.purchases;});
   var platHtml = platSorted.length ? platSorted.map(function(r){
     var label = (BD_PLATFORM_LABELS[r.platform]||r.platform) + (r.position? ' &middot; '+r.position.replace(/_/g,' ') : '');
     return '<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--panel-border)">'
