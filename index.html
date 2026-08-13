@@ -2278,8 +2278,13 @@ function commGetAnalysts(){
 }
 function commPrevMonth(){commMonth--;if(commMonth<1){commMonth=12;commYear--;}renderCommission();}
 function commNextMonth(){commMonth++;if(commMonth>12){commMonth=1;commYear++;}renderCommission();}
-function csumSaveClips(name,yr,mo,val){try{localStorage.setItem('rb_cclips_'+name+'_'+yr+'_'+pad2(mo),val||'0');}catch(e){}renderCommission();}function csumSaveGoal(name,yr,mo,val){
-  try{localStorage.setItem('rb_cgoal_'+name+'_'+yr+'_'+pad2(mo),val||'0');}catch(e){}
+function commGetClips(a,yr,mo){var k=a+'_'+yr+'_'+pad2(mo);try{var lv=localStorage.getItem('rb_cclips_'+k);if(lv!==null)return parseInt(lv)||0;}catch(e){}return parseInt(_clipsNpointData[k]||0)||0;}
+function commGetGoal(a,yr,mo){var k=a+'_'+yr+'_'+pad2(mo);try{var lv=localStorage.getItem('rb_cgoal_'+k);if(lv!==null)return parseFloat(lv)||0;}catch(e){}return parseFloat(_goalNpointData[k]||0)||0;}
+function csumSaveClips(name,yr,mo,val){var k=name+'_'+yr+'_'+pad2(mo);var v=parseInt(val||0)||0;try{localStorage.setItem('rb_cclips_'+k,v);}catch(e){}_clipsNpointData[k]=v;_leavePost(window._leaveCache||{});renderCommission();}function csumSaveGoal(name,yr,mo,val){
+  var k=name+'_'+yr+'_'+pad2(mo);var v=parseFloat(val||0)||0;
+  try{localStorage.setItem('rb_cgoal_'+k,v);}catch(e){}
+  _goalNpointData[k]=v;
+  _leavePost(window._leaveCache||{});
   renderCommission();
 }
 
@@ -2370,7 +2375,7 @@ function renderCommission(){
       });
     }
     // Spark SVG
-    for(var _m3=1;_m3<=mo;_m3++){var _ck='rb_cclips_'+a+'_'+yr+'_'+pad2(_m3);var _cv=0;try{_cv=parseInt(localStorage.getItem(_ck)||0)||0;}catch(e){}ytd+=_cv*1000;}var sparkVals=dayArr.map(function(day){return sparkDaily[day.dk]||0;});
+    for(var _m3=1;_m3<=mo;_m3++){ytd+=commGetClips(a,yr,_m3)*1000;}var sparkVals=dayArr.map(function(day){return sparkDaily[day.dk]||0;});
     var maxSpark=Math.max.apply(null,sparkVals)||1;
     var sw=220,sh=42,pts=sparkVals.map(function(v,i){
       var x=sw*i/Math.max(sparkVals.length-1,1);
@@ -2379,7 +2384,7 @@ function renderCommission(){
     }).join(' ');
     var hasSpark=sparkVals.some(function(v){return v>0;});
     var sparkSvg=hasSpark?'<svg width="100%" viewBox="0 0 '+sw+' '+sh+'" preserveAspectRatio="none" style="display:block;height:42px"><defs><linearGradient id="sg_'+a.replace(/\s/g,'_')+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#7c6ff7" stop-opacity=".35"/><stop offset="100%" stop-color="#7c6ff7" stop-opacity="0"/></linearGradient></defs><polyline points="'+pts+'" fill="none" stroke="#7c6ff7" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/></svg>':'<div style="height:42px;display:flex;align-items:center;justify-content:center;font-size:.7rem;color:var(--text3);opacity:.4">ยังไม่มีข้อมูล</div>';
-    var clipsKey='rb_cclips_'+a+'_'+yr+'_'+pad2(mo);var clips=0;try{clips=parseInt(localStorage.getItem(clipsKey)||0)||0;}catch(e){}var clipBonus=clips*1000;atot2+=clipBonus;sumData.push({a:a,atot:atot2,prevTot:prevTot,ytd:ytd,totalSpend:totalSpend,daysWorked:Object.keys(daysSet).length,brands:prods.filter(function(p){return prodBreak[p]>0;}).length||prods.length,prodBreak:prodBreak,sparkSvg:sparkSvg,prods:prods,clips:clips,clipBonus:clipBonus});
+    var clips=commGetClips(a,yr,mo);var clipBonus=clips*1000;atot2+=clipBonus;sumData.push({a:a,atot:atot2,prevTot:prevTot,ytd:ytd,totalSpend:totalSpend,daysWorked:Object.keys(daysSet).length,brands:prods.filter(function(p){return prodBreak[p]>0;}).length||prods.length,prodBreak:prodBreak,sparkSvg:sparkSvg,prods:prods,clips:clips,clipBonus:clipBonus});
   });
   // Sort by commission descending
   sumData.sort(function(a,b){return b.atot-a.atot;});
@@ -2387,8 +2392,7 @@ function renderCommission(){
   out+='<div class="csum-grid">';
   sumData.forEach(function(s,idx){
     var a=s.a;
-    var goalKey='rb_cgoal_'+a+'_'+yr+'_'+pad2(mo);
-    var goal=0;try{goal=parseFloat(localStorage.getItem(goalKey)||0)||0;}catch(e){}
+    var goal=commGetGoal(a,yr,mo);
     var pct=goal>0?Math.round(s.atot/goal*100):0;
     var pctHtml=goal>0?'<span class="csum-goal-pct" style="color:'+(pct>=100?'#4ade80':pct>=70?'#fbbf24':'#ff5252')+'">'+pct+'% '+(pct>=100?'✓':'')+'</span>':'';
     var progW=goal>0?Math.min(pct,100):0;
@@ -6374,6 +6378,8 @@ var _TH_HOLIDAYS_2026=['2026-01-01','2026-03-03','2026-04-13','2026-04-14','2026
 var _LEAVE_NPOINT='https://api.npoint.io/0f30d56553bf06c0c544';
 window._leaveCache=null;
 var _commNpointData={};
+var _goalNpointData={};
+var _clipsNpointData={};
 function _leaveGetData(){try{return window._leaveCache||JSON.parse(localStorage.getItem('leave_cal')||'{}')||{};}catch(e){return{};}}
 function _leaveSaveData(d){try{localStorage.setItem('leave_cal',JSON.stringify(d));}catch(e){}}
 async function _leaveFetch(){
@@ -6384,6 +6390,8 @@ async function _leaveFetch(){
     if(j._photos){Object.keys(j._photos).forEach(function(n){if(j._photos[n])avatarMap[n]=j._photos[n];});delete j._photos;}
     // extract commission data + merge กับ localStorage (ป้องกันข้อมูลหายถ้า refresh เร็ว)
     if(j._comm){_commNpointData=j._comm;delete j._comm;}
+    if(j._goals){_goalNpointData=j._goals;delete j._goals;}
+    if(j._clips){_clipsNpointData=j._clips;delete j._clips;}
     if(j._tasks){_taskData=j._tasks;delete j._tasks;}
     // merge local commission entries ที่ยังไม่ sync
     try{
@@ -6432,6 +6440,8 @@ async function _leavePost(data){
     var payload=Object.assign({},data);
     payload._photos=Object.assign({},avatarMap);
     payload._comm=Object.assign({},_commNpointData);
+    payload._goals=Object.assign({},_goalNpointData);
+    payload._clips=Object.assign({},_clipsNpointData);
     payload._tasks=Object.assign({},_taskData);
     await fetch(_LEAVE_NPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
   }catch(e){}
