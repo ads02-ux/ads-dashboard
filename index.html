@@ -717,7 +717,7 @@ function _exportProductCSV(){
 var _viewAccessMap={
   fb:['fb'],ai:['ai'],adsai:['adsai'],track:['track'],benchmark:['benchmark'],
   chartrank:['chartrank'],hunter:['top','kpiGrid','lbSection','chartSection','cohort','t1wrap','t2wrap'],
-  hr:['commission'],leave:['leave'],dailytask:['dailytask']
+  hr:['commission'],leave:['leave'],dailytask:['dailytask'],videoai:['videoai'],buyerdemo:['buyerdemo']
 };
 function _applyLimitedAccess(access){
   var _keys=Array.isArray(access)?access:[access];
@@ -8660,8 +8660,8 @@ function _renderBudgetLog(el){
 
 function _renderUserMgmt(el){
   var users=_getAccessUsers();
-  var _AL={all:'ทุกหน้า',fb:'Facebook Ads',ai:'AI แนะนำ',adsai:'AI วิเคราะห์ Ads',track:'ติดตามผล',benchmark:'BenchMark',chartrank:'ชาร์ตอันดับ',hunter:'Hunter',hr:'ค่าคอม',leave:'วันหยุด',dailytask:'งานรายวัน'};
-  var _AC={all:'linear-gradient(135deg,#4f46e5,#7c3aed)',fb:'#1d4ed8',ai:'#7c3aed',adsai:'#6d28d9',track:'#0891b2',benchmark:'#b45309',chartrank:'#d97706',hunter:'#0f172a',hr:'#059669',leave:'#dc2626',dailytask:'#475569'};
+  var _AL={all:'ทุกหน้า',fb:'Facebook Ads',ai:'AI แนะนำ',adsai:'AI วิเคราะห์ Ads',track:'ติดตามผล',benchmark:'BenchMark',chartrank:'ชาร์ตอันดับ',hunter:'Hunter',hr:'ค่าคอม',leave:'วันหยุด',dailytask:'งานรายวัน',videoai:'วิเคราะห์วีดีโอ',buyerdemo:'ข้อมูลผู้ซื้อ'};
+  var _AC={all:'linear-gradient(135deg,#4f46e5,#7c3aed)',fb:'#1d4ed8',ai:'#7c3aed',adsai:'#6d28d9',track:'#0891b2',benchmark:'#b45309',chartrank:'#d97706',hunter:'#0f172a',hr:'#059669',leave:'#dc2626',dailytask:'#475569',videoai:'#db2777',buyerdemo:'#0d9488'};
   var accessLabel=function(a){
     if(a==='all'){return '<span style="display:inline-flex;align-items:center;padding:3px 12px;border-radius:20px;font-size:.68rem;font-weight:700;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff">ทุกหน้า</span>';}
     var arr=Array.isArray(a)?a:[a];
@@ -8676,7 +8676,7 @@ function _renderUserMgmt(el){
     var _curAccess=u.access;
     var _isAll=(_curAccess==='all');
     var _curArr=_isAll?[]:Array.isArray(_curAccess)?_curAccess:[_curAccess];
-    var _PAGES=[{k:'fb',lbl:'FB Ads'},{k:'ai',lbl:'AI แนะนำ'},{k:'adsai',lbl:'AI วิเคราะห์'},{k:'track',lbl:'ติดตาม'},{k:'benchmark',lbl:'Benchmark'},{k:'chartrank',lbl:'ชาร์ต'},{k:'hunter',lbl:'Hunter'},{k:'hr',lbl:'ค่าคอม'},{k:'leave',lbl:'วันหยุด'},{k:'dailytask',lbl:'งานรายวัน'}];
+    var _PAGES=[{k:'fb',lbl:'FB Ads'},{k:'ai',lbl:'AI แนะนำ'},{k:'adsai',lbl:'AI วิเคราะห์'},{k:'track',lbl:'ติดตาม'},{k:'benchmark',lbl:'Benchmark'},{k:'chartrank',lbl:'ชาร์ต'},{k:'hunter',lbl:'Hunter'},{k:'hr',lbl:'ค่าคอม'},{k:'leave',lbl:'วันหยุด'},{k:'dailytask',lbl:'งานรายวัน'},{k:'videoai',lbl:'วิเคราะห์วีดีโอ'},{k:'buyerdemo',lbl:'ข้อมูลผู้ซื้อ'}];
     var _accPills='<div style="display:flex;flex-wrap:wrap;gap:3px;max-width:300px">';
     _accPills+='<button data-idx="'+i+'" onclick="_umSetAllAccess(this)" style="font-size:.6rem;padding:2px 8px;border-radius:20px;border:1px solid '+(_isAll?'#4f46e5':'#e2e8f0')+';background:'+(_isAll?'#4f46e5':'#f8fafc')+';color:'+(_isAll?'#fff':'#94a3b8')+';cursor:pointer;font-family:inherit;font-weight:700">ทุกหน้า</button>';
     _PAGES.forEach(function(p){var active=_curArr.indexOf(p.k)>=0;_accPills+='<button data-idx="'+i+'" data-key="'+p.k+'" onclick="_umTogglePage(this)" style="font-size:.6rem;padding:2px 8px;border-radius:20px;border:1px solid '+(active?'#3b82f6':'#e2e8f0')+';background:'+(active?'#eff6ff':'#f8fafc')+';color:'+(active?'#1d4ed8':'#94a3b8')+';cursor:pointer;font-family:inherit;font-weight:'+(active?'700':'400')+'">'+p.lbl+'</button>';});
@@ -8744,6 +8744,8 @@ function _renderUserMgmt(el){
             +'<span data-nacc="hr" data-active="0" onclick="_umNewAccPillToggle(this)" style="cursor:pointer;display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;border:1px solid #e2e8f0;background:#f8fafc;color:#64748b;font-size:.65rem;font-weight:400">ค่าคอม</span>'
             +'<span data-nacc="leave" data-active="0" onclick="_umNewAccPillToggle(this)" style="cursor:pointer;display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;border:1px solid #e2e8f0;background:#f8fafc;color:#64748b;font-size:.65rem;font-weight:400">วันหยุด</span>'
             +'<span data-nacc="dailytask" data-active="0" onclick="_umNewAccPillToggle(this)" style="cursor:pointer;display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;border:1px solid #e2e8f0;background:#f8fafc;color:#64748b;font-size:.65rem;font-weight:400">งานรายวัน</span>'
+            +'<span data-nacc="videoai" data-active="0" onclick="_umNewAccPillToggle(this)" style="cursor:pointer;display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;border:1px solid #e2e8f0;background:#f8fafc;color:#64748b;font-size:.65rem;font-weight:400">วิเคราะห์วีดีโอ</span>'
+            +'<span data-nacc="buyerdemo" data-active="0" onclick="_umNewAccPillToggle(this)" style="cursor:pointer;display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;border:1px solid #e2e8f0;background:#f8fafc;color:#64748b;font-size:.65rem;font-weight:400">ข้อมูลผู้ซื้อ</span>'
           +'</div></div>'
         +'<div><label style="font-size:.67rem;color:#64748b;display:block;margin-bottom:4px;font-weight:600">การใช้งาน</label>'
           +'<select id="umNewPerm" style="border:1.5px solid #e2e8f0;border-radius:7px;padding:7px 12px;font-size:.8rem;font-family:inherit;color:#0f172a;background:#fff">'
