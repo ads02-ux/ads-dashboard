@@ -4436,12 +4436,21 @@ function _loadFBFromAPI(accMeta,accName){
   _fetchFBPage(url,[],accName);
 }
 
-function _fetchFBPage(url,accumulated,accName){
+function _fetchFBPage(url,accumulated,accName,retryCount){
+  retryCount=retryCount||0;
   fetch(url)
     .then(function(r){return r.json();})
     .then(function(d){
       if(d.error){
-        showBanner('❌ FB API: '+d.error.message);
+        var _msg=d.error.message||'';
+        var _isTransient=d.error.code===4||d.error.code===17||d.error.code===32||d.error.code===613||/request limit|reduce the amount of data|too many calls|temporarily unavailable/i.test(_msg);
+        if(_isTransient&&retryCount<5){
+          var _delay=3000*Math.pow(2,retryCount);
+          showBanner('⏳ FB API ชนลิมิต ('+accName+') กำลังลองใหม่ใน '+Math.round(_delay/1000)+'s...');
+          setTimeout(function(){_fetchFBPage(url,accumulated,accName,retryCount+1);},_delay);
+          return;
+        }
+        showBanner('❌ FB API: '+_msg+' ('+accName+')');
         fbDataMap[accName]=accumulated.length?accumulated:[];
         fbLoadedMap[accName]=true;
         _fbLoadingMap[accName]=false;
@@ -4489,7 +4498,7 @@ function _fetchFBPage(url,accumulated,accName){
           if(el)el.innerHTML='<div style="padding:40px 24px">'+_fbBreadcrumb()+_fbAccountTabs()
             +'<div style="padding:40px;text-align:center;color:var(--text3);font-size:.9rem">⏳ โหลด '+accumulated.length+' รายการ...</div></div>';
         }
-        _fetchFBPage(d.paging.next,accumulated,accName);
+        _fetchFBPage(d.paging.next,accumulated,accName,0);
       }else{
         fbDataMap[accName]=accumulated;
         fbLoadedMap[accName]=true;
@@ -4499,13 +4508,20 @@ function _fetchFBPage(url,accumulated,accName){
       }
     })
     .catch(function(e){
-      showBanner('❌ Facebook API error: '+e.message);
-      fbDataMap[accName]=[];
+      if(retryCount<5){
+        var _delay2=3000*Math.pow(2,retryCount);
+        showBanner('⏳ เครือข่ายขัดข้อง ('+accName+') กำลังลองใหม่ใน '+Math.round(_delay2/1000)+'s...');
+        setTimeout(function(){_fetchFBPage(url,accumulated,accName,retryCount+1);},_delay2);
+        return;
+      }
+      showBanner('❌ Facebook API error: '+e.message+' ('+accName+')');
+      fbDataMap[accName]=accumulated.length?accumulated:[];
       fbLoadedMap[accName]=true;
       _fbLoadingMap[accName]=false;
       renderFB();
     });
 }
+
 
 function cb_fb(resp){
   try{
