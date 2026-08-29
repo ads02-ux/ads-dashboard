@@ -1069,6 +1069,7 @@ var FB_ACCOUNTS_META=[
   {name:'AudfriderThorpe',id:'act_516772400783194',configKey:'FB_GID_NayTam'},
   {name:'CecilyElmebrigge',id:'act_849522896508483',configKey:'FB_GID_NayTam'},
   {name:'AdelaisGrimchanter',id:'act_1674641149957282',configKey:'FB_GID_NayTam'},
+{name:'JagelinLampsoul',id:'act_1017490993714814',configKey:'FB_GID_NayTam'},
   {name:'ImmyYamakura',id:'act_861882859314430',configKey:'FB_GID_ImmyYamakura'},
   {name:'EmnaFrancey',id:'act_1445267903470353',configKey:'FB_GID_EmnaFrancey'},
   {name:'GodesaJeweleyes',id:'act_2221386248612082',configKey:'FB_GID_GodesaJeweleyes'},
@@ -1229,6 +1230,7 @@ FB_TOKENS['PatthadonPhayaknet']=FB_TOKENS['NayTam'];
 FB_TOKENS['AudfriderThorpe']=FB_TOKENS['NayTam'];
 FB_TOKENS['CecilyElmebrigge']=FB_TOKENS['NayTam'];
 FB_TOKENS['AdelaisGrimchanter']=FB_TOKENS['NayTam'];
+FB_TOKENS['JagelinLampsoul']=FB_TOKENS['NayTam'];
 var FB_API='https://richbiotech-fb-proxy.ads02.workers.dev/v20.0/';
 var s1data=null,s2data=null,loadedCount=0,chartInst={},modalCharts={};
 var commSheetData={}; // keyed 'YYYY-MM' → {analyst:{product:{date:{s,r}}}}
@@ -3187,7 +3189,12 @@ var FB_HIERARCHY=[
         name:'Olymplus ฟิตจนคนทัก ไม่รักได้ยังไง',
         manager:'MOS',
         phone:'099-609-0902',
-        accounts:[]
+        accounts:[
+          {
+            displayName:'Jagelin Lampsoul',
+            adAccounts:['JagelinLampsoul']
+          }
+        ]
       }
     ]
   },
