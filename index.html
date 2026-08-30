@@ -7618,6 +7618,10 @@ function _renderCampDetailContent(campName,campId,days){
   html+=kpiCard('ROAS',agg.roas>0?agg.roas.toFixed(2)+'x':'—',_fbRoasColor(agg.roas));
   html+=kpiCard('CTR',agg.ctr>0?agg.ctr.toFixed(2)+'%':'—','#38bdf8');
   html+=kpiCard('การซื้อ',agg.purchases>0?fmt(agg.purchases,0)+' ครั้ง':'—','#00e676');
+  html+=kpiCard('การสนทนา',agg.conversations>0?fmt(agg.conversations,0)+' ราย':'—','#818cf8');
+  html+=kpiCard('ต้นทุน/สนทนา',agg.costPerConv>0?'฿'+fmt(agg.costPerConv):'—','#f472b6');
+  html+=kpiCard('ต้นทุน/ซื้อ',agg.costPerBuy>0?'฿'+fmt(agg.costPerBuy):'—','#fb923c');
+  html+=kpiCard('ค่าคอนเวอร์ชั่น',agg.revenue>0?'฿'+fmt(agg.revenue):'—','#a78bfa');
   html+='</div>';
 
   // Chart
