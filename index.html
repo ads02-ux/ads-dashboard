@@ -7559,7 +7559,11 @@ function _renderCampDetailContent(campName,campId,days){
 
     var todayStr=toYMD(new Date());
   var rows;
-  if(days<=1){
+  if(days==='y'){
+    var yestDate=new Date();yestDate.setDate(yestDate.getDate()-1);
+    var yestStr=toYMD(yestDate);
+    rows=campRows.filter(function(r){return r.date&&r.date===yestStr;});
+  }else if(days<=1){
     rows=campRows.filter(function(r){return r.date&&r.date===todayStr;});
   }else{
     var cutDate=new Date();cutDate.setDate(cutDate.getDate()-(days-1));
@@ -7591,7 +7595,7 @@ function _renderCampDetailContent(campName,campId,days){
 
   // Date filter tabs
   html+='<div style="display:flex;gap:4px;margin-bottom:16px">';
-  [{l:'วันนี้',d:1},{l:'3 วัน',d:3},{l:'7 วัน',d:7},{l:'30 วัน',d:30}].forEach(function(f){
+  [{l:'วันนี้',d:1},{l:'เมื่อวาน',d:'y'},{l:'3 วัน',d:3},{l:'7 วัน',d:7},{l:'30 วัน',d:30}].forEach(function(f){
     var act=days===f.d;
     html+='<button onclick="event.stopPropagation();fbDetailSetDays('+f.d+')" style="padding:5px 12px;font-size:.7rem;font-weight:600;border:1px solid '+(act?'#1565c0':'rgba(100,116,139,.3)')+';border-radius:20px;background:'+(act?'rgba(21,101,192,.12)':'transparent')+';color:'+(act?'#1565c0':'#64748b')+';cursor:pointer;font-family:inherit;transition:.15s">'+f.l+'</button>';
   });
