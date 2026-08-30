@@ -7545,6 +7545,52 @@ function fbDetailSetDays(d){
   _renderCampDetailContent(window._fbDetailCamp.name,window._fbDetailCamp.id,d);
 }
 
+var _fbKpiDefaultOrder=['spend','roas','ctr','purchases','conversations','costPerConv','costPerBuy','revenue'];
+function _fbKpiOrderGet(){
+  try{
+    var saved=JSON.parse(localStorage.getItem('_fbKpiOrder')||'null');
+    if(Array.isArray(saved)&&saved.length){
+      var merged=saved.filter(function(k){return _fbKpiDefaultOrder.indexOf(k)!==-1;});
+      _fbKpiDefaultOrder.forEach(function(k){if(merged.indexOf(k)===-1)merged.push(k);});
+      return merged;
+    }
+  }catch(e){}
+  return _fbKpiDefaultOrder.slice();
+}
+function _fbKpiOrderSet(order){
+  try{localStorage.setItem('_fbKpiOrder',JSON.stringify(order));}catch(e){}
+}
+var _fbKpiDragId=null;
+function _fbKpiDragStart(ev){
+  _fbKpiDragId=ev.currentTarget.getAttribute('data-kpi-id');
+  ev.dataTransfer.effectAllowed='move';
+  try{ev.dataTransfer.setData('text/plain',_fbKpiDragId);}catch(e){}
+  ev.currentTarget.style.opacity='.4';
+}
+function _fbKpiDragOver(ev){
+  ev.preventDefault();
+  ev.dataTransfer.dropEffect='move';
+}
+function _fbKpiDrop(ev){
+  ev.preventDefault();
+  var targetId=ev.currentTarget.getAttribute('data-kpi-id');
+  if(!_fbKpiDragId||_fbKpiDragId===targetId)return;
+  var order=_fbKpiOrderGet();
+  var fromIdx=order.indexOf(_fbKpiDragId);
+  var toIdx=order.indexOf(targetId);
+  if(fromIdx===-1||toIdx===-1)return;
+  order.splice(fromIdx,1);
+  order.splice(toIdx,0,_fbKpiDragId);
+  _fbKpiOrderSet(order);
+  if(window._fbDetailCamp&&typeof _renderCampDetailContent==='function'){
+    _renderCampDetailContent(window._fbDetailCamp.name,window._fbDetailCamp.id,window._fbDetailCamp.days);
+  }
+}
+function _fbKpiDragEnd(ev){
+  ev.currentTarget.style.opacity='1';
+  _fbKpiDragId=null;
+}
+
 function _renderCampDetailContent(campName,campId,days){
   var el=document.getElementById('fbDetailContent');
   if(!el)return;
@@ -7607,24 +7653,27 @@ function _renderCampDetailContent(campName,campId,days){
     +'</div>';
 
   // KPI mini cards
-  html+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px">';
-  function kpiCard(label,value,color){
-    return '<div style="background:#ffffff;border:1px solid #dde3f4;border-radius:10px;padding:10px 12px;box-shadow:0 1px 4px rgba(15,23,42,.05)">'
+  html+='<div id="fbKpiGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px">';
+  function kpiCard(id,label,value,color){
+    return '<div class="fb-kpi-card" draggable="true" data-kpi-id="'+id+'" ondragstart="_fbKpiDragStart(event)" ondragover="_fbKpiDragOver(event)" ondrop="_fbKpiDrop(event)" ondragend="_fbKpiDragEnd(event)" style="background:#ffffff;border:1px solid #dde3f4;border-radius:10px;padding:10px 12px;box-shadow:0 1px 4px rgba(15,23,42,.05);cursor:grab;user-select:none">'
       +'<div style="font-size:.58rem;color:#64748b;margin-bottom:3px;text-transform:uppercase;letter-spacing:.4px">'+label+'</div>'
       +'<div style="font-size:.95rem;font-weight:700;color:'+(color||'#0f172a')+'">'+value+'</div>'
       +'</div>';
   }
-  html+=kpiCard('Spend','฿'+fmt(agg.spend),'#f59e0b');
-  html+=kpiCard('ROAS',agg.roas>0?agg.roas.toFixed(2)+'x':'—',_fbRoasColor(agg.roas));
-  html+=kpiCard('CTR',agg.ctr>0?agg.ctr.toFixed(2)+'%':'—','#38bdf8');
-  html+=kpiCard('การซื้อ',agg.purchases>0?fmt(agg.purchases,0)+' ครั้ง':'—','#00e676');
-  html+=kpiCard('การสนทนา',agg.conversations>0?fmt(agg.conversations,0)+' ราย':'—','#818cf8');
-  html+=kpiCard('ต้นทุน/สนทนา',agg.costPerConv>0?'฿'+fmt(agg.costPerConv):'—','#f472b6');
-  html+=kpiCard('ต้นทุน/ซื้อ',agg.costPerBuy>0?'฿'+fmt(agg.costPerBuy):'—','#fb923c');
-  html+=kpiCard('ค่าคอนเวอร์ชั่น',agg.revenue>0?'฿'+fmt(agg.revenue):'—','#a78bfa');
+  var kpiDefs={
+    spend:kpiCard('spend','Spend','฿'+fmt(agg.spend),'#f59e0b'),
+    roas:kpiCard('roas','ROAS',agg.roas>0?agg.roas.toFixed(2)+'x':'—',_fbRoasColor(agg.roas)),
+    ctr:kpiCard('ctr','CTR',agg.ctr>0?agg.ctr.toFixed(2)+'%':'—','#38bdf8'),
+    purchases:kpiCard('purchases','การซื้อ',agg.purchases>0?fmt(agg.purchases,0)+' ครั้ง':'—','#00e676'),
+    conversations:kpiCard('conversations','การสนทนา',agg.conversations>0?fmt(agg.conversations,0)+' ราย':'—','#818cf8'),
+    costPerConv:kpiCard('costPerConv','ต้นทุน/สนทนา',agg.costPerConv>0?'฿'+fmt(agg.costPerConv):'—','#f472b6'),
+    costPerBuy:kpiCard('costPerBuy','ต้นทุน/ซื้อ',agg.costPerBuy>0?'฿'+fmt(agg.costPerBuy):'—','#fb923c'),
+    revenue:kpiCard('revenue','ค่าคอนเวอร์ชั่น',agg.revenue>0?'฿'+fmt(agg.revenue):'—','#a78bfa')
+  };
+  _fbKpiOrderGet().forEach(function(k){if(kpiDefs[k])html+=kpiDefs[k];});
   html+='</div>';
 
-  // Chart
+  // Chart// Chart
   html+='<div style="margin-bottom:18px">'
     +'<div style="font-size:.68rem;color:#475569;font-weight:600;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">📊 Spend & ROAS รายวัน</div>'
     +_campDetailChart(dailyArr)
