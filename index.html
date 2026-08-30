@@ -2953,6 +2953,7 @@ function _fbNotesSave(dt,name,field,val){
   if(!_fbNotes[dt][name])_fbNotes[dt][name]={old:'',new:''};
   _fbNotes[dt][name][field]=val;
   try{localStorage.setItem('_fbNotes',JSON.stringify(_fbNotes));}catch(e){}
+  if(typeof renderFB==='function'){try{renderFB();}catch(e){}}
   clearTimeout(_fbNotesPushTimer);_fbNotesPushTimer=setTimeout(_fbNotesPush,2500);}
 function _fbNotesLoad(){
   try{var s=localStorage.getItem('_fbNotes');if(s)_fbNotes=JSON.parse(s);}catch(e){}
