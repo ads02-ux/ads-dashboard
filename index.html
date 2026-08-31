@@ -1232,6 +1232,7 @@ FB_TOKENS['CecilyElmebrigge']=FB_TOKENS['NayTam'];
 FB_TOKENS['AdelaisGrimchanter']=FB_TOKENS['NayTam'];
 FB_TOKENS['JagelinLampsoul']=FB_TOKENS['NayTam'];
 var FB_API='https://richbiotech-fb-proxy.ads02.workers.dev/v20.0/';
+var FB_ACCTMOVE_API='https://richbiotech-fb-proxy.ads02.workers.dev/_acctmove';
 var s1data=null,s2data=null,loadedCount=0,chartInst={},modalCharts={};
 var commSheetData={}; // keyed 'YYYY-MM' → {analyst:{product:{date:{s,r}}}}
 var filterFrom=null,filterTo=null,filterProduct=null,filterAnalyst=null;
@@ -3466,6 +3467,115 @@ var FB_HIERARCHY=[
     ]
   },{product:'OlymplusMax',icon:'💪',color:'#1d4ed8',desc:'อาหารเสริมเสริมพลังผู้ชาย',pages:[{name:'Olymplus ปลดล็อคพลังแกร่ง',manager:'-',phone:'099-609-0902',accounts:[{displayName:'Olymplus ปลดล็อคพลังแกร่ง Account',adAccounts:[]},{displayName:'Audfríder Thorpe',adAccounts:['AudfriderThorpe']},{displayName:'Cecily Elmebrigge',adAccounts:['CecilyElmebrigge']}]},{name:'ของดีผู้ชายไทย Olymplus+',manager:'-',phone:'-',accounts:[{displayName:'ของดีผู้ชายไทย Olymplus+ Account',adAccounts:[]}]}]}];
 var fbNavProduct=null,fbNavPage=null,fbNavHolder=null,fbNavManager=null;
+function _fbFindHolderLocation(displayName){
+  for (var p = 0; p < FB_HIERARCHY.length; p++) {
+    var prod = FB_HIERARCHY[p];
+    for (var g = 0; g < prod.pages.length; g++) {
+      var pg = prod.pages[g];
+      for (var h = 0; h < pg.accounts.length; h++) {
+        if (pg.accounts[h].displayName === displayName) { return { productIdx: p, pageIdx: g, holderIdx: h }; }
+      }
+    }
+  }
+  return null;
+}
+function _fbFindPageByName(productName, pageName){
+  for (var p = 0; p < FB_HIERARCHY.length; p++) {
+    if (FB_HIERARCHY[p].product === productName) {
+      for (var g = 0; g < FB_HIERARCHY[p].pages.length; g++) {
+        if (FB_HIERARCHY[p].pages[g].name === pageName) { return FB_HIERARCHY[p].pages[g]; }
+      }
+    }
+  }
+  return null;
+}
+function _fbAllPageOptions(){
+  var out = [];
+  for (var p = 0; p < FB_HIERARCHY.length; p++) {
+    for (var g = 0; g < FB_HIERARCHY[p].pages.length; g++) { out.push({ product: FB_HIERARCHY[p].product, page: FB_HIERARCHY[p].pages[g].name }); }
+  }
+  return out;
+}
+var _fbAcctMoveMap = {};
+function _fbApplyAcctMoveOverrides(){
+  var changed = false;
+  for (var accountName in _fbAcctMoveMap) {
+    var target = _fbAcctMoveMap[accountName];
+    if (!target || !target.product || !target.page) continue;
+    var loc = _fbFindHolderLocation(accountName);
+    if (!loc) continue;
+    var curProduct = FB_HIERARCHY[loc.productIdx].product;
+    var curPage = FB_HIERARCHY[loc.productIdx].pages[loc.pageIdx].name;
+    if (curProduct === target.product && curPage === target.page) continue;
+    var destPage = _fbFindPageByName(target.product, target.page);
+    if (!destPage) continue;
+    var holder = FB_HIERARCHY[loc.productIdx].pages[loc.pageIdx].accounts.splice(loc.holderIdx, 1)[0];
+    destPage.accounts.push(holder);
+    changed = true;
+  }
+  return changed;
+}
+function _fbOpenMoveAcctModal(i){
+  var holder = fbNavPage.accounts[i];
+  if (!holder) return;
+  window.__fbMoveHolderName = holder.displayName;
+  var opts = _fbAllPageOptions();
+  window.__fbAcctMoveOptions = opts;
+  var curProduct = fbNavProduct ? fbNavProduct.product : '';
+  var curPage = fbNavPage.name;
+  var optHtml = '';
+  for (var k = 0; k < opts.length; k++) {
+    if (opts[k].product === curProduct && opts[k].page === curPage) continue;
+    optHtml += '<option value="' + k + '">' + opts[k].product + ' / ' + opts[k].page + '</option>';
+  }
+  var modal = document.createElement("div");
+  modal.id = "fbAcctMoveModal";
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99999;display:flex;align-items:center;justify-content:center;';
+  var html = '';
+  html += '<div style="background:#fff;border-radius:12px;padding:24px;max-width:360px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.3);">';
+  html += '<div style="font-weight:700;font-size:1.05rem;margin-bottom:4px;">ย้ายบัญชี "' + holder.displayName + '"</div>';
+  html += '<div style="font-size:.85rem;color:#64748b;margin-bottom:14px;">เลือกเพจปลายทางที่ต้องการย้ายบัญชีนี้ไป</div>';
+  html += '<select id="fbAcctMoveSelect" style="width:100%;padding:10px;border-radius:8px;border:1px solid #e2e8f0;font-size:.9rem;margin-bottom:16px;">' + optHtml + '</select>';
+  html += '<div style="display:flex;gap:8px;justify-content:flex-end;">';
+  html += '<button onclick="_fbCloseMoveModal()" style="padding:8px 16px;border-radius:8px;border:1px solid #e2e8f0;background:#fff;cursor:pointer;">ยกเลิก</button>';
+  html += '<button onclick="_fbConfirmMoveAcct()" style="padding:8px 16px;border-radius:8px;border:none;background:#1565c0;color:#fff;cursor:pointer;font-weight:600;">ยืนยันย้าย</button>';
+  html += '</div></div>';
+  modal.innerHTML = html;
+  document.body.appendChild(modal);
+}
+function _fbCloseMoveModal(){
+  var m = document.getElementById("fbAcctMoveModal");
+  if (m) m.remove();
+}
+async function _fbConfirmMoveAcct(){
+  var displayName = window.__fbMoveHolderName;
+  var sel = document.getElementById("fbAcctMoveSelect");
+  if (!sel || sel.value === "" || !displayName) { _fbCloseMoveModal(); return; }
+  var target = window.__fbAcctMoveOptions[parseInt(sel.value, 10)];
+  if (!target) { _fbCloseMoveModal(); return; }
+  try {
+    var r = await fetch(FB_ACCTMOVE_API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ account: displayName, product: target.product, page: target.page }) });
+    var data = await r.json().catch(function(){ return {}; });
+    if (data && data.map) { _fbAcctMoveMap = data.map; }
+    _fbApplyAcctMoveOverrides();
+    _fbCloseMoveModal();
+    fbNavBack("root");
+    if (typeof renderFB === "function") renderFB();
+  } catch (e) {
+    alert("ย้ายบัญชีไม่สำเร็จ กรุณาลองใหม่");
+  }
+}
+(async function(){
+  try {
+    var r = await fetch(FB_ACCTMOVE_API);
+    var data = await r.json().catch(function(){ return {}; });
+    if (data && data.map) {
+      _fbAcctMoveMap = data.map;
+      _fbApplyAcctMoveOverrides();
+      if (typeof renderFB === "function" && fbNavProduct) renderFB();
+    }
+  } catch (e) {}
+})();
 
 function fbNavBack(level){
   if(level==='root'){fbNavProduct=null;fbNavPage=null;fbNavHolder=null;fbNavManager=null;}
@@ -4100,6 +4210,7 @@ h+='</div>';
     }
     h+='</div>';
 
+    h+='<button onclick="event.stopPropagation();_fbOpenMoveAcctModal('+i+')" style="width:100%;padding:8px;margin-top:6px;background:rgba(180,83,9,.06);border:1px dashed rgba(180,83,9,.3);border-radius:8px;font-size:.8rem;color:#b45309;cursor:pointer;">⇄ ย้ายไปเพจอื่น</button>';
     h+='</div>'; // end holder card
   });
   h+='</div></div>';
