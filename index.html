@@ -4924,6 +4924,13 @@ async function fbToggleCampaignStatus(campName,campId){
     var d3=await r3.json();
     if(d3&&d3.error){showBanner('❌ '+d3.error.message);return;}
     if(fbCampaignsMap[_accForCamp2]&&fbCampaignsMap[_accForCamp2][campName]){fbCampaignsMap[_accForCamp2][campName].status=newStatus2;}
+    if(typeof _fbNotesDateKey==='function'&&typeof _fbNotesSave==='function'){
+      var _dnKey2=_fbNotesDateKey();
+      if(_dnKey2){
+        if(newStatus2==='PAUSED'){_fbNotesSave(_dnKey2,campName,'old','ปิด');_fbNotesSave(_dnKey2,campName,'new','ปิด');}
+        else{_fbNotesSave(_dnKey2,campName,'old','');_fbNotesSave(_dnKey2,campName,'new','');}
+      }
+    }
     var _lt2=_rbLogNow();_rbLogSave({ts:_lt2.ts,date:_lt2.date,time:_lt2.time,user:_rbLogUser(),account:fbAccount,campaign:campName,type:'status',oldVal:curStatus2,newVal:newStatus2});
     showBanner('✅ '+actLabel2+'แคมเปญสำเร็จ');
     _renderFBInner(document.getElementById('fbViewInner'));
