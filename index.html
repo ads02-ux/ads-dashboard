@@ -7753,9 +7753,9 @@ function _renderCampDetailContent(campName,campId,days){
   }else if(days<=1){
     rows=campRows.filter(function(r){return r.date&&r.date===todayStr;});
   }else{
-    var cutDate=new Date();cutDate.setDate(cutDate.getDate()-(days-1));
+    var cutDate=new Date();cutDate.setDate(cutDate.getDate()-days);
     var cutStr=toYMD(cutDate);
-    rows=campRows.filter(function(r){return r.date&&r.date>=cutStr&&r.date<=todayStr;});
+    rows=campRows.filter(function(r){return r.date&&r.date>=cutStr&&r.date<todayStr;});
   }
 
   var byDate={};
