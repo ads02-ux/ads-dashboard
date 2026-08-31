@@ -1760,9 +1760,9 @@ function renderPmList(analysts){
   var c=document.getElementById('pmList');c.innerHTML='';
   analysts.forEach(function(name){
     var photo=getPhoto(name),item=document.createElement('div');item.className='pm-item';item.id='pmi_'+name;
-    item.innerHTML='<div class="pm-av-wrap"><div class="pm-av" id="pmav_'+name+'">'+(photo?'<img src="'+photo+'" alt="'+name+'" onerror="this.parentNode.innerHTML=\''+initials(name)+'\'">':(initials(name)))+'</div><div class="pm-cam" onclick="triggerFileInput(\''+name.replace(/'/g,"\\'")+'\')">📷</div></div>'+
+    item.innerHTML='<div class="pm-av-wrap"><div class="pm-av" id="pmav_'+name+'">'+(photo?'<img src="'+photo+'" alt="'+name+'" onerror="this.parentNode.innerHTML=\''+initials(name)+'\'">':(initials(name)))+'</div><div class="pm-cam" onclick="triggerFileInput(\''+name.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;')+'\')">📷</div></div>'+
       '<div class="pm-right"><div class="pm-name">'+name+'</div><div class="pm-controls"><input class="pm-url-input" id="pmu_'+name+'" type="text" placeholder="URL รูปภาพ..." value="'+(photo||'')+'"></div>'+
-      '<div class="pm-controls"><button class="pm-btn save" onclick="pmSaveUrl(\''+name.replace(/'/g,"\\'")+'\')">✓ Save URL</button><button class="pm-btn upload" onclick="triggerFileInput(\''+name.replace(/'/g,"\\'")+'\')">📁 Upload</button>'+(photo?'<button class="pm-btn clear" onclick="pmClear(\''+name.replace(/'/g,"\\'")+'\')">✕ Clear</button>':'')+'</div>'+
+      '<div class="pm-controls"><button class="pm-btn save" onclick="pmSaveUrl(\''+name.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;')+'\')">✓ Save URL</button><button class="pm-btn upload" onclick="triggerFileInput(\''+name.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;')+'\')">📁 Upload</button>'+(photo?'<button class="pm-btn clear" onclick="pmClear(\''+name.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;')+'\')">✕ Clear</button>':'')+'</div>'+
       '<div class="pm-hint">รองรับ URL สาธารณะ หรืออัปโหลดจากเครื่อง</div></div>';
     c.appendChild(item);
     var inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.style.display='none';inp.id='pmf_'+name;
@@ -2087,7 +2087,7 @@ function renderBenchmark(){
   h+='<div class="bm-filter-row" style="margin-bottom:18px">';
   prodList.forEach(function(x){
     var lbl=(x.icon?x.icon+' ':'')+x.label;
-    h+='<button class="bm-prod-btn'+(_bmProd===x.k?' active':'')+'" onclick="_bmProd=\''+x.k.replace(/'/g,"\\'").replace(/\+/g,'\\+')+'\';renderBenchmark()">'+lbl+'</button>';
+    h+='<button class="bm-prod-btn'+(_bmProd===x.k?' active':'')+'" onclick="_bmProd=\''+x.k.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;').replace(/\+/g,'\\+')+'\';renderBenchmark()">'+lbl+'</button>';
   });
   h+='</div>';
 
@@ -2426,13 +2426,13 @@ function renderCommission(){
     var vsCls=vsVal===null?'flat':vsVal>=0?'up':'dn';
     var vsLabel=vsVal===null?'—':( vsVal>=0?'▲ '+vsVal+'%':'▼ '+Math.abs(vsVal)+'%');
     var vsNote='เทียบเดือนก่อน';
-    out+='<div class="csum-card" style="cursor:pointer" onclick="if(event.target.tagName!==\'INPUT\'&&event.target.tagName!==\'BUTTON\')openCommDetail(\''+a.replace(/'/g,"\\'")+'\')">';
+    out+='<div class="csum-card" style="cursor:pointer" onclick="if(event.target.tagName!==\'INPUT\'&&event.target.tagName!==\'BUTTON\')openCommDetail(\''+a.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;')+'\')">';
     out+='<div class="csum-rank">'+(medals2[idx]||('#'+(idx+1)))+'</div>';
     out+='<div class="csum-hd">'+avHtmlUpload(a,44)+'<div><div class="csum-name">'+a+'</div><div class="csum-subttl">ทีมยิงแอด</div></div></div>';
     out+='<div class="csum-main">฿'+fmt(s.atot)+'</div>';
     out+='<div class="csum-ytd">สะสมปีนี้ <b>฿'+fmt(s.ytd)+'</b></div>';
     out+='<span class="csum-vs '+vsCls+'">'+vsLabel+' '+vsNote+'</span>';
-    out+='<div class="csum-goal-row"><span class="csum-goal-lbl">🎯 เป้า ฿</span><input class="csum-goal-inp" id="cgoal_'+a+'" type="number" value="'+(goal||'')+'" placeholder="0" onchange="csumSaveGoal(\''+a.replace(/'/g,"\\'")+"',"+yr+','+mo+',this.value)">'+' <span class="csum-goal-hint">(กรอกเอง)</span>'+pctHtml+'</div>';if(a==='บุ๋มบิ๋ม'){out+='<div class="csum-goal-row" style="margin-top:4px"><span class="csum-goal-lbl">👼 คลิปนางฟ้า</span><input class="csum-goal-inp" id="cclips_'+a+'" type="number" value="'+(s.clips||'')+'" placeholder="0" onchange="csumSaveClips(\''+a.replace(/'/g,"\'")+"',"+yr+','+mo+',this.value)">'+' <span class="csum-goal-hint">× ฿1,000'+(s.clipBonus?' = +฿'+fmt(s.clipBonus):'')+'</span></div>';}
+    out+='<div class="csum-goal-row"><span class="csum-goal-lbl">🎯 เป้า ฿</span><input class="csum-goal-inp" id="cgoal_'+a+'" type="number" value="'+(goal||'')+'" placeholder="0" onchange="csumSaveGoal(\''+a.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;')+"',"+yr+','+mo+',this.value)">'+' <span class="csum-goal-hint">(กรอกเอง)</span>'+pctHtml+'</div>';if(a==='บุ๋มบิ๋ม'){out+='<div class="csum-goal-row" style="margin-top:4px"><span class="csum-goal-lbl">👼 คลิปนางฟ้า</span><input class="csum-goal-inp" id="cclips_'+a+'" type="number" value="'+(s.clips||'')+'" placeholder="0" onchange="csumSaveClips(\''+a.replace(/'/g,"\'")+"',"+yr+','+mo+',this.value)">'+' <span class="csum-goal-hint">× ฿1,000'+(s.clipBonus?' = +฿'+fmt(s.clipBonus):'')+'</span></div>';}
     out+='<div class="csum-prog"><div class="csum-prog-bar" style="width:'+progW+'%;background:'+progColor+'"></div></div>';
     out+='<div class="csum-stats">';
     out+='<div class="csum-stat"><div class="csum-stat-v">'+( s.totalSpend>=1000000?'฿'+(s.totalSpend/1000000).toFixed(2)+' ล.':(s.totalSpend>=1000?'฿'+Math.round(s.totalSpend/1000)+'K':'฿'+fmt(s.totalSpend,0)))+'</div><div class="csum-stat-l">ยอดยิงแอด</div></div>';
@@ -2521,7 +2521,7 @@ function renderCommission(){
         var comHtml=hasData?(res.com>0?'<span class="comm-com-val">'+res.com+'</span>':'<span class="comm-com-zero">0</span>'):'<span class="comm-dash">—</span>';
         rowTot+=res.com;
         var uid=_aid+'_'+dkc+'_'+pi;var cb='commLive(\''+_aid+'\',\''+dkc+'\','+pi+',\''+p+'\')';
-        var _da=a.replace(/'/g,"\\'"),_dp=p.replace(/'/g,"\\'");
+        var _da=a.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;'),_dp=p.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;');
         cells+='<td style="border-left:2px solid rgba(21,101,192,.1);padding:4px 6px"><input class="comm-edit" id="csp_'+uid+'" data-a="'+_da+'" data-p="'+_dp+'" data-d="'+dk+'" data-f="s" value="'+(sp>0?sp:'')+'" oninput="'+cb+'"></td>'+'<td style="padding:4px 6px"><input class="comm-edit" id="crv_'+uid+'" data-a="'+_da+'" data-p="'+_dp+'" data-d="'+dk+'" data-f="r" value="'+(rv>0?rv:'')+'" oninput="'+cb+'"></td>'+'<td id="cpct_'+uid+'">'+pctHtml+'</td>'+'<td id="ccom_'+uid+'">'+comHtml+'</td>';
         atot+=res.com;
       });
@@ -2797,7 +2797,7 @@ function openCommDetail(analyst){
   // Goal input + bar
   h+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">'
    +'<span style="font-size:.75rem;color:var(--text3)">🎯 เป้า ฿</span>'
-   +'<input id="cdet-goal" type="number" value="'+(goal||'')+'" placeholder="0" onchange="csumSaveGoal(\''+analyst.replace(/'/g,"\\'")+'\','+yr+','+mo+',this.value);setTimeout(function(){openCommDetail(\''+analyst.replace(/'/g,"\\'")+'\')},100)" style="background:#ffffff;border:1px solid #dde3f4;color:var(--text);border-radius:6px;padding:4px 8px;font-size:.8rem;width:90px;text-align:right;outline:none">'
+   +'<input id="cdet-goal" type="number" value="'+(goal||'')+'" placeholder="0" onchange="csumSaveGoal(\''+analyst.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;')+'\','+yr+','+mo+',this.value);setTimeout(function(){openCommDetail(\''+analyst.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;')+'\')},100)" style="background:#ffffff;border:1px solid #dde3f4;color:var(--text);border-radius:6px;padding:4px 8px;font-size:.8rem;width:90px;text-align:right;outline:none">'
    +'<span style="font-size:.68rem;color:var(--text3);opacity:.6">(กรอกเอง)</span>'
    +(goal>0?'<span style="margin-left:auto;font-family:Rajdhani,sans-serif;font-size:.95rem;font-weight:900;color:'+(pct>=100?'#4ade80':pct>=70?'#fbbf24':'#ff5252')+'">'+pct+'% '+(pct>=100?'✓':'')+'</span>':'')
    +'</div>';
@@ -5601,7 +5601,7 @@ function _renderAdsAI(el){
     h+='<div style="font-weight:600;color:#0f172a" title="'+c.campaign+'">'+nm+'</div>';
     if(pgN||accN){
       if(!_adsaiFilterAccount){
-        var safeAccN=accN.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+        var safeAccN=accN.replace(/\\/g,'\\\\').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;');
         h+='<div onclick="_adsaiFilterAccount=\''+safeAccN+'\';_renderAdsAI(document.getElementById(\'adsaiView\'))" style="cursor:pointer;font-size:.6rem;color:#6366f1;margin-top:3px;display:inline-block;background:#f5f3ff;border-radius:5px;padding:1px 7px;font-weight:600" title="ดูแค่บัญชีนี้">'+(pgN?'📄 '+pgN+' · ':'')+(accN?'🏦 '+accN:'')+(accN?' 🔍':'')+'</div>';
       } else {
         h+='<div style="font-size:.6rem;color:#94a3b8;margin-top:2px">'+(pgN?'📄 '+pgN:'')+'</div>';
@@ -7661,7 +7661,7 @@ function fbOpenCampDetail(campName,campId){
   }
   _ensureFBDetailPanel();
   var p=document.getElementById('fbCampDetailPanel');
-  var esc=campName.replace(/'/g,"\\'");
+  var esc=campName.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;');
   p.innerHTML='<div style="padding:18px 20px 8px;border-bottom:1px solid #dde3f4;position:sticky;top:0;background:#f8faff;z-index:1">'
     +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">'
     +'<span style="font-size:.65rem;color:#64748b;letter-spacing:.5px;text-transform:uppercase">แคมเปญ</span>'
@@ -7790,12 +7790,12 @@ function _renderCampDetailContent(campName,campId,days){
 
   // แถบแก้ไขงบ (แยกแถบของตัวเอง)
   html+='<div style="margin-bottom:18px">'
-    +'<button onclick="event.stopPropagation();fbUpdateBudget(\''+campName.replace(/'/g,"\\'")+'\',\''+campId+'\')" style="width:100%;padding:10px 14px;background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.35);color:#b45309;border-radius:10px;font-size:.8rem;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px">แก้ไขงบประมาณ</button>'
+    +'<button onclick="event.stopPropagation();fbUpdateBudget(\''+campName.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;')+'\',\''+campId+'\')" style="width:100%;padding:10px 14px;background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.35);color:#b45309;border-radius:10px;font-size:.8rem;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px">แก้ไขงบประมาณ</button>'
     
   var _campStatusCur2=(fbCampaignsMap[fbAccount]&&fbCampaignsMap[fbAccount][campName])?fbCampaignsMap[fbAccount][campName].status:'';
   var _campPaused2=_campStatusCur2==='PAUSED';
   html+='<div style="margin-bottom:18px">'
-    +'<button onclick="event.stopPropagation();fbToggleCampaignStatus(\''+campName.replace(/'/g,"\\'")+'\',\''+campId+'\')" style="width:100%;padding:10px 14px;background:'+(_campPaused2?'rgba(5,150,105,.1)':'rgba(220,38,38,.1)')+';border:1px solid '+(_campPaused2?'rgba(5,150,105,.35)':'rgba(220,38,38,.35)')+';color:'+(_campPaused2?'#059669':'#dc2626')+';border-radius:10px;font-size:.8rem;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px">'+(_campPaused2?'▶ เปิดแคมเปญ':'⏸ ปิดแคมเปญ')+'</button>'
+    +'<button onclick="event.stopPropagation();fbToggleCampaignStatus(\''+campName.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;')+'\',\''+campId+'\')" style="width:100%;padding:10px 14px;background:'+(_campPaused2?'rgba(5,150,105,.1)':'rgba(220,38,38,.1)')+';border:1px solid '+(_campPaused2?'rgba(5,150,105,.35)':'rgba(220,38,38,.35)')+';color:'+(_campPaused2?'#059669':'#dc2626')+';border-radius:10px;font-size:.8rem;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px">'+(_campPaused2?'▶ เปิดแคมเปญ':'⏸ ปิดแคมเปญ')+'</button>'
     +'</div>';
 +'</div>';
 
@@ -8406,7 +8406,7 @@ function _fbAutoFitTable(){var vp=document.getElementById('fbAccountViewport');v
     var canToggle=!isAdSet&&campId;
     var toggleHtml='';
     if(canToggle){
-      var esc=(campName||'').replace(/'/g,"\\'");
+      var esc=(campName||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;');
       var bgOn='#059669',bgOff='rgba(148,163,184,.3)',bgAmb='#d97706';
       var togBg=active&&delivering!==false?bgOn:bgOff;
       var kx=(active&&delivering!==false)?'13px':'1px';
@@ -8546,12 +8546,12 @@ function _fbAutoFitTable(){var vp=document.getElementById('fbAccountViewport');v
     var _cbg=(window._fbChecked&&window._fbChecked[cname])?'rgba(21,101,192,.1)':'rgba(21,101,192,.05)';
     var _csel=(window._fbChecked&&window._fbChecked[cname])?'rgba(21,101,192,.13)':'#eef3fd';
     var _cchked=(window._fbChecked&&window._fbChecked[cname])?'checked':' ';
-    tbody+='<tr class="fb-camp-row" data-camp="'+cname.replace(/"/g,'&quot;')+'" style="background:'+_cbg+';cursor:pointer;border-top:1px solid rgba(21,101,192,.12)" onclick="fbToggleExpand(\''+cname.replace(/'/g,"\\'")+'\')">'
+    tbody+='<tr class="fb-camp-row" data-camp="'+cname.replace(/"/g,'&quot;')+'" style="background:'+_cbg+';cursor:pointer;border-top:1px solid rgba(21,101,192,.12)" onclick="fbToggleExpand(\''+cname.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;')+'\')">'
       +'<td style="padding:0 0 0 12px;width:32px;position:sticky;left:0;z-index:3;background:'+_csel+'" onclick="event.stopPropagation()"><input type="checkbox" class="fbCampCb" data-camp="'+cname.replace(/"/g,'&quot;')+'" '+_cchked+' onchange="_fbOnCheck(this)" style="width:15px;height:15px;cursor:pointer;accent-color:#1565c0;vertical-align:middle"></td>'
       +'<td style="padding:10px 14px;position:sticky;left:44px;z-index:2;background:'+_csel+'">'+statusBadge(campActive,false,cname,campInfo?campInfo.id:'',campInfo?campInfo.status:'',(fbFilter==='today'||fbFilter==='yesterday')?cagg.spend>0:undefined)+'</td>'
       +'<td style="padding:10px 12px;font-size:.8rem;font-weight:700;color:#0f172a;white-space:nowrap;position:sticky;left:174px;z-index:2;background:'+_csel+';box-shadow:4px 0 8px -2px rgba(21,101,192,.18);">'
         +'<span style="color:#1565c0;margin-right:6px;font-size:.8rem">'+arrow+'</span>'
-        +'<span title="'+cname+'" onclick="event.stopPropagation();fbOpenCampDetail(\''+cname.replace(/'/g,"\\'")+'\',\''+(campInfo?campInfo.id:'')+'\');" style="cursor:pointer;text-decoration:underline;text-decoration-color:rgba(21,101,192,.4);text-underline-offset:2px;transition:.15s" onmouseover="this.style.color=\'#1565c0\'" onmouseout="this.style.color=\'\'">'+shortName+'</span>'
+        +'<span title="'+cname+'" onclick="event.stopPropagation();fbOpenCampDetail(\''+cname.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;')+'\',\''+(campInfo?campInfo.id:'')+'\');" style="cursor:pointer;text-decoration:underline;text-decoration-color:rgba(21,101,192,.4);text-underline-offset:2px;transition:.15s" onmouseover="this.style.color=\'#1565c0\'" onmouseout="this.style.color=\'\'">'+shortName+'</span>'
         +'<span style="margin-left:8px;font-size:.65rem;color:#1565c0;background:rgba(21,101,192,.1);border-radius:4px;padding:1px 6px">แคมเปญ</span>'
       +'</td>'
       +remainCell
