@@ -2304,8 +2304,10 @@ function commGetAnalysts(){
 function commPrevMonth(){commMonth--;if(commMonth<1){commMonth=12;commYear--;}renderCommission();}
 function commNextMonth(){commMonth++;if(commMonth>12){commMonth=1;commYear++;}renderCommission();}
 function commGetClips(a,yr,mo){var k=a+'_'+yr+'_'+pad2(mo);try{var lv=localStorage.getItem('rb_cclips_'+k);if(lv!==null)return parseInt(lv)||0;}catch(e){}return parseInt(_clipsNpointData[k]||0)||0;}
+function commGetClips2(a,yr,mo){var k=a+'_'+yr+'_'+pad2(mo);try{var lv=localStorage.getItem('rb_cclips2_'+k);if(lv!==null)return parseInt(lv)||0;}catch(e){}return parseInt(_clips2NpointData[k]||0)||0;}
 function commGetGoal(a,yr,mo){var k=a+'_'+yr+'_'+pad2(mo);try{var lv=localStorage.getItem('rb_cgoal_'+k);if(lv!==null)return parseFloat(lv)||0;}catch(e){}return parseFloat(_goalNpointData[k]||0)||0;}
-function csumSaveClips(name,yr,mo,val){var k=name+'_'+yr+'_'+pad2(mo);var v=parseInt(val||0)||0;try{localStorage.setItem('rb_cclips_'+k,v);}catch(e){}_clipsNpointData[k]=v;_leavePost(window._leaveCache||{});renderCommission();}function csumSaveGoal(name,yr,mo,val){
+function csumSaveClips(name,yr,mo,val){var k=name+'_'+yr+'_'+pad2(mo);var v=parseInt(val||0)||0;try{localStorage.setItem('rb_cclips_'+k,v);}catch(e){}_clipsNpointData[k]=v;_leavePost(window._leaveCache||{});renderCommission();}
+function csumSaveClips2(name,yr,mo,val){var k=name+'_'+yr+'_'+pad2(mo);var v=parseInt(val||0)||0;try{localStorage.setItem('rb_cclips2_'+k,v);}catch(e){}_clips2NpointData[k]=v;_leavePost(window._leaveCache||{});renderCommission();}function csumSaveGoal(name,yr,mo,val){
   var k=name+'_'+yr+'_'+pad2(mo);var v=parseFloat(val||0)||0;
   try{localStorage.setItem('rb_cgoal_'+k,v);}catch(e){}
   _goalNpointData[k]=v;
@@ -2409,7 +2411,7 @@ function renderCommission(){
     }).join(' ');
     var hasSpark=sparkVals.some(function(v){return v>0;});
     var sparkSvg=hasSpark?'<svg width="100%" viewBox="0 0 '+sw+' '+sh+'" preserveAspectRatio="none" style="display:block;height:42px"><defs><linearGradient id="sg_'+a.replace(/\s/g,'_')+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#7c6ff7" stop-opacity=".35"/><stop offset="100%" stop-color="#7c6ff7" stop-opacity="0"/></linearGradient></defs><polyline points="'+pts+'" fill="none" stroke="#7c6ff7" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/></svg>':'<div style="height:42px;display:flex;align-items:center;justify-content:center;font-size:.7rem;color:var(--text3);opacity:.4">ยังไม่มีข้อมูล</div>';
-    var clips=commGetClips(a,yr,mo);var clipBonus=clips*1000;atot2+=clipBonus;sumData.push({a:a,atot:atot2,prevTot:prevTot,ytd:ytd,totalSpend:totalSpend,daysWorked:Object.keys(daysSet).length,brands:prods.filter(function(p){return prodBreak[p]>0;}).length||prods.length,prodBreak:prodBreak,sparkSvg:sparkSvg,prods:prods,clips:clips,clipBonus:clipBonus});
+    var clips=commGetClips(a,yr,mo);var clipBonus=clips*1000;atot2+=clipBonus;var clips2=commGetClips2(a,yr,mo);var clipBonus2=clips2*500;atot2+=clipBonus2;sumData.push({a:a,atot:atot2,prevTot:prevTot,ytd:ytd,totalSpend:totalSpend,daysWorked:Object.keys(daysSet).length,brands:prods.filter(function(p){return prodBreak[p]>0;}).length||prods.length,prodBreak:prodBreak,sparkSvg:sparkSvg,prods:prods,clips:clips,clipBonus:clipBonus,clips2:clips2,clipBonus2:clipBonus2});
   });
   // Sort by commission descending
   sumData.sort(function(a,b){return b.atot-a.atot;});
@@ -2432,7 +2434,7 @@ function renderCommission(){
     out+='<div class="csum-main">฿'+fmt(s.atot)+'</div>';
     out+='<div class="csum-ytd">สะสมปีนี้ <b>฿'+fmt(s.ytd)+'</b></div>';
     out+='<span class="csum-vs '+vsCls+'">'+vsLabel+' '+vsNote+'</span>';
-    out+='<div class="csum-goal-row"><span class="csum-goal-lbl">🎯 เป้า ฿</span><input class="csum-goal-inp" id="cgoal_'+a+'" type="number" value="'+(goal||'')+'" placeholder="0" onchange="csumSaveGoal(\''+a.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;')+"',"+yr+','+mo+',this.value)">'+' <span class="csum-goal-hint">(กรอกเอง)</span>'+pctHtml+'</div>';if(a==='บุ๋มบิ๋ม'){out+='<div class="csum-goal-row" style="margin-top:4px"><span class="csum-goal-lbl">👼 คลิปนางฟ้า</span><input class="csum-goal-inp" id="cclips_'+a+'" type="number" value="'+(s.clips||'')+'" placeholder="0" onchange="csumSaveClips(\''+a.replace(/'/g,"\'")+"',"+yr+','+mo+',this.value)">'+' <span class="csum-goal-hint">× ฿1,000'+(s.clipBonus?' = +฿'+fmt(s.clipBonus):'')+'</span></div>';}
+    out+='<div class="csum-goal-row"><span class="csum-goal-lbl">🎯 เป้า ฿</span><input class="csum-goal-inp" id="cgoal_'+a+'" type="number" value="'+(goal||'')+'" placeholder="0" onchange="csumSaveGoal(\''+a.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;')+"',"+yr+','+mo+',this.value)">'+' <span class="csum-goal-hint">(กรอกเอง)</span>'+pctHtml+'</div>';if(a==='บุ๋มบิ๋ม'){out+='<div class="csum-goal-row" style="margin-top:4px"><span class="csum-goal-lbl">👼 คลิปนางฟ้า</span><input class="csum-goal-inp" id="cclips_'+a+'" type="number" value="'+(s.clips||'')+'" placeholder="0" onchange="csumSaveClips(\''+a.replace(/'/g,"\'")+"',"+yr+','+mo+',this.value)">'+' <span class="csum-goal-hint">× ฿1,000'+(s.clipBonus?' = +฿'+fmt(s.clipBonus):'')+'</span></div><div class="csum-goal-row" style="margin-top:4px"><span class="csum-goal-lbl">👼 คลิปนางฟ้ารอง</span><input class="csum-goal-inp" id="cclips2_'+a+'" type="number" value="'+(s.clips2||'')+'" placeholder="0" onchange="csumSaveClips2(\''+a.replace(/'/g,"\'")+"',"+yr+','+mo+',this.value)">'+' <span class="csum-goal-hint">× ฿500'+(s.clipBonus2?' = +฿'+fmt(s.clipBonus2):'')+'</span></div>';}
     out+='<div class="csum-prog"><div class="csum-prog-bar" style="width:'+progW+'%;background:'+progColor+'"></div></div>';
     out+='<div class="csum-stats">';
     out+='<div class="csum-stat"><div class="csum-stat-v">'+( s.totalSpend>=1000000?'฿'+(s.totalSpend/1000000).toFixed(2)+' ล.':(s.totalSpend>=1000?'฿'+Math.round(s.totalSpend/1000)+'K':'฿'+fmt(s.totalSpend,0)))+'</div><div class="csum-stat-l">ยอดยิงแอด</div></div>';
@@ -6588,6 +6590,7 @@ window._leaveCache=null;
 var _commNpointData={};
 var _goalNpointData={};
 var _clipsNpointData={};
+var _clips2NpointData={};
 function _leaveGetData(){try{return window._leaveCache||JSON.parse(localStorage.getItem('leave_cal')||'{}')||{};}catch(e){return{};}}
 function _leaveSaveData(d){try{localStorage.setItem('leave_cal',JSON.stringify(d));}catch(e){}}
 async function _leaveFetch(){
@@ -6600,6 +6603,7 @@ async function _leaveFetch(){
     if(j._comm){_commNpointData=j._comm;delete j._comm;}
     if(j._goals){_goalNpointData=j._goals;delete j._goals;}
     if(j._clips){_clipsNpointData=j._clips;delete j._clips;}
+    if(j._clips2){_clips2NpointData=j._clips2;delete j._clips2;}
     if(j._tasks){_taskData=j._tasks;delete j._tasks;}
     // merge local commission entries ที่ยังไม่ sync
     try{
@@ -6650,6 +6654,7 @@ async function _leavePost(data){
     payload._comm=Object.assign({},_commNpointData);
     payload._goals=Object.assign({},_goalNpointData);
     payload._clips=Object.assign({},_clipsNpointData);
+    payload._clips2=Object.assign({},_clips2NpointData);
     payload._tasks=Object.assign({},_taskData);
     await fetch(_LEAVE_NPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
   }catch(e){}
