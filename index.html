@@ -4909,6 +4909,29 @@ async function fbUpdateBudget(campName,campId){var _nbRow=Array.from(document.qu
     if(e.key==='Escape')close_();
   });
 }
+async function fbToggleCampaignStatus(campName,campId){
+  var _accForCamp2=fbAccount;
+  outer2:for(var _k2 in fbCampaignsMap){if(fbCampaignsMap[_k2])for(var _cn2 in fbCampaignsMap[_k2]){if(fbCampaignsMap[_k2][_cn2]&&String(fbCampaignsMap[_k2][_cn2].id)==String(campId)){_accForCamp2=_k2;break outer2;}}}
+  var ci2=(fbCampaignsMap[_accForCamp2]||{})[campName]||{};
+  var curStatus2=ci2.status||'ACTIVE';
+  var newStatus2=curStatus2==='PAUSED'?'ACTIVE':'PAUSED';
+  var actLabel2=newStatus2==='PAUSED'?'ปิด':'เปิด';
+  if(!confirm('ยืนยันจะ'+actLabel2+'แคมเปญนี้ใช่หรือไม่?\n\n'+campName))return;
+  showBanner('⏳ กำลัง'+actLabel2+'แคมเปญ...');
+  var tok3=FB_TOKENS[_accForCamp2]||FB_TOKEN;
+  try{
+    var r3=await fetch(FB_API+campId+'?access_token='+encodeURIComponent(tok3),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:newStatus2})});
+    var d3=await r3.json();
+    if(d3&&d3.error){showBanner('❌ '+d3.error.message);return;}
+    if(fbCampaignsMap[_accForCamp2]&&fbCampaignsMap[_accForCamp2][campName]){fbCampaignsMap[_accForCamp2][campName].status=newStatus2;}
+    var _lt2=_rbLogNow();_rbLogSave({ts:_lt2.ts,date:_lt2.date,time:_lt2.time,user:_rbLogUser(),account:fbAccount,campaign:campName,type:'status',oldVal:curStatus2,newVal:newStatus2});
+    showBanner('✅ '+actLabel2+'แคมเปญสำเร็จ');
+    _renderFBInner(document.getElementById('fbViewInner'));
+  }catch(e){
+    showBanner('❌ Network: '+e.message);
+  }
+}
+
 async function fbChangeStopDate(campName,campId){
   var campInfo=(fbCampaignsMap[fbAccount]||{})[campName]||{};
   var currentStop=campInfo.stop_time||null;
@@ -7761,7 +7784,13 @@ function _renderCampDetailContent(campName,campId,days){
   // แถบแก้ไขงบ (แยกแถบของตัวเอง)
   html+='<div style="margin-bottom:18px">'
     +'<button onclick="event.stopPropagation();fbUpdateBudget(\''+campName.replace(/'/g,"\\'")+'\',\''+campId+'\')" style="width:100%;padding:10px 14px;background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.35);color:#b45309;border-radius:10px;font-size:.8rem;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px">แก้ไขงบประมาณ</button>'
+    
+  var _campStatusCur2=(fbCampaignsMap[fbAccount]&&fbCampaignsMap[fbAccount][campName])?fbCampaignsMap[fbAccount][campName].status:'';
+  var _campPaused2=_campStatusCur2==='PAUSED';
+  html+='<div style="margin-bottom:18px">'
+    +'<button onclick="event.stopPropagation();fbToggleCampaignStatus(\''+campName.replace(/'/g,"\\'")+'\',\''+campId+'\')" style="width:100%;padding:10px 14px;background:'+(_campPaused2?'rgba(5,150,105,.1)':'rgba(220,38,38,.1)')+';border:1px solid '+(_campPaused2?'rgba(5,150,105,.35)':'rgba(220,38,38,.35)')+';color:'+(_campPaused2?'#059669':'#dc2626')+';border-radius:10px;font-size:.8rem;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px">'+(_campPaused2?'▶ เปิดแคมเปญ':'⏸ ปิดแคมเปญ')+'</button>'
     +'</div>';
++'</div>';
 
   // KPI mini cards
   html+='<div id="fbKpiGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px">';
