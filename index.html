@@ -8413,8 +8413,8 @@ function _fbAutoFitTable(){var vp=document.getElementById('fbAccountViewport');v
     if(canToggle){
       var esc=(campName||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;');
       var bgOn='#059669',bgOff='rgba(148,163,184,.3)',bgAmb='#d97706';
-      var togBg=active&&delivering!==false?bgOn:bgOff;
-      var kx=(active&&delivering!==false)?'13px':'1px';
+      var togBg=!active?bgOff:(delivering===false?bgAmb:bgOn);
+      var kx=active?'13px':'1px';
       toggleHtml='<div onclick="event.stopPropagation();fbToggleStatus(\''+esc+'\',\''+campId+'\','+active+')" '
         +'style="width:28px;height:16px;border-radius:8px;background:'+togBg+';position:relative;display:inline-block;cursor:pointer;flex-shrink:0;transition:.2s;vertical-align:middle">'
         +'<div style="position:absolute;top:2px;left:'+kx+';width:12px;height:12px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(15,23,42,.2)"></div>'
@@ -8440,7 +8440,7 @@ function _fbAutoFitTable(){var vp=document.getElementById('fbAccountViewport');v
     } else if(es==='ADSET_PAUSED'){
       label='ชุดโฆษณาปิด'; color='#64748b'; bg='rgba(100,116,139,.1)'; pill=true;
     } else if(active&&delivering===false){
-      label='ปิดอยู่'; color='#64748b';
+      label='ใช้งานอยู่ (ยังไม่มี spend)'; color='#d97706';
     } else if(active){
       label='ใช้งานอยู่'; color='#059669';
     } else if(isAdSet){
