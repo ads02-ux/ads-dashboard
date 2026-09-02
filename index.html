@@ -806,6 +806,9 @@ function disableCommInputs(){
     <div class="sb-item" id="sb-buyerdemo" onclick="switchView('buyerdemo',this)">
       <span class="sb-icon">👥</span><span>ข้อมูลผู้ซื้อ</span>
     </div>
+    <div class="sb-item" id="sb-fbdisabled" onclick="switchView('fbdisabled',this)">
+      <span class="sb-icon">🚫</span><span>Facebook โดนปิดใช้งาน</span>
+    </div>
     <div class="sb-sep"></div>
     <div class="sb-section">Analytics<span style="display:block;font-size:.6rem;font-weight:400;opacity:.55;margin-top:1px;letter-spacing:.02em">ระบบวิเคราะห์โฆษณา</span></div>
     <div class="sb-item" onclick="sbNav(this,'top')" id="sb-home">
@@ -1003,6 +1006,7 @@ function disableCommInputs(){
 <div id="benchmarkView" style="display:none"><div class="page" id="benchmarkViewInner"></div></div>
 <div id="chartrankView" style="display:none;padding:28px 32px"></div>
 <div id="buyerDemoView" style="display:none;padding:28px 32px"></div>
+<div id="fbDisabledView" style="display:none;padding:28px 32px"></div>
 <div id="aiView" style="display:none;padding:28px 32px"></div>
 <div id="adsaiView" style="display:none;padding:28px 32px"></div>
 <div id="videoaiView" style="display:none">
@@ -2617,6 +2621,7 @@ function switchView(view,el){
   var _alv=document.getElementById('alertView');if(_alv)_alv.style.display='none';
   var _blv=document.getElementById('budgetLogView');if(_blv)_blv.style.display='none';
   var _bdvPre=document.getElementById('buyerDemoView');if(_bdvPre)_bdvPre.style.display='none';
+  var _fdvPre=document.getElementById('fbDisabledView');if(_fdvPre)_fdvPre.style.display='none';
   var _auth=sessionStorage.getItem('rb_auth'),_acc=sessionStorage.getItem('rb_access');
   if(_auth==='hr'&&view!=='commission')return;
   if(_auth==='limited'&&_acc){var _accParsed;try{_accParsed=JSON.parse(_acc);}catch(e){_accParsed=_acc;}var _accKeys=Array.isArray(_accParsed)?_accParsed:[_accParsed];var _allowed=[];_accKeys.forEach(function(k){var v=_viewAccessMap[k]||[];v.forEach(function(vn){if(_allowed.indexOf(vn)<0)_allowed.push(vn);});});if(_allowed.indexOf(view)<0)return;}
@@ -2638,6 +2643,9 @@ function switchView(view,el){
     window.scrollTo({top:0,behavior:'smooth'});
   } else if(view==='buyerdemo'){
     mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv2=document.getElementById('benchmarkView');if(bv2)bv2.style.display='none';var crv2=document.getElementById('chartrankView');if(crv2)crv2.style.display='none';var bdv=document.getElementById('buyerDemoView');if(bdv){bdv.style.display='block';_renderBuyerDemo(bdv);}if(_ab)_ab.style.display='flex';
+    window.scrollTo({top:0,behavior:'smooth'});
+  } else if(view==='fbdisabled'){
+    mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv3=document.getElementById('benchmarkView');if(bv3)bv3.style.display='none';var crv3=document.getElementById('chartrankView');if(crv3)crv3.style.display='none';var fdv=document.getElementById('fbDisabledView');if(fdv){fdv.style.display='block';_renderFbDisabled(fdv);}if(_ab)_ab.style.display='flex';
     window.scrollTo({top:0,behavior:'smooth'});
   } else if(view==='ai'){
     mv.style.display='none';cv.style.display='none';if(cmv)cmv.style.display='none';if(fbv)fbv.style.display='none';var bv=document.getElementById('benchmarkView');if(bv)bv.style.display='none';var crv=document.getElementById('chartrankView');if(crv)crv.style.display='none';var aiv=document.getElementById('aiView');if(aiv){aiv.style.display='block';_renderAIContent(aiv);}
@@ -4315,6 +4323,13 @@ var buyerDemoAccount = null;
 var buyerDemoScope = 'ALL';
 var buyerDemoErrCount = 0;
 var buyerDemoTotalAcc = 0;
+function _renderFbDisabled(el){
+  el.innerHTML = '<div style="max-width:640px;margin:60px auto;text-align:center;padding:40px;background:#fff;border-radius:16px;box-shadow:0 2px 12px rgba(0,0,0,.06)">'
+    + '<div style="font-size:48px;margin-bottom:16px">🚫</div>'
+    + '<div style="font-size:20px;font-weight:700;color:#1e293b;margin-bottom:8px">Facebook โดนปิดใช้งาน</div>'
+    + '<div style="font-size:14px;color:#64748b">หน้านี้กำลังอยู่ระหว่างการพัฒนา รอข้อมูลเพิ่มเติมเร็วๆ นี้</div>'
+    + '</div>';
+}
 function _renderBuyerDemo(el){
   if(buyerDemoAccount !== buyerDemoScope) buyerDemoData = null;
   buyerDemoAccount = buyerDemoScope;
