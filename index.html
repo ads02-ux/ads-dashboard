@@ -5006,7 +5006,7 @@ async function fbUpdateBudget(campName,campId){var _nbRow=Array.from(document.qu
       var lastErr='';var allOk=true;
       for(var i=0;i<targets.length;i++){
         var t=targets[i];
-        var tp=isDaily?{daily_budget:t.budget*100}:{lifetime_budget:t.budget*100};if(_sd2_){var _stopTs_=Math.floor(new Date(_sd2_+'T23:59:59+07:00').getTime()/1000);tp.end_time=_stopTs_;tp.stop_time=_stopTs_;}
+        var tp=isDaily?{daily_budget:t.budget*100}:{lifetime_budget:t.budget*100};if(_sd2_){var _stopTs_=Math.floor(new Date(_sd2_+'T23:59:59+07:00').getTime()/1000);tp.end_time=_stopTs_;}
         var r=await fetch(FB_API+t.id+'?access_token='+encodeURIComponent(tok2),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(tp)});
         var d=await r.json();
         if(!d.success&&!d.id){allOk=false;if(d.error)lastErr=d.error.message;}
