@@ -1,83 +1,159 @@
 <!DOCTYPE html>
-  <html lang="th">
+<html lang="th">
   <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Facebook Ads Dashboard summary</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Facebook Ads Dashboard — สรุปสำหรับผู้บริหาร</title>
   <style>
-  :root{ color-scheme: light; }
-*{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Segoe UI',Prompt,Tahoma,sans-serif;background:#eef1f8;color:#1E2761;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:24px 16px 60px;}
-.deck{width:100%;max-width:980px;}
-.slide{display:none;background:linear-gradient(135deg,#12173a 0%,#1E2761 55%,#2c3a7a 100%);color:#eef2ff;border-radius:18px;padding:48px 56px;min-height:520px;box-shadow:0 20px 50px rgba(30,39,97,.35);position:relative;overflow:hidden;}
-.slide.active{display:flex;flex-direction:column;}
-h1{font-size:34px;font-weight:800;line-height:1.25;margin-bottom:10px;}
-h2{font-size:26px;font-weight:700;margin-bottom:22px;display:flex;align-items:center;gap:12px;}
-.icon-circle{width:44px;height:44px;border-radius:50%;background:#ffffff1a;border:1px solid #ffffff33;display:flex;align-items:center;justify-content:center;font-size:20px;flex:none;}
-.subtitle{font-size:16px;color:#c3ceef;margin-bottom:28px;max-width:640px;line-height:1.6;}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;flex:1;}
-.card{background:#ffffff12;border:1px solid #ffffff22;border-radius:14px;padding:18px 20px;}
-.card h3{font-size:15px;font-weight:700;margin-bottom:8px;color:#d9e3ff;}
-.card p{font-size:13.5px;color:#c9d3f0;line-height:1.65;}
-.footer-note{margin-top:auto;padding-top:20px;font-size:12px;color:#93a2d6;border-top:1px solid #ffffff22;}
-.num{position:absolute;bottom:24px;right:32px;font-size:12px;color:#8fa0d9;}
-.title-slide{align-items:flex-start;justify-content:center;}
-.title-slide h1{font-size:42px;}
-  .brand{display:flex;align-items:center;gap:14px;margin-bottom:30px;}
-.brand .dot{width:14px;height:14px;border-radius:50%;background:#7fd9c4;}
-.brand span{font-size:14px;letter-spacing:3px;color:#a9b8e6;font-weight:600;}
-.closing ul{font-size:15px;line-height:2;list-style:none;}
-.nav{width:100%;max-width:980px;display:flex;align-items:center;justify-content:space-between;margin-top:20px;}
-.nav button{background:#1E2761;color:#fff;border:none;padding:10px 22px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;}
-.nav button:disabled{opacity:.35;cursor:default;}
-.dots{display:flex;gap:8px;}
-.dots span{width:8px;height:8px;border-radius:50%;background:#c3ceef;cursor:pointer;}
-.dots span.on{background:#1E2761;width:22px;border-radius:5px;}
-</style>
+    :root{ color-scheme: light; }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Segoe UI',Prompt,Tahoma,sans-serif;background:#eef1f8;color:#1E2761;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:24px 16px 60px;}
+    .deck{width:100%;max-width:980px;}
+    .slide{display:none;background:linear-gradient(135deg,#12173a 0%,#1E2761 55%,#2c3a7a 100%);color:#eef2ff;border-radius:18px;padding:48px 56px;min-height:520px;box-shadow:0 20px 50px rgba(30,39,97,.35);position:relative;overflow:hidden;}
+    .slide.active{display:flex;flex-direction:column;}
+    h1{font-size:34px;font-weight:800;line-height:1.25;margin-bottom:10px;}
+    h2{font-size:26px;font-weight:700;margin-bottom:22px;display:flex;align-items:center;gap:12px;}
+    .icon-circle{width:44px;height:44px;border-radius:50%;background:#ffffff1a;border:1px solid #ffffff33;display:flex;align-items:center;justify-content:center;font-size:20px;flex:none;}
+    .subtitle{font-size:16px;color:#c3ceef;margin-bottom:28px;max-width:640px;line-height:1.6;}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;flex:1;}
+    .card{background:#ffffff12;border:1px solid #ffffff22;border-radius:14px;padding:18px 20px;}
+    .card h3{font-size:15px;font-weight:700;margin-bottom:8px;color:#d9e3ff;}
+    .card p{font-size:13.5px;color:#c9d3f0;line-height:1.65;}
+    .footer-note{margin-top:auto;padding-top:20px;font-size:12px;color:#93a2d6;border-top:1px solid #ffffff22;}
+    .num{position:absolute;bottom:24px;right:32px;font-size:12px;color:#8fa0d9;}
+    .title-slide{align-items:flex-start;justify-content:center;}
+    .title-slide h1{font-size:42px;}
+    .brand{display:flex;align-items:center;gap:14px;margin-bottom:30px;}
+    .brand .dot{width:14px;height:14px;border-radius:50%;background:#7fd9c4;}
+    .brand span{font-size:14px;letter-spacing:3px;color:#a9b8e6;font-weight:600;}
+    .closing ul{font-size:15px;line-height:2;list-style:none;}
+    .nav{width:100%;max-width:980px;display:flex;align-items:center;justify-content:space-between;margin-top:20px;}
+    .nav button{background:#1E2761;color:#fff;border:none;padding:10px 22px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;}
+    .nav button:disabled{opacity:.35;cursor:default;}
+    .dots{display:flex;gap:8px;}
+    .dots span{width:8px;height:8px;border-radius:50%;background:#c3ceef;cursor:pointer;}
+    .dots span.on{background:#1E2761;width:22px;border-radius:5px;}
+    </style>
   </head>
   <body>
-  <div class="deck">
-  <div class="slide active title-slide">
-  <div class="brand"><div class="dot"></div><span>RICH BIOTECH ADS SYSTEM</span></div>
-  <h1>Facebook Ads Dashboard<br>Ph_phuam Function Kanchai Ngan</h1>
-  <p class="subtitle">Sarup Samrap Phu_borihan - Rabop Tidtam Lae Borihan Campaign Kotsana Facebook Thangmod Nai Thidiao</p>
-  <div class="footer-note">Ads Analytics Dashboard</div>
-<div class="num">1 / 8</div>
-</div>
-<div class="slide">
-<h2><span class="icon-circle">1</span> Menu Groups</h2>
-<div class="grid">
-<div class="card"><h3>Overview</h3><p>Facebook Ads campaign data drill down</p></div>
-  <div class="card"><h3>Analysis</h3><p>AI tools and deep reports</p></div>
-<div class="card"><h3>Analytics</h3><p>Tools for analyst team</p></div>
-<div class="card"><h3>Settings</h3><p>User management edit history</p></div>
-</div>
-  <div class="num">2 / 8</div>
-  </div>
-</div>
-<div class="nav">
-<button id="prevBtn" onclick="go(-1)">Prev</button>
-<div class="dots" id="dots"></div>
-<button id="nextBtn" onclick="go(1)">Next</button>
-</div>
-<script>
-const slides = document.querySelectorAll('.slide');
-const dotsEl = document.getElementById('dots');
-let idx = 0;
-slides.forEach((s,i) => {
-const d = document.createElement('span');
-d.onclick = () => { idx = i; render(); };
-  dotsEl.appendChild(d);
-});
-function render(){
-slides.forEach((s,i) => s.classList.toggle('active', i===idx));
-}
-function go(delta){
-  idx = Math.max(0, Math.min(slides.length-1, idx+delta));
-render();
-}
-render();
-</script>
+    <div class="deck">
+      <div class="slide active title-slide">
+        <div class="brand"><div class="dot"></div>div><span>RICH BIOTECH ADS SYSTEM</span></div>div>
+      <h1>Facebook Ads Dashboard<br>ภาพรวมฟังก์ชันการใช้งาน</h1>
+      <p class="subtitle">สรุปสำหรับผู้บริหาร ระบบติดตามและบริหารแคมเปญโฆษณา Facebook ทั้งหมดในที่เดียว ตั้งแต่ภาพรวมยอดขาย ไปจนถึงการเปิดปิด และแก้ไขงบประมาณแคมเปญแบบเรียลไทม์</p>p>
+      <div class="footer-note">Ads Analytics Dashboard ระบบดึงข้อมูลจาก Facebook Marketing API แบบเรียลไทม์</div>div>
+      <div class="num">1 / 8</div>div>
+      </div>div>
+    <div class="slide">
+    <h2><span class="icon-circle">1</span>span> โครงสร้างเมนูหลัก 4 กลุ่ม</h2>
+    <div class="grid">
+    <div class="card"><h3>ภาพรวม</h3><p>Facebook Ads ดูข้อมูลแคมเปญจริงแบบไล่ระดับ สินค้า เพจ บัญชี แคมเปญ</p></div>div>
+    <div class="card"><h3>วิเคราะห์</h3><p>เครื่องมือ AI และรายงานเชิงลึก เช่น แนะนำคอนเทนต์ วิเคราะห์ Ads วิเคราะห์วีดีโอ Alert แจ้งเตือน</p></div>div>
+    <div class="card"><h3>ANALYTICS ระบบวิเคราะห์โฆษณา</h3><p>เครื่องมือสำหรับทีมวิเคราะห์ เช่น KPI Overview Analyst Ranking Campaign Log ค่าคอมมิชชั่น</p></div>div>
+    <div class="card"><h3>ตั้งค่า</h3><p>จัดการผู้ใช้ ประวัติการแก้ไข และการรีเฟรชข้อมูลอัตโนมัติของระบบ</p></div>div>
+    </div>div>
+    <div class="num">2 / 8</div>div>
+    </div>div>
+    <div class="slide">
+    <h2><span class="icon-circle">2</span>span> ภาพรวม Facebook Ads โครงสร้าง 3 ชั้น</h2>
+    <p class="subtitle">ผู้ใช้ไล่ดูข้อมูลจากภาพรวมสินค้า ลงลึกไปทีละชั้นจนถึงตารางแคมเปญจริง</p>
+    <div class="grid">
+    <div class="card"><h3>1 สินค้า</h3><p>ภาพรวมยอดใช้จ่าย ยอดขาย ROAS ของสินค้าแต่ละตัว รวมทุกเพจบัญชีในสินค้านั้น</p></div>div>
+    <div class="card"><h3>2 เพจ</h3><p>แยกข้อมูลตามเพจ Facebook ที่ยิงโฆษณาให้สินค้านั้น</p></div>div>
+    <div class="card"><h3>3 บัญชีโฆษณา</h3><p>ข้อมูลระดับบัญชีโฆษณา Ad Account แต่ละบัญชีที่ผูกกับเพจ</p></div>div>
+    <div class="card"><h3>4 ตารางแคมเปญ</h3><p>รายละเอียดแคมเปญจริง พร้อมปุ่มเปิดปิด แก้ไขงบ ดูครีเอทีฟ และย้ายบัญชี</p></div>div>
+    </div>div>
+    <div class="num">3 / 8</div>div>
+    </div>div>
+    <div class="slide">
+    <h2><span class="icon-circle">3</span>span> ปุ่มจัดการแคมเปญต่อแถว</h2>
+    <div class="grid">
+    <div class="card"><h3>เปิดปิดแคมเปญ</h3><p>สลับสถานะแคมเปญได้ทันทีจากตาราง มีหน้ายืนยันก่อนทุกครั้ง</p></div>div>
+    <div class="card"><h3>แก้ไขงบประมาณ</h3><p>ปรับงบรายวันตลอดชีพได้ทันที พร้อมเก็บประวัติยอดเก่ายอดใหม่</p></div>div>
+    <div class="card"><h3>ดูครีเอทีฟ</h3><p>เปิดดูรูปวีดีโอโฆษณาจริงที่กำลังรันอยู่ พร้อมลิงก์โพสต์ต้นฉบับ</p></div>div>
+    <div class="card"><h3>ประวัติการแก้ไข</h3><p>ดูว่าใครแก้ไขอะไร เมื่อไหร่ ย้อนหลังได้ทุกการเปลี่ยนแปลง</p></div>div>
+    </div>div>
+    <div class="num">4 / 8</div>div>
+    </div>div>
+    <div class="slide">
+    <h2><span class="icon-circle">4</span>span> วิเคราะห์ เครื่องมือ AI</h2>
+    <div class="grid">
+    <div class="card"><h3>AI แนะนำคอนเทนต์</h3><p>วิเคราะห์แคมเปญด้วย Claude API แนะนำแนวทางคอนเทนต์ที่น่าจะทำผลงานดี</p></div>div>
+    <div class="card"><h3>AI วิเคราะห์ Ads วีดีโอ</h3><p>ประเมินผลโฆษณาและวีดีโอ พร้อมคำแนะนำเชิงลึกอัตโนมัติ</p></div>div>
+    <div class="card"><h3>BenchMark ชาร์ตอันดับ</h3><p>เปรียบเทียบมาตรวัดแอดและจัดอันดับผลงานระหว่างแคมเปญนักวิเคราะห์</p></div>div>
+    <div class="card"><h3>Alert การแจ้งเตือน</h3><p>แจ้งเตือนอัตโนมัติเมื่อแคมเปญมีสัญญาณผิดปกติ เช่น ROAS ตก หรือ Facebook ปิดใช้งานบัญชี</p></div>div>
+    </div>div>
+    <div class="num">5 / 8</div>div>
+    </div>div>
+    <div class="slide">
+    <h2><span class="icon-circle">5</span>span> ANALYTICS ระบบวิเคราะห์โฆษณา</h2>
+    <p class="subtitle">ชุดเครื่องมือสำหรับทีมวิเคราะห์ ใช้ติดตามผลงานเชิงลึกและบริหารทีม</p>
+    <div class="grid">
+    <div class="card"><h3>KPI Overview กราฟ Cohort</h3><p>ภาพรวมตัวชี้วัดหลักและแนวโน้มผลงานย้อนหลัง</p></div>div>
+    <div class="card"><h3>Analyst Ranking ค่าคอมมิชชั่น</h3><p>จัดอันดับผลงานนักวิเคราะห์ และคำนวณค่าคอมมิชชั่นอัตโนมัติ</p></div>div>
+    <div class="card"><h3>Campaign Log Content Intel</h3><p>บันทึกการเปลี่ยนแปลงแคมเปญ และข้อมูลเชิงลึกของคอนเทนต์โฆษณา</p></div>div>
+    <div class="card"><h3>กลุ่มเป้าหมาย TEST ทุกสัปดาห์</h3><p>ทดสอบกลุ่มเป้าหมายใหม่เป็นประจำทุกสัปดาห์ พร้อมจัดการวันหยุดงานรายวันของทีม</p></div>div>
+    </div>div>
+    <div class="num">6 / 8</div>div>
+    </div>div>
+    <div class="slide">
+    <h2><span class="icon-circle">6</span>span> ตั้งค่าระบบ</h2>
+    <div class="grid">
+    <div class="card"><h3>รีเฟรชข้อมูล Auto</h3><p>ระบบดึงข้อมูลจาก Facebook อัตโนมัติตามรอบเวลาที่ตั้งไว้</p></div>div>
+    <div class="card"><h3>จัดการผู้ใช้</h3><p>เพิ่มลบผู้ใช้ กำหนดสิทธิ์การเข้าถึงแต่ละหน้า</p></div>div>
+    <div class="card"><h3>ประวัติการแก้ไข</h3><p>ตรวจสอบย้อนหลังทุกการเปลี่ยนแปลงในระบบทั้งหมด</p></div>div>
+    <div class="card"><h3>Export</h3><p>ส่งออกข้อมูลเป็นไฟล์ อยู่ระหว่างพัฒนา Coming soon</p></div>div>
+    </div>div>
+    <div class="num">7 / 8</div>div>
+    </div>div>
+    <div class="slide closing">
+    <h2><span class="icon-circle">7</span>span> สรุปสำหรับผู้บริหาร</h2>
+    <ul>
+      <li>ระบบเดียวครบทุกขั้นตอน ตั้งแต่ดูภาพรวม จนถึงสั่งเปิดปิดแก้งบแคมเปญจริง</li>
+    <li>ข้อมูลเรียลไทม์จาก Facebook Marketing API โดยตรง ไม่ต้องเข้า Ads Manager</li>
+    <li>มี AI ช่วยแนะนำคอนเทนต์และวิเคราะห์ผลงานอัตโนมัติ</li>
+    <li>ทุกการเปลี่ยนแปลงมีประวัติย้อนหลัง ตรวจสอบได้เสมอ</li>
+    <li>รองรับทีมวิเคราะห์หลายคน พร้อมระบบจัดอันดับและคอมมิชชั่น</li>
+    </ul>
+    <div class="footer-note">Rich Biotech Ads Analytics Dashboard</div>div>
+    <div class="num">8 / 8</div>div>
+    </div>div>
+    </div>div>
+  <div class="nav">
+  <button id="prevBtn" onclick="go(-1)">ก่อนหน้า</button>button>
+  <div class="dots" id="dots"></div>div>
+  <button id="nextBtn" onclick="go(1)">ถัดไป</button>button>
+  </div>div>
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const dotsEl = document.getElementById('dots');
+    let idx = 0;
+    slides.forEach((s,i) => {
+      const d = document.createElement('span');
+      d.onclick = () => { idx = i; render(); };
+      dotsEl.appendChild(d);
+    });
+    function render(){
+      slides.forEach((s,i) => s.classList.toggle('active', i===idx));
+      [...dotsEl.children].forEach((d,i) => d.classList.toggle('on', i===idx));
+      document.getElementById('prevBtn').disabled = idx===0;
+      document.getElementById('nextBtn').disabled = idx===slides.length-1;
+    }
+    function go(delta){
+      idx = Math.max(0, Math.min(slides.length-1, idx+delta));
+      render();
+    }
+    document.addEventListener('keydown', e => {
+      if(e.key==='ArrowRight') go(1);
+      if(e.key==='ArrowLeft') go(-1);
+    });
+    render();
+  </script>
   </body>
-  </html>
-  
+</html>html>
+
+  </script></li></li>
+    </ul></p></p></h2></h1></span>
+  </body>
+  </style></title>
+  </head>
