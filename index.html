@@ -724,16 +724,32 @@ function _applyLimitedAccess(access){
   var allowed=[];
   _keys.forEach(function(k){var v=_viewAccessMap[k]||[];v.forEach(function(vn){if(allowed.indexOf(vn)<0)allowed.push(vn);});});
   var sidebar=document.querySelector('.sidebar');
-  if(sidebar){
+  var wrap=document.querySelector('.main-wrap,.content-wrap');
+  if(allowed.length>1){
+    var nav=document.querySelector('.sb-nav');
+    if(sidebar&&nav){
+      var items=nav.querySelectorAll('.sb-item');
+      items.forEach(function(it){
+        var vn=it.id.replace(/^sb-/,'');
+        it.style.display=(allowed.indexOf(vn)>=0)?'':'none';
+      });
+      sidebar.style.width='';sidebar.style.minWidth='';sidebar.style.overflow='';sidebar.style.padding='';
+      if(wrap)wrap.style.marginLeft='';
+    }
+  } else if(sidebar){
     sidebar.style.width='0';sidebar.style.minWidth='0';sidebar.style.overflow='hidden';sidebar.style.padding='0';
+    if(wrap)wrap.style.marginLeft='0';
   }
-  var wrap=document.querySelector('.main-wrap,.content-wrap');if(wrap)wrap.style.marginLeft='0';
   if(allowed.length){
     var v=allowed[0];
     var el=document.getElementById('sb-'+v)||document.getElementById('sb-'+v+'View');
-    switchView(v,el);
+    if(el&&el.getAttribute('onclick')){
+      try{ new Function(el.getAttribute('onclick')).call(el); }catch(e){ switchView(v,el); }
+    } else {
+      switchView(v,el);
+    }
   }
-}
+  }
 function enableHrMode(){
   // Hide sidebar so HR can't navigate elsewhere
   var nav=document.querySelector('.sb-nav');
