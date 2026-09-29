@@ -22,5 +22,53 @@
         "WinstonCobbe"
       ]
     }
+  },
+  "Heavenplus+||Heaven Plus - ระเบิดพลังชาย ฟิต อึด ทน||Deepak Kumar": {
+    "reason": "disabled",
+    "ts": 1790680161819,
+    "meta": {
+      "product": "Heavenplus+",
+      "page": "Heaven Plus - ระเบิดพลังชาย ฟิต อึด ทน",
+      "name": "Deepak Kumar",
+      "adAccounts": [
+        "DeepakKumar"
+      ]
+    }
+  },
+  "ขุนแผน||ขุนแผนชายชาตรี||Hjorgunnr Elmebrigge": {
+    "reason": "disabled",
+    "ts": 1790680161819,
+    "meta": {
+      "product": "ขุนแผน",
+      "page": "ขุนแผนชายชาตรี",
+      "name": "Hjorgunnr Elmebrigge",
+      "adAccounts": [
+        "HjorgunnrElmebrigge"
+      ]
+    }
+  },
+  "ขุนแผน||ขุนแผนฟิตพร้อมลุย||Roskva Caveplait": {
+    "reason": "disabled",
+    "ts": 1790680161819,
+    "meta": {
+      "product": "ขุนแผน",
+      "page": "ขุนแผนฟิตพร้อมลุย",
+      "name": "Roskva Caveplait",
+      "adAccounts": [
+        "RoskvaCaveplait"
+      ]
+    }
+  },
+  "ขุนแผน||ขุนแผนแรงมั่นใจ||Roma Rio": {
+    "reason": "disabled",
+    "ts": 1790680161819,
+    "meta": {
+      "product": "ขุนแผน",
+      "page": "ขุนแผนแรงมั่นใจ",
+      "name": "Roma Rio",
+      "adAccounts": [
+        "RomaRio"
+      ]
+    }
   }
 }
