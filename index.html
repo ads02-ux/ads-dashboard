@@ -3141,7 +3141,7 @@ function _rbLogSave(entry){
     localStorage.setItem(_RB_LOG_KEY,JSON.stringify(log));
   }catch(e){}
 }
-function _rbLogGet(){try{return JSON.parse(localStorage.getItem(_RB_LOG_KEY)||'[]');}catch(e){return[];}}
+function _rbLogGet(){try{return JSON.parse(localStorage.getItem(_RB_LOG_KEY)||'[]');}catch(e){return[];}} function _rbLogExport(){ try{ var log=_rbLogGet(); var blob=new Blob([JSON.stringify(log,null,2)],{type:'application/json'}); var url=URL.createObjectURL(blob); var a=document.createElement('a'); a.href=url; var n=new Date(); function p(x){return x<10?'0'+x:x;} a.download='budget_log_'+n.getFullYear()+p(n.getMonth()+1)+p(n.getDate())+'_'+p(n.getHours())+p(n.getMinutes())+'.json'; document.body.appendChild(a); a.click(); document.body.removeChild(a); setTimeout(function(){URL.revokeObjectURL(url);},1000); }catch(e){ alert('ส่งออกไม่สำเร็จ: '+e.message); } }
 function _rbLogUser(){try{return sessionStorage.getItem('rb_username')||'Unknown';}catch(e){return 'Unknown';}}
 function _rbLogNow(){
   var n=new Date();
@@ -9303,7 +9303,7 @@ function _renderBudgetLog(el){
           +'<option value="budget"'+(filterType==='budget'?' selected':'')+'>💰 งบ</option>'
           +'<option value="date"'+(filterType==='date'?' selected':'')+'>📅 วันที่</option>'
         +'</select>'
-        +'<button onclick="if(confirm(\'ล้างประวัติทั้งหมด?\')){{localStorage.removeItem(\''+_RB_LOG_KEY+'\');_renderBudgetLog(document.getElementById(\'budgetLogView\'));}}" style="border:1px solid #fca5a5;border-radius:8px;padding:7px 14px;background:#fff;color:#dc2626;font-family:inherit;font-size:.8rem;font-weight:600;cursor:pointer">🗑 ล้างประวัติ</button>'
+        +'<button onclick="_rbLogExport()" style="border:1px solid #93c5fd;border-radius:8px;padding:7px 14px;background:#fff;color:#1d4ed8;font-family:inherit;font-size:.8rem;font-weight:600;cursor:pointer">📥 ส่งออก JSON</button>'+'<button onclick="if(confirm(\'ล้างประวัติทั้งหมด?\')){{localStorage.removeItem(\''+_RB_LOG_KEY+'\');_renderBudgetLog(document.getElementById(\'budgetLogView\'));}}" style="border:1px solid #fca5a5;border-radius:8px;padding:7px 14px;background:#fff;color:#dc2626;font-family:inherit;font-size:.8rem;font-weight:600;cursor:pointer">🗑 ล้างประวัติ</button>'
       +'</div>'
     +'</div>'
     +(filtered.length===0
