@@ -30705,6 +30705,10 @@
     "Verify Campaign Plan Test": {
       "old": "1000",
       "new": "1500"
+    },
+    "Verify Campaign Plan Test2": {
+      "old": "2000",
+      "new": ""
     }
   }
 }
