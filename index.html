@@ -3170,7 +3170,12 @@ function _fbNotesSave(dt,name,field,val){
   _fbNotes[dt][name][field]=val;
   try{localStorage.setItem('_fbNotes',JSON.stringify(_fbNotes));}catch(e){}
   if(typeof renderFB==='function'){try{renderFB();}catch(e){}}
-  clearTimeout(_fbNotesPushTimer);_fbNotesPushTimer=setTimeout(_fbNotesPush,2500);}
+  clearTimeout(_fbNotesPushTimer);_fbNotesPushTimer=setTimeout(_fbNotesPush,2500);
+  try{
+    var _fbnE=_fbNotes[dt][name];
+    fetch('https://richbiotech-fb-proxy.ads02.workers.dev/_camplog',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({actor:_rbLogUser(),campaignId:(typeof fbAccount!=='undefined'?fbAccount:''),campaignName:name,action:'plannote:'+dt,oldValue:String(_fbnE.old||''),newValue:String(_fbnE.new||'')})}).catch(function(){});
+  }catch(e){}
+}
 function _fbNotesLoad(){
   try{var s=localStorage.getItem('_fbNotes');if(s)_fbNotes=JSON.parse(s);}catch(e){}
   fetch('https://raw.githubusercontent.com/ads02-ux/ads-dashboard/main/daily-notes.json?t='+Date.now())
