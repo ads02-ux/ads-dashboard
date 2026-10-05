@@ -8107,7 +8107,7 @@ function fbDetailSetDays(d){
   _renderCampDetailContent(window._fbDetailCamp.name,window._fbDetailCamp.id,d);
 }
 
-var _fbKpiDefaultOrder=['spend','roas','ctr','purchases','conversations','costPerConv','costPerBuy','revenue'];
+var _fbKpiDefaultOrder=['spend','roas','ctr','purchases','conversations','costPerConv','costPerBuy','revenue','pctAds'];
 function _fbKpiOrderGet(){
   try{
     var saved=JSON.parse(localStorage.getItem('_fbKpiOrder')||'null');
@@ -8236,7 +8236,8 @@ function _renderCampDetailContent(campName,campId,days){
     conversations:kpiCard('conversations','การสนทนา',agg.conversations>0?fmt(agg.conversations,0)+' ราย':'—','#818cf8'),
     costPerConv:kpiCard('costPerConv','ต้นทุน/สนทนา',agg.costPerConv>0?'฿'+fmt(agg.costPerConv):'—','#f472b6'),
     costPerBuy:kpiCard('costPerBuy','ต้นทุน/ซื้อ',agg.costPerBuy>0?'฿'+fmt(agg.costPerBuy):'—','#fb923c'),
-    revenue:kpiCard('revenue','ค่าคอนเวอร์ชั่น',agg.revenue>0?'฿'+fmt(agg.revenue):'—','#a78bfa')
+    revenue:kpiCard('revenue','ค่าคอนเวอร์ชั่น',agg.revenue>0?'฿'+fmt(agg.revenue):'—','#a78bfa'),
+    pctAds:kpiCard('pctAds','%ADS',agg.revenue>0?(Math.round(agg.spend/agg.revenue*1000)/10)+'%':'—',_fbPctColor(agg.revenue>0?agg.spend/agg.revenue*100:0))
   };
   _fbKpiOrderGet().forEach(function(k){if(kpiDefs[k])html+=kpiDefs[k];});
   html+='</div>';
