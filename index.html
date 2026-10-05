@@ -8237,7 +8237,7 @@ function _renderCampDetailContent(campName,campId,days){
     costPerConv:kpiCard('costPerConv','ต้นทุน/สนทนา',agg.costPerConv>0?'฿'+fmt(agg.costPerConv):'—','#f472b6'),
     costPerBuy:kpiCard('costPerBuy','ต้นทุน/ซื้อ',agg.costPerBuy>0?'฿'+fmt(agg.costPerBuy):'—','#fb923c'),
     revenue:kpiCard('revenue','ค่าคอนเวอร์ชั่น',agg.revenue>0?'฿'+fmt(agg.revenue):'—','#a78bfa'),
-    pctAds:kpiCard('pctAds','%ADS',agg.revenue>0?(Math.round(agg.spend/agg.revenue*1000)/10)+'%':'—',_fbPctColor(agg.revenue>0?agg.spend/agg.revenue*100:0))
+    pctAds:kpiCard('pctAds','%ADS',agg.revenue>0?(agg.spend/agg.revenue).toFixed(2):'—',_fbPctColor(agg.revenue>0?agg.spend/agg.revenue*100:0))
   };
   _fbKpiOrderGet().forEach(function(k){if(kpiDefs[k])html+=kpiDefs[k];});
   html+='</div>';
