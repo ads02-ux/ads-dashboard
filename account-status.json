@@ -70,5 +70,17 @@
         "RomaRio"
       ]
     }
+  },
+  "เจ้าขุน||เจ้าขุน ปลุกตื่นทุกเช้า||Suwatcharaporn Wichitpan": {
+    "reason": "disabled",
+    "ts": 1791179771450,
+    "meta": {
+      "product": "เจ้าขุน",
+      "page": "เจ้าขุน ปลุกตื่นทุกเช้า",
+      "name": "Suwatcharaporn Wichitpan",
+      "adAccounts": [
+        "SuwatcharapornWichitpan"
+      ]
+    }
   }
 }
