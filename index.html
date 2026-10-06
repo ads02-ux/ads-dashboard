@@ -3197,6 +3197,7 @@ function _fbNotesSave(dt,name,field,val){
     fetch('https://richbiotech-fb-proxy.ads02.workers.dev/_camplog',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({actor:_rbLogUser(),campaignId:(typeof fbAccount!=='undefined'?fbAccount:''),campaignName:name,action:'plannote:'+dt,oldValue:String(_fbnE.old||''),newValue:String(_fbnE.new||'')})}).catch(function(){});
   }catch(e){}
 }
+function _fbNotesMergeLog(){return fetch('https://richbiotech-fb-proxy.ads02.workers.dev/_camplog').then(function(r){return r.json();}).then(function(j){var a=Array.isArray(j)?j:(j.log||j.entries||[]);var seen={};var ch=false;a.forEach(function(x){var m=/^plannote:(\d{4}-\d\d-\d\d)$/.exec(String(x.action||''));if(!m||!x.campaignName)return;var k=m[1]+'|'+x.campaignName;if(seen[k])return;seen[k]=1;var nv=String(x.newValue==null?'':x.newValue);if(!/\d/.test(nv))return;if(!_fbNotes[m[1]])_fbNotes[m[1]]={};var cur=_fbNotes[m[1]][x.campaignName];if(cur&&(cur.new||cur.old))return;_fbNotes[m[1]][x.campaignName]={old:String(x.oldValue==null?'':x.oldValue),new:nv};ch=true;});if(ch){try{localStorage.setItem('_fbNotes',JSON.stringify(_fbNotes));}catch(e){}}}).catch(function(){});}
 function _fbNotesLoad(){
   try{var s=localStorage.getItem('_fbNotes');if(s)_fbNotes=JSON.parse(s);}catch(e){}
   fetch('https://raw.githubusercontent.com/ads02-ux/ads-dashboard/main/daily-notes.json?t='+Date.now())
@@ -3212,7 +3213,7 @@ function _fbNotesLoad(){
         });
         try{localStorage.setItem('_fbNotes',JSON.stringify(_fbNotes));}catch(e){}
       }
-    }).catch(function(){});}
+    }).catch(function(){}).then(function(){return _fbNotesMergeLog();});}
 var _nw=['ghp_Rpo9','hIKu81w6','8RK1aeu3Q','zZyd72VBu1Bevko'];
 function _fbNotesPush(){
   var pat=localStorage.getItem('_ghPAT')||_nw.join('');
