@@ -1033,6 +1033,7 @@ function disableCommInputs(){
 <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
 <select id="vai-prod" style="border:1px solid #e5e7eb;border-radius:8px;padding:.4rem .7rem;font-size:.8rem;background:#ffffff;color:var(--txt);cursor:pointer" onchange="vaiLoad()"><option value="__all__">ทุกสินค้า</option></select>
 <select id="vai-acct" style="border:1px solid #e5e7eb;border-radius:8px;padding:.4rem .7rem;font-size:.8rem;background:#ffffff;color:var(--txt);cursor:pointer" onchange="vaiLoad()"><option value="__all__">ทุกบัญชี</option></select>
+<input id="vai-search" type="text" placeholder="🔍 พิมพ์ค้นหาบัญชี..." autocomplete="off" oninput="vaiSearch()" style="border:1px solid #e5e7eb;border-radius:8px;padding:.4rem .7rem;font-size:.8rem;background:#ffffff;color:var(--txt);width:170px">
 <select id="vai-date" style="border:1px solid #e5e7eb;border-radius:8px;padding:.4rem .7rem;font-size:.8rem;background:#ffffff;color:var(--txt);cursor:pointer" onchange="vaiLoad()">
 <option value="today">วันนี้</option>
 <option value="last_3d">3 วันล่าสุด</option>
@@ -9558,6 +9559,8 @@ function vaiInit(){
   FB_ACCOUNTS_META.forEach(function(m){sel.innerHTML+='<option value="'+m.name+'">'+m.name+'</option>';});
 }
 
+var _vaiSearchT=null;
+function vaiSearch(){vaiInit();var sel=document.getElementById('vai-acct');var q=(document.getElementById('vai-search').value||'').toLowerCase().replace(/\s+/g,'');var first=null;for(var i=1;i<sel.options.length;i++){var o=sel.options[i];var ok=!q||o.text.toLowerCase().replace(/\s+/g,'').indexOf(q)>-1;o.hidden=!ok;o.disabled=!ok;if(ok&&!first)first=o;}clearTimeout(_vaiSearchT);if(q&&first){_vaiSearchT=setTimeout(function(){if(sel.value!==first.value){sel.value=first.value;vaiLoad();}},500);}}
 async function vaiLoad(){
   vaiInit();
   var actVal=document.getElementById('vai-acct').value;
