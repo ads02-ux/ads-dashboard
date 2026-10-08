@@ -309,6 +309,7 @@ function render(periodDays){
     +'<div class="vrd" style="background:'+v.vBg+';color:'+v.vColor+'">'+v.vIcon+' '+v.vrd+'</div>'
     +'</div>'
     +'<div class="hd-btns no-print">'
+    +'<button class="hd-btn" onclick="downloadPDF(this)">Download PDF</button>'
     +'<button class="hd-btn" onclick="window.print()">Print / PDF</button>'
     +'<button class="hd-btn copy-btn" id="copyBtn" onclick="copyLink()">Copy Link for CEO</button>'
     +'</div></div></div>'
@@ -334,6 +335,11 @@ function render(periodDays){
   document.getElementById('app').innerHTML=h;
 }
 
+window.downloadPDF=function(btn){var el=document.getElementById('app');var old=btn?btn.textContent:'';function go(){var dt=new Date();var ds=dt.getFullYear()+'-'+('0'+(dt.getMonth()+1)).slice(-2)+'-'+('0'+dt.getDate()).slice(-2);
+var opt={margin:[8,6,8,6],filename:'CEO-Report-'+ds+'.pdf',image:{type:'jpeg',quality:0.95},html2canvas:{scale:2,useCORS:true,backgroundColor:'#ffffff',scrollY:0,ignoreElements:function(e){return e.classList&&e.classList.contains('no-print');}},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'},pagebreak:{mode:['css','legacy'],avoid:['.kpi-grid','.section','table','.ai-card']}};
+window.scrollTo(0,0);html2pdf().set(opt).from(el).save().then(function(){if(btn){btn.textContent=old;btn.disabled=false;}}).catch(function(e){if(btn){btn.textContent=old;btn.disabled=false;}alert('สร้าง PDF ไม่สำเร็จ: '+(e&&e.message?e.message:e));});}
+if(btn){btn.textContent='กำลังสร้าง PDF...';btn.disabled=true;}
+if(window.html2pdf){go();return;}var s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';s.onload=go;s.onerror=function(){if(btn){btn.textContent=old;btn.disabled=false;}alert('โหลดตัวสร้าง PDF ไม่สำเร็จ ลองใช้ปุ่ม Print / PDF แทน');};document.head.appendChild(s);};
 window.switchPeriod=function(d){render(d);window.scrollTo(0,0);};
 window.switchCamp=function(i){currentCampIdx=i;render(currentPeriod);window.scrollTo(0,0);};
 window.copyLink=function(){
