@@ -82,7 +82,7 @@ function calcAgg(arr){
   (arr||[]).forEach(function(d){a.spend+=(+d.spend||0);a.revenue+=(+d.revenue||0);a.impressions+=(+d.impressions||0);a.clicks+=(+d.clicks||0);a.purchases+=(+d.purchases||0);a.conversations+=(+d.conversations||0);});
   a.roas=a.spend>0?Math.round(a.revenue/a.spend*100)/100:0;
   a.ctr=a.impressions>0?Math.round(a.clicks/a.impressions*10000)/100:0;
-  a.costPerBuy=a.purchases>0?Math.round(a.spend/a.purchases):0;
+  a.costPerBuy=a.purchases>0?Math.round(a.spend/a.purchases):0;a.costPerConv=a.conversations>0?Math.round(a.spend/a.conversations):0;
   return a;
 }
 
@@ -197,15 +197,15 @@ function buildCompareTable(camps,periodDays){
     var arr=filterByPeriod(c.daily||[],periodDays);
     return{name:c.name,agg:calcAgg(arr)};
   });
-  var cols=['spend','revenue','roas','ctr','purchases','costPerBuy'];
-  var labels={spend:'Spend',revenue:'Revenue',roas:'ROAS',ctr:'CTR %',purchases:'Purchases',costPerBuy:'CPA'};
+  var cols=['spend','revenue','roas','ctr','conversations','costPerConv','purchases','costPerBuy'];
+  var labels={spend:'Spend',revenue:'Revenue',roas:'ROAS',ctr:'CTR %',conversations:'Chats (คนทัก)',costPerConv:'Cost/Chat (ต้นทุนทัก)',purchases:'Purchases',costPerBuy:'CPA (ต้นทุนซื้อ)'};
   var best={},worst={};
   cols.forEach(function(k){
     var vals=aggs.map(function(a){return a.agg[k]||0;});
     var pos=vals.filter(function(v){return v>0;});
     if(!pos.length)return;
-    var bf=(k==='costPerBuy')?Math.min:Math.max;
-    var wf=(k==='costPerBuy')?Math.max:Math.min;
+    var bf=(k==='costPerBuy'||k==='costPerConv')?Math.min:Math.max;
+    var wf=(k==='costPerBuy'||k==='costPerConv')?Math.max:Math.min;
     best[k]=bf.apply(null,pos);
     worst[k]=wf.apply(null,pos);
     if(best[k]===worst[k]){best[k]=null;worst[k]=null;}
@@ -214,7 +214,7 @@ function buildCompareTable(camps,periodDays){
     if(!v&&v!==0)return'--';
     if(k==='roas')return v>0?v.toFixed(2)+'x':'--';
     if(k==='ctr')return v>0?v.toFixed(2)+'%':'--';
-    if(k==='costPerBuy')return v>0?fmt(v):'--';
+    if(k==='costPerBuy'||k==='costPerConv')return v>0?fmt(v):'--';
     return v>0?fmt(v):'--';
   }
   var h='<div style="overflow-x:auto"><table class="cmp-table"><thead><tr><th style="min-width:180px">Campaign</th>';
