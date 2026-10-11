@@ -3184,7 +3184,7 @@ function _fbNotesDateKey(){var now=new Date();function p(n){return n<10?'0'+n:n;
   return null;}
 function _fbNotesGet(dt,name){if(!dt||!name)return{old:'',new:''};return((_fbNotes[dt]||{})[name])||{old:'',new:''};}
 function _fbNotesLookback(name,field,beforeDt){var d=new Date(beforeDt+'T00:00:00');for(var i=0;i<30;i++){d.setDate(d.getDate()-1);var y=d.getFullYear(),m=d.getMonth()+1,dd=d.getDate();var key=y+'-'+(m<10?'0'+m:m)+'-'+(dd<10?'0'+dd:dd);var ent=(_fbNotes[key]||{})[name];if(ent&&ent[field])return{val:ent[field],from:key};}return{val:'',from:null};}
-function _fbNotesApplyFallback(dt,name,nv){if(!dt||fbFilter!=='today'||new Date().getHours()<19)return false;var did=false;if(!nv.old){var fo=_fbNotesLookback(name,'old',dt);if(fo.val){nv.old=fo.val;did=true;}}if(!nv.new){var fn=_fbNotesLookback(name,'new',dt);if(fn.val){nv.new=fn.val;did=true;}}return did;}
+function _fbNotesApplyFallback(dt,name,nv){if(!dt||(fbFilter!=='today'&&fbFilter!=='yesterday')||(fbFilter==='today'&&new Date().getHours()<19))return false;var did=false;if(!nv.old){var fo=_fbNotesLookback(name,'old',dt);if(fo.val){nv.old=fo.val;did=true;}}if(!nv.new){var fn=_fbNotesLookback(name,'new',dt);if(fn.val){nv.new=fn.val;did=true;}}return did;}
 function _fbNotesSave(dt,name,field,val){
   if(!dt||!name)return;
   if(!_fbNotes[dt])_fbNotes[dt]={};
