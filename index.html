@@ -3191,6 +3191,20 @@ function _fbNotesLookback(name,field,beforeDt){var d=new Date(beforeDt+'T00:00:0
 function _fbNotesApplyFallback(dt,name,nv){if(!dt||(fbFilter!=='today'&&fbFilter!=='yesterday')||(fbFilter==='today'&&new Date().getHours()<19))return false;var did=false;if(!nv.old){var fo=_fbNotesLookback(name,'old',dt);if(fo.val){nv.old=fo.val;did=true;}}if(!nv.new){var fn=_fbNotesLookback(name,'new',dt);if(fn.val){nv.new=fn.val;did=true;}}return did;}
 function _fbNotesSave(dt,name,field,val){
   if(!dt||!name)return;
+  if(!window._fbNotesSkipCheck&&(field==='new'||field==='old')){
+    var _cv=parseFloat(String(val||'').replace(/,/g,''));
+    if(_cv>0){
+      var _bl=0,_bd='';
+      try{var _d=new Date(dt+'T00:00:00');for(var _i=0;_i<30&&!_bl;_i++){_d.setDate(_d.getDate()-1);var _k=_d.getFullYear()+'-'+String(_d.getMonth()+1).padStart(2,'0')+'-'+String(_d.getDate()).padStart(2,'0');var _e=(_fbNotes[_k]||{})[name];var _v=_e?parseFloat(String(_e.new||'').replace(/,/g,'')):0;if(_v>0){_bl=_v;_bd=_k;}}}catch(e){}
+      if(_bl>0&&Math.abs(_cv-_bl)/_bl>0.4){
+        var _pc=Math.round((_cv-_bl)/_bl*100);
+        if(!confirm('\u26A0\uFE0F ตรวจสอบยอด'+(field==='new'?'ใหม่':'เก่า')+' ก่อนบันทึก\n\nแคมเปญ: '+name+'\nกรอก: '+_cv.toLocaleString()+'\nยอดใหม่ล่าสุด ('+_bd+'): '+_bl.toLocaleString()+'  ('+(_pc>0?'+':'')+_pc+'%)\n\nต่างกันเกิน 40% — พิมพ์ถูกแล้วใช่ไหม?\nกด OK = บันทึก / Cancel = ยกเลิก')){
+          if(typeof renderFB==='function'){try{renderFB();}catch(e){}}
+          return;
+        }
+      }
+    }
+  }
   if(!_fbNotes[dt])_fbNotes[dt]={};
   if(!_fbNotes[dt][name])_fbNotes[dt][name]={old:'',new:''};
   _fbNotes[dt][name][field]=val;
