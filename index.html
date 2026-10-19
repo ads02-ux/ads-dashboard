@@ -3196,9 +3196,9 @@ function _fbNotesSave(dt,name,field,val){
     if(_cv>0){
       var _bl=0,_bd='';
       try{var _d=new Date(dt+'T00:00:00');for(var _i=0;_i<30&&!_bl;_i++){_d.setDate(_d.getDate()-1);var _k=_d.getFullYear()+'-'+String(_d.getMonth()+1).padStart(2,'0')+'-'+String(_d.getDate()).padStart(2,'0');var _e=(_fbNotes[_k]||{})[name];var _v=_e?parseFloat(String(_e.new||'').replace(/,/g,'')):0;if(_v>0){_bl=_v;_bd=_k;}}}catch(e){}
-      if(_bl>0&&Math.abs(_cv-_bl)/_bl>0.4){
+      if(_bl>0&&Math.abs(_cv-_bl)/_bl>0.5){
         var _pc=Math.round((_cv-_bl)/_bl*100);
-        if(!confirm('\u26A0\uFE0F ตรวจสอบยอด'+(field==='new'?'ใหม่':'เก่า')+' ก่อนบันทึก\n\nแคมเปญ: '+name+'\nกรอก: '+_cv.toLocaleString()+'\nยอดใหม่ล่าสุด ('+_bd+'): '+_bl.toLocaleString()+'  ('+(_pc>0?'+':'')+_pc+'%)\n\nต่างกันเกิน 40% — พิมพ์ถูกแล้วใช่ไหม?\nกด OK = บันทึก / Cancel = ยกเลิก')){
+        if(!confirm('\u26A0\uFE0F ตรวจสอบยอด'+(field==='new'?'ใหม่':'เก่า')+' ก่อนบันทึก\n\nแคมเปญ: '+name+'\nกรอก: '+_cv.toLocaleString()+'\nยอดใหม่ล่าสุด ('+_bd+'): '+_bl.toLocaleString()+'  ('+(_pc>0?'+':'')+_pc+'%)\n\nต่างกันเกิน 50% — พิมพ์ถูกแล้วใช่ไหม?\nกด OK = บันทึก / Cancel = ยกเลิก')){
           if(typeof renderFB==='function'){try{renderFB();}catch(e){}}
           return;
         }
