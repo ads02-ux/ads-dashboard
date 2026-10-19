@@ -3208,6 +3208,7 @@ function _fbNotesSave(dt,name,field,val){
   if(!_fbNotes[dt])_fbNotes[dt]={};
   if(!_fbNotes[dt][name])_fbNotes[dt][name]={old:'',new:''};
   _fbNotes[dt][name][field]=val;
+  try{(window._fbNotesDirty=window._fbNotesDirty||{})[dt+'\u0001'+name]=1;}catch(e){}
   try{localStorage.setItem('_fbNotes',JSON.stringify(_fbNotes));}catch(e){}
   if(typeof renderFB==='function'){try{renderFB();}catch(e){}}
   clearTimeout(_fbNotesPushTimer);_fbNotesPushTimer=setTimeout(_fbNotesPush,2500);
@@ -3236,15 +3237,30 @@ function _fbNotesLoad(){
 var _nw=['ghp_Rpo9','hIKu81w6','8RK1aeu3Q','zZyd72VBu1Bevko'];
 function _fbNotesPush(){
   var pat=localStorage.getItem('_ghPAT')||_nw.join('');
-  var content=btoa(unescape(encodeURIComponent(JSON.stringify(_fbNotes,null,2))));
   var apiUrl='https://api.github.com/repos/ads02-ux/ads-dashboard/contents/daily-notes.json';
-  fetch(apiUrl,{headers:{Authorization:'token '+pat,'Accept':'application/vnd.github.v3+json'}})
-    .then(function(r){return r.ok?r.json():null;})
-    .then(function(meta){
-      var body={message:'notes '+new Date().toISOString(),content:content};
+  var dirty=window._fbNotesDirty||{};var keys=Object.keys(dirty);if(!keys.length)return;
+  function attempt(n){
+    return Promise.all([
+      fetch(apiUrl+'?ref=main&t='+Date.now(),{headers:{Authorization:'token '+pat,'Accept':'application/vnd.github+json'},cache:'no-store'}).then(function(r){return r.ok?r.json():null;}),
+      fetch(apiUrl+'?ref=main&t='+Date.now(),{headers:{Authorization:'token '+pat,'Accept':'application/vnd.github.raw'},cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;})
+    ]).then(function(res){
+      var meta=res[0],remote=res[1];if(!remote||typeof remote!=='object')return;
+      keys.forEach(function(k){var p=k.split('\u0001'),dt=p[0],nm=p.slice(1).join('\u0001');var e=(_fbNotes[dt]||{})[nm];if(!e)return;remote[dt]=remote[dt]||{};remote[dt][nm]={old:e.old||'',new:e.new||''};});
+      var body={message:'notes '+new Date().toISOString(),content:btoa(unescape(encodeURIComponent(JSON.stringify(remote,null,2))))};
       if(meta&&meta.sha)body.sha=meta.sha;
-      return fetch(apiUrl,{method:'PUT',headers:{Authorization:'token '+pat,'Content-Type':'application/json'},body:JSON.stringify(body)});
-    }).catch(function(){});}
+      return fetch(apiUrl,{method:'PUT',headers:{Authorization:'token '+pat,'Content-Type':'application/json'},body:JSON.stringify(body)}).then(function(r){
+        if(r.ok){
+          keys.forEach(function(k){delete dirty[k];});
+          for(var d in remote){_fbNotes[d]=_fbNotes[d]||{};for(var nm in remote[d]){if(!dirty[d+'\u0001'+nm])_fbNotes[d][nm]=remote[d][nm];}}
+          try{localStorage.setItem('_fbNotes',JSON.stringify(_fbNotes));}catch(e){}
+          if(typeof renderFB==='function'){try{renderFB();}catch(e){}}
+          return;
+        }
+        if((r.status===409||r.status===422)&&n<3)return attempt(n+1);
+      });
+    });
+  }
+  return attempt(0).catch(function(){});}
 _fbNotesLoad();
 var _fbAcctStatus={};
 function _fbAcctKey(product,page,name){return product+'||'+page+'||'+name;}
