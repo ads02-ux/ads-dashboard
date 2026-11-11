@@ -717,7 +717,7 @@ function _exportProductCSV(){
 var _viewAccessMap={
   fb:['fb'],ai:['ai'],adsai:['adsai'],track:['track'],benchmark:['benchmark'],
   chartrank:['chartrank'],hunter:['top','kpiGrid','lbSection','chartSection','cohort','t1wrap','t2wrap'],
-  hr:['commission'],leave:['leave'],dailytask:['dailytask'],videoai:['videoai'],buyerdemo:['buyerdemo']
+  hr:['commission'],leave:['leave'],dailytask:['dailytask'],videoai:['videoai'],buyerdemo:['buyerdemo'],chat:['chatpage'],chat_nook:['chatpage'],chat_au:['chatpage'],chat_honey:['chatpage']
 };
 function _applyLimitedAccess(access){
   var _keys=Array.isArray(access)?access:[access];
@@ -9470,7 +9470,7 @@ function _renderUserMgmt(el){
     var _curAccess=u.access;
     var _isAll=(_curAccess==='all');
     var _curArr=_isAll?[]:Array.isArray(_curAccess)?_curAccess:[_curAccess];
-    var _PAGES=[{k:'fb',lbl:'FB Ads'},{k:'ai',lbl:'AI แนะนำ'},{k:'adsai',lbl:'AI วิเคราะห์'},{k:'track',lbl:'ติดตาม'},{k:'benchmark',lbl:'Benchmark'},{k:'chartrank',lbl:'ชาร์ต'},{k:'hunter',lbl:'Hunter'},{k:'hr',lbl:'ค่าคอม'},{k:'leave',lbl:'วันหยุด'},{k:'dailytask',lbl:'งานรายวัน'},{k:'videoai',lbl:'วิเคราะห์วีดีโอ'},{k:'buyerdemo',lbl:'ข้อมูลผู้ซื้อ'}];
+    var _PAGES=[{k:'fb',lbl:'FB Ads'},{k:'ai',lbl:'AI แนะนำ'},{k:'adsai',lbl:'AI วิเคราะห์'},{k:'track',lbl:'ติดตาม'},{k:'benchmark',lbl:'Benchmark'},{k:'chartrank',lbl:'ชาร์ต'},{k:'hunter',lbl:'Hunter'},{k:'hr',lbl:'ค่าคอม'},{k:'leave',lbl:'วันหยุด'},{k:'dailytask',lbl:'งานรายวัน'},{k:'videoai',lbl:'วิเคราะห์วีดีโอ'},{k:'buyerdemo',lbl:'ข้อมูลผู้ซื้อ'},{k:'chat',lbl:'คนทัก (ทุกซุป)'},{k:'chat_nook',lbl:'คนทัก-ซุปนุ๊ก'},{k:'chat_au',lbl:'คนทัก-Au Supad1'},{k:'chat_honey',lbl:'คนทัก-ซุปน้ำผึ้ง'}];
     var _accPills='<div style="display:flex;flex-wrap:wrap;gap:3px;max-width:300px">';
     _accPills+='<button data-idx="'+i+'" onclick="_umSetAllAccess(this)" style="font-size:.6rem;padding:2px 8px;border-radius:20px;border:1px solid '+(_isAll?'#4f46e5':'#e2e8f0')+';background:'+(_isAll?'#4f46e5':'#f8fafc')+';color:'+(_isAll?'#fff':'#94a3b8')+';cursor:pointer;font-family:inherit;font-weight:700">ทุกหน้า</button>';
     _PAGES.forEach(function(p){var active=_curArr.indexOf(p.k)>=0;_accPills+='<button data-idx="'+i+'" data-key="'+p.k+'" onclick="_umTogglePage(this)" style="font-size:.6rem;padding:2px 8px;border-radius:20px;border:1px solid '+(active?'#3b82f6':'#e2e8f0')+';background:'+(active?'#eff6ff':'#f8fafc')+';color:'+(active?'#1d4ed8':'#94a3b8')+';cursor:pointer;font-family:inherit;font-weight:'+(active?'700':'400')+'">'+p.lbl+'</button>';});
@@ -9835,10 +9835,14 @@ function chatPageOpen(el){
 }
 document.addEventListener('click',function(e){var it=e.target.closest&&e.target.closest('.sb-item');if(it&&it.id!=='sb-chatpage'){var v=document.getElementById('chatPageView');if(v)v.style.display='none';}},true);
 function chatPageSet(k,val){chatPageState[k]=val;if(k==='sup')chatPageState.prod='';chatPageRender();}
+var CHAT_ACCESS_SUP={chat_nook:'ซุปนุ๊ก',chat_au:'Au Supad1',chat_honey:'ซุปน้ำผึ้ง'};
+function _cpLockedSup(){try{if(sessionStorage.getItem('rb_auth')==='1')return '';var a=sessionStorage.getItem('rb_access')||'';var arr;try{arr=JSON.parse(a);}catch(e){arr=[a];}if(!Array.isArray(arr))arr=[arr];if(arr.indexOf('chat')>=0)return '';for(var i=0;i<arr.length;i++){if(CHAT_ACCESS_SUP[arr[i]])return CHAT_ACCESS_SUP[arr[i]];}}catch(e){}return '';}
+var _cpLastN=-1;setInterval(function(){var v=document.getElementById('chatPageView');if(!v||v.style.display==='none')return;var n=0;try{for(var k in fbDataMap)n+=(fbDataMap[k]||[]).length;}catch(e){}if(n!==_cpLastN){_cpLastN=n;chatPageRender();}},5000);
 function chatPageRender(){
   var box=document.getElementById('chatPageInner');if(!box)return;
   if(typeof FB_HIERARCHY==='undefined'||typeof fbDataMap==='undefined'){box.innerHTML='<p style="padding:24px">กำลังโหลดข้อมูล...</p>';return;}
   var T=_cpDate(0),Y=_cpDate(1),D7=[];for(var i=0;i<7;i++)D7.push(_cpDate(i));
+  var _cpLock=_cpLockedSup();if(_cpLock)chatPageState.sup=_cpLock;
   var st=chatPageState,allowed=st.sup?CHAT_SUP_MAP[st.sup]:null;
   var prods=FB_HIERARCHY.filter(function(p){return (!allowed||allowed.indexOf(p.product)>=0)&&(!st.prod||p.product===st.prod);});
   var rows=[],tot={t:0,y:0,w:0,sw:0};
@@ -9857,7 +9861,7 @@ function chatPageRender(){
   h+='<h2 style="font-size:22px;font-weight:700;margin-bottom:4px">💬 คนทักรายเพจ</h2>';
   h+='<div style="opacity:.7;font-size:13px;margin-bottom:16px">จำนวนการสนทนา (คนทัก) จาก Facebook Ads ของทุกเพจ · วันนี้ '+T+' · ข้อมูลวันนี้ถึงเวลาที่โหลดล่าสุด</div>';
   h+='<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px">';
-  h+='<select style="'+sel+'" onchange="chatPageSet(\'sup\',this.value)"><option value="">ซุป: ทุกทีม</option>'+Object.keys(CHAT_SUP_MAP).map(function(s){return '<option value="'+_cpEsc(s)+'"'+(st.sup===s?' selected':'')+'>'+_cpEsc(s)+'</option>';}).join('')+'</select>';
+  h+='<select style="'+sel+'"'+(_cpLock?' disabled':'')+' onchange="chatPageSet(\'sup\',this.value)">'+(_cpLock?'':'<option value="">ซุป: ทุกทีม</option>')+Object.keys(CHAT_SUP_MAP).map(function(s){return '<option value="'+_cpEsc(s)+'"'+(st.sup===s?' selected':'')+'>'+_cpEsc(s)+'</option>';}).join('')+'</select>';
   h+='<select style="'+sel+'" onchange="chatPageSet(\'prod\',this.value)"><option value="">สินค้า: ทั้งหมด</option>'+prodOpts.map(function(s){return '<option value="'+_cpEsc(s)+'"'+(st.prod===s?' selected':'')+'>'+_cpEsc(s)+'</option>';}).join('')+'</select>';
   h+='<select style="'+sel+'" onchange="chatPageSet(\'sort\',this.value)"><option value="prod"'+(st.sort==='prod'?' selected':'')+'>เรียง: ตามสินค้า</option><option value="today"'+(st.sort==='today'?' selected':'')+'>เรียง: คนทักวันนี้มากสุด</option><option value="week"'+(st.sort==='week'?' selected':'')+'>เรียง: คนทัก 7 วันมากสุด</option></select>';
   h+='</div>';
