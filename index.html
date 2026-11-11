@@ -825,6 +825,9 @@ function disableCommInputs(){
     <div class="sb-item" id="sb-fbdisabled" onclick="switchView('fbdisabled',this)">
       <span class="sb-icon">🚫</span><span>Facebook โดนปิดใช้งาน</span>
     </div>
+    <div class="sb-item" id="sb-chatpage" onclick="chatPageOpen(this)">
+      <span class="sb-icon">💬</span><span>คนทักรายเพจ</span>
+    </div>
     <div class="sb-sep"></div>
     <div class="sb-section">Analytics<span style="display:block;font-size:.6rem;font-weight:400;opacity:.55;margin-top:1px;letter-spacing:.02em">ระบบวิเคราะห์โฆษณา</span></div>
     <div class="sb-item" onclick="sbNav(this,'top')" id="sb-home">
@@ -1018,7 +1021,7 @@ function disableCommInputs(){
 
 <div id="cohortView" style="display:none"><div class="page" id="cohortViewInner"></div></div>
 <div id="commissionView" style="display:none"><div class="page" id="commissionViewInner"></div></div>
-<div id="fbView"><div class="page" id="fbViewInner"></div></div>
+<div id="chatPageView" style="display:none"><div class="page" id="chatPageInner"></div></div><div id="fbView"><div class="page" id="fbViewInner"></div></div>
 <div id="benchmarkView" style="display:none"><div class="page" id="benchmarkViewInner"></div></div>
 <div id="chartrankView" style="display:none;padding:28px 32px"></div>
 <div id="buyerDemoView" style="display:none;padding:28px 32px"></div>
@@ -9816,3 +9819,58 @@ function vaiQuadToggle(){_vai.collapsed=!_vai.collapsed;var inner=document.getEl
   };
 })();</script>
 </div><!-- /content-wrap -->
+
+<script>
+/* ===== คนทักรายเพจ (เพิ่มโดย Claude 11 พ.ย. 2569) ===== */
+var CHAT_SUP_MAP={'ซุปนุ๊ก':['เจ้าขุน','Heavenplus+','THE LORD','Wolf'],'Au Supad1':['Olymplus','Dragon Blood','JUDO','ขุนแผน','OlymplusMax'],'ซุปน้ำผึ้ง':['LIV CARE','Sopink','BLING&SYN']};
+var chatPageState={sup:'',prod:'',sort:'prod'};
+function _cpDate(n){var d=new Date(Date.now()+7*3600e3);d.setUTCDate(d.getUTCDate()-n);return d.toISOString().slice(0,10);}
+function _cpEsc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function chatPageOpen(el){
+  document.querySelectorAll('[id$="View"]').forEach(function(v){v.style.display='none';});
+  document.querySelectorAll('.sb-item').forEach(function(i){i.classList.remove('active');});
+  var v=document.getElementById('chatPageView');if(v)v.style.display='';
+  if(el)el.classList.add('active');
+  chatPageRender();
+}
+document.addEventListener('click',function(e){var it=e.target.closest&&e.target.closest('.sb-item');if(it&&it.id!=='sb-chatpage'){var v=document.getElementById('chatPageView');if(v)v.style.display='none';}},true);
+function chatPageSet(k,val){chatPageState[k]=val;if(k==='sup')chatPageState.prod='';chatPageRender();}
+function chatPageRender(){
+  var box=document.getElementById('chatPageInner');if(!box)return;
+  if(typeof FB_HIERARCHY==='undefined'||typeof fbDataMap==='undefined'){box.innerHTML='<p style="padding:24px">กำลังโหลดข้อมูล...</p>';return;}
+  var T=_cpDate(0),Y=_cpDate(1),D7=[];for(var i=0;i<7;i++)D7.push(_cpDate(i));
+  var st=chatPageState,allowed=st.sup?CHAT_SUP_MAP[st.sup]:null;
+  var prods=FB_HIERARCHY.filter(function(p){return (!allowed||allowed.indexOf(p.product)>=0)&&(!st.prod||p.product===st.prod);});
+  var rows=[],tot={t:0,y:0,w:0,sw:0};
+  prods.forEach(function(p){p.pages.forEach(function(pg){
+    var r={prod:p.product,color:p.color||'#64748b',icon:p.icon||'',page:pg.name,t:0,y:0,w:0,sw:0,n:0};
+    pg.accounts.forEach(function(a){(a.adAccounts||[]).forEach(function(acc){r.n++;(fbDataMap[acc]||[]).forEach(function(x){var c=+x.conversations||0,s=+x.spend||0;if(x.date===T)r.t+=c;if(x.date===Y)r.y+=c;if(D7.indexOf(x.date)>=0){r.w+=c;r.sw+=s;}});});});
+    if(r.n===0)return;
+    r.t=Math.round(r.t);r.y=Math.round(r.y);r.w=Math.round(r.w);
+    tot.t+=r.t;tot.y+=r.y;tot.w+=r.w;tot.sw+=r.sw;rows.push(r);
+  });});
+  if(st.sort==='today')rows.sort(function(a,b){return b.t-a.t;});
+  else if(st.sort==='week')rows.sort(function(a,b){return b.w-a.w;});
+  var prodOpts=(allowed||FB_HIERARCHY.map(function(p){return p.product;}));
+  var sel='padding:8px 12px;border:1px solid var(--panel-border,#E2E8F4);border-radius:8px;background:var(--panel,#fff);color:inherit;font:inherit';
+  var h='<div style="padding:20px 24px">';
+  h+='<h2 style="font-size:22px;font-weight:700;margin-bottom:4px">💬 คนทักรายเพจ</h2>';
+  h+='<div style="opacity:.7;font-size:13px;margin-bottom:16px">จำนวนการสนทนา (คนทัก) จาก Facebook Ads ของทุกเพจ · วันนี้ '+T+' · ข้อมูลวันนี้ถึงเวลาที่โหลดล่าสุด</div>';
+  h+='<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px">';
+  h+='<select style="'+sel+'" onchange="chatPageSet(\'sup\',this.value)"><option value="">ซุป: ทุกทีม</option>'+Object.keys(CHAT_SUP_MAP).map(function(s){return '<option value="'+_cpEsc(s)+'"'+(st.sup===s?' selected':'')+'>'+_cpEsc(s)+'</option>';}).join('')+'</select>';
+  h+='<select style="'+sel+'" onchange="chatPageSet(\'prod\',this.value)"><option value="">สินค้า: ทั้งหมด</option>'+prodOpts.map(function(s){return '<option value="'+_cpEsc(s)+'"'+(st.prod===s?' selected':'')+'>'+_cpEsc(s)+'</option>';}).join('')+'</select>';
+  h+='<select style="'+sel+'" onchange="chatPageSet(\'sort\',this.value)"><option value="prod"'+(st.sort==='prod'?' selected':'')+'>เรียง: ตามสินค้า</option><option value="today"'+(st.sort==='today'?' selected':'')+'>เรียง: คนทักวันนี้มากสุด</option><option value="week"'+(st.sort==='week'?' selected':'')+'>เรียง: คนทัก 7 วันมากสุด</option></select>';
+  h+='</div>';
+  var cards=[['คนทักวันนี้',tot.t],['เมื่อวาน',tot.y],['7 วัน',tot.w],['เพจ',rows.length]];
+  h+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:16px">'+cards.map(function(c){return '<div style="background:var(--panel,#fff);border:1px solid var(--panel-border,#E2E8F4);border-radius:12px;padding:14px 16px"><div style="font-size:12px;opacity:.7">'+c[0]+'</div><div style="font-size:26px;font-weight:700">'+c[1].toLocaleString()+'</div></div>';}).join('')+'</div>';
+  var th='padding:10px 12px;text-align:left;font-size:12px;opacity:.75;border-bottom:1px solid var(--panel-border,#E2E8F4);white-space:nowrap';
+  var td='padding:9px 12px;border-bottom:1px solid var(--panel-border,#E2E8F4);font-size:14px';
+  h+='<div style="background:var(--panel,#fff);border:1px solid var(--panel-border,#E2E8F4);border-radius:12px;overflow-x:auto"><table style="width:100%;border-collapse:collapse">';
+  h+='<thead><tr><th style="'+th+'">สินค้า</th><th style="'+th+'">เพจ</th><th style="'+th+';text-align:right">คนทักวันนี้</th><th style="'+th+';text-align:right">เมื่อวาน</th><th style="'+th+';text-align:right">7 วัน</th><th style="'+th+';text-align:right">ต้นทุน/ทัก (7 วัน)</th></tr></thead><tbody>';
+  if(!rows.length)h+='<tr><td colspan="6" style="'+td+';text-align:center;opacity:.6">ไม่มีข้อมูล</td></tr>';
+  rows.forEach(function(r){var cpc=r.w?Math.round(r.sw/r.w):'-';
+    h+='<tr><td style="'+td+';white-space:nowrap"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:'+_cpEsc(r.color)+';margin-right:6px"></span>'+_cpEsc(r.icon+' '+r.prod)+'</td><td style="'+td+'">'+_cpEsc(r.page)+'</td><td style="'+td+';text-align:right;font-weight:700">'+r.t.toLocaleString()+'</td><td style="'+td+';text-align:right">'+r.y.toLocaleString()+'</td><td style="'+td+';text-align:right">'+r.w.toLocaleString()+'</td><td style="'+td+';text-align:right">'+(cpc==='-'?'-':'฿'+cpc)+'</td></tr>';});
+  h+='</tbody></table></div></div>';
+  box.innerHTML=h;
+}
+</script>
