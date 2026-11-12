@@ -1,0 +1,113 @@
+{
+  "months": {
+    "2026-11": {
+      "items": [
+        {
+          "product": "THE LORD",
+          "who": "ปาย",
+          "target": 1000000,
+          "ads": 58,
+          "cac": 0
+        },
+        {
+          "product": "JUDO",
+          "who": "ปาย",
+          "target": 1000000,
+          "ads": 58,
+          "cac": 0
+        },
+        {
+          "product": "Sopink",
+          "who": "พิม",
+          "target": 1700000,
+          "ads": 51,
+          "cac": 0
+        },
+        {
+          "product": "Wolf",
+          "who": "พิม",
+          "target": 1450000,
+          "ads": 51,
+          "cac": 0
+        },
+        {
+          "product": "เจ้าขุน",
+          "who": "มอส",
+          "target": 550000,
+          "ads": 58,
+          "cac": 0
+        },
+        {
+          "product": "OlymplusMax",
+          "who": "ปาย",
+          "target": 120000,
+          "ads": 40,
+          "cac": 0
+        },
+        {
+          "product": "Heavenplus+",
+          "who": "ปาย",
+          "target": 450000,
+          "ads": 50,
+          "cac": 0
+        },
+        {
+          "product": "Olymplus",
+          "who": "ปาย",
+          "target": 1100000,
+          "ads": 40,
+          "cac": 0
+        },
+        {
+          "product": "LIV CARE",
+          "who": "ปาย",
+          "target": 140000,
+          "ads": 55,
+          "cac": 0
+        },
+        {
+          "product": "BLING&SYN",
+          "who": "ปาย",
+          "target": 100000,
+          "ads": 65,
+          "cac": 0
+        },
+        {
+          "product": "Dragon Blood",
+          "who": "มอส",
+          "target": 200000,
+          "ads": 65,
+          "cac": 0
+        },
+        {
+          "product": "ขุนแผน",
+          "who": "บุ๋มบิ๋ม",
+          "target": 3500000,
+          "ads": 46,
+          "cac": 0
+        }
+      ],
+      "updatedAt": "2026-11-12T10:00:00.000Z",
+      "updatedBy": "Admin"
+    }
+  },
+  "_history": [
+    {
+      "t": "2026-11-12T10:00:00.000Z",
+      "by": "Admin",
+      "month": "2026-11",
+      "txt": "ตั้งเป้า พ.ย. 2569 จากตารางเป้าค่าคอมเดือน 11 (12 สินค้า)"
+    }
+  ],
+  "_casper": {
+    "2026-11": {
+      "เจ้าขุน": {
+        "adsAmt": 273406,
+        "sales": 385750,
+        "orders": 1029,
+        "through": "2026-11-11",
+        "src": "CasperCall ซุปนุ๊ก · กาแฟเจ้าขุน"
+      }
+    }
+  }
+}
