@@ -9,7 +9,7 @@
   function label(it) { var spans = it.querySelectorAll('span'); var t = ''; spans.forEach(function (s) { if (!s.classList.contains('sb-icon')) t += ' ' + s.textContent; }); return (t || it.textContent).replace(/\s+/g, ' ').trim(); }
 
   var GROUPS = [
-    ['ภาพรวม', ['#sb-fbv2', '#sb-kpiv2', '#sb-fb', 'KPI Overview', 'กราฟ']],
+    ['ภาพรวม', ['#sb-fbv2', '#sb-kpiv2', '#sb-chartv2', '#sb-fb']],
     ['โฆษณา', ['Alert', '#sb-fbdisabled', 'ติดตามผล', '#sb-budgetlog']],
     ['AI', ['#sb-adsai', '#sb-ai', '#sb-videoai']],
     ['ยอดขาย / แชท', ['#sb-chatpage', '#sb-buyerdemo', 'Cohort']],
@@ -68,7 +68,7 @@
     cog: '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/>',
     down: '<path d="M12 4v11M7 10l5 5 5-5M4 20h16"/>'
   };
-  var ICON_OF = { '#sb-fbv2': 'grid', '#sb-kpiv2': 'target', '#sb-fb': 'mega', 'KPI Overview': 'bars', 'กราฟ': 'line', 'Alert': 'bell', '#sb-fbdisabled': 'ban', 'ติดตามผล': 'target', 'Campaign Log': 'list', '#sb-budgetlog': 'hist', '#sb-adsai': 'spark', '#sb-ai': 'bulb', '#sb-videoai': 'video', 'Content Intel': 'search', '#sb-chatpage': 'chat', '#sb-buyerdemo': 'users', 'Cohort': 'layers', '#sb-benchmark': 'gauge', '#sb-chartrank': 'trophy', 'กลุ่มเป้าหมาย': 'cross', 'Analyst Ranking': 'trophy', '#sb-comm': 'coins', '#sb-leave': 'cal', '#sb-daily': 'check', 'จัดการโปรไฟล์': 'user', 'รีเฟรชข้อมูล': 'refresh', '#sb-usermgmt': 'cog', 'Export': 'down' };
+  var ICON_OF = { '#sb-fbv2': 'grid', '#sb-kpiv2': 'target', '#sb-chartv2': 'line', '#sb-fb': 'mega', 'KPI Overview': 'bars', 'กราฟ': 'line', 'Alert': 'bell', '#sb-fbdisabled': 'ban', 'ติดตามผล': 'target', 'Campaign Log': 'list', '#sb-budgetlog': 'hist', '#sb-adsai': 'spark', '#sb-ai': 'bulb', '#sb-videoai': 'video', 'Content Intel': 'search', '#sb-chatpage': 'chat', '#sb-buyerdemo': 'users', 'Cohort': 'layers', '#sb-benchmark': 'gauge', '#sb-chartrank': 'trophy', 'กลุ่มเป้าหมาย': 'cross', 'Analyst Ranking': 'trophy', '#sb-comm': 'coins', '#sb-leave': 'cal', '#sb-daily': 'check', 'จัดการโปรไฟล์': 'user', 'รีเฟรชข้อมูล': 'refresh', '#sb-usermgmt': 'cog', 'Export': 'down' };
   function setIcon(it, key) {
     var ic = it.querySelector('.sb-icon'); var name = ICON_OF[key]; if (!ic || !name || !IC[name]) return;
     ic.setAttribute('data-emoji', ic.textContent);
@@ -186,7 +186,7 @@
     var used = [], frag = document.createDocumentFragment();
     // เมนูที่เอาออกจากแถบซ้าย (ย้ายไปกล่องซ่อน ไม่ลบ เผื่อโค้ดเดิมอ้างถึง)
     var hid = document.createElement('div'); hid.id = 'v2nav-hidden'; hid.style.display = 'none';
-    ['Campaign Log', 'Content Intel', 'KPI Overview'].forEach(function (k) { var it = findItem(items, k, used); if (it) { used.push(it); hid.appendChild(it); } });
+    ['Campaign Log', 'Content Intel', 'KPI Overview', '#sb-chartold'].forEach(function (k) { var it = findItem(items, k, used); if (it) { used.push(it); hid.appendChild(it); } });
     function group(title, list) {
       var g = document.createElement('div'); g.className = 'v2nav-group' + (fold[title] ? ' fold' : '');
       var h = document.createElement('button'); h.type = 'button'; h.className = 'v2nav-head'; h.innerHTML = '<span>' + title + '</span><i aria-hidden="true">▾</i>';
@@ -230,7 +230,7 @@
   var tries = 0;
   (function wait() {
     tries++;
-    var ready = document.getElementById('sb-fb') && (document.getElementById('sb-fbv2') || tries > 20) && (document.getElementById('sb-kpiv2') || tries > 20) && document.getElementById('sb-chatpage');
+    var ready = document.getElementById('sb-fb') && (document.getElementById('sb-fbv2') || tries > 20) && (document.getElementById('sb-kpiv2') || tries > 20) && (document.getElementById('sb-chartv2') || tries > 20) && document.getElementById('sb-chatpage');
     if (ready) { try { if (build()) return; } catch (e) { console.warn('v2-nav:', e); return; } }
     if (tries < 60) setTimeout(wait, 500);
   })();
