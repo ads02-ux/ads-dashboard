@@ -10,8 +10,8 @@
 
   var GROUPS = [
     ['ภาพรวม', ['#sb-fbv2', '#sb-fb', 'KPI Overview', 'กราฟ']],
-    ['โฆษณา', ['Alert', '#sb-fbdisabled', 'ติดตามผล', 'Campaign Log', '#sb-budgetlog']],
-    ['AI', ['#sb-adsai', '#sb-ai', '#sb-videoai', 'Content Intel']],
+    ['โฆษณา', ['Alert', '#sb-fbdisabled', 'ติดตามผล', '#sb-budgetlog']],
+    ['AI', ['#sb-adsai', '#sb-ai', '#sb-videoai']],
     ['ยอดขาย / แชท', ['#sb-chatpage', '#sb-buyerdemo', 'Cohort']],
     ['วิเคราะห์', ['#sb-benchmark', '#sb-chartrank', 'กลุ่มเป้าหมาย']],
     ['ทีม', ['Analyst Ranking', '#sb-comm', '#sb-leave', '#sb-daily', 'จัดการโปรไฟล์']],
@@ -184,6 +184,9 @@
     css();
     var fold = {}; try { fold = JSON.parse(get(FOLD) || '{}') || {}; } catch (e) {}
     var used = [], frag = document.createDocumentFragment();
+    // เมนูที่เอาออกจากแถบซ้าย (ย้ายไปกล่องซ่อน ไม่ลบ เผื่อโค้ดเดิมอ้างถึง)
+    var hid = document.createElement('div'); hid.id = 'v2nav-hidden'; hid.style.display = 'none';
+    ['Campaign Log', 'Content Intel'].forEach(function (k) { var it = findItem(items, k, used); if (it) { used.push(it); hid.appendChild(it); } });
     function group(title, list) {
       var g = document.createElement('div'); g.className = 'v2nav-group' + (fold[title] ? ' fold' : '');
       var h = document.createElement('button'); h.type = 'button'; h.className = 'v2nav-head'; h.innerHTML = '<span>' + title + '</span><i aria-hidden="true">▾</i>';
@@ -202,7 +205,7 @@
     if (rest.length) group('อื่น ๆ', rest);
     // ซ่อนหัวข้อ/เส้นคั่นเดิม (ไม่ลบ เผื่อโค้ดเดิมอ้างถึง)
     Array.prototype.slice.call(nav.children).forEach(function (el) { if (el.classList.contains('sb-section') || el.classList.contains('sb-sep')) el.style.display = 'none'; });
-    nav.appendChild(frag);
+    nav.appendChild(frag); nav.appendChild(hid);
     // ชื่อเมนู Facebook Ads
     var v2 = document.getElementById('sb-fbv2'); if (v2) { var s2 = v2.querySelectorAll('span'); if (s2[1]) s2[1].textContent = 'Facebook Ads'; }
     var s1 = first.querySelectorAll('span'); if (s1[1]) s1[1].textContent = 'Facebook Ads (แบบเดิม)';
