@@ -20,10 +20,20 @@
 
   function css() {
     if (document.getElementById('v2navcss')) return;
+    if (!document.getElementById('v2font')) { var lk = document.createElement('link'); lk.id = 'v2font'; lk.rel = 'stylesheet'; lk.href = 'https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap'; document.head.appendChild(lk); }
     var st = document.createElement('style'); st.id = 'v2navcss';
     st.textContent = [
+      '#sidebar.v2nav-on{background:#0F172A!important;font-family:"IBM Plex Sans Thai","Sarabun",system-ui,sans-serif}',
+      '#sidebar.v2nav-on .sb-logo{border-bottom:1px solid rgba(148,163,184,.15)!important}',
+      '#sidebar.v2nav-on .sb-nav{padding:6px 0 0!important}',
+      '#sidebar.v2nav-on .sb-item{margin:1px 10px!important;padding:8px 10px!important;border-radius:8px!important;border-left:0!important;font-size:13.5px!important;font-weight:500!important;color:#CBD5E1!important;background:transparent!important;gap:10px!important;font-family:inherit!important}',
+      '#sidebar.v2nav-on .sb-item:hover{background:rgba(255,255,255,.07)!important;color:#fff!important}',
+      '#sidebar.v2nav-on .sb-item.active{background:#2563EB!important;color:#fff!important;font-weight:600!important;box-shadow:0 1px 2px rgba(0,0,0,.2)}',
+      '#sidebar.v2nav-on .sb-icon{font-size:14px!important;width:18px!important;filter:grayscale(1) brightness(1.7);opacity:.75}',
+      '#sidebar.v2nav-on .sb-item:hover .sb-icon,#sidebar.v2nav-on .sb-item.active .sb-icon{filter:none;opacity:1}',
+      '#sidebar.v2nav-on .sb-item small,#sidebar.v2nav-on .sb-item .sb-sub{color:#94A3B8!important}',
       '.v2nav-group{margin:2px 0 6px}',
-      '.v2nav-head{display:flex;align-items:center;justify-content:space-between;width:100%;border:0;background:transparent;cursor:pointer;padding:10px 14px 4px;font:inherit;font-size:11px;font-weight:700;letter-spacing:.04em;color:#94A3B8;text-align:left}',
+      '.v2nav-head{display:flex;align-items:center;justify-content:space-between;width:100%;border:0;background:transparent;cursor:pointer;padding:12px 20px 4px;font:inherit;font-size:11.5px;font-weight:700;letter-spacing:.02em;color:#64748B;text-align:left}',
       '.v2nav-head:hover{color:#CBD5E1}.v2nav-head i{font-style:normal;transition:transform .15s;font-size:10px}.v2nav-group.fold .v2nav-head i{transform:rotate(-90deg)}.v2nav-group.fold .v2nav-items{display:none}',
       '.v2nav-items .sb-item{border-radius:8px!important}',
       '.v2nav-foot{padding:12px 14px 18px}.v2nav-foot button{width:100%;min-height:36px;border-radius:8px;border:1px solid rgba(148,163,184,.35);background:transparent;color:#94A3B8;font:inherit;font-size:12px;cursor:pointer}.v2nav-foot button:hover{color:#E2E8F0;border-color:#94A3B8}'
@@ -84,6 +94,7 @@
     foot.querySelector('button').onclick = function () { set(KEY, 'off'); location.reload(); };
     nav.appendChild(foot);
     nav.setAttribute('data-v2nav', '1');
+    var sbar = document.getElementById('sidebar'); if (sbar) sbar.classList.add('v2nav-on');
     // ซ่อนหัวข้อกลุ่มที่ทุกเมนูถูกซ่อน (ระบบสิทธิ์)
     setInterval(function () {
       nav.querySelectorAll('.v2nav-group').forEach(function (g) {
