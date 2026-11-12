@@ -70,7 +70,8 @@
   };
   var ICON_OF = { '#sb-fbv2': 'grid', '#sb-kpiv2': 'target', '#sb-chartv2': 'line', '#sb-fb': 'mega', 'KPI Overview': 'bars', 'กราฟ': 'line', 'Alert': 'bell', '#sb-fbdisabled': 'ban', 'ติดตามผล': 'target', 'Campaign Log': 'list', '#sb-budgetlog': 'hist', '#sb-adsai': 'spark', '#sb-ai': 'bulb', '#sb-videoai': 'video', 'Content Intel': 'search', '#sb-chatpage': 'chat', '#sb-buyerdemo': 'users', 'Cohort': 'layers', '#sb-benchmark': 'gauge', '#sb-chartrank': 'trophy', 'กลุ่มเป้าหมาย': 'cross', 'Analyst Ranking': 'trophy', '#sb-comm': 'coins', '#sb-leave': 'cal', '#sb-daily': 'check', 'จัดการโปรไฟล์': 'user', 'รีเฟรชข้อมูล': 'refresh', '#sb-usermgmt': 'cog', 'Export': 'down' };
   function setIcon(it, key) {
-    var ic = it.querySelector('.sb-icon'); var name = ICON_OF[key]; if (!ic || !name || !IC[name]) return;
+    var ic = it.querySelector('.sb-icon'); var name = ICON_OF[key]; if (!name || !IC[name]) return;
+    if (!ic) { var tn = it.firstChild; while (tn && tn.nodeType === 3 && !tn.nodeValue.trim()) tn = tn.nextSibling; ic = document.createElement('span'); ic.className = 'sb-icon'; if (tn && tn.nodeType === 3) { ic.textContent = tn.nodeValue.trim(); tn.parentNode.removeChild(tn); } it.insertBefore(ic, it.firstChild); }
     ic.setAttribute('data-emoji', ic.textContent);
     ic.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + IC[name] + '</svg>';
   }
