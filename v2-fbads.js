@@ -20,6 +20,7 @@
     return date < t && date >= dayShift(n);
   }
   function num(v) { return +v || 0; }
+  function live(i) { return !!i && i.status === 'ACTIVE' && (!i.stop_time || new Date(i.stop_time).getTime() > Date.now()); }
   function agg(rows) {
     var a = { spend: 0, rev: 0, buy: 0, chat: 0, imp: 0, clk: 0 };
     rows.forEach(function (r) { a.spend += num(r.spend); a.rev += num(r.revenue); a.buy += num(r.purchases); a.chat += num(r.conversations); a.imp += num(r.impressions); a.clk += num(r.clicks); });
@@ -126,7 +127,7 @@
       (holder.adAccounts || []).forEach(function (acc) {
         var x = agg(rowsOfAccs([acc]));
         var cm = (window.fbCampaignsMap && fbCampaignsMap[acc]) || {};
-        var nActive = Object.keys(cm).filter(function (k) { return cm[k] && cm[k].status === 'ACTIVE'; }).length;
+        var nActive = Object.keys(cm).filter(function (k) { return live(cm[k]); }).length;
         var initials = String(holder.displayName || acc).replace(/[^A-Za-z\u0E00-\u0E7F ]/g, '').split(' ').filter(Boolean).map(function (w) { return w[0]; }).join('').slice(0, 2).toUpperCase();
         h += '<button class="v2-card v2-acct" onclick="fbV2.acct(' + hi + ',\'' + jsq(acc) + '\')"><span class="v2-av">' + esc(initials || 'AC') + '</span><span class="v2-acct-name"><b>' + esc(holder.displayName) + '</b><small>' + (x.spend ? 'ใช้เงินอยู่' : 'ช่วงนี้ยังไม่ใช้เงิน') + ' · แคมเปญเปิด ' + nActive + '</small></span><span class="v2-acct-nums"><span><small>ค่าแอด</small>' + baht(x.spend) + '</span><span><small>ROAS</small>' + (x.spend ? x.roas.toFixed(2) : '–') + '</span><span><small>ทัก</small>' + int(x.chat) + '</span><span><small>ซื้อ</small>' + int(x.buy) + '</span></span><span class="v2-chev" aria-hidden="true">›</span></button>';
       });
@@ -140,23 +141,23 @@
     var acc = S.acc, rows = rowsOfAccs([acc]), a = agg(rows), T = today();
     var cm = (window.fbCampaignsMap && fbCampaignsMap[acc]) || {};
     var m = {}; rows.forEach(function (r) { (m[r.campaign] = m[r.campaign] || []).push(r); });
-    Object.keys(cm).forEach(function (k) { if (!m[k] && cm[k] && cm[k].status === 'ACTIVE') m[k] = []; });
+    Object.keys(cm).forEach(function (k) { if (!m[k] && live(cm[k])) m[k] = []; });
     var camps = Object.keys(m).map(function (k) { return { name: k, a: agg(m[k]), info: cm[k] || {} }; });
-    camps.sort(function (x, y) { return y.a.spend - x.a.spend || (x.info.status === 'ACTIVE' ? -1 : 1); });
+    camps.sort(function (x, y) { return y.a.spend - x.a.spend || (live(x.info) ? -1 : 1); });
     var h = header(S.h.displayName, esc(S.pg.name) + ' · ' + esc(acc));
-    if (!a.spend) h += '<div class="v2-banner v2-b-mute"><b>ช่วงนี้ยังไม่มีค่าใช้จ่าย</b> — แคมเปญเปิดอยู่ ' + camps.filter(function (c) { return c.info.status === 'ACTIVE'; }).length + ' ตัว · ลองเลือกช่วง 7 วัน</div>';
+    if (!a.spend) h += '<div class="v2-banner v2-b-mute"><b>ช่วงนี้ยังไม่มีค่าใช้จ่าย</b> — แคมเปญเปิดอยู่ ' + camps.filter(function (c) { return live(c.info); }).length + ' ตัว · ลองเลือกช่วง 7 วัน</div>';
     else if (a.roas < 1) h += '<div class="v2-banner v2-b-bad"><b>ROAS ' + a.roas.toFixed(2) + ' — ขาดทุนในช่วงนี้</b> · ดูแคมเปญที่ใช้เงินมากแต่ยังไม่มีคนซื้อด้านล่าง</div>';
     h += kpis(a, [['CTR', a.imp ? a.ctr.toFixed(2) + '%' : '–', ''], ['การแสดงผล', int(a.imp), '']]);
     h += '<div class="v2-actions"><button onclick="fbV2.old()">ย้ายไปเพจอื่น / สถานะบัญชี / Ad Creatives (หน้าเดิม)</button></div>';
     h += '<section class="v2-card v2-tablecard"><div class="v2-tablehead"><h2>แคมเปญ (' + camps.length + ')</h2><span class="v2-dim">ช่องสีเหลือง = แผนงบวันนี้ ' + T + '</span></div><div class="v2-scroll"><table class="v2-table v2-camp"><thead><tr><th>สถานะ</th><th>แคมเปญ</th><th class="r">ค่าแอด</th><th class="r">CTR</th><th class="r">ทัก</th><th class="r">฿/ทัก</th><th class="r">ซื้อ</th><th class="c">ROAS</th><th class="r">฿/ซื้อ</th><th class="v2-plan c" colspan="3">ยอดเก่า → ยอดใหม่</th><th class="c">จัดการ</th></tr></thead><tbody>';
     if (!camps.length) h += '<tr><td colspan="13" class="c v2-dim">ไม่มีแคมเปญในช่วงนี้</td></tr>';
     camps.forEach(function (c) {
-      var st = c.info.status || '', on = st === 'ACTIVE', id = c.info.id || '';
+      var st = c.info.status || '', on = st === 'ACTIVE', id = c.info.id || '', ended = on && !live(c.info);
       var note = (window._fbNotes && _fbNotes[T] && _fbNotes[T][c.name]) || { old: '', new: '' };
       var o = parseFloat(note.old), n = parseFloat(note['new']), chg = '', ct = 'mute';
       if (note['new'] !== undefined && note['new'] !== '') { if (isNaN(n)) { chg = 'ปิด'; } else if (isNaN(o)) { chg = 'ใหม่'; ct = 'good'; } else if (n > o) { chg = '+' + (n - o); ct = 'good'; } else if (n < o) { chg = '−' + (o - n); ct = 'bad'; } else chg = 'คงเดิม'; }
-      var stLabel = on ? (c.a.spend ? 'ใช้งาน' : 'เปิด · ยังไม่ใช้เงิน') : (st === 'PAUSED' ? 'ปิดอยู่' : (st || '–'));
-      var stTone = on ? (c.a.spend ? 'good' : 'warn') : 'mute';
+      var stLabel = ended ? 'จบแล้ว' : on ? (c.a.spend ? 'ใช้งาน' : 'เปิด · ยังไม่ใช้เงิน') : (st === 'PAUSED' ? 'ปิดอยู่' : (st || '–'));
+      var stTone = ended ? 'mute' : on ? (c.a.spend ? 'good' : 'warn') : 'mute';
       var nm = jsq(c.name);
       h += '<tr data-camp="' + esc(c.name) + '"><td>' + pill(stLabel, stTone) + '</td><td class="v2-cname"><button class="v2-link v2-ell" title="' + esc(c.name) + '" onclick="fbV2.detail(\'' + nm + '\',\'' + id + '\')">' + esc(c.name) + '</button></td><td class="r"><b>' + (c.a.spend ? baht(c.a.spend) : '–') + '</b></td><td class="r">' + (c.a.imp ? c.a.ctr.toFixed(2) + '%' : '–') + '</td><td class="r">' + (c.a.chat ? int(c.a.chat) : '–') + '</td><td class="r">' + (c.a.chat ? baht(c.a.cpc) : '–') + '</td><td class="r">' + (c.a.buy ? int(c.a.buy) : '–') + '</td><td class="c">' + roasPill(c.a) + '</td><td class="r">' + cpaPill(c.a) + '</td>';
       h += '<td class="v2-plan"><input aria-label="ยอดเก่า" data-field="old" value="' + esc(note.old || '') + '" placeholder="เก่า" onchange="fbV2.note(\'' + nm + '\',\'old\',this.value)"></td><td class="v2-plan"><input aria-label="ยอดใหม่" data-field="new" value="' + esc(note['new'] || '') + '" placeholder="ใหม่" onchange="fbV2.note(\'' + nm + '\',\'new\',this.value)"></td><td class="v2-plan">' + (chg ? pill(chg, ct) : '') + '</td>';
