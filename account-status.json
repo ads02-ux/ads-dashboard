@@ -130,5 +130,17 @@
         "EdricFitton"
       ]
     }
+  },
+  "Dragon Blood||ปลุกมังกรหลับ คืนความมั่นใจ||Jaen Spikehold": {
+    "reason": "verify",
+    "ts": 1794468235900,
+    "meta": {
+      "product": "Dragon Blood",
+      "page": "ปลุกมังกรหลับ คืนความมั่นใจ",
+      "name": "Jaen Spikehold",
+      "adAccounts": [
+        "JaenSpikehold"
+      ]
+    }
   }
 }
