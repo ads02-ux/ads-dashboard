@@ -89,6 +89,18 @@
   }
   // นับเฉพาะคอนเทนต์ที่วันที่แรกในชื่อ ≥ วันที่ 25 ของเดือนก่อน (เช่น พ.ย. → 25/10)
   function cutOf(m) { var p = m.split('-'), d = new Date(+p[0], +p[1] - 2, 25); return ymd(d); }
+  // คีย์คอนเทนต์: ตัดเลขลำดับหน้าชื่อ แล้วเอาข้อความถึง "ver N" (ไม่มี ver = ถึงวันที่แรก) · ver ต่างกัน = คนละชิ้น
+  function contentKey(c) {
+    var s = String(c.name || '').replace(/^[\s*().\[\]#_\-0-9]+/, '').replace(/\s+/g, ' ').trim().toLowerCase();
+    var v = s.match(/^(.*?\bver\.?\s*\d+)/);
+    if (v) s = v[1]; else { var d = s.match(/^(.*?\d{1,2}\/\d{1,2}\/\d{2,4})/); if (d) s = d[1]; }
+    return c.prod + '|' + s;
+  }
+  function dedupe(list, rank, ex) {
+    var by = {}, out = [];
+    list.forEach(function (x) { var k = contentKey(x.c), o = by[k]; if (!o) { by[k] = x; x.dups = []; out.push(x); return; } if (rank(x) < rank(o)) { x.dups = o.dups.concat([o]); o.dups = []; out[out.indexOf(o)] = x; by[k] = x; } else o.dups.push(x); ex.dup++; });
+    return out;
+  }
   function compute(m) {
     var rows = rowsFor(m); if (!rows) return null;
     var rg = mRange(m), info = accInfo(), T = today(), cm = {};
@@ -98,7 +110,7 @@
       d.s += r.s; d.v += r.v; d.ch += r.ch; d.b += r.b;
       if (r.s > 0 && (!c.first || r.d < c.first)) c.first = r.d;
     });
-    var fetchFrom = addD(rg[0], -14), chat = [], roas = [], cut = cutOf(m), ex = { old: 0, none: 0 };
+    var fetchFrom = addD(rg[0], -14), chat = [], roas = [], cut = cutOf(m), ex = { old: 0, none: 0, dup: 0 };
     function okName(c) { if (c.nd === undefined) c.nd = nameDate(c.name); if (c.nd && c.nd >= cut) return true; if (c.nd) ex.old++; else ex.none++; return false; }
     Object.keys(cm).forEach(function (k) {
       var c = cm[k], ai = info[c.acc] || { pi: -1, prod: '', page: '', disp: c.acc, mgr: 'ไม่ระบุ' };
@@ -125,6 +137,10 @@
       }
       if (best && okName(c)) roas.push({ c: c, b: best });
     });
+    // ไม่นับคอนเทนต์ซ้ำ (เลขแคมเปญต่างกันแต่ชื่อเดียวกัน · ver ต่างกันนับแยก) เก็บตัวที่ดีที่สุด
+    var GI = { 'A+': 0, A: 1, B: 2 };
+    chat = dedupe(chat, function (x) { return (x.grade && x.done ? 0 : 10) + (x.grade ? GI[x.grade[0]] : 3) + (x.cpc || 999) / 10000; }, ex);
+    roas = dedupe(roas, function (x) { return x.b.gi - x.b.ro / 1000; }, ex);
     return { chat: chat, roas: roas, cut: cut, ex: ex };
   }
 
@@ -137,7 +153,7 @@
     var R = compute(S.m), P = prods(), h = '<div class="c2-wrap ai2 ag">';
     var MR = mRange(S.m), toD = MR[1] < today() ? MR[1] : today();
     h += '<div class="c2-head"><div><h1>คัดนางฟ้า</h1><div class="c2-subhead">คัดคอนเทนต์ประจำเดือนด้วย 2 เกณฑ์ที่แยกกัน · ข้อมูลจาก Facebook</div>' +
-      '<div class="ag-range">ช่วงที่คัด: <b>' + dl(MR[0]) + ' ' + (+MR[0].slice(0, 4) + 543) + ' – ' + dl(toD) + ' ' + (+toD.slice(0, 4) + 543) + '</b>' + (toD < MR[1] ? ' <span class="c2-dim">(ถึงวันนี้ · รอบยังไม่จบ)</span>' : '') + ' · ดึงข้อมูลเมื่อ ' + new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) + '<div class="ag-cut">นับเฉพาะคอนเทนต์ที่<b>วันที่แรกในชื่อแคมเปญ ตั้งแต่ ' + (function (s) { var p = s.split('-'); return +p[2] + '/' + (+p[1]) + '/' + String(+p[0] + 543).slice(2); })(cutOf(S.m)) + '</b> เป็นต้นไป' + (R && (R.ex.old || R.ex.none) ? ' <span class="c2-dim">· ไม่นับ ' + R.ex.old + ' ชิ้นที่วันที่ในชื่อเก่ากว่า · ' + R.ex.none + ' ชิ้นที่ไม่มีวันที่ในชื่อ</span>' : '') + '</div></div></div>' +
+      '<div class="ag-range">ช่วงที่คัด: <b>' + dl(MR[0]) + ' ' + (+MR[0].slice(0, 4) + 543) + ' – ' + dl(toD) + ' ' + (+toD.slice(0, 4) + 543) + '</b>' + (toD < MR[1] ? ' <span class="c2-dim">(ถึงวันนี้ · รอบยังไม่จบ)</span>' : '') + ' · ดึงข้อมูลเมื่อ ' + new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) + '<div class="ag-cut">นับเฉพาะคอนเทนต์ที่<b>วันที่แรกในชื่อแคมเปญ ตั้งแต่ ' + (function (s) { var p = s.split('-'); return +p[2] + '/' + (+p[1]) + '/' + String(+p[0] + 543).slice(2); })(cutOf(S.m)) + '</b> เป็นต้นไป' + (R && (R.ex.old || R.ex.none) ? ' <span class="c2-dim">· ไม่นับ ' + R.ex.old + ' ชิ้นที่วันที่ในชื่อเก่ากว่า · ' + R.ex.none + ' ชิ้นที่ไม่มีวันที่ในชื่อ</span>' : '') + (R && R.ex.dup ? ' <span class="c2-dim">· รวมคอนเทนต์ซ้ำ ' + R.ex.dup + ' แคมเปญ (นับชิ้นเดียว · เปลี่ยน ver ถึงนับใหม่)</span>' : '') + '</div></div></div>' +
       '<div class="c2-seg" role="group" aria-label="รอบ">' + MS.map(function (m) { return '<button class="' + (S.m === m ? 'on' : '') + '" onclick="angelV2.set(\'m\',\'' + m + '\')">' + mLabel(m) + '</button>'; }).join('') + '</div></div>';
     h += '<div class="c2-tabs"><button class="' + (S.p < 0 ? 'on' : '') + '" onclick="angelV2.set(\'p\',-1)">ทุกสินค้า</button>' + P.map(function (p, i) { var on = S.p === i; return '<button class="' + (on ? 'on' : '') + '" onclick="angelV2.set(\'p\',' + i + ')"><i style="background:' + (on ? '#fff' : PAL[i % PAL.length]) + '"></i>' + esc(p.product) + '</button>'; }).join('') + '</div>';
     if (!R) {
@@ -172,7 +188,7 @@
       h += '<div class="c2-scroll"><table class="c2-t ai2-t"><thead><tr><th>เกรด</th><th>แคมเปญ</th><th>สินค้า · เพจ · ผู้ดูแล</th><th>ช่วงที่ดู (วันที่ 1–5)</th><th class="r">ค่าแอด 5 วัน</th><th class="r">คนทัก 5 วัน</th><th class="r">ต้นทุน/ทัก</th><th>เกณฑ์ที่ผ่าน</th><th class="r">ค่าคอม</th></tr></thead><tbody>';
       chat.forEach(function (x, xi) {
         var c = x.c, g = x.grade;
-        h += '<tr><td>' + (g ? gtag(g[0]) : '') + (x.done ? '' : '<span class="ai2-tag none">วันที่ ' + x.n + '/5</span>') + '</td><td class="ai2-name"><button class="ag-clip" title="ดูคลิป: ' + esc(c.name) + '" onclick="angelV2.clip(\'chat\',' + xi + ')">' + esc(c.name) + '</button><span class="c2-dim ai2-sm">' + esc(c.disp) + '</span></td>' +
+        h += '<tr><td>' + (g ? gtag(g[0]) : '') + (x.done ? '' : '<span class="ai2-tag none">วันที่ ' + x.n + '/5</span>') + '</td><td class="ai2-name"><button class="ag-clip" title="ดูคลิป: ' + esc(c.name) + '" onclick="angelV2.clip(\'chat\',' + xi + ')">' + esc(c.name) + '</button><span class="c2-dim ai2-sm">' + esc(c.disp) + '</span>' + (x.dups && x.dups.length ? '<span class="ag-dup" title="' + esc(x.dups.map(function (d) { return d.c.name; }).join('\n')) + '">ซ้ำอีก ' + x.dups.length + ' แคมเปญ · นับชิ้นเดียว</span>' : '') + '</td>' +
           '<td><b>' + esc(c.prod) + '</b><div class="c2-dim ai2-sm">' + esc(c.page) + '</div><span class="ag-mgt' + (c.mgr === 'ไม่ระบุ' ? ' none' : '') + '">' + esc(c.mgr) + '</span></td><td class="ai2-nw">' + dl(c.first) + ' – ' + dl(x.end) + '</td>' +
           '<td class="r">' + B(x.s) + '</td><td class="r">' + I(x.ch) + '</td><td class="r"><b>' + B(x.cpc) + '</b></td>' +
           '<td class="ai2-sm">' + (g ? esc(x.rule.name) + ': ≤ ฿' + g[1] + ' · ≥ ' + g[2] + ' คน' : '<span class="c2-dim">' + (x.done ? 'ไม่ผ่าน' : 'ยังไม่ครบ 5 วัน · คนทักยังไม่ถึงขั้นต่ำ') + '</span>') + '</td>' +
@@ -186,7 +202,7 @@
       h += '<div class="c2-scroll"><table class="c2-t ai2-t"><thead><tr><th>เกรด</th><th>แคมเปญ</th><th>สินค้า · เพจ · ผู้ดูแล</th><th>3 วันที่ผ่าน</th><th class="r">งบต่ำสุด/วัน</th><th class="r">ค่าแอด 3 วัน</th><th class="r">ยอดขาย 3 วัน</th><th class="r">ROAS</th><th class="r">ค่าคอม</th></tr></thead><tbody>';
       roas.forEach(function (x, xi) {
         var c = x.c, b = x.b;
-        h += '<tr><td>' + gtag(b.grade[0]) + '</td><td class="ai2-name"><button class="ag-clip" title="ดูคลิป: ' + esc(c.name) + '" onclick="angelV2.clip(\'roas\',' + xi + ')">' + esc(c.name) + '</button><span class="c2-dim ai2-sm">' + esc(c.disp) + '</span></td>' +
+        h += '<tr><td>' + gtag(b.grade[0]) + '</td><td class="ai2-name"><button class="ag-clip" title="ดูคลิป: ' + esc(c.name) + '" onclick="angelV2.clip(\'roas\',' + xi + ')">' + esc(c.name) + '</button><span class="c2-dim ai2-sm">' + esc(c.disp) + '</span>' + (x.dups && x.dups.length ? '<span class="ag-dup" title="' + esc(x.dups.map(function (d) { return d.c.name; }).join('\n')) + '">ซ้ำอีก ' + x.dups.length + ' แคมเปญ · นับชิ้นเดียว</span>' : '') + '</td>' +
           '<td><b>' + esc(c.prod) + '</b><div class="c2-dim ai2-sm">' + esc(c.page) + '</div><span class="ag-mgt' + (c.mgr === 'ไม่ระบุ' ? ' none' : '') + '">' + esc(c.mgr) + '</span></td><td class="ai2-nw">' + dl(b.from) + ' – ' + dl(addD(b.from, 2)) + '</td>' +
           '<td class="r">' + B(b.minS) + '</td><td class="r">' + B(b.s) + '</td><td class="r">' + B(b.v) + '</td><td class="r"><span class="c2-pill g">' + b.ro.toFixed(2) + '</span></td><td class="r"><b class="c2-good">' + B(b.grade[3]) + '</b></td></tr>';
       });
@@ -260,7 +276,7 @@
     var s = document.createElement('style'); s.id = 'agcss';
     s.textContent = [
       '#angelView .ag-g{display:inline-block;min-width:34px;text-align:center;padding:3px 8px;border-radius:99px;font-size:12px;font-weight:700;margin-right:6px}#angelView .ag-g.ap{background:#FEF3C7;color:#92400E}#angelView .ag-g.a{background:#DBEAFE;color:#1D4ED8}#angelView .ag-g.b{background:#E2E8F0;color:#334155}',
-      '#angelView .ag-range{margin-top:6px;font-size:14px;color:#0F172A;background:#EFF6FF;border:1px solid #BFDBFE;border-radius:8px;padding:6px 10px;display:inline-block}#angelView .ag-cut{margin-top:4px;font-size:13px;color:#92400E}',
+      '#angelView .ag-range{margin-top:6px;font-size:14px;color:#0F172A;background:#EFF6FF;border:1px solid #BFDBFE;border-radius:8px;padding:6px 10px;display:inline-block}#angelView .ag-cut{margin-top:4px;font-size:13px;color:#92400E}#angelView .ag-dup{display:inline-block;margin-top:3px;padding:1px 8px;border-radius:99px;background:#FEF3C7;color:#92400E;font-size:11px;font-weight:600}',
       '#angelView .ag-mg{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch}#angelView .ag-mgl{align-self:center;font-size:13px;color:#64748B;margin-right:4px}#angelView .ag-mg button{display:flex;flex-direction:column;align-items:flex-start;gap:1px;border:1px solid #E5E7EB!important;background:#fff!important;border-radius:10px!important;padding:7px 12px!important;cursor:pointer;font:inherit!important;color:#0F172A!important;min-width:92px;text-align:left}#angelView .ag-mg button b{font-size:13px}#angelView .ag-mg button span{font-size:11px;color:#64748B}#angelView .ag-mg button .ag-mgc{color:#15803D;font-weight:600;font-size:12px}#angelView .ag-mg button.on{background:#2563EB!important;border-color:#2563EB!important;color:#fff!important}#angelView .ag-mg button.on span{color:#DBEAFE!important}#angelView .ag-mg button:not(:first-of-type){}#angelView .ag-mgt{display:inline-block;margin-top:3px;padding:1px 8px;border-radius:99px;background:#EEF2FF;color:#4338CA;font-size:11px;font-weight:700}#angelView .ag-mgt.none{background:#F1F5F9;color:#94A3B8;font-weight:500}',
       '#angelView .ag-switch{display:flex;flex-wrap:wrap;gap:10px;align-items:center}#angelView .ag-switch .ai2-q{margin-left:auto}',
       '#angelView .ag-rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-top:14px}#angelView .ag-rules .c2-t{min-width:0;margin-top:6px}',
