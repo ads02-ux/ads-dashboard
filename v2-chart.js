@@ -31,6 +31,11 @@
   }
   function dateList(n, endBack) { var out = []; for (var i = n + endBack - 1; i >= endBack; i--) out.push(dayShift(i)); return out; }
   function sum(dmap, dates) { var a = blank(); dates.forEach(function (d) { var x = dmap[d]; if (x) { a.spend += x.spend; a.rev += x.rev; a.buy += x.buy; a.chat += x.chat; a.imp += x.imp; a.clk += x.clk; } }); return fin(a); }
+  function period(k) {
+    if (k === 'today') return { n: 1, end: 0, btn: 'วันนี้', label: 'วันนี้ถึงตอนนี้' };
+    if (k === 'yday') return { n: 1, end: 1, btn: 'เมื่อวาน', label: 'เมื่อวาน' };
+    k = +k || 14; return { n: k, end: 1, btn: k + ' วัน', label: k + ' วัน ถึงเมื่อวาน' };
+  }
   function minDate() { var m = ''; for (var k in (window.fbDataMap || {})) (fbDataMap[k] || []).forEach(function (r) { if (r.date && (!m || r.date < m)) m = r.date; }); return m; }
 
   /* ---------- กราฟ SVG ---------- */
@@ -89,11 +94,12 @@
   }
 
   /* ---------- หน้า ---------- */
+  var DLBL = 'จากช่วงก่อน';
   function delta(cur, prev, good, fmt) {
     if (prev == null || !isFinite(prev) || prev === 0) return '<span class="c2-dim">ไม่มีช่วงก่อนเทียบ</span>';
     var d = cur - prev, pct = d / Math.abs(prev) * 100, up = d > 0;
     var cls = (good === 'flat' || Math.abs(pct) < 1) ? 'c2-dim' : ((up === (good === 'up')) ? 'c2-good' : 'c2-bad');
-    return '<span class="' + cls + '">' + (up ? '▲' : (d < 0 ? '▼' : '')) + ' ' + (fmt ? fmt(Math.abs(d)) : Math.abs(pct).toFixed(0) + '%') + '</span> <span class="c2-dim">จากช่วงก่อน</span>';
+    return '<span class="' + cls + '">' + (up ? '▲' : (d < 0 ? '▼' : '')) + ' ' + (fmt ? fmt(Math.abs(d)) : Math.abs(pct).toFixed(0) + '%') + '</span> <span class="c2-dim">' + DLBL + '</span>';
   }
   function kpi(l, v, d) { return '<div class="c2-card c2-kpi"><div class="c2-lbl">' + l + '</div><div class="c2-val">' + v + '</div><div class="c2-sub">' + d + '</div></div>'; }
 
@@ -105,32 +111,36 @@
     if (S.p !== 'all' && !selP) S.p = 'all';
     var accs = [];
     (selP ? [selP] : P).forEach(function (p) { accsOf(p).forEach(function (a) { if (accs.indexOf(a) < 0) accs.push(a); }); });
-    var dates = dateList(S.days, 1), prevDates = dateList(S.days, 1 + S.days);
-    var D = daily(accs, prevDates[0], dates[dates.length - 1]);
+    var pr = period(S.days), n0 = pr.n, e0 = pr.end;
+    var dates = dateList(n0, e0), prevDates = dateList(n0, e0 + n0);
+    var cdates = n0 < 7 ? dateList(7, e0) : dates; // กราฟรายวันแสดงอย่างน้อย 7 วัน
+    var D = daily(accs, (cdates[0] < prevDates[0] ? cdates[0] : prevDates[0]), dates[dates.length - 1]);
     var cur = sum(D, dates), md = minDate(), hasPrev = md && md <= prevDates[0];
     var prev = hasPrev ? sum(D, prevDates) : null;
+    DLBL = n0 === 1 ? (e0 === 0 ? 'จากเมื่อวาน' : 'จากวันก่อน') : 'จากช่วงก่อน';
+    var cntPrev = (e0 === 0) ? null : prev; // วันนี้ยังไม่จบวัน: ไม่เทียบยอดรวมกับเมื่อวานทั้งวัน
     var today = daily(accs, dayShift(0), dayShift(0)), td = sum(today, [dayShift(0)]);
 
-    var h = '<div class="c2-head"><div><h1>กราฟ' + (selP ? ' · ' + esc(selP.product) : ' · ทุกสินค้า') + '</h1><div class="c2-subhead">' + dlabel(dates[0]) + ' – ' + dlabel(dates[dates.length - 1]) + ' (' + S.days + ' วัน ถึงเมื่อวาน) · ข้อมูลจาก Facebook · วันนี้ถึงตอนนี้ ค่าแอด ' + K(td.spend) + ' ROAS ' + (td.spend ? td.roas.toFixed(2) : '–') + '</div></div>' +
-      '<div class="c2-seg" role="group" aria-label="ช่วงเวลา">' + [7, 14, 30].map(function (n) { return '<button class="' + (S.days === n ? 'on' : '') + '" aria-pressed="' + (S.days === n) + '" onclick="chartV2.days(' + n + ')">' + n + ' วัน</button>'; }).join('') + '</div></div>';
+    var h = '<div class="c2-head"><div><h1>กราฟ' + (selP ? ' · ' + esc(selP.product) : ' · ทุกสินค้า') + '</h1><div class="c2-subhead">' + dlabel(dates[0]) + (n0 === 1 ? '' : ' – ' + dlabel(dates[dates.length - 1])) + ' (' + pr.label + ') · ข้อมูลจาก Facebook' + (e0 === 0 ? ' · ยังไม่จบวัน ยอดรวมจึงไม่เทียบกับเมื่อวาน · กราฟแสดง 7 วันล่าสุด' : (n0 < 7 ? ' · กราฟแสดง 7 วันถึง ' + dlabel(dates[dates.length - 1]) : ' · วันนี้ถึงตอนนี้ ค่าแอด ' + K(td.spend) + ' ROAS ' + (td.spend ? td.roas.toFixed(2) : '–'))) + '</div></div>' +
+      '<div class="c2-seg" role="group" aria-label="ช่วงเวลา">' + ['today', 'yday', 3, 7, 14, 30].map(function (n) { return '<button class="' + (S.days === n ? 'on' : '') + '" aria-pressed="' + (S.days === n) + '" onclick="chartV2.days(' + (typeof n === 'string' ? "'" + n + "'" : n) + ')">' + period(n).btn + '</button>'; }).join('') + '</div></div>';
 
     h += '<div class="c2-tabs"><button class="' + (S.p === 'all' ? 'on' : '') + '" onclick="chartV2.p(\'all\')">ทุกสินค้า</button>' +
       P.map(function (p, i) { var on = S.p === p.product; return '<button class="' + (on ? 'on' : '') + '" onclick="chartV2.p(' + esc(JSON.stringify(p.product)) + ')"><i style="background:' + (on ? '#fff' : PAL[i % PAL.length]) + '"></i>' + esc(p.product) + '</button>'; }).join('') + '</div>';
 
     h += '<div class="c2-kpis">' +
-      kpi('ค่าแอด', K(cur.spend), prev ? delta(cur.spend, prev.spend, 'flat') : delta(0, null)) +
-      kpi('ยอดขาย (FB)', K(cur.rev), prev ? delta(cur.rev, prev.rev, 'up') : delta(0, null)) +
+      kpi('ค่าแอด', K(cur.spend), cntPrev ? delta(cur.spend, cntPrev.spend, 'flat') : delta(0, null)) +
+      kpi('ยอดขาย (FB)', K(cur.rev), cntPrev ? delta(cur.rev, cntPrev.rev, 'up') : delta(0, null)) +
       kpi('ROAS', cur.spend ? '<span class="' + (cur.roas >= 1.3 ? 'c2-good' : cur.roas >= 1 ? 'c2-warn' : 'c2-bad') + '">' + cur.roas.toFixed(2) + '</span>' : '–', prev ? delta(cur.roas, prev.roas, 'up', function (x) { return x.toFixed(2); }) : delta(0, null)) +
-      kpi('ซื้อ', I(cur.buy), prev ? delta(cur.buy, prev.buy, 'up') : delta(0, null)) +
+      kpi('ซื้อ', I(cur.buy), cntPrev ? delta(cur.buy, cntPrev.buy, 'up') : delta(0, null)) +
       kpi('ต้นทุนต่อซื้อ', cur.buy ? '<span class="' + (cur.cpa <= 200 ? 'c2-good' : 'c2-bad') + '">' + B(cur.cpa) + '</span>' : '–', prev && prev.cpa ? delta(cur.cpa, prev.cpa, 'down', B) : delta(0, null)) +
       kpi('ทัก · ต้นทุนต่อทัก', I(cur.chat) + ' <small>· ' + (cur.chat ? B(cur.cpc) : '–') + '</small>', prev && prev.cpc ? delta(cur.cpc, prev.cpc, 'down', B) : delta(0, null)) +
       '</div>';
 
     CHARTS = {};
     h += '<div class="c2-grid">' +
-      '<div class="c2-card c2-pad c2-wide"><h2>ค่าแอดและ ROAS รายวัน</h2>' + size(1100, 300) + chartSpendRoas('sr', dates, D) + '</div>' +
-      '<div class="c2-card c2-pad"><h2>ต้นทุนต่อซื้อ / ต่อทัก</h2>' + size(560, 290) + chartCost('cost', dates, D) + '</div>' +
-      '<div class="c2-card c2-pad"><h2>ทักและซื้อรายวัน</h2>' + chartChatBuy('cb', dates, D) + '</div>' +
+      '<div class="c2-card c2-pad c2-wide"><h2>ค่าแอดและ ROAS รายวัน</h2>' + size(1100, 300) + chartSpendRoas('sr', cdates, D) + '</div>' +
+      '<div class="c2-card c2-pad"><h2>ต้นทุนต่อซื้อ / ต่อทัก</h2>' + size(560, 290) + chartCost('cost', cdates, D) + '</div>' +
+      '<div class="c2-card c2-pad"><h2>ทักและซื้อรายวัน</h2>' + chartChatBuy('cb', cdates, D) + '</div>' +
       '</div>';
 
     // เทียบสินค้า
