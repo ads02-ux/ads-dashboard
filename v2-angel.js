@@ -23,7 +23,7 @@
   function I(n) { return Math.round(n || 0).toLocaleString('en-US'); }
   var THM = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
   function dl(s) { var p = s.split('-'); return +p[2] + ' ' + THM[+p[1] - 1]; }
-  function mLabel(m) { var p = m.split('-'); return THM[+p[1] - 1] + ' ' + (+p[0] + 543); }
+  function mLabel(m) { var r = mRange(m), a = r[0].split('-'), b = r[1].split('-'); return (+a[2]) + ' ' + THM[+a[1] - 1] + ' – ' + (+b[2]) + ' ' + THM[+b[1] - 1] + ' ' + String(+b[0] + 543).slice(2); }
   function prods() { return window.FB_HIERARCHY || []; }
   var MG_ORDER = ['MOS', 'DOM', 'NUNE', 'JAM', 'BALL', 'TER', 'LINK'];
   function mgrOf(v) { v = String(v == null ? '' : v).trim(); return !v || v === '-' ? 'ไม่ระบุ' : v.toUpperCase(); }
@@ -35,8 +35,9 @@
   }
   function ruleOf(prod) { for (var k in CHAT_RULES) if (CHAT_RULES[k].prods.indexOf(prod) >= 0) return CHAT_RULES[k]; return null; }
   function today() { return ymd(new Date()); }
-  function monthsBack(n) { var out = [], d = new Date(); d.setDate(1); for (var i = 0; i < n; i++) { out.push(d.getFullYear() + '-' + pad(d.getMonth() + 1)); d.setMonth(d.getMonth() - 1); } return out; }
-  function mRange(m) { var a = m + '-01', d = new Date(a + 'T00:00:00'); d.setMonth(d.getMonth() + 1); d.setDate(0); return [a, ymd(d)]; }
+  function monthsBack(n) { var out = [], d = new Date(); if (d.getDate() > 25) { d.setDate(28); d.setMonth(d.getMonth() + 1); } d.setDate(1); for (var i = 0; i < n; i++) { out.push(d.getFullYear() + '-' + pad(d.getMonth() + 1)); d.setMonth(d.getMonth() - 1); } return out; }
+  // รอบค่าคอม: 26 ของเดือนก่อน – 25 ของเดือน (คีย์ = เดือนที่จบรอบ)
+  function mRange(m) { var p = m.split('-'); return [ymd(new Date(+p[0], +p[1] - 2, 26)), ymd(new Date(+p[0], +p[1] - 1, 25))]; }
 
   /* ---------- ข้อมูล: เดือนปัจจุบันใช้ fbDataMap (30 วัน) · เดือนก่อนดึงจาก Facebook ---------- */
   function fromMap(from) {
@@ -136,8 +137,8 @@
     var R = compute(S.m), P = prods(), h = '<div class="c2-wrap ai2 ag">';
     var MR = mRange(S.m), toD = MR[1] < today() ? MR[1] : today();
     h += '<div class="c2-head"><div><h1>คัดนางฟ้า</h1><div class="c2-subhead">คัดคอนเทนต์ประจำเดือนด้วย 2 เกณฑ์ที่แยกกัน · ข้อมูลจาก Facebook</div>' +
-      '<div class="ag-range">ช่วงที่คัด: <b>' + dl(MR[0]) + ' ' + (+MR[0].slice(0, 4) + 543) + ' – ' + dl(toD) + ' ' + (+toD.slice(0, 4) + 543) + '</b>' + (toD < MR[1] ? ' <span class="c2-dim">(ถึงวันนี้ · เดือนยังไม่จบ)</span>' : '') + ' · ดึงข้อมูลเมื่อ ' + new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) + '<div class="ag-cut">นับเฉพาะคอนเทนต์ที่<b>วันที่แรกในชื่อแคมเปญ ตั้งแต่ ' + (function (s) { var p = s.split('-'); return +p[2] + '/' + (+p[1]) + '/' + String(+p[0] + 543).slice(2); })(cutOf(S.m)) + '</b> เป็นต้นไป' + (R && (R.ex.old || R.ex.none) ? ' <span class="c2-dim">· ไม่นับ ' + R.ex.old + ' ชิ้นที่วันที่ในชื่อเก่ากว่า · ' + R.ex.none + ' ชิ้นที่ไม่มีวันที่ในชื่อ</span>' : '') + '</div></div></div>' +
-      '<div class="c2-seg" role="group" aria-label="เดือน">' + MS.map(function (m) { return '<button class="' + (S.m === m ? 'on' : '') + '" onclick="angelV2.set(\'m\',\'' + m + '\')">' + mLabel(m) + '</button>'; }).join('') + '</div></div>';
+      '<div class="ag-range">ช่วงที่คัด: <b>' + dl(MR[0]) + ' ' + (+MR[0].slice(0, 4) + 543) + ' – ' + dl(toD) + ' ' + (+toD.slice(0, 4) + 543) + '</b>' + (toD < MR[1] ? ' <span class="c2-dim">(ถึงวันนี้ · รอบยังไม่จบ)</span>' : '') + ' · ดึงข้อมูลเมื่อ ' + new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) + '<div class="ag-cut">นับเฉพาะคอนเทนต์ที่<b>วันที่แรกในชื่อแคมเปญ ตั้งแต่ ' + (function (s) { var p = s.split('-'); return +p[2] + '/' + (+p[1]) + '/' + String(+p[0] + 543).slice(2); })(cutOf(S.m)) + '</b> เป็นต้นไป' + (R && (R.ex.old || R.ex.none) ? ' <span class="c2-dim">· ไม่นับ ' + R.ex.old + ' ชิ้นที่วันที่ในชื่อเก่ากว่า · ' + R.ex.none + ' ชิ้นที่ไม่มีวันที่ในชื่อ</span>' : '') + '</div></div></div>' +
+      '<div class="c2-seg" role="group" aria-label="รอบ">' + MS.map(function (m) { return '<button class="' + (S.m === m ? 'on' : '') + '" onclick="angelV2.set(\'m\',\'' + m + '\')">' + mLabel(m) + '</button>'; }).join('') + '</div></div>';
     h += '<div class="c2-tabs"><button class="' + (S.p < 0 ? 'on' : '') + '" onclick="angelV2.set(\'p\',-1)">ทุกสินค้า</button>' + P.map(function (p, i) { var on = S.p === i; return '<button class="' + (on ? 'on' : '') + '" onclick="angelV2.set(\'p\',' + i + ')"><i style="background:' + (on ? '#fff' : PAL[i % PAL.length]) + '"></i>' + esc(p.product) + '</button>'; }).join('') + '</div>';
     if (!R) {
       var L = LOADING[S.m] || { done: 0, total: 0 };
