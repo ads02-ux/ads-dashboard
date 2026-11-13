@@ -268,6 +268,22 @@
     var p = document.getElementById('fbV2DrawerInner'); if (p) p.scrollTop = 0;
   }
 
+  // ปิด/เปิดแคมเปญแล้ว ให้บันทึกลงช่อง ยอดเก่า → ยอดใหม่ ของวันนี้ด้วย
+  function noteToggle(acc, name, wasOn) {
+    var want = wasOn ? 'PAUSED' : 'ACTIVE', ci = (window.fbCampaignsMap[acc] || {})[name];
+    if (!ci || ci.status !== want || typeof _fbNotesSave !== 'function') return;
+    var T = _fbNotesDateKey(), cur = _fbNotesGet(T, name) || {};
+    var prev = '';
+    if (cur['new'] && cur['new'] !== 'ปิด') prev = cur['new'];
+    else if (cur.old && cur.old !== 'ปิด') prev = cur.old;
+    else { var lb = _fbNotesLookback(name, 'new', T); if (lb && lb.val && lb.val !== 'ปิด') prev = lb.val; }
+    if (!prev && ci.daily_budget) prev = String(Math.round(ci.daily_budget));
+    var sk = window._fbNotesSkipCheck; window._fbNotesSkipCheck = true;
+    try {
+      if (wasOn) { _fbNotesSave(T, name, 'old', prev || cur.old || ''); _fbNotesSave(T, name, 'new', 'ปิด'); }
+      else if (cur['new'] === 'ปิด' || !cur['new']) { _fbNotesSave(T, name, 'old', 'ปิด'); _fbNotesSave(T, name, 'new', prev || ''); }
+    } finally { window._fbNotesSkipCheck = sk; }
+  }
   window.fbV2 = {
     open: open, render: render,
     go: function (l) { if (l === 'root') { S.p = S.pg = S.h = S.acc = null; } if (l === 'product') { S.pg = S.h = S.acc = null; } if (l === 'page') { S.h = S.acc = null; } S.lvl = l; render(); window.scrollTo(0, 0); },
@@ -286,7 +302,7 @@
     creatives: function () { try { fbAccount = S.acc; fbLoadAdCreatives(D.id); } catch (e) { alert(e.message); } },
     oldDetail: function () { fbV2.dclose(); try { fbAccount = S.acc; fbOpenCampDetail(D.name, D.id); } catch (e) { alert(e.message); } },
     budget: function (name, id) { try { fbAccount = S.acc; fbUpdateBudget(name, id); } catch (e) { alert(e.message); } },
-    toggle: function (name, id, on) { try { fbAccount = S.acc; Promise.resolve(fbToggleStatus(name, id, on)).then(function () { setTimeout(function () { render(); if (document.getElementById('fbV2Drawer') && document.getElementById('fbV2Drawer').style.display !== 'none') renderDrawer(); }, 1500); }); } catch (e) { alert(e.message); } },
+    toggle: function (name, id, on) { try { fbAccount = S.acc; var acc0 = S.acc; Promise.resolve(fbToggleStatus(name, id, on)).then(function () { try { noteToggle(acc0, name, on); } catch (e) {} setTimeout(function () { render(); if (document.getElementById('fbV2Drawer') && document.getElementById('fbV2Drawer').style.display !== 'none') renderDrawer(); }, 1500); }); } catch (e) { alert(e.message); } },
     old: function () {
       var sb = document.getElementById('sb-fb');
       try { switchView('fb', sb); fbNavProduct = S.p; fbNavPage = S.pg; fbNavHolder = S.h; fbAccount = S.acc; renderFB(); } catch (e) { alert(e.message); }
