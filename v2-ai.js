@@ -177,6 +177,8 @@
     chat: function (k, v) { CH[k] = v; if (k === 'sup') CH.p = ''; try { localStorage.setItem('rb_chat_v2', JSON.stringify(CH)); } catch (e) {} renderChat(); },
     bm: function (k, v) { BM[k] = v; if (k === 'mode' || k === 'p' || k === 'per') BM.tier = ''; try { localStorage.setItem('rb_bm_v2', JSON.stringify({ mode: BM.mode, per: BM.per, p: BM.p })); } catch (e) {} renderBench(); },
     bmq: function (v) { BM.q = v; clearTimeout(qT); qT = setTimeout(function () { BM._focus = true; renderBench(); }, 250); },
+    al: function (k, v) { AL[k] = v; renderAlert(); },
+    alq: function (v) { AL.q = v; clearTimeout(qT); qT = setTimeout(function () { AL._focus = true; renderAlert(); }, 250); },
     cr: function (k, v) { CR[k] = v; try { localStorage.setItem('rb_cr_v2', JSON.stringify(CR)); } catch (e) {} renderRank(); }
   };
 
@@ -444,13 +446,96 @@
     el.innerHTML = h;
   }
 
+  /* ================= Alert การแจ้งเตือน ================= */
+  var AL = { lvl: '', q: '' };
+  function renderAlert(el) {
+    el = el || document.getElementById('alertView'); if (!el) return;
+    if (!window.FB_HIERARCHY || !window.fbDataMap) { el.innerHTML = '<div class="c2-wrap ai2"><div class="c2-card c2-empty">กำลังโหลดข้อมูล…</div></div>'; return; }
+    loadAll();
+    if (window._alertFilterProd === undefined) window._alertFilterProd = -1;
+    var sp = window._alertFilterProd, P = prods();
+    var cfgOf = function (pi) { try { return window._getCfgForProd(pi); } catch (e) { return { roasWarn: 1.5, roasCrit: 1, roasScale: 2, ctrWarn: 0.5, spendMax: 10000, newCampDays: 2 }; } };
+    var cfg = cfgOf(sp), hasOwn = false; try { hasOwn = sp >= 0 && !!localStorage.getItem('rb_alert_cfg_P' + sp); } catch (e) {}
+    var T = dayShift(0), Yd = dayShift(1), accs = accList(sp), loaded = 0, cm = {};
+    var pmap = {}; P.forEach(function (p, pi) { (p.pages || []).forEach(function (pg) { (pg.accounts || []).forEach(function (hh) { (hh.adAccounts || []).forEach(function (a) { if (!pmap[a]) pmap[a] = { pi: pi, pg: pg.name }; }); }); }); });
+    accs.forEach(function (acc) {
+      if (window.fbLoadedMap && window.fbLoadedMap[acc]) loaded++;
+      ((window.fbDataMap || {})[acc] || []).forEach(function (r) {
+        if (!r.date) return;
+        var k = acc + '|' + (r.campaign || ''), c = cm[k] || (cm[k] = { acc: acc, name: r.campaign || '(ไม่มีชื่อ)', t: blank(), y: blank(), d3: blank(), d7: blank(), all: blank(), first: '' });
+        if (num(r.spend) > 0 && (!c.first || r.date < c.first)) c.first = r.date;
+        addRow(c.all, r);
+        if (r.date === T) addRow(c.t, r);
+        if (r.date === Yd) addRow(c.y, r);
+        if (inP(r.date, '3')) addRow(c.d3, r);
+        if (inP(r.date, '7')) addRow(c.d7, r);
+      });
+    });
+    var list = [];
+    Object.keys(cm).forEach(function (k) {
+      var c = cm[k]; ['t', 'y', 'd3', 'd7', 'all'].forEach(function (x) { fin(c[x]); c[x].ctr = c[x].imp ? c[x].clk / c[x].imp * 100 : 0; });
+      if (!c.t.spend && !c.y.spend) return;
+      var pm = pmap[c.acc] || { pi: -1, pg: '' }, g = cfgOf(pm.pi), is = [], lv = 0, sc = 0;
+      c.pi = pm.pi; c.pg = pm.pg;
+      function add(l, txt) { is.push([l, txt]); if (l === 'bad') lv = Math.max(lv, 3); else if (l === 'warn') lv = Math.max(lv, 2); else if (l === 'info') lv = Math.max(lv, 1); }
+      var age = c.first ? Math.round((new Date(T) - new Date(c.first)) / 86400000) : 0;
+      if (age >= g.newCampDays && age <= 14 && c.all.spend > 0 && !c.all.rev) add('bad', 'วิ่ง ' + age + ' วัน ยังไม่มียอดขาย (ใช้ไป ' + B(c.all.spend) + ') → ปิดหรือเปลี่ยนครีเอทีฟ');
+      if (c.d7.spend && c.d7.rev && c.d7.roas < g.roasCrit) add('bad', 'ROAS 7 วัน ' + c.d7.roas.toFixed(2));
+      else if (c.d7.spend && c.d7.rev && c.d7.roas < g.roasWarn) add('warn', 'ROAS 7 วัน ' + c.d7.roas.toFixed(2));
+      if (c.d3.spend && c.d3.rev && c.d3.roas < g.roasCrit) add('bad', 'ROAS 3 วัน ' + c.d3.roas.toFixed(2));
+      else if (c.d3.spend && c.d3.rev && c.d3.roas < g.roasWarn) add('warn', 'ROAS 3 วัน ' + c.d3.roas.toFixed(2));
+      if (c.t.spend >= 300 && c.t.roas < g.roasCrit) add(c.t.rev ? 'warn' : 'info', 'วันนี้ ROAS ' + c.t.roas.toFixed(2) + ' (ใช้ ' + B(c.t.spend) + ')');
+      if (c.t.spend > 500 && !c.t.buy) add('warn', 'วันนี้ใช้ ' + B(c.t.spend) + ' ยังไม่มีคนซื้อ');
+      if (c.t.imp > 1000 && c.t.ctr < g.ctrWarn) add('warn', 'CTR ' + c.t.ctr.toFixed(2) + '% ต่ำกว่า ' + g.ctrWarn + '%');
+      if (c.y.spend > g.spendMax) add('warn', 'เมื่อวานใช้ ' + B(c.y.spend) + ' เกินเพดาน ' + B(g.spendMax));
+      if (c.y.spend && !c.t.spend && new Date().getHours() >= 10) add('info', 'เมื่อวานใช้ ' + B(c.y.spend) + ' แต่วันนี้ยังไม่ใช้งบ — เช็กว่าแคมเปญยังเปิดอยู่');
+      var r3 = c.d3.roas, r7 = c.d7.roas;
+      if (c.d3.buy >= 2 && c.d3.rev > 0 && c.d3.cpa <= 200) sc = 'ต้นทุน/ซื้อ 3 วัน ' + B(c.d3.cpa);
+      else if (c.d3.spend && r3 >= g.roasScale && (!c.d7.spend || r7 >= g.roasScale)) sc = 'ROAS 3 วัน ' + r3.toFixed(2) + ' · 7 วัน ' + r7.toFixed(2);
+      c.issues = is; c.lv = lv; c.scale = lv < 3 ? sc : '';
+      c.k = lv === 3 ? 'bad' : lv === 2 ? 'warn' : c.scale ? 'scale' : lv === 1 ? 'info' : 'ok';
+      list.push(c);
+    });
+    var cnt = { bad: 0, warn: 0, scale: 0, info: 0, ok: 0 }; list.forEach(function (c) { cnt[c.k]++; });
+    var rows = list.filter(function (c) { return AL.lvl ? c.k === AL.lvl : c.k !== 'ok'; });
+    if (AL.q) { var q = AL.q.toLowerCase(); rows = rows.filter(function (c) { return (c.name + ' ' + c.acc + ' ' + c.pg).toLowerCase().indexOf(q) >= 0; }); }
+    var ORD = { bad: 0, warn: 1, scale: 2, info: 3, ok: 4 };
+    rows.sort(function (a, b) { return ORD[a.k] - ORD[b.k] || b.d3.spend - a.d3.spend; });
+    var h = '<div class="c2-wrap ai2">';
+    h += '<div class="c2-head"><div><h1>Alert การแจ้งเตือน</h1><div class="c2-subhead">สแกนทุกแคมเปญที่ใช้งบวันนี้หรือเมื่อวาน · 3 วัน / 7 วัน = ถึงเมื่อวาน · สแกนเมื่อ ' + new Date().toLocaleTimeString('th-TH') + '</div></div><button class="ai2-btn" onclick="_renderAlert()">สแกนใหม่</button></div>';
+    h += '<div class="c2-tabs"><button class="' + (sp < 0 ? 'on' : '') + '" onclick="window._alertFilterProd=-1;_renderAlert()">ทุกสินค้า</button>' + P.map(function (p, i) { var on = sp === i; return '<button class="' + (on ? 'on' : '') + '" onclick="window._alertFilterProd=' + i + ';_renderAlert()"><i style="background:' + (on ? '#fff' : PAL[i % PAL.length]) + '"></i>' + esc(p.product) + '</button>'; }).join('') + '</div>';
+    if (loaded < accs.length) h += '<div class="ai2-banner warn">กำลังโหลดข้อมูล ' + loaded + '/' + accs.length + ' บัญชี… <button class="c2-link" onclick="_renderAlert()">สแกนใหม่</button></div>';
+    var TL = [['bad', 'วิกฤต', 'ต้องแก้ทันที', '#B91C1C'], ['warn', 'เตือน', 'เฝ้าดู / ปรับ', '#B45309'], ['scale', 'เพิ่มงบได้', 'ต้นทุน/ซื้อ ≤ ฿200 หรือ ROAS สูง', '#1D4ED8'], ['info', 'ข้อมูล', 'หยุดใช้งบ / วันนี้ยังน้อย', '#475569'], ['ok', 'ปกติ', 'ไม่มีอะไรต้องทำ', '#15803D']];
+    h += '<div class="c2-kpis">' + TL.map(function (x) { return '<button class="c2-card c2-kpi ai2-tier' + (AL.lvl === x[0] ? ' on' : '') + '" onclick="aiV2.al(\'lvl\',\'' + (AL.lvl === x[0] ? '' : x[0]) + '\')"><div class="c2-lbl"><i class="c2-dot" style="background:' + x[3] + '"></i>' + x[1] + '</div><div class="c2-val" style="color:' + x[3] + '">' + I(cnt[x[0]]) + ' <small>แคมเปญ</small></div><div class="c2-sub c2-dim">' + x[2] + '</div></button>'; }).join('') + '</div>';
+    var tag = { bad: ['close', 'วิกฤต'], warn: ['down', 'เตือน'], scale: ['up', 'เพิ่มงบได้'], info: ['none', 'ข้อมูล'], ok: ['keep', 'ปกติ'] };
+    h += '<div class="c2-card c2-pad"><div class="c2-h2row"><h2>' + (AL.lvl ? tag[AL.lvl][1] + ' ' : 'ต้องดู ') + '(' + I(rows.length) + ' แคมเปญ)' + (AL.lvl ? ' <button class="c2-link ai2-x" onclick="aiV2.al(\'lvl\',\'\')">ดูทั้งหมด ✕</button>' : '') + '</h2><input class="ai2-q" type="search" placeholder="ค้นหาแคมเปญ / บัญชี / เพจ" value="' + esc(AL.q) + '" oninput="aiV2.alq(this.value)"></div>';
+    h += '<div class="c2-scroll"><table class="c2-t ai2-t"><thead><tr><th>ระดับ</th><th>แคมเปญ</th><th>สิ่งที่พบ</th><th class="r">วันนี้</th><th class="r">3 วัน</th><th class="r">7 วัน</th><th class="r">ค่าแอดวันนี้</th><th class="r">ต้นทุน/ซื้อ 3 วัน</th></tr></thead><tbody>';
+    rows.slice(0, 300).forEach(function (c) {
+      var iss = c.issues.map(function (x) { return '<li class="' + x[0] + '">' + esc(x[1]) + '</li>'; }).join('') + (c.scale ? '<li class="good">' + esc('เพิ่มงบได้: ' + c.scale) + '</li>' : '');
+      h += '<tr class="ai2-' + (c.k === 'bad' ? 'close' : c.k) + '"><td><span class="ai2-tag ' + tag[c.k][0] + '">' + tag[c.k][1] + '</span></td>' +
+        '<td class="ai2-name"><div title="' + esc(c.name) + '">' + esc(c.name) + '</div><span class="c2-dim ai2-sm">' + esc(c.pi >= 0 ? P[c.pi].product : '') + ' · ' + esc(c.pg) + ' · ' + esc(dispOf(c.acc)) + '</span></td>' +
+        '<td><ul class="ai2-iss">' + (iss || '<li class="c2-dim">–</li>') + '</ul></td>' +
+        '<td class="r">' + pill(c.t.roas, c.t.spend > 0) + '</td><td class="r">' + pill(c.d3.roas, c.d3.spend > 0) + '</td><td class="r">' + pill(c.d7.roas, c.d7.spend > 0) + '</td>' +
+        '<td class="r">' + (c.t.spend ? B(c.t.spend) : '<span class="c2-dim">–</span>') + '</td><td class="r ' + (c.d3.buy && c.d3.rev && c.d3.cpa <= 200 ? 'c2-good' : '') + '">' + (c.d3.buy ? B(c.d3.cpa) : '<span class="c2-dim">–</span>') + '</td></tr>';
+    });
+    if (!rows.length) h += '<tr><td colspan="8" class="c2-dim">' + (AL.lvl === 'ok' || !list.length ? 'ไม่มีแคมเปญในกลุ่มนี้' : 'ไม่มีอะไรต้องแก้ ทุกแคมเปญอยู่ในเกณฑ์') + '</td></tr>';
+    h += '</tbody></table></div>' + (rows.length > 300 ? '<div class="c2-note">แสดง 300 จาก ' + I(rows.length) + ' — เลือกสินค้าหรือค้นหาเพื่อแคบลง</div>' : '') + '</div>';
+    var F = [['roasWarn', 'ROAS เตือน', '0.1'], ['roasCrit', 'ROAS วิกฤต', '0.1'], ['roasScale', 'ROAS เพิ่มงบ', '0.1'], ['ctrWarn', 'CTR ต่ำสุด (%)', '0.1'], ['spendMax', 'เพดานงบต่อวัน (฿)', '1000'], ['newCampDays', 'ตัวใหม่ไม่มียอดขายกี่วันถึงเตือน', '1']];
+    h += '<details class="c2-card ai2-cfg"' + (hasOwn ? ' open' : '') + '><summary><b>เกณฑ์การแจ้งเตือน · ' + (sp >= 0 ? esc(P[sp].product) + (hasOwn ? ' <span class="c2-good">(ตั้งเฉพาะสินค้านี้)</span>' : ' <span class="c2-dim">(ใช้ค่าเริ่มต้น)</span>') : 'ค่าเริ่มต้นทุกสินค้า') + '</b><span class="c2-dim">ROAS วิกฤต &lt; ' + cfg.roasCrit + ' · เตือน &lt; ' + cfg.roasWarn + ' · เพิ่มงบ ≥ ' + cfg.roasScale + '</span></summary>' +
+      '<div class="ai2-form">' + F.map(function (f) { return '<label>' + f[1] + '<input id="al-' + f[0] + '" type="number" step="' + f[2] + '" value="' + esc(cfg[f[0]]) + '"></label>'; }).join('') +
+      '<button class="ai2-btn pri" onclick="_alertSaveCfg()">บันทึกเกณฑ์</button>' + (sp >= 0 && hasOwn ? '<button class="ai2-btn" onclick="_alertResetProdCfg(' + sp + ')">กลับไปใช้ค่าเริ่มต้น</button>' : '') + '</div>' +
+      '<div class="c2-note">เกณฑ์เก็บไว้ในเครื่องนี้ (ไม่แชร์ข้ามเครื่อง) · เลือกสินค้าก่อนเพื่อตั้งเกณฑ์เฉพาะสินค้านั้น · "เพิ่มงบได้" ใช้กติกาทีมเรื่องต้นทุน/ซื้อ ≤ ฿200 ด้วย</div></details>';
+    h += '</div>';
+    el.innerHTML = h;
+    var qi = el.querySelector('.ai2-q'); if (qi && AL._focus) { qi.focus(); qi.setSelectionRange(qi.value.length, qi.value.length); AL._focus = false; }
+  }
   function css() {
     if (document.getElementById('ai2css')) return;
     var s = document.createElement('style'); s.id = 'ai2css';
     // ใช้ id ซ้ำ 2 ครั้งเพื่อให้ชนะกฎของ v2-skin.js ที่คลุมหน้าเดิม
-    function sc(x) { return x.split(',').map(function (y) { return ['adsaiView', 'aiView', 'chatPageView', 'benchmarkView', 'chartrankView'].map(function (v) { return '#' + v + '#' + v + ' .ai2 ' + y; }).join(','); }).join(','); }
+    function sc(x) { return x.split(',').map(function (y) { return ['adsaiView', 'aiView', 'chatPageView', 'benchmarkView', 'chartrankView', 'alertView'].map(function (v) { return '#' + v + '#' + v + ' .ai2 ' + y; }).join(','); }).join(','); }
     s.textContent = [
-      '#adsaiView#adsaiView,#aiView#aiView,#chartrankView#chartrankView,#chatPageView#chatPageView,#chatPageView#chatPageView .page,#benchmarkView#benchmarkView,#benchmarkView#benchmarkView .page{padding:0!important;background:#F5F6FA!important;max-width:none!important}',
+      '#adsaiView#adsaiView,#aiView#aiView,#chartrankView#chartrankView,#chatPageView#chatPageView,#chatPageView#chatPageView .page,#benchmarkView#benchmarkView,#benchmarkView#benchmarkView .page,#alertView#alertView{padding:0!important;background:#F5F6FA!important;max-width:none!important}',
       sc('button') + '{border-radius:10px!important}',
       sc('.c2-tabs button') + '{border-radius:99px!important}', sc('.c2-seg button') + '{border-radius:7px!important}',
       sc('.c2-link,.ai2-acc') + '{border-radius:0!important}', sc('.ai2-chip') + '{border-radius:99px!important}',
@@ -478,6 +563,8 @@
       '.ai2-bars{display:flex;flex-direction:column;gap:7px}.ai2-bars>div{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) 108px;gap:10px;align-items:center;font-size:12px}.ai2-bars span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ai2-bars>div>div{height:8px;background:#EEF1F6;border-radius:99px;overflow:hidden}.ai2-bars i{display:block;height:100%;border-radius:99px}.ai2-bars em{font-style:normal;text-align:right;color:#475569;white-space:nowrap}',
       '.ai2-ctl{gap:14px}.ai2-ctl small{display:block;font-size:12px;color:#64748B;margin-bottom:6px}.ai2-ctlrow{display:flex;flex-wrap:wrap;gap:24px}',
       '.ai2-rk{display:inline-flex;width:26px;height:26px;border-radius:99px;align-items:center;justify-content:center;background:#F1F5F9;color:#475569;font-size:12px}.ai2-rk.t1{background:#FEF3C7;color:#92400E}.ai2-rk.t2{background:#E2E8F0;color:#334155}.ai2-rk.t3{background:#FFEDD5;color:#9A3412}.ai2-rank{min-width:1000px}',
+      '.ai2-iss{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:3px;font-size:12px;min-width:260px}.ai2-iss li{padding-left:12px;position:relative}.ai2-iss li:before{content:"";position:absolute;left:0;top:6px;width:6px;height:6px;border-radius:99px;background:#94A3B8}.ai2-iss li.bad{color:#B91C1C}.ai2-iss li.bad:before{background:#EF4444}.ai2-iss li.warn{color:#92400E}.ai2-iss li.warn:before{background:#F59E0B}.ai2-iss li.good{color:#15803D}.ai2-iss li.good:before{background:#16A34A}',
+      '.ai2-cfg{padding:14px 20px}.ai2-cfg summary{cursor:pointer;display:flex;flex-wrap:wrap;gap:10px;align-items:baseline;font-size:14px}.ai2-cfg .ai2-form{margin-top:14px}.ai2-cfg .c2-note{margin-top:10px}.ai2-t tr.ai2-warn td{background:#FFFDF5}',
       '@media (max-width:640px){.ai2-q{min-width:0;width:100%}.ai2-sort{margin-left:0}}'
     ].join('\n');
     document.head.appendChild(s);
@@ -493,7 +580,9 @@
     window.chatPageRender = safe(function () { renderChat(); }, 'chatPageInner');
     window.renderBenchmark = safe(function () { renderBench(); }, 'benchmarkViewInner');
     window._renderChartRank = safe(renderRank, 'chartrankView');
-    [['chatPageView', window.chatPageRender], ['benchmarkView', window.renderBenchmark], ['chartrankView', window._renderChartRank]].forEach(function (x) { var v = document.getElementById(x[0]); if (v && v.style.display !== 'none' && v.offsetParent) x[1](); });
+    window._renderAlert = safe(renderAlert, 'alertView');
+    window._alertRefresh = function () { window._renderAlert(); };
+    [['chatPageView', window.chatPageRender], ['benchmarkView', window.renderBenchmark], ['chartrankView', window._renderChartRank], ['alertView', window._renderAlert]].forEach(function (x) { var v = document.getElementById(x[0]); if (v && v.style.display !== 'none' && v.offsetParent) x[1](); });
     ['adsaiView', 'aiView'].forEach(function (id) { var v = document.getElementById(id); if (v && v.style.display !== 'none' && v.offsetParent) (id === 'adsaiView' ? window._renderAdsAI : window._renderAIContent)(v); });
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install); else install();
