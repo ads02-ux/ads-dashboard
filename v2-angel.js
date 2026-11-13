@@ -89,11 +89,11 @@
   }
   // นับเฉพาะคอนเทนต์ที่วันที่แรกในชื่อ ≥ วันที่ 25 ของเดือนก่อน (เช่น พ.ย. → 25/10)
   function cutOf(m) { var p = m.split('-'), d = new Date(+p[0], +p[1] - 2, 25); return ymd(d); }
-  // คีย์คอนเทนต์: ตัดเลขลำดับหน้าชื่อ แล้วเอาข้อความถึง "ver N" (ไม่มี ver = ถึงวันที่แรก) · ver ต่างกัน = คนละชิ้น
+  // คีย์คอนเทนต์: ตัดส่วนหน้า "--" และเลขลำดับหน้าชื่อ แล้วเอาข้อความถึงวันที่แรก + เลข ver (วันรุมยิงไม่นับ) · ver ต่างกัน = คนละชิ้น
   function contentKey(c) {
-    var s = String(c.name || '').replace(/^[\s*().\[\]#_\-0-9]+/, '').replace(/\s+/g, ' ').trim().toLowerCase();
-    var v = s.match(/^(.*?\bver\.?\s*\d+)/);
-    if (v) s = v[1]; else { var d = s.match(/^(.*?\d{1,2}\/\d{1,2}\/\d{2,4})/); if (d) s = d[1]; }
+    var s = String(c.name || '').replace(/^.*--\s*/, '').replace(/^[\s*().\[\]#_\-0-9]+/, '').replace(/\s+/g, ' ').trim().toLowerCase();
+    var v = s.match(/\bver\.?\s*(\d+)/), d = s.match(/^(.*?\d{1,2}\/\d{1,2}\/\d{2,4})/);
+    s = (d ? d[1] : v ? s.slice(0, v.index) : s).trim() + ' ver' + (v ? v[1] : '1');
     return c.prod + '|' + s;
   }
   function dedupe(list, rank, ex) {
