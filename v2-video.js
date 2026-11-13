@@ -45,7 +45,7 @@
       }).then(function () {
         var cm = {}; ads.forEach(function (a) { cm[a.id] = a; });
         ins.forEach(function (r) {
-          var cr = (cm[r.ad_id] || {}).creative || {}, v3 = act(r.video_play_actions, ['video_view']);
+          var cr = (cm[r.ad_id] || {}).creative || {}, v3 = act(r.actions, ['video_view']) || act(r.video_play_actions, ['video_view']);
           if (!v3) return;
           var ai = info[acc] || {}, created = (cm[r.ad_id] || {}).created_time;
           L.rows.push({ id: r.ad_id, name: r.ad_name || '', camp: r.campaign_name || '', acc: acc, pi: ai.pi, prod: ai.prod || '', page: ai.page || '', disp: ai.disp || acc,
@@ -93,7 +93,7 @@
     return s + '</svg>';
   }
   function retention(d) {
-    var a = [d.p25, d.p50, d.p75, d.p95].map(function (v) { return d.v3 ? v / d.v3 : 0; });
+    var a = [d.p25, d.p50, d.p75, d.p95].map(function (v) { return d.v3 ? Math.min(1, v / d.v3) : 0; });
     return '<div class="vd-ret" title="ดูถึง 25% / 50% / 75% / 95% ของคนที่หยุดดู">' + a.map(function (v, i) { return '<div><i style="height:' + Math.max(2, Math.round(v * 100)) + '%"></i><span>' + Math.round(v * 100) + '</span></div>'; }).join('') + '</div>';
   }
 
