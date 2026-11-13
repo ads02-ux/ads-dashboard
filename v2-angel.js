@@ -7,7 +7,7 @@
   // เกณฑ์ทักถูก (ต้นทุน/ทัก ≤ , คนทักรวม 5 วัน ≥ , ค่าคอม)
   var CHAT_RULES = {
     g199: { name: 'กลุ่ม 199', prods: ['ขุนแผน', 'THE LORD', 'Olymplus', 'Wolf', 'Sopink'], g: [['A+', 30, 30, 100], ['A', 40, 20, 70], ['B', 50, 15, 50]] },
-    g249: { name: 'กลุ่ม 249', prods: ['OlymplusMax', 'เจ้าขุน', 'BLING&SYN'], g: [['A+', 50, 20, 100], ['A', 60, 15, 70], ['B', 70, 10, 50]] },
+    g249: { name: 'กลุ่ม 249', prods: ['OlymplusMax', 'เจ้าขุน', 'BLING&SYN', 'Dragon Blood'], g: [['A+', 50, 20, 100], ['A', 60, 15, 70], ['B', 70, 10, 50]] },
     g538: { name: 'กลุ่ม 538', prods: ['Heavenplus+', 'JUDO', 'LIV CARE'], g: [['A+', 50, 20, 100], ['A', 60, 15, 70], ['B', 70, 10, 50]] }
   };
   // เกรดคอนเทนต์ (งบทุกวัน ≥ , ROAS 3 วัน ≥ , ค่าคอมต่อชิ้น)
@@ -153,7 +153,7 @@
           '<td class="r">' + (g && x.done ? '<b class="c2-good">' + B(g[3]) + '</b>' : '<span class="c2-dim">' + (g ? 'รอครบ 5 วัน' : '–') + '</span>') + '</td></tr>';
       });
       if (!chat.length) h += '<tr><td colspan="9" class="c2-dim">ยังไม่มีคอนเทนต์ที่ผ่านเกณฑ์นี้</td></tr>';
-      h += '</tbody></table></div><div class="c2-note">Dragon Blood และ I SURE PLUS ยังไม่มีเกณฑ์ทักถูก จึงไม่ถูกคัดในเกณฑ์นี้ · "คนทัก" = การสนทนาที่ Facebook นับ</div></div>';
+      h += '</tbody></table></div><div class="c2-note">I SURE PLUS ยังไม่มีเกณฑ์ทักถูก จึงไม่ถูกคัดในเกณฑ์นี้ · "คนทัก" = การสนทนาที่ Facebook นับ</div></div>';
     } else {
       roas.sort(function (a, b) { return (a.b.gi - b.b.gi) || (b.b.ro - a.b.ro); });
       h += '<div class="c2-card c2-pad"><h2>เกณฑ์ 2 · ใช้งบยิง + ROAS (3 วันติดกัน)</h2><div class="c2-note">หา 3 วันติดกันในช่วง <b>' + dl(MR[0]) + ' – ' + dl(toD) + '</b> · ทุกวันใน 3 วันต้องใช้งบ ≥ เกณฑ์ และ ROAS รวม 3 วัน ≥ เกณฑ์ · แสดงเกรดสูงสุดที่ทำได้ พร้อม 3 วันที่ผ่าน</div>';
