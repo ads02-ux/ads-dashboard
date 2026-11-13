@@ -75,7 +75,7 @@
       '<div class="c2-seg" role="group" aria-label="รอบค่าคอม">' + MS.map(function (m) { return '<button class="' + (S.m === m ? 'on' : '') + '" onclick="mcV2.set(\'m\',\'' + m + '\')">' + mLabel(m) + '</button>'; }).join('') + '</div></div>';
     if (!window.FB_HIERARCHY || !window.fbDataMap) { box.innerHTML = h + '<div class="c2-card c2-empty">กำลังโหลดข้อมูล Facebook…</div></div>'; setTimeout(render, 1500); return; }
     var D = build(S.m), R = D.R;
-    var mgrs = Object.keys(D.PG).filter(function (k) { return k !== 'ไม่ระบุ' || sumMgr(R[k]).s > 0; }).sort(function (a, b) { return ord(a) - ord(b) || (a < b ? -1 : 1); });
+    var mgrs = Object.keys(D.PG).sort(function (a, b) { return ord(a) - ord(b) || (a < b ? -1 : 1); });
     if (S.who && mgrs.indexOf(S.who) < 0) S.who = '';
     if (D.minD && D.C[1] >= D.minD && D.minD > D.C[0]) h += '<div class="ai2-banner warn"><b>ข้อมูลเดือนนี้ไม่ครบ</b><span>ข้อมูล Facebook ในแดชบอร์ดเริ่มที่ ' + dTH(D.minD) + '</span></div>';
     if (D.minD && D.C[1] < D.minD) h += '<div class="ai2-banner warn"><b>ไม่มีข้อมูลเดือนนี้</b><span>ข้อมูล Facebook ในแดชบอร์ดเริ่มที่ ' + dTH(D.minD) + '</span></div>';
@@ -83,7 +83,7 @@
     // การ์ดคนดูแล
     var all = { s: 0, c: 0 };
     h += '<div class="mc-people"><button class="c2-card mc-p' + (!S.who ? ' on' : '') + '" style="--c:#0F172A" onclick="mcV2.set(\'who\',\'\')"><b>ทุกคน</b><span class="mc-big">สรุปรวม</span><span class="c2-dim ai2-sm">เทียบทุกคนดูแล</span></button>' +
-      mgrs.map(function (k) { var t = sumMgr(R[k]); all.s += t.s; all.c += t.c; return '<button class="c2-card mc-p' + (S.who === k ? ' on' : '') + '" style="--c:' + (COL[k] || '#94A3B8') + '" onclick="mcV2.set(\'who\',\'' + jsq(k) + '\')"><b>' + esc(k) + '</b><span class="mc-big">' + B(t.c) + '</span><span class="c2-dim ai2-sm">ยิง ' + B(t.s) + ' · ได้คอม ' + t.days + ' วัน-สินค้า</span>' + prodChips(D, k) + '</button>'; }).join('') + '</div>';
+      mgrs.map(function (k) { var t = sumMgr(R[k]); all.s += t.s; all.c += t.c; return '<button class="c2-card mc-p' + (S.who === k ? ' on' : '') + '" style="--c:' + (COL[k] || '#94A3B8') + '" onclick="mcV2.set(\'who\',\'' + jsq(k) + '\')"><b>' + esc(k) + '</b><span class="mc-big">' + B(t.c) + '</span><span class="c2-dim ai2-sm">ยิง ' + B(t.s) + ' · ได้คอม ' + t.days + ' วัน-สินค้า</span></button>'; }).join('') + '</div>';
 
     if (!S.who) {
       // ตารางสรุปทุกคน × สินค้า
@@ -115,6 +115,9 @@
       if (!pl.length) h += '<div class="c2-card c2-empty">คนดูแลนี้ยังไม่มีเพจ</div>';
       h += '</div>';
     }
+    // ใครดูแลสินค้าอะไร (ด้านล่าง)
+    h += '<div class="c2-card c2-pad"><div class="c2-h2row"><h2>ใครดูแลสินค้าอะไร</h2><span class="c2-note">ตัวเลข = จำนวนเพจ · ชี้ที่สินค้าเพื่อดูชื่อเพจ</span></div><table class="c2-t mc-who-t"><thead><tr><th>คนดูแล</th><th>สินค้าที่ดูแล</th><th class="r">เพจ</th></tr></thead><tbody>' +
+      mgrs.map(function (k) { var P = D.PG[k] || {}, n = 0; Object.keys(P).forEach(function (p) { n += P[p].length; }); return '<tr><td><button class="mc-who" style="--c:' + (COL[k] || '#94A3B8') + '" onclick="mcV2.set(\'who\',\'' + jsq(k) + '\')">' + esc(k) + '</button></td><td>' + prodChips(D, k) + '</td><td class="r">' + n + '</td></tr>'; }).join('') + '</tbody></table></div>';
     h += '<div class="mc-foot"><details class="c2-card c2-pad"><summary><b>ตารางค่าคอม</b> <span class="c2-dim">(ยอดยิงแอดต่อสินค้าต่อวัน)</span></summary><table class="c2-t mc-tier"><thead><tr><th>ยอดยิงแอด</th><th class="r">ค่าคอม (บาท)</th></tr></thead><tbody>' + TIERS.slice().reverse().map(function (t) { return '<tr><td>&gt; ' + t[0].toLocaleString('en-US') + '</td><td class="r">' + t[1].toFixed(2) + '</td></tr>'; }).join('') + '</tbody></table><div class="c2-note">ไม่ถึง 15,000 = ไม่มีค่าคอม · รอบค่าคอม = วันที่ 26 เดือนก่อน ถึง 25 ของเดือน · คนดูแลอิงจากผู้ดูแลเพจปัจจุบัน · ยอดยิงเป็นค่าแอด Facebook (ไม่รวม VAT) อาจต่างจากที่ดูใน Ads Manager คนละเวลาเล็กน้อย</div></details>' +
       '<button class="ai2-btn" onclick="mcV2.csv()">ดาวน์โหลด CSV รอบ ' + mLabel(S.m) + '</button></div>';
     h += '</div>';
@@ -150,7 +153,7 @@
       V + ' .mc-p{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;cursor:pointer;padding:14px 16px!important;border:1px solid #E5E7EB!important;border-top:4px solid var(--c)!important;border-radius:14px!important;background:#fff!important;color:#0F172A!important;font:inherit!important}',
       V + ' .mc-p.on{outline:2px solid var(--c);outline-offset:-1px;background:#F8FAFF!important}',
       '.mc-p b{font-size:15px}.mc-big{font-size:22px;font-weight:700;color:#15803D}',
-      '.mc-prods{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;padding-top:8px;border-top:1px solid #EEF1F6;width:100%}.mc-prods i{font-style:normal;font-size:11px;font-weight:600;color:#334155;background:#F1F5F9;border-radius:99px;padding:2px 8px;white-space:nowrap}.mc-prods small{font-weight:400;color:#64748B;font-size:10px}',
+      '.mc-prods{display:flex;flex-wrap:wrap;gap:6px}.mc-prods i{font-style:normal;font-size:13px;font-weight:600;color:#334155;background:#F1F5F9;border-radius:99px;padding:3px 10px;white-space:nowrap}.mc-prods small{font-weight:400;color:#64748B;font-size:11px}.mc-who-t{width:100%}.mc-who-t td{vertical-align:middle}',
       '.mc-sum td,.mc-sum th{white-space:nowrap}.mc-g{color:#15803D}.mc-tot td{background:#F8FAFC;border-top:2px solid #E2E8F0}',
       V + ' .mc-who{border:0!important;background:var(--c)!important;color:#fff!important;border-radius:99px!important;padding:3px 12px!important;font-weight:700;cursor:pointer;font-size:13px!important}',
       '.mc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:14px;align-items:start}@media (max-width:600px){.mc-grid{grid-template-columns:minmax(0,1fr)}}',
