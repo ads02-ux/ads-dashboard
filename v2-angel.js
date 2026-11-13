@@ -76,6 +76,18 @@
   }
 
   /* ---------- คำนวณ ---------- */
+  // วันที่แรกในชื่อแคมเปญ (d/m/yy พ.ศ.) → YYYY-MM-DD · ไม่มี = ''
+  function nameDate(s) {
+    var re = /(\d{1,2})\/(\d{1,2})\/(\d{2,4})/g, x;
+    while ((x = re.exec(String(s || '')))) {
+      var d = +x[1], mo = +x[2], y = +x[3];
+      if (y < 100) y += 2500; if (y > 2400) y -= 543;
+      if (d >= 1 && d <= 31 && mo >= 1 && mo <= 12 && y >= 2020 && y <= 2035) return y + '-' + pad(mo) + '-' + pad(d);
+    }
+    return '';
+  }
+  // นับเฉพาะคอนเทนต์ที่วันที่แรกในชื่อ ≥ วันที่ 25 ของเดือนก่อน (เช่น พ.ย. → 25/10)
+  function cutOf(m) { var p = m.split('-'), d = new Date(+p[0], +p[1] - 2, 25); return ymd(d); }
   function compute(m) {
     var rows = rowsFor(m); if (!rows) return null;
     var rg = mRange(m), info = accInfo(), T = today(), cm = {};
@@ -85,7 +97,8 @@
       d.s += r.s; d.v += r.v; d.ch += r.ch; d.b += r.b;
       if (r.s > 0 && (!c.first || r.d < c.first)) c.first = r.d;
     });
-    var fetchFrom = addD(rg[0], -14), chat = [], roas = [];
+    var fetchFrom = addD(rg[0], -14), chat = [], roas = [], cut = cutOf(m), ex = { old: 0, none: 0 };
+    function okName(c) { if (c.nd === undefined) c.nd = nameDate(c.name); if (c.nd && c.nd >= cut) return true; if (c.nd) ex.old++; else ex.none++; return false; }
     Object.keys(cm).forEach(function (k) {
       var c = cm[k], ai = info[c.acc] || { pi: -1, prod: '', page: '', disp: c.acc, mgr: 'ไม่ระบุ' };
       c.pi = ai.pi; c.prod = ai.prod; c.page = ai.page; c.disp = ai.disp; c.mgr = ai.mgr;
@@ -96,7 +109,7 @@
         var rule = ruleOf(c.prod), cpc = ch ? s / ch : 0, grade = null;
         if (rule && ch) for (var g = 0; g < rule.g.length; g++) { if (cpc <= rule.g[g][1] && ch >= rule.g[g][2]) { grade = rule.g[g]; break; } }
         var done = end < T;
-        if (grade || (!done && rule && ch && cpc <= rule.g[rule.g.length - 1][1])) chat.push({ c: c, s: s, ch: ch, cpc: cpc, grade: grade, rule: rule, end: end, done: done, n: Math.min(5, n) });
+        if ((grade || (!done && rule && ch && cpc <= rule.g[rule.g.length - 1][1])) && okName(c)) chat.push({ c: c, s: s, ch: ch, cpc: cpc, grade: grade, rule: rule, end: end, done: done, n: Math.min(5, n) });
       }
       // เกณฑ์ 2: เกรด ROAS (3 วันติดกันภายในเดือน)
       var best = null;
@@ -109,9 +122,9 @@
           if (minS >= R[1] && ro >= R[2]) { if (!best || q < best.gi || (q === best.gi && ro > best.ro)) best = { gi: q, grade: R, from: d0, ro: ro, s: ss, v: vv, minS: minS, ch: w[0].ch + w[1].ch + w[2].ch }; break; }
         }
       }
-      if (best) roas.push({ c: c, b: best });
+      if (best && okName(c)) roas.push({ c: c, b: best });
     });
-    return { chat: chat, roas: roas };
+    return { chat: chat, roas: roas, cut: cut, ex: ex };
   }
 
   /* ---------- หน้า ---------- */
@@ -123,7 +136,7 @@
     var R = compute(S.m), P = prods(), h = '<div class="c2-wrap ai2 ag">';
     var MR = mRange(S.m), toD = MR[1] < today() ? MR[1] : today();
     h += '<div class="c2-head"><div><h1>คัดนางฟ้า</h1><div class="c2-subhead">คัดคอนเทนต์ประจำเดือนด้วย 2 เกณฑ์ที่แยกกัน · ข้อมูลจาก Facebook</div>' +
-      '<div class="ag-range">ช่วงที่คัด: <b>' + dl(MR[0]) + ' ' + (+MR[0].slice(0, 4) + 543) + ' – ' + dl(toD) + ' ' + (+toD.slice(0, 4) + 543) + '</b>' + (toD < MR[1] ? ' <span class="c2-dim">(ถึงวันนี้ · เดือนยังไม่จบ)</span>' : '') + ' · ดึงข้อมูลเมื่อ ' + new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) + '</div></div>' +
+      '<div class="ag-range">ช่วงที่คัด: <b>' + dl(MR[0]) + ' ' + (+MR[0].slice(0, 4) + 543) + ' – ' + dl(toD) + ' ' + (+toD.slice(0, 4) + 543) + '</b>' + (toD < MR[1] ? ' <span class="c2-dim">(ถึงวันนี้ · เดือนยังไม่จบ)</span>' : '') + ' · ดึงข้อมูลเมื่อ ' + new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) + '<div class="ag-cut">นับเฉพาะคอนเทนต์ที่<b>วันที่แรกในชื่อแคมเปญ ตั้งแต่ ' + (function (s) { var p = s.split('-'); return +p[2] + '/' + (+p[1]) + '/' + String(+p[0] + 543).slice(2); })(cutOf(S.m)) + '</b> เป็นต้นไป' + (R && (R.ex.old || R.ex.none) ? ' <span class="c2-dim">· ไม่นับ ' + R.ex.old + ' ชิ้นที่วันที่ในชื่อเก่ากว่า · ' + R.ex.none + ' ชิ้นที่ไม่มีวันที่ในชื่อ</span>' : '') + '</div></div></div>' +
       '<div class="c2-seg" role="group" aria-label="เดือน">' + MS.map(function (m) { return '<button class="' + (S.m === m ? 'on' : '') + '" onclick="angelV2.set(\'m\',\'' + m + '\')">' + mLabel(m) + '</button>'; }).join('') + '</div></div>';
     h += '<div class="c2-tabs"><button class="' + (S.p < 0 ? 'on' : '') + '" onclick="angelV2.set(\'p\',-1)">ทุกสินค้า</button>' + P.map(function (p, i) { var on = S.p === i; return '<button class="' + (on ? 'on' : '') + '" onclick="angelV2.set(\'p\',' + i + ')"><i style="background:' + (on ? '#fff' : PAL[i % PAL.length]) + '"></i>' + esc(p.product) + '</button>'; }).join('') + '</div>';
     if (!R) {
@@ -246,7 +259,7 @@
     var s = document.createElement('style'); s.id = 'agcss';
     s.textContent = [
       '#angelView .ag-g{display:inline-block;min-width:34px;text-align:center;padding:3px 8px;border-radius:99px;font-size:12px;font-weight:700;margin-right:6px}#angelView .ag-g.ap{background:#FEF3C7;color:#92400E}#angelView .ag-g.a{background:#DBEAFE;color:#1D4ED8}#angelView .ag-g.b{background:#E2E8F0;color:#334155}',
-      '#angelView .ag-range{margin-top:6px;font-size:14px;color:#0F172A;background:#EFF6FF;border:1px solid #BFDBFE;border-radius:8px;padding:6px 10px;display:inline-block}',
+      '#angelView .ag-range{margin-top:6px;font-size:14px;color:#0F172A;background:#EFF6FF;border:1px solid #BFDBFE;border-radius:8px;padding:6px 10px;display:inline-block}#angelView .ag-cut{margin-top:4px;font-size:13px;color:#92400E}',
       '#angelView .ag-mg{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch}#angelView .ag-mgl{align-self:center;font-size:13px;color:#64748B;margin-right:4px}#angelView .ag-mg button{display:flex;flex-direction:column;align-items:flex-start;gap:1px;border:1px solid #E5E7EB!important;background:#fff!important;border-radius:10px!important;padding:7px 12px!important;cursor:pointer;font:inherit!important;color:#0F172A!important;min-width:92px;text-align:left}#angelView .ag-mg button b{font-size:13px}#angelView .ag-mg button span{font-size:11px;color:#64748B}#angelView .ag-mg button .ag-mgc{color:#15803D;font-weight:600;font-size:12px}#angelView .ag-mg button.on{background:#2563EB!important;border-color:#2563EB!important;color:#fff!important}#angelView .ag-mg button.on span{color:#DBEAFE!important}#angelView .ag-mg button:not(:first-of-type){}#angelView .ag-mgt{display:inline-block;margin-top:3px;padding:1px 8px;border-radius:99px;background:#EEF2FF;color:#4338CA;font-size:11px;font-weight:700}#angelView .ag-mgt.none{background:#F1F5F9;color:#94A3B8;font-weight:500}',
       '#angelView .ag-switch{display:flex;flex-wrap:wrap;gap:10px;align-items:center}#angelView .ag-switch .ai2-q{margin-left:auto}',
       '#angelView .ag-rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-top:14px}#angelView .ag-rules .c2-t{min-width:0;margin-top:6px}',
