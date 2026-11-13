@@ -187,7 +187,7 @@
     var used = [], frag = document.createDocumentFragment();
     // เมนูที่เอาออกจากแถบซ้าย (ย้ายไปกล่องซ่อน ไม่ลบ เผื่อโค้ดเดิมอ้างถึง)
     var hid = document.createElement('div'); hid.id = 'v2nav-hidden'; hid.style.display = 'none';
-    ['Campaign Log', 'Content Intel', 'KPI Overview', '#sb-chartold'].forEach(function (k) { var it = findItem(items, k, used); if (it) { used.push(it); hid.appendChild(it); } });
+    ['Campaign Log', 'Content Intel', 'KPI Overview', '#sb-chartold', 'Analyst Ranking'].forEach(function (k) { var it = findItem(items, k, used); if (it) { used.push(it); hid.appendChild(it); } });
     function group(title, list) {
       var g = document.createElement('div'); g.className = 'v2nav-group' + (fold[title] ? ' fold' : '');
       var h = document.createElement('button'); h.type = 'button'; h.className = 'v2nav-head'; h.innerHTML = '<span>' + title + '</span><i aria-hidden="true">▾</i>';
