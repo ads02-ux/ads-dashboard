@@ -42,7 +42,8 @@
   function decide(c) {
     var t = c.p.today, y = c.p.y, d3 = c.p['3'], d7 = c.p['7'];
     if (!t.spend && !y.spend && !d3.spend && !d7.spend) return { k: 'none', t: 'ไม่มีค่าใช้จ่าย', adj: 0 };
-    if (!d7.rev && !d3.rev && d7.spend > 0 && !d7.buy) return d7.chat >= 5 && d7.cpc && d7.cpc < 80 ? { k: 'keep', t: 'ทักถูก ยังไม่ขาย → รอครบ 5 วัน', adj: 0 } : { k: 'close', t: 'ยังไม่มียอดขาย → ปิด', adj: -1 };
+    if (c.first && c.first >= dayShift(2) && !(d3.spend && d3.roas >= 1.5)) return { k: 'keep', t: 'ตัวใหม่ (เริ่ม ' + c.first.slice(8) + '/' + c.first.slice(5, 7) + ') รอครบ 3 วัน', adj: 0 };
+    if (!d7.rev && !d3.rev && d7.spend > 0 && !d7.buy) return d7.chat >= 5 && d7.cpc && d7.cpc < 80 && c.first >= dayShift(4) ? { k: 'keep', t: 'ทักถูก ยังไม่ขาย → รอครบ 5 วัน', adj: 0 } : { k: 'close', t: 'ยังไม่มียอดขาย → ปิด', adj: -1 };
     if (d3.spend && d7.spend && d3.roas < 1 && d7.roas < 1) return { k: 'close', t: 'ปิด (3 วัน + 7 วัน < 1)', adj: -1 };
     if (d3.buy >= 2 && d3.rev > 0 && d3.cpa <= 200) return { k: 'up', t: 'เพิ่มงบ (ต้นทุน/ซื้อ ' + B(d3.cpa) + ')', adj: d3.cpa <= 120 ? 0.5 : 0.3 };
     if (d7.roas >= 2 && (!d3.spend || d3.roas >= 2) && (!y.spend || y.roas >= 2)) return { k: 'up', t: 'เพิ่มงบ 30–50% (≥ 2 ทุกช่วง)', adj: 0.4 };
@@ -53,13 +54,14 @@
   }
   function adsData() {
     var accs = A.p >= 0 && prods()[A.p] ? accsOf(prods()[A.p]) : allAccs();
-    var tot = {}, cm = {}, loaded = 0;
+    var tot = {}, cm = {}, first = {}, loaded = 0;
     PK.forEach(function (p) { tot[p[0]] = blank(); });
     accs.forEach(function (acc) {
       var rows = (window.fbDataMap || {})[acc]; if (window.fbLoadedMap && window.fbLoadedMap[acc]) loaded++;
       (rows || []).forEach(function (r) {
         if (!r.date) return;
         var key = acc + '|' + (r.campaign || '(ไม่มีชื่อ)');
+        if (num(r.spend) > 0) { var f0 = (first[key] || '9'); if (r.date < f0) first[key] = r.date; }
         PK.forEach(function (p) {
           if (!inP(r.date, p[0])) return;
           addRow(tot[p[0]], r);
@@ -69,7 +71,7 @@
       });
     });
     PK.forEach(function (p) { fin(tot[p[0]]); });
-    var camps = Object.keys(cm).map(function (k) { var c = cm[k]; PK.forEach(function (p) { fin(c.p[p[0]]); }); c.d = decide(c); return c; })
+    var camps = Object.keys(cm).map(function (k) { var c = cm[k]; c.first = first[k] || ''; PK.forEach(function (p) { fin(c.p[p[0]]); }); c.d = decide(c); return c; })
       .filter(function (c) { return c.p.today.spend > 0 || c.p.y.spend > 0 || c.p['3'].spend > 0; });
     return { accs: accs, loaded: loaded, tot: tot, camps: camps };
   }
@@ -177,8 +179,8 @@
   /* ================= AI แนะนำคอนเทนต์ ================= */
   // ประเภทคอนเทนต์ตามวิธีตั้งชื่อแคมเปญของทีม
   var TYPES = [
-    ['qa', 'คำถาม-ตอบ', /คำถาม|ถาม-ตอบ|q&a/i],
     ['comment', 'เล่าคอมเมนต์ / คำถามลูกค้า', /คอมเม้น|คอมเมนต์|comment/i],
+    ['qa', 'คำถาม-ตอบ', /คำถาม|ถาม-ตอบ|q&a/i],
     ['owner', 'เจ้าของแบรนด์', /เจ้าของแบรนด์/],
     ['expert', 'ผู้เชี่ยวชาญ', /ผู้เชี่ยวชาญ|มาโนช|หมอ|เภสัช|expert/i],
     ['mix', 'ยำคลิป (ตัดต่อคลิปคนดัง)', /ยำคลิป|ยำ/],
@@ -280,7 +282,7 @@
       '.ai2-res{padding:16px 20px;display:flex;flex-direction:column;gap:16px;font-size:13px}.ai2-res h3{margin:0 0 8px;font-size:14px;font-weight:700}',
       '.ai2-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}@media (max-width:1000px){.ai2-grid{grid-template-columns:minmax(0,1fr)}}.ai2-small{min-width:520px}.ai2-recs{display:flex;flex-direction:column;gap:8px}',
       '.ai2-list{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px;counter-reset:n}.ai2-list li{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid #EEF1F6;border-radius:8px;counter-increment:n}.ai2-list li:before{content:counter(n);width:20px;color:#64748B;font-weight:600}',
-      '.ai2-list li span{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}.ai2-list small{display:block;font-weight:400;color:#64748B;font-size:11px;overflow:hidden;text-overflow:ellipsis}.ai2-list em{font-style:normal;color:#475569;font-size:12px;white-space:nowrap}.ai2-list.bad li{border-color:#FEE2E2}',
+      '.ai2-list li span{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}.ai2-list small{display:block;font-weight:400;color:#64748B;font-size:11px;overflow:hidden;text-overflow:ellipsis}.ai2-list em{font-style:normal;color:#475569;font-size:12px;white-space:nowrap}.ai2-list.bad li{border-color:#FEE2E2}.ai2-list li span.c2-pill{flex:none;overflow:visible}',
       '.ai2-comp{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;padding:12px 14px;background:#F8FAFC;border:1px solid #E5E7EB;border-radius:10px}.ai2-compres:empty{display:none}',
       '@media (max-width:640px){.ai2-q{min-width:0;width:100%}.ai2-sort{margin-left:0}}'
     ].join('\n');
