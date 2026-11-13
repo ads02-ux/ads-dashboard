@@ -1,0 +1,232 @@
+/* v2-angel.js — หน้า "คัดนางฟ้า": คัดคอนเทนต์ประจำเดือน 2 เกณฑ์ (แยกกัน)
+   1) ทักถูก: วันที่ 1–5 ของแคมเปญ · ต้นทุน/ทัก ≤ เกณฑ์ของกลุ่มสินค้า · คนทักรวม 5 วัน ≥ ขั้นต่ำ → ค่าคอมทีมกราฟิก
+   2) เกรด ROAS: 3 วันติดกันในเดือน · งบทุกวัน ≥ เกณฑ์ · ROAS 3 วัน ≥ เกณฑ์ → ค่าคอมต่อชิ้น */
+(function () {
+  'use strict';
+  var PAL = ['#2563EB', '#0EA5E9', '#6366F1', '#14B8A6', '#8B5CF6', '#0891B2', '#F59E0B', '#EC4899', '#10B981', '#64748B', '#EF4444', '#84CC16', '#A855F7', '#06B6D4'];
+  // เกณฑ์ทักถูก (ต้นทุน/ทัก ≤ , คนทักรวม 5 วัน ≥ , ค่าคอม)
+  var CHAT_RULES = {
+    g199: { name: 'กลุ่ม 199', prods: ['ขุนแผน', 'THE LORD', 'Olymplus', 'Wolf', 'Sopink'], g: [['A+', 30, 30, 100], ['A', 40, 20, 70], ['B', 50, 15, 50]] },
+    g249: { name: 'กลุ่ม 249', prods: ['OlymplusMax', 'เจ้าขุน', 'BLING&SYN'], g: [['A+', 50, 20, 100], ['A', 60, 15, 70], ['B', 70, 10, 50]] },
+    g538: { name: 'กลุ่ม 538', prods: ['Heavenplus+', 'JUDO', 'LIV CARE'], g: [['A+', 50, 20, 100], ['A', 60, 15, 70], ['B', 70, 10, 50]] }
+  };
+  // เกรดคอนเทนต์ (งบทุกวัน ≥ , ROAS 3 วัน ≥ , ค่าคอมต่อชิ้น)
+  var ROAS_RULES = [['A+', 5000, 3, 500], ['A', 3000, 2.5, 300], ['B', 1000, 2, 200]];
+  var S = { m: '', p: -1, tab: 'chat', q: '' }, CACHE = {}, LOADING = {};
+
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function pad(n) { return String(n).padStart(2, '0'); }
+  function ymd(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+  function addD(s, n) { var d = new Date(s + 'T00:00:00'); d.setDate(d.getDate() + n); return ymd(d); }
+  function num(v) { var n = parseFloat(String(v == null ? '' : v).replace(/,/g, '')); return isNaN(n) ? 0 : n; }
+  function B(n) { return '฿' + Math.round(n || 0).toLocaleString('en-US'); }
+  function I(n) { return Math.round(n || 0).toLocaleString('en-US'); }
+  var THM = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+  function dl(s) { var p = s.split('-'); return +p[2] + ' ' + THM[+p[1] - 1]; }
+  function mLabel(m) { var p = m.split('-'); return THM[+p[1] - 1] + ' ' + (+p[0] + 543); }
+  function prods() { return window.FB_HIERARCHY || []; }
+  function accInfo() {
+    var m = {};
+    prods().forEach(function (p, pi) { (p.pages || []).forEach(function (pg) { (pg.accounts || []).forEach(function (h) { (h.adAccounts || []).forEach(function (a) { if (!m[a]) m[a] = { pi: pi, prod: p.product, page: pg.name, disp: h.displayName || a }; }); }); }); });
+    return m;
+  }
+  function ruleOf(prod) { for (var k in CHAT_RULES) if (CHAT_RULES[k].prods.indexOf(prod) >= 0) return CHAT_RULES[k]; return null; }
+  function today() { return ymd(new Date()); }
+  function monthsBack(n) { var out = [], d = new Date(); d.setDate(1); for (var i = 0; i < n; i++) { out.push(d.getFullYear() + '-' + pad(d.getMonth() + 1)); d.setMonth(d.getMonth() - 1); } return out; }
+  function mRange(m) { var a = m + '-01', d = new Date(a + 'T00:00:00'); d.setMonth(d.getMonth() + 1); d.setDate(0); return [a, ymd(d)]; }
+
+  /* ---------- ข้อมูล: เดือนปัจจุบันใช้ fbDataMap (30 วัน) · เดือนก่อนดึงจาก Facebook ---------- */
+  function fromMap(from) {
+    var rows = [], info = accInfo();
+    Object.keys(info).forEach(function (acc) { ((window.fbDataMap || {})[acc] || []).forEach(function (r) { if (r.date && r.date >= from) rows.push({ acc: acc, c: r.campaign || '(ไม่มีชื่อ)', d: r.date, s: num(r.spend), v: num(r.revenue), ch: num(r.conversations), b: num(r.purchases) }); }); });
+    return rows;
+  }
+  function act(arr, types) { for (var i = 0; i < types.length; i++) { var x = (arr || []).filter(function (y) { return y.action_type === types[i]; })[0]; if (x) return num(x.value); } return 0; }
+  function fetchMonth(m) {
+    if (LOADING[m]) return; LOADING[m] = { done: 0, total: 0, rows: [] };
+    var L = LOADING[m], r = mRange(m), from = addD(r[0], -14), to = r[1] < today() ? r[1] : today();
+    var info = accInfo(), accs = Object.keys(info); L.total = accs.length;
+    var meta = window.FB_ACCOUNTS_META || [];
+    var q = accs.slice();
+    function one() {
+      var acc = q.shift(); if (!acc) return Promise.resolve();
+      var mm = meta.filter(function (x) { return x.name === acc || x.configKey === 'FB_GID_' + acc; })[0];
+      var tok = (window.FB_TOKENS || {})[acc] || window.FB_TOKEN;
+      if (!mm || !mm.id) { L.done++; return one(); }
+      var url = window.FB_API + mm.id + '/insights?level=campaign&time_increment=1&limit=500&fields=campaign_name,spend,actions,action_values&time_range=' + encodeURIComponent(JSON.stringify({ since: from, until: to })) + '&access_token=' + tok;
+      function page(u) {
+        return fetch(u).then(function (x) { return x.json(); }).then(function (j) {
+          (j.data || []).forEach(function (x) { L.rows.push({ acc: acc, c: x.campaign_name || '(ไม่มีชื่อ)', d: x.date_start, s: num(x.spend), v: act(x.action_values, ['purchase', 'onsite_conversion.purchase', 'offsite_conversion.fb_pixel_purchase']), ch: act(x.actions, ['onsite_conversion.messaging_conversation_started_7d']), b: act(x.actions, ['purchase', 'onsite_conversion.purchase', 'offsite_conversion.fb_pixel_purchase']) }); });
+          if (j.paging && j.paging.next) return page(j.paging.next);
+        });
+      }
+      return page(url).catch(function () {}).then(function () { L.done++; if (L.done % 10 === 0) render(); return one(); });
+    }
+    Promise.all([one(), one(), one(), one(), one(), one()]).then(function () { CACHE[m] = L.rows; delete LOADING[m]; render(); });
+  }
+  function rowsFor(m) {
+    var r = mRange(m), from = addD(r[0], -14);
+    var minMap = ''; for (var k in (window.fbDataMap || {})) ((window.fbDataMap[k]) || []).forEach(function (x) { if (x.date && (!minMap || x.date < minMap)) minMap = x.date; });
+    if (minMap && minMap <= from) return fromMap(from);
+    if (CACHE[m]) return CACHE[m];
+    fetchMonth(m); return null;
+  }
+
+  /* ---------- คำนวณ ---------- */
+  function compute(m) {
+    var rows = rowsFor(m); if (!rows) return null;
+    var rg = mRange(m), info = accInfo(), T = today(), cm = {};
+    rows.forEach(function (r) {
+      var k = r.acc + '|' + r.c, c = cm[k] || (cm[k] = { acc: r.acc, name: r.c, days: {}, first: '' });
+      var d = c.days[r.d] || (c.days[r.d] = { s: 0, v: 0, ch: 0, b: 0 });
+      d.s += r.s; d.v += r.v; d.ch += r.ch; d.b += r.b;
+      if (r.s > 0 && (!c.first || r.d < c.first)) c.first = r.d;
+    });
+    var fetchFrom = addD(rg[0], -14), chat = [], roas = [];
+    Object.keys(cm).forEach(function (k) {
+      var c = cm[k], ai = info[c.acc] || { pi: -1, prod: '', page: '', disp: c.acc };
+      c.pi = ai.pi; c.prod = ai.prod; c.page = ai.page; c.disp = ai.disp;
+      // เกณฑ์ 1: ทักถูก (แคมเปญที่เริ่มยิงในเดือนนี้)
+      if (c.first && c.first >= rg[0] && c.first <= rg[1] && c.first > fetchFrom) {
+        var s = 0, ch = 0, end = addD(c.first, 4), n = 0;
+        for (var i = 0; i < 5; i++) { var dd = addD(c.first, i), x = c.days[dd]; if (dd <= T) n++; if (x) { s += x.s; ch += x.ch; } }
+        var rule = ruleOf(c.prod), cpc = ch ? s / ch : 0, grade = null;
+        if (rule && ch) for (var g = 0; g < rule.g.length; g++) { if (cpc <= rule.g[g][1] && ch >= rule.g[g][2]) { grade = rule.g[g]; break; } }
+        var done = end < T;
+        if (grade || (!done && rule && ch && cpc <= rule.g[rule.g.length - 1][1])) chat.push({ c: c, s: s, ch: ch, cpc: cpc, grade: grade, rule: rule, end: end, done: done, n: Math.min(5, n) });
+      }
+      // เกณฑ์ 2: เกรด ROAS (3 วันติดกันภายในเดือน)
+      var best = null;
+      for (var d0 = rg[0]; d0 <= rg[1] && d0 <= T; d0 = addD(d0, 1)) {
+        var w = [c.days[d0], c.days[addD(d0, 1)], c.days[addD(d0, 2)]];
+        if (addD(d0, 2) > rg[1] || !w[0] || !w[1] || !w[2]) continue;
+        var minS = Math.min(w[0].s, w[1].s, w[2].s), ss = w[0].s + w[1].s + w[2].s, vv = w[0].v + w[1].v + w[2].v, ro = ss ? vv / ss : 0;
+        for (var q = 0; q < ROAS_RULES.length; q++) {
+          var R = ROAS_RULES[q];
+          if (minS >= R[1] && ro >= R[2]) { if (!best || q < best.gi || (q === best.gi && ro > best.ro)) best = { gi: q, grade: R, from: d0, ro: ro, s: ss, v: vv, minS: minS, ch: w[0].ch + w[1].ch + w[2].ch }; break; }
+        }
+      }
+      if (best) roas.push({ c: c, b: best });
+    });
+    return { chat: chat, roas: roas };
+  }
+
+  /* ---------- หน้า ---------- */
+  function gtag(g) { return '<span class="ag-g ' + (g === 'A+' ? 'ap' : g === 'A' ? 'a' : 'b') + '">' + g + '</span>'; }
+  function render() {
+    var box = document.getElementById('angelView'); if (!box || box.style.display === 'none') return;
+    if (!window.FB_HIERARCHY || !window.fbDataMap) { box.innerHTML = '<div class="c2-wrap ai2"><div class="c2-card c2-empty">กำลังโหลดข้อมูล…</div></div>'; return; }
+    var MS = monthsBack(4); if (!S.m) S.m = MS[0];
+    var R = compute(S.m), P = prods(), h = '<div class="c2-wrap ai2 ag">';
+    var MR = mRange(S.m), toD = MR[1] < today() ? MR[1] : today();
+    h += '<div class="c2-head"><div><h1>คัดนางฟ้า</h1><div class="c2-subhead">คัดคอนเทนต์ประจำเดือนด้วย 2 เกณฑ์ที่แยกกัน · ข้อมูลจาก Facebook</div>' +
+      '<div class="ag-range">ช่วงที่คัด: <b>' + dl(MR[0]) + ' ' + (+MR[0].slice(0, 4) + 543) + ' – ' + dl(toD) + ' ' + (+toD.slice(0, 4) + 543) + '</b>' + (toD < MR[1] ? ' <span class="c2-dim">(ถึงวันนี้ · เดือนยังไม่จบ)</span>' : '') + ' · ดึงข้อมูลเมื่อ ' + new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) + '</div></div>' +
+      '<div class="c2-seg" role="group" aria-label="เดือน">' + MS.map(function (m) { return '<button class="' + (S.m === m ? 'on' : '') + '" onclick="angelV2.set(\'m\',\'' + m + '\')">' + mLabel(m) + '</button>'; }).join('') + '</div></div>';
+    h += '<div class="c2-tabs"><button class="' + (S.p < 0 ? 'on' : '') + '" onclick="angelV2.set(\'p\',-1)">ทุกสินค้า</button>' + P.map(function (p, i) { var on = S.p === i; return '<button class="' + (on ? 'on' : '') + '" onclick="angelV2.set(\'p\',' + i + ')"><i style="background:' + (on ? '#fff' : PAL[i % PAL.length]) + '"></i>' + esc(p.product) + '</button>'; }).join('') + '</div>';
+    if (!R) {
+      var L = LOADING[S.m] || { done: 0, total: 0 };
+      h += '<div class="c2-card c2-empty">กำลังดึงข้อมูล ' + mLabel(S.m) + ' จาก Facebook… ' + L.done + '/' + (L.total || '?') + ' บัญชี</div></div>'; box.innerHTML = h; return;
+    }
+    var q = S.q.toLowerCase();
+    function keep(c) { return (S.p < 0 || c.pi === S.p) && (!q || (c.name + ' ' + c.page + ' ' + c.disp + ' ' + c.prod).toLowerCase().indexOf(q) >= 0); }
+    var chat = R.chat.filter(function (x) { return keep(x.c); }), roas = R.roas.filter(function (x) { return keep(x.c); });
+    var cg = { 'A+': 0, A: 0, B: 0 }, ccom = 0, rg = { 'A+': 0, A: 0, B: 0 }, rcom = 0, pend = 0;
+    chat.forEach(function (x) { if (x.grade && x.done) { cg[x.grade[0]]++; ccom += x.grade[3]; } else pend++; });
+    roas.forEach(function (x) { rg[x.b.grade[0]]++; rcom += x.b.grade[3]; });
+    h += '<div class="c2-kpis">' +
+      '<div class="c2-card c2-kpi"><div class="c2-lbl">เกณฑ์ 1 · ทักถูก (ผ่านแล้ว)</div><div class="c2-val">' + I(cg['A+'] + cg.A + cg.B) + ' <small>ชิ้น</small></div><div class="c2-sub">A+ ' + cg['A+'] + ' · A ' + cg.A + ' · B ' + cg.B + (pend ? ' <span class="c2-dim">· ยังไม่ครบ 5 วัน ' + pend + '</span>' : '') + '</div></div>' +
+      '<div class="c2-card c2-kpi"><div class="c2-lbl">ค่าคอมทีมกราฟิก (เกณฑ์ 1)</div><div class="c2-val c2-good">' + B(ccom) + '</div><div class="c2-sub c2-dim">นับเฉพาะตัวที่ครบ 5 วันแล้ว</div></div>' +
+      '<div class="c2-card c2-kpi"><div class="c2-lbl">เกณฑ์ 2 · เกรด ROAS</div><div class="c2-val">' + I(roas.length) + ' <small>ชิ้น</small></div><div class="c2-sub">A+ ' + rg['A+'] + ' · A ' + rg.A + ' · B ' + rg.B + '</div></div>' +
+      '<div class="c2-card c2-kpi"><div class="c2-lbl">ค่าคอมเกรดคอนเทนต์ (เกณฑ์ 2)</div><div class="c2-val c2-good">' + B(rcom) + '</div><div class="c2-sub c2-dim">นับเกรดสูงสุดที่ทำได้ในเดือน</div></div></div>';
+    h += '<div class="ag-switch"><div class="c2-seg">' + [['chat', 'เกณฑ์ 1 · ต้นทุนทักถูก (' + chat.length + ')'], ['roas', 'เกณฑ์ 2 · งบ + ROAS (' + roas.length + ')']].map(function (x) { return '<button class="' + (S.tab === x[0] ? 'on' : '') + '" onclick="angelV2.set(\'tab\',\'' + x[0] + '\')">' + x[1] + '</button>'; }).join('') + '</div>' +
+      '<input class="ai2-q" type="search" placeholder="ค้นหาแคมเปญ / เพจ / บัญชี" value="' + esc(S.q) + '" oninput="angelV2.q(this.value)"><button class="ai2-btn" onclick="angelV2.csv()">ดาวน์โหลด CSV</button></div>';
+    if (S.tab === 'chat') {
+      chat.sort(function (a, b) { var ga = a.grade ? 'A+AB'.indexOf(a.grade[0]) : 9, gb = b.grade ? 'A+AB'.indexOf(b.grade[0]) : 9; return (b.done - a.done) || (ga - gb) || (a.cpc - b.cpc); });
+      h += '<div class="c2-card c2-pad"><h2>เกณฑ์ 1 · ต้นทุนทักถูก (ยิงวันแรก–วันที่ 5)</h2><div class="c2-note">นับแคมเปญที่เริ่มยิงระหว่าง <b>' + dl(MR[0]) + ' – ' + dl(toD) + '</b> · ดู 5 วันแรกของแต่ละตัว (คอลัมน์ "ช่วงที่ดู") · ต้นทุนต่อทักรวม 5 วัน ≤ เกณฑ์ และคนทักรวม 5 วัน ≥ ขั้นต่ำ ตามกลุ่มสินค้า</div>';
+      h += '<div class="c2-scroll"><table class="c2-t ai2-t"><thead><tr><th>เกรด</th><th>แคมเปญ</th><th>สินค้า · เพจ</th><th>ช่วงที่ดู (วันที่ 1–5)</th><th class="r">ค่าแอด 5 วัน</th><th class="r">คนทัก 5 วัน</th><th class="r">ต้นทุน/ทัก</th><th>เกณฑ์ที่ผ่าน</th><th class="r">ค่าคอม</th></tr></thead><tbody>';
+      chat.forEach(function (x) {
+        var c = x.c, g = x.grade;
+        h += '<tr><td>' + (g ? gtag(g[0]) : '') + (x.done ? '' : '<span class="ai2-tag none">วันที่ ' + x.n + '/5</span>') + '</td><td class="ai2-name"><div title="' + esc(c.name) + '">' + esc(c.name) + '</div><span class="c2-dim ai2-sm">' + esc(c.disp) + '</span></td>' +
+          '<td><b>' + esc(c.prod) + '</b><div class="c2-dim ai2-sm">' + esc(c.page) + '</div></td><td class="ai2-nw">' + dl(c.first) + ' – ' + dl(x.end) + '</td>' +
+          '<td class="r">' + B(x.s) + '</td><td class="r">' + I(x.ch) + '</td><td class="r"><b>' + B(x.cpc) + '</b></td>' +
+          '<td class="ai2-sm">' + (g ? esc(x.rule.name) + ': ≤ ฿' + g[1] + ' · ≥ ' + g[2] + ' คน' : '<span class="c2-dim">' + (x.done ? 'ไม่ผ่าน' : 'ยังไม่ครบ 5 วัน · คนทักยังไม่ถึงขั้นต่ำ') + '</span>') + '</td>' +
+          '<td class="r">' + (g && x.done ? '<b class="c2-good">' + B(g[3]) + '</b>' : '<span class="c2-dim">' + (g ? 'รอครบ 5 วัน' : '–') + '</span>') + '</td></tr>';
+      });
+      if (!chat.length) h += '<tr><td colspan="9" class="c2-dim">ยังไม่มีคอนเทนต์ที่ผ่านเกณฑ์นี้</td></tr>';
+      h += '</tbody></table></div><div class="c2-note">Dragon Blood และ I SURE PLUS ยังไม่มีเกณฑ์ทักถูก จึงไม่ถูกคัดในเกณฑ์นี้ · "คนทัก" = การสนทนาที่ Facebook นับ</div></div>';
+    } else {
+      roas.sort(function (a, b) { return (a.b.gi - b.b.gi) || (b.b.ro - a.b.ro); });
+      h += '<div class="c2-card c2-pad"><h2>เกณฑ์ 2 · ใช้งบยิง + ROAS (3 วันติดกัน)</h2><div class="c2-note">หา 3 วันติดกันในช่วง <b>' + dl(MR[0]) + ' – ' + dl(toD) + '</b> · ทุกวันใน 3 วันต้องใช้งบ ≥ เกณฑ์ และ ROAS รวม 3 วัน ≥ เกณฑ์ · แสดงเกรดสูงสุดที่ทำได้ พร้อม 3 วันที่ผ่าน</div>';
+      h += '<div class="c2-scroll"><table class="c2-t ai2-t"><thead><tr><th>เกรด</th><th>แคมเปญ</th><th>สินค้า · เพจ</th><th>3 วันที่ผ่าน</th><th class="r">งบต่ำสุด/วัน</th><th class="r">ค่าแอด 3 วัน</th><th class="r">ยอดขาย 3 วัน</th><th class="r">ROAS</th><th class="r">ค่าคอม</th></tr></thead><tbody>';
+      roas.forEach(function (x) {
+        var c = x.c, b = x.b;
+        h += '<tr><td>' + gtag(b.grade[0]) + '</td><td class="ai2-name"><div title="' + esc(c.name) + '">' + esc(c.name) + '</div><span class="c2-dim ai2-sm">' + esc(c.disp) + '</span></td>' +
+          '<td><b>' + esc(c.prod) + '</b><div class="c2-dim ai2-sm">' + esc(c.page) + '</div></td><td class="ai2-nw">' + dl(b.from) + ' – ' + dl(addD(b.from, 2)) + '</td>' +
+          '<td class="r">' + B(b.minS) + '</td><td class="r">' + B(b.s) + '</td><td class="r">' + B(b.v) + '</td><td class="r"><span class="c2-pill g">' + b.ro.toFixed(2) + '</span></td><td class="r"><b class="c2-good">' + B(b.grade[3]) + '</b></td></tr>';
+      });
+      if (!roas.length) h += '<tr><td colspan="9" class="c2-dim">ยังไม่มีคอนเทนต์ที่ผ่านเกณฑ์นี้</td></tr>';
+      h += '</tbody></table></div><div class="c2-note">ROAS / ยอดขายเป็นตัวเลขที่ Facebook นับ · 1 แคมเปญ = 1 ชิ้น</div></div>';
+    }
+    // ตารางเกณฑ์
+    h += '<details class="c2-card ai2-cfg"><summary><b>ดูเกณฑ์ทั้งหมด</b><span class="c2-dim">เกณฑ์ 1 แยกตามกลุ่มสินค้า · เกณฑ์ 2 ใช้กับทุกสินค้า</span></summary><div class="ag-rules">' +
+      Object.keys(CHAT_RULES).map(function (k) { var r = CHAT_RULES[k]; return '<div><b>เกณฑ์ 1 · ' + esc(r.name) + '</b><div class="c2-dim ai2-sm">' + esc(r.prods.join(' / ')) + '</div><table class="c2-t"><thead><tr><th></th>' + r.g.map(function (g) { return '<th>' + g[0] + '</th>'; }).join('') + '</tr></thead><tbody><tr><td>ต้นทุน/ทัก ≤</td>' + r.g.map(function (g) { return '<td>฿' + g[1] + '</td>'; }).join('') + '</tr><tr><td>คนทักรวม 5 วัน ≥</td>' + r.g.map(function (g) { return '<td>' + g[2] + '</td>'; }).join('') + '</tr><tr><td>ค่าคอม</td>' + r.g.map(function (g) { return '<td>฿' + g[3] + '</td>'; }).join('') + '</tr></tbody></table></div>'; }).join('') +
+      '<div><b>เกณฑ์ 2 · เกรดคอนเทนต์</b><div class="c2-dim ai2-sm">ทุกสินค้า · 3 วันติดกัน</div><table class="c2-t"><thead><tr><th></th>' + ROAS_RULES.map(function (g) { return '<th>' + g[0] + '</th>'; }).join('') + '</tr></thead><tbody><tr><td>งบ/วัน ≥</td>' + ROAS_RULES.map(function (g) { return '<td>' + B(g[1]) + '</td>'; }).join('') + '</tr><tr><td>ROAS ≥</td>' + ROAS_RULES.map(function (g) { return '<td>' + g[2] + '</td>'; }).join('') + '</tr><tr><td>ค่าคอม/ชิ้น</td>' + ROAS_RULES.map(function (g) { return '<td>' + B(g[3]) + '</td>'; }).join('') + '</tr></tbody></table></div></div></details>';
+    h += '</div>';
+    box.innerHTML = h;
+    window._angelLast = { chat: chat, roas: roas };
+    var qi = box.querySelector('.ai2-q'); if (qi && S._f) { qi.focus(); qi.setSelectionRange(qi.value.length, qi.value.length); S._f = false; }
+  }
+  function csv() {
+    var L = window._angelLast; if (!L) return;
+    var lines = [['เกณฑ์', 'เกรด', 'สถานะ', 'สินค้า', 'เพจ', 'บัญชี', 'แคมเปญ', 'ช่วงวันที่', 'ค่าแอด', 'คนทัก', 'ต้นทุน/ทัก', 'ยอดขาย', 'ROAS', 'ค่าคอม']];
+    L.chat.forEach(function (x) { lines.push(['ทักถูก', x.grade ? x.grade[0] : '', x.done ? 'ครบ 5 วัน' : 'วันที่ ' + x.n + '/5', x.c.prod, x.c.page, x.c.disp, x.c.name, x.c.first + ' ถึง ' + x.end, Math.round(x.s), Math.round(x.ch), Math.round(x.cpc), '', '', x.grade && x.done ? x.grade[3] : 0]); });
+    L.roas.forEach(function (x) { lines.push(['งบ+ROAS', x.b.grade[0], '', x.c.prod, x.c.page, x.c.disp, x.c.name, x.b.from + ' ถึง ' + addD(x.b.from, 2), Math.round(x.b.s), Math.round(x.b.ch), '', Math.round(x.b.v), x.b.ro.toFixed(2), x.b.grade[3]]); });
+    var t = String.fromCharCode(65279) + lines.map(function (r) { return r.map(function (v) { v = String(v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }).join(','); }).join('\n');
+    var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([t], { type: 'text/csv;charset=utf-8' })); a.download = 'คัดนางฟ้า-' + S.m + '.csv'; document.body.appendChild(a); a.click(); a.remove();
+  }
+  var qT;
+  window.angelV2 = {
+    set: function (k, v) { S[k] = v; render(); if (k !== 'tab') window.scrollTo(0, 0); },
+    q: function (v) { S.q = v; clearTimeout(qT); qT = setTimeout(function () { S._f = true; render(); }, 250); },
+    csv: csv, render: render, open: open
+  };
+
+  var ICON = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.4 6.8 19.1l1-5.8L3.5 9.2l5.9-.9z"/></svg>';
+  function open(el) {
+    document.querySelectorAll('[id$="View"]').forEach(function (v) { v.style.display = 'none'; });
+    document.querySelectorAll('.sb-item').forEach(function (i) { i.classList.remove('active'); });
+    var v = document.getElementById('angelView'); if (v) v.style.display = '';
+    var it = el || document.getElementById('sb-angel'); if (it) it.classList.add('active');
+    render(); window.scrollTo(0, 0);
+  }
+  function css() {
+    if (document.getElementById('agcss')) return;
+    var s = document.createElement('style'); s.id = 'agcss';
+    s.textContent = [
+      '#angelView .ag-g{display:inline-block;min-width:34px;text-align:center;padding:3px 8px;border-radius:99px;font-size:12px;font-weight:700;margin-right:6px}#angelView .ag-g.ap{background:#FEF3C7;color:#92400E}#angelView .ag-g.a{background:#DBEAFE;color:#1D4ED8}#angelView .ag-g.b{background:#E2E8F0;color:#334155}',
+      '#angelView .ag-range{margin-top:6px;font-size:14px;color:#0F172A;background:#EFF6FF;border:1px solid #BFDBFE;border-radius:8px;padding:6px 10px;display:inline-block}',
+      '#angelView .ag-switch{display:flex;flex-wrap:wrap;gap:10px;align-items:center}#angelView .ag-switch .ai2-q{margin-left:auto}',
+      '#angelView .ag-rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-top:14px}#angelView .ag-rules .c2-t{min-width:0;margin-top:6px}',
+      '#angelView .c2-tabs button{border-radius:99px}#angelView .c2-seg button{border-radius:7px}'
+    ].join('\n');
+    document.head.appendChild(s);
+  }
+  var tries = 0;
+  function install() {
+    var cr = document.getElementById('sb-chartrank'), wrap = document.querySelector('.content-wrap');
+    if (!cr || !wrap || !window.FB_HIERARCHY) return setTimeout(install, 500);
+    var navOff = false; try { navOff = localStorage.getItem('rb_nav_v2') === 'off'; } catch (e) {}
+    var grouped = cr.parentNode && cr.parentNode.classList && cr.parentNode.classList.contains('v2nav-items');
+    if (!grouped && !navOff && ++tries < 30) return setTimeout(install, 500);
+    if (document.getElementById('sb-angel')) return;
+    css();
+    var it = document.createElement('div'); it.className = 'sb-item'; it.id = 'sb-angel';
+    it.innerHTML = '<span class="sb-icon">' + ICON + '</span><span>คัดนางฟ้า</span>';
+    it.onclick = function () { open(it); };
+    cr.parentNode.insertBefore(it, cr.nextSibling);
+    var v = document.createElement('div'); v.id = 'angelView'; v.style.display = 'none';
+    wrap.appendChild(v);
+    document.addEventListener('click', function (e) { var t = e.target.closest && e.target.closest('.sb-item'); if (t && t.id !== 'sb-angel') { var av = document.getElementById('angelView'); if (av) av.style.display = 'none'; it.classList.remove('active'); } }, true);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install); else install();
+})();
