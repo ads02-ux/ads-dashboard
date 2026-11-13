@@ -92,8 +92,9 @@
   // คีย์คอนเทนต์: ตัดส่วนหน้า "--" และเลขลำดับหน้าชื่อ แล้วเอาข้อความถึงวันที่แรก + เลข ver (วันรุมยิงไม่นับ) · ver ต่างกัน = คนละชิ้น
   function contentKey(c) {
     var s = String(c.name || '').replace(/^.*--\s*/, '').replace(/^[\s*().\[\]#_\-0-9]+/, '').replace(/\s+/g, ' ').trim().toLowerCase();
-    var v = s.match(/\bver\.?\s*(\d+)/), d = s.match(/^(.*?\d{1,2}\/\d{1,2}\/\d{2,4})/);
-    s = (d ? d[1] : v ? s.slice(0, v.index) : s).trim() + ' ver' + (v ? v[1] : '1');
+    var v = s.match(/\bver\.?\s*(\d+)/), d = s.match(/\d{1,2}\/\d{1,2}\/\d{2,4}/);
+    // ชื่อคอนเทนต์ = ข้อความก่อนวันที่แรก (ไม่มีวันที่ = ก่อน ver) · ตัด noedit / ช่องว่าง + วันที่แรก + ver → เช่น "ผู้เชี่ยวชาญยัยไหม TL อยู่ดีดี" 09/11/69 ver1
+    s = (d ? s.slice(0, d.index) : v ? s.slice(0, v.index) : s).replace(/no\s*-?\s*edit(t?ing)?/g, '').replace(/[\s\-_.,:|]+/g, '') + '|' + nameDate(c.name) + '|ver' + (v ? v[1] : '1');
     return c.prod + '|' + s;
   }
   function dedupe(list, rank, ex) {
