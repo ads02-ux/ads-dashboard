@@ -12,7 +12,7 @@
   };
   // เกรดคอนเทนต์ (งบทุกวัน ≥ , ROAS 3 วัน ≥ , ค่าคอมต่อชิ้น)
   var ROAS_RULES = [['A+', 5000, 3, 500], ['A', 3000, 2.5, 300], ['B', 1000, 2, 200]];
-  var S = { m: '', p: -1, tab: 'chat', q: '' }, CACHE = {}, LOADING = {};
+  var S = { m: '', p: -1, tab: 'chat', q: '', mg: '' }, CACHE = {}, LOADING = {};
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function pad(n) { return String(n).padStart(2, '0'); }
@@ -25,9 +25,12 @@
   function dl(s) { var p = s.split('-'); return +p[2] + ' ' + THM[+p[1] - 1]; }
   function mLabel(m) { var p = m.split('-'); return THM[+p[1] - 1] + ' ' + (+p[0] + 543); }
   function prods() { return window.FB_HIERARCHY || []; }
+  var MG_ORDER = ['MOS', 'DOM', 'NUNE', 'JAM', 'BALL', 'TER', 'LINK'];
+  function mgrOf(v) { v = String(v == null ? '' : v).trim(); return !v || v === '-' ? 'ไม่ระบุ' : v.toUpperCase(); }
+  function mgOrd(a) { var i = MG_ORDER.indexOf(a); return a === 'ไม่ระบุ' ? 999 : i < 0 ? 500 : i; }
   function accInfo() {
     var m = {};
-    prods().forEach(function (p, pi) { (p.pages || []).forEach(function (pg) { (pg.accounts || []).forEach(function (h) { (h.adAccounts || []).forEach(function (a) { if (!m[a]) m[a] = { pi: pi, prod: p.product, page: pg.name, disp: h.displayName || a }; }); }); }); });
+    prods().forEach(function (p, pi) { (p.pages || []).forEach(function (pg) { (pg.accounts || []).forEach(function (h) { (h.adAccounts || []).forEach(function (a) { if (!m[a]) m[a] = { pi: pi, prod: p.product, page: pg.name, disp: h.displayName || a, mgr: mgrOf(pg.manager) }; }); }); }); });
     return m;
   }
   function ruleOf(prod) { for (var k in CHAT_RULES) if (CHAT_RULES[k].prods.indexOf(prod) >= 0) return CHAT_RULES[k]; return null; }
@@ -84,8 +87,8 @@
     });
     var fetchFrom = addD(rg[0], -14), chat = [], roas = [];
     Object.keys(cm).forEach(function (k) {
-      var c = cm[k], ai = info[c.acc] || { pi: -1, prod: '', page: '', disp: c.acc };
-      c.pi = ai.pi; c.prod = ai.prod; c.page = ai.page; c.disp = ai.disp;
+      var c = cm[k], ai = info[c.acc] || { pi: -1, prod: '', page: '', disp: c.acc, mgr: 'ไม่ระบุ' };
+      c.pi = ai.pi; c.prod = ai.prod; c.page = ai.page; c.disp = ai.disp; c.mgr = ai.mgr;
       // เกณฑ์ 1: ทักถูก (แคมเปญที่เริ่มยิงในเดือนนี้)
       if (c.first && c.first >= rg[0] && c.first <= rg[1] && c.first > fetchFrom) {
         var s = 0, ch = 0, end = addD(c.first, 4), n = 0;
@@ -128,7 +131,16 @@
       h += '<div class="c2-card c2-empty">กำลังดึงข้อมูล ' + mLabel(S.m) + ' จาก Facebook… ' + L.done + '/' + (L.total || '?') + ' บัญชี</div></div>'; box.innerHTML = h; return;
     }
     var q = S.q.toLowerCase();
-    function keep(c) { return (S.p < 0 || c.pi === S.p) && (!q || (c.name + ' ' + c.page + ' ' + c.disp + ' ' + c.prod).toLowerCase().indexOf(q) >= 0); }
+    function keep0(c) { return (S.p < 0 || c.pi === S.p) && (!q || (c.name + ' ' + c.page + ' ' + c.disp + ' ' + c.prod + ' ' + c.mgr).toLowerCase().indexOf(q) >= 0); }
+    function keep(c) { return keep0(c) && (!S.mg || c.mgr === S.mg); }
+    // ผู้ดูแลเพจ: นับชิ้นที่ผ่าน + ค่าคอม แยกตามคน (ไม่สนตัวกรองผู้ดูแล)
+    var MG = {};
+    function mgAdd(c, k, com) { var o = MG[c.mgr] || (MG[c.mgr] = { c1: 0, c2: 0, com: 0 }); o[k]++; o.com += com; }
+    R.chat.forEach(function (x) { if (keep0(x.c) && x.grade && x.done) mgAdd(x.c, 'c1', x.grade[3]); });
+    R.roas.forEach(function (x) { if (keep0(x.c)) mgAdd(x.c, 'c2', x.b.grade[3]); });
+    var MGK = Object.keys(MG).sort(function (a, b) { return (mgOrd(a) - mgOrd(b)) || (a < b ? -1 : 1); });
+    if (S.mg && !MG[S.mg]) MGK.push(S.mg);
+    h += '<div class="ag-mg" role="group" aria-label="ผู้ดูแล"><span class="ag-mgl">ผู้ดูแล</span><button class="' + (!S.mg ? 'on' : '') + '" onclick="angelV2.set(\'mg\',\'\')"><b>ทุกคน</b></button>' + MGK.map(function (k) { var o = MG[k] || { c1: 0, c2: 0, com: 0 }; return '<button class="' + (S.mg === k ? 'on' : '') + '" onclick="angelV2.set(\'mg\',\'' + esc(k) + '\')"><b>' + esc(k) + '</b><span>เกณฑ์ 1 ' + o.c1 + ' · เกณฑ์ 2 ' + o.c2 + '</span><span class="ag-mgc">' + B(o.com) + '</span></button>'; }).join('') + '</div>';
     var chat = R.chat.filter(function (x) { return keep(x.c); }), roas = R.roas.filter(function (x) { return keep(x.c); });
     var cg = { 'A+': 0, A: 0, B: 0 }, ccom = 0, rg = { 'A+': 0, A: 0, B: 0 }, rcom = 0, pend = 0;
     chat.forEach(function (x) { if (x.grade && x.done) { cg[x.grade[0]]++; ccom += x.grade[3]; } else pend++; });
@@ -143,11 +155,11 @@
     if (S.tab === 'chat') {
       chat.sort(function (a, b) { var ga = a.grade ? 'A+AB'.indexOf(a.grade[0]) : 9, gb = b.grade ? 'A+AB'.indexOf(b.grade[0]) : 9; return (b.done - a.done) || (ga - gb) || (a.cpc - b.cpc); });
       h += '<div class="c2-card c2-pad"><h2>เกณฑ์ 1 · ต้นทุนทักถูก (ยิงวันแรก–วันที่ 5)</h2><div class="c2-note">นับแคมเปญที่เริ่มยิงระหว่าง <b>' + dl(MR[0]) + ' – ' + dl(toD) + '</b> · ดู 5 วันแรกของแต่ละตัว (คอลัมน์ "ช่วงที่ดู") · ต้นทุนต่อทักรวม 5 วัน ≤ เกณฑ์ และคนทักรวม 5 วัน ≥ ขั้นต่ำ ตามกลุ่มสินค้า</div>';
-      h += '<div class="c2-scroll"><table class="c2-t ai2-t"><thead><tr><th>เกรด</th><th>แคมเปญ</th><th>สินค้า · เพจ</th><th>ช่วงที่ดู (วันที่ 1–5)</th><th class="r">ค่าแอด 5 วัน</th><th class="r">คนทัก 5 วัน</th><th class="r">ต้นทุน/ทัก</th><th>เกณฑ์ที่ผ่าน</th><th class="r">ค่าคอม</th></tr></thead><tbody>';
+      h += '<div class="c2-scroll"><table class="c2-t ai2-t"><thead><tr><th>เกรด</th><th>แคมเปญ</th><th>สินค้า · เพจ · ผู้ดูแล</th><th>ช่วงที่ดู (วันที่ 1–5)</th><th class="r">ค่าแอด 5 วัน</th><th class="r">คนทัก 5 วัน</th><th class="r">ต้นทุน/ทัก</th><th>เกณฑ์ที่ผ่าน</th><th class="r">ค่าคอม</th></tr></thead><tbody>';
       chat.forEach(function (x, xi) {
         var c = x.c, g = x.grade;
         h += '<tr><td>' + (g ? gtag(g[0]) : '') + (x.done ? '' : '<span class="ai2-tag none">วันที่ ' + x.n + '/5</span>') + '</td><td class="ai2-name"><button class="ag-clip" title="ดูคลิป: ' + esc(c.name) + '" onclick="angelV2.clip(\'chat\',' + xi + ')">' + esc(c.name) + '</button><span class="c2-dim ai2-sm">' + esc(c.disp) + '</span></td>' +
-          '<td><b>' + esc(c.prod) + '</b><div class="c2-dim ai2-sm">' + esc(c.page) + '</div></td><td class="ai2-nw">' + dl(c.first) + ' – ' + dl(x.end) + '</td>' +
+          '<td><b>' + esc(c.prod) + '</b><div class="c2-dim ai2-sm">' + esc(c.page) + '</div><span class="ag-mgt' + (c.mgr === 'ไม่ระบุ' ? ' none' : '') + '">' + esc(c.mgr) + '</span></td><td class="ai2-nw">' + dl(c.first) + ' – ' + dl(x.end) + '</td>' +
           '<td class="r">' + B(x.s) + '</td><td class="r">' + I(x.ch) + '</td><td class="r"><b>' + B(x.cpc) + '</b></td>' +
           '<td class="ai2-sm">' + (g ? esc(x.rule.name) + ': ≤ ฿' + g[1] + ' · ≥ ' + g[2] + ' คน' : '<span class="c2-dim">' + (x.done ? 'ไม่ผ่าน' : 'ยังไม่ครบ 5 วัน · คนทักยังไม่ถึงขั้นต่ำ') + '</span>') + '</td>' +
           '<td class="r">' + (g && x.done ? '<b class="c2-good">' + B(g[3]) + '</b>' : '<span class="c2-dim">' + (g ? 'รอครบ 5 วัน' : '–') + '</span>') + '</td></tr>';
@@ -157,11 +169,11 @@
     } else {
       roas.sort(function (a, b) { return (a.b.gi - b.b.gi) || (b.b.ro - a.b.ro); });
       h += '<div class="c2-card c2-pad"><h2>เกณฑ์ 2 · ใช้งบยิง + ROAS (3 วันติดกัน)</h2><div class="c2-note">หา 3 วันติดกันในช่วง <b>' + dl(MR[0]) + ' – ' + dl(toD) + '</b> · ทุกวันใน 3 วันต้องใช้งบ ≥ เกณฑ์ และ ROAS รวม 3 วัน ≥ เกณฑ์ · แสดงเกรดสูงสุดที่ทำได้ พร้อม 3 วันที่ผ่าน</div>';
-      h += '<div class="c2-scroll"><table class="c2-t ai2-t"><thead><tr><th>เกรด</th><th>แคมเปญ</th><th>สินค้า · เพจ</th><th>3 วันที่ผ่าน</th><th class="r">งบต่ำสุด/วัน</th><th class="r">ค่าแอด 3 วัน</th><th class="r">ยอดขาย 3 วัน</th><th class="r">ROAS</th><th class="r">ค่าคอม</th></tr></thead><tbody>';
+      h += '<div class="c2-scroll"><table class="c2-t ai2-t"><thead><tr><th>เกรด</th><th>แคมเปญ</th><th>สินค้า · เพจ · ผู้ดูแล</th><th>3 วันที่ผ่าน</th><th class="r">งบต่ำสุด/วัน</th><th class="r">ค่าแอด 3 วัน</th><th class="r">ยอดขาย 3 วัน</th><th class="r">ROAS</th><th class="r">ค่าคอม</th></tr></thead><tbody>';
       roas.forEach(function (x, xi) {
         var c = x.c, b = x.b;
         h += '<tr><td>' + gtag(b.grade[0]) + '</td><td class="ai2-name"><button class="ag-clip" title="ดูคลิป: ' + esc(c.name) + '" onclick="angelV2.clip(\'roas\',' + xi + ')">' + esc(c.name) + '</button><span class="c2-dim ai2-sm">' + esc(c.disp) + '</span></td>' +
-          '<td><b>' + esc(c.prod) + '</b><div class="c2-dim ai2-sm">' + esc(c.page) + '</div></td><td class="ai2-nw">' + dl(b.from) + ' – ' + dl(addD(b.from, 2)) + '</td>' +
+          '<td><b>' + esc(c.prod) + '</b><div class="c2-dim ai2-sm">' + esc(c.page) + '</div><span class="ag-mgt' + (c.mgr === 'ไม่ระบุ' ? ' none' : '') + '">' + esc(c.mgr) + '</span></td><td class="ai2-nw">' + dl(b.from) + ' – ' + dl(addD(b.from, 2)) + '</td>' +
           '<td class="r">' + B(b.minS) + '</td><td class="r">' + B(b.s) + '</td><td class="r">' + B(b.v) + '</td><td class="r"><span class="c2-pill g">' + b.ro.toFixed(2) + '</span></td><td class="r"><b class="c2-good">' + B(b.grade[3]) + '</b></td></tr>';
       });
       if (!roas.length) h += '<tr><td colspan="9" class="c2-dim">ยังไม่มีคอนเทนต์ที่ผ่านเกณฑ์นี้</td></tr>';
@@ -178,9 +190,9 @@
   }
   function csv() {
     var L = window._angelLast; if (!L) return;
-    var lines = [['เกณฑ์', 'เกรด', 'สถานะ', 'สินค้า', 'เพจ', 'บัญชี', 'แคมเปญ', 'ช่วงวันที่', 'ค่าแอด', 'คนทัก', 'ต้นทุน/ทัก', 'ยอดขาย', 'ROAS', 'ค่าคอม']];
-    L.chat.forEach(function (x) { lines.push(['ทักถูก', x.grade ? x.grade[0] : '', x.done ? 'ครบ 5 วัน' : 'วันที่ ' + x.n + '/5', x.c.prod, x.c.page, x.c.disp, x.c.name, x.c.first + ' ถึง ' + x.end, Math.round(x.s), Math.round(x.ch), Math.round(x.cpc), '', '', x.grade && x.done ? x.grade[3] : 0]); });
-    L.roas.forEach(function (x) { lines.push(['งบ+ROAS', x.b.grade[0], '', x.c.prod, x.c.page, x.c.disp, x.c.name, x.b.from + ' ถึง ' + addD(x.b.from, 2), Math.round(x.b.s), Math.round(x.b.ch), '', Math.round(x.b.v), x.b.ro.toFixed(2), x.b.grade[3]]); });
+    var lines = [['เกณฑ์', 'เกรด', 'สถานะ', 'สินค้า', 'เพจ', 'ผู้ดูแล', 'บัญชี', 'แคมเปญ', 'ช่วงวันที่', 'ค่าแอด', 'คนทัก', 'ต้นทุน/ทัก', 'ยอดขาย', 'ROAS', 'ค่าคอม']];
+    L.chat.forEach(function (x) { lines.push(['ทักถูก', x.grade ? x.grade[0] : '', x.done ? 'ครบ 5 วัน' : 'วันที่ ' + x.n + '/5', x.c.prod, x.c.page, x.c.mgr, x.c.disp, x.c.name, x.c.first + ' ถึง ' + x.end, Math.round(x.s), Math.round(x.ch), Math.round(x.cpc), '', '', x.grade && x.done ? x.grade[3] : 0]); });
+    L.roas.forEach(function (x) { lines.push(['งบ+ROAS', x.b.grade[0], '', x.c.prod, x.c.page, x.c.mgr, x.c.disp, x.c.name, x.b.from + ' ถึง ' + addD(x.b.from, 2), Math.round(x.b.s), Math.round(x.b.ch), '', Math.round(x.b.v), x.b.ro.toFixed(2), x.b.grade[3]]); });
     var t = String.fromCharCode(65279) + lines.map(function (r) { return r.map(function (v) { v = String(v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }).join(','); }).join('\n');
     var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([t], { type: 'text/csv;charset=utf-8' })); a.download = 'คัดนางฟ้า-' + S.m + '.csv'; document.body.appendChild(a); a.click(); a.remove();
   }
@@ -235,6 +247,7 @@
     s.textContent = [
       '#angelView .ag-g{display:inline-block;min-width:34px;text-align:center;padding:3px 8px;border-radius:99px;font-size:12px;font-weight:700;margin-right:6px}#angelView .ag-g.ap{background:#FEF3C7;color:#92400E}#angelView .ag-g.a{background:#DBEAFE;color:#1D4ED8}#angelView .ag-g.b{background:#E2E8F0;color:#334155}',
       '#angelView .ag-range{margin-top:6px;font-size:14px;color:#0F172A;background:#EFF6FF;border:1px solid #BFDBFE;border-radius:8px;padding:6px 10px;display:inline-block}',
+      '#angelView .ag-mg{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch}#angelView .ag-mgl{align-self:center;font-size:13px;color:#64748B;margin-right:4px}#angelView .ag-mg button{display:flex;flex-direction:column;align-items:flex-start;gap:1px;border:1px solid #E5E7EB!important;background:#fff!important;border-radius:10px!important;padding:7px 12px!important;cursor:pointer;font:inherit!important;color:#0F172A!important;min-width:92px;text-align:left}#angelView .ag-mg button b{font-size:13px}#angelView .ag-mg button span{font-size:11px;color:#64748B}#angelView .ag-mg button .ag-mgc{color:#15803D;font-weight:600;font-size:12px}#angelView .ag-mg button.on{background:#2563EB!important;border-color:#2563EB!important;color:#fff!important}#angelView .ag-mg button.on span{color:#DBEAFE!important}#angelView .ag-mg button:not(:first-of-type){}#angelView .ag-mgt{display:inline-block;margin-top:3px;padding:1px 8px;border-radius:99px;background:#EEF2FF;color:#4338CA;font-size:11px;font-weight:700}#angelView .ag-mgt.none{background:#F1F5F9;color:#94A3B8;font-weight:500}',
       '#angelView .ag-switch{display:flex;flex-wrap:wrap;gap:10px;align-items:center}#angelView .ag-switch .ai2-q{margin-left:auto}',
       '#angelView .ag-rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-top:14px}#angelView .ag-rules .c2-t{min-width:0;margin-top:6px}',
       '#angelView .ag-clip{display:block;max-width:100%;border:0;background:none;padding:0;font:inherit;font-weight:600;color:#1D4ED8;cursor:pointer;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#angelView .ag-clip:hover{text-decoration:underline}',
