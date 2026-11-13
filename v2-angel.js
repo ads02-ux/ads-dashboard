@@ -144,9 +144,9 @@
       chat.sort(function (a, b) { var ga = a.grade ? 'A+AB'.indexOf(a.grade[0]) : 9, gb = b.grade ? 'A+AB'.indexOf(b.grade[0]) : 9; return (b.done - a.done) || (ga - gb) || (a.cpc - b.cpc); });
       h += '<div class="c2-card c2-pad"><h2>เกณฑ์ 1 · ต้นทุนทักถูก (ยิงวันแรก–วันที่ 5)</h2><div class="c2-note">นับแคมเปญที่เริ่มยิงระหว่าง <b>' + dl(MR[0]) + ' – ' + dl(toD) + '</b> · ดู 5 วันแรกของแต่ละตัว (คอลัมน์ "ช่วงที่ดู") · ต้นทุนต่อทักรวม 5 วัน ≤ เกณฑ์ และคนทักรวม 5 วัน ≥ ขั้นต่ำ ตามกลุ่มสินค้า</div>';
       h += '<div class="c2-scroll"><table class="c2-t ai2-t"><thead><tr><th>เกรด</th><th>แคมเปญ</th><th>สินค้า · เพจ</th><th>ช่วงที่ดู (วันที่ 1–5)</th><th class="r">ค่าแอด 5 วัน</th><th class="r">คนทัก 5 วัน</th><th class="r">ต้นทุน/ทัก</th><th>เกณฑ์ที่ผ่าน</th><th class="r">ค่าคอม</th></tr></thead><tbody>';
-      chat.forEach(function (x) {
+      chat.forEach(function (x, xi) {
         var c = x.c, g = x.grade;
-        h += '<tr><td>' + (g ? gtag(g[0]) : '') + (x.done ? '' : '<span class="ai2-tag none">วันที่ ' + x.n + '/5</span>') + '</td><td class="ai2-name"><div title="' + esc(c.name) + '">' + esc(c.name) + '</div><span class="c2-dim ai2-sm">' + esc(c.disp) + '</span></td>' +
+        h += '<tr><td>' + (g ? gtag(g[0]) : '') + (x.done ? '' : '<span class="ai2-tag none">วันที่ ' + x.n + '/5</span>') + '</td><td class="ai2-name"><button class="ag-clip" title="ดูคลิป: ' + esc(c.name) + '" onclick="angelV2.clip(\'chat\',' + xi + ')">' + esc(c.name) + '</button><span class="c2-dim ai2-sm">' + esc(c.disp) + '</span></td>' +
           '<td><b>' + esc(c.prod) + '</b><div class="c2-dim ai2-sm">' + esc(c.page) + '</div></td><td class="ai2-nw">' + dl(c.first) + ' – ' + dl(x.end) + '</td>' +
           '<td class="r">' + B(x.s) + '</td><td class="r">' + I(x.ch) + '</td><td class="r"><b>' + B(x.cpc) + '</b></td>' +
           '<td class="ai2-sm">' + (g ? esc(x.rule.name) + ': ≤ ฿' + g[1] + ' · ≥ ' + g[2] + ' คน' : '<span class="c2-dim">' + (x.done ? 'ไม่ผ่าน' : 'ยังไม่ครบ 5 วัน · คนทักยังไม่ถึงขั้นต่ำ') + '</span>') + '</td>' +
@@ -158,9 +158,9 @@
       roas.sort(function (a, b) { return (a.b.gi - b.b.gi) || (b.b.ro - a.b.ro); });
       h += '<div class="c2-card c2-pad"><h2>เกณฑ์ 2 · ใช้งบยิง + ROAS (3 วันติดกัน)</h2><div class="c2-note">หา 3 วันติดกันในช่วง <b>' + dl(MR[0]) + ' – ' + dl(toD) + '</b> · ทุกวันใน 3 วันต้องใช้งบ ≥ เกณฑ์ และ ROAS รวม 3 วัน ≥ เกณฑ์ · แสดงเกรดสูงสุดที่ทำได้ พร้อม 3 วันที่ผ่าน</div>';
       h += '<div class="c2-scroll"><table class="c2-t ai2-t"><thead><tr><th>เกรด</th><th>แคมเปญ</th><th>สินค้า · เพจ</th><th>3 วันที่ผ่าน</th><th class="r">งบต่ำสุด/วัน</th><th class="r">ค่าแอด 3 วัน</th><th class="r">ยอดขาย 3 วัน</th><th class="r">ROAS</th><th class="r">ค่าคอม</th></tr></thead><tbody>';
-      roas.forEach(function (x) {
+      roas.forEach(function (x, xi) {
         var c = x.c, b = x.b;
-        h += '<tr><td>' + gtag(b.grade[0]) + '</td><td class="ai2-name"><div title="' + esc(c.name) + '">' + esc(c.name) + '</div><span class="c2-dim ai2-sm">' + esc(c.disp) + '</span></td>' +
+        h += '<tr><td>' + gtag(b.grade[0]) + '</td><td class="ai2-name"><button class="ag-clip" title="ดูคลิป: ' + esc(c.name) + '" onclick="angelV2.clip(\'roas\',' + xi + ')">' + esc(c.name) + '</button><span class="c2-dim ai2-sm">' + esc(c.disp) + '</span></td>' +
           '<td><b>' + esc(c.prod) + '</b><div class="c2-dim ai2-sm">' + esc(c.page) + '</div></td><td class="ai2-nw">' + dl(b.from) + ' – ' + dl(addD(b.from, 2)) + '</td>' +
           '<td class="r">' + B(b.minS) + '</td><td class="r">' + B(b.s) + '</td><td class="r">' + B(b.v) + '</td><td class="r"><span class="c2-pill g">' + b.ro.toFixed(2) + '</span></td><td class="r"><b class="c2-good">' + B(b.grade[3]) + '</b></td></tr>';
       });
@@ -184,11 +184,41 @@
     var t = String.fromCharCode(65279) + lines.map(function (r) { return r.map(function (v) { v = String(v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }).join(','); }).join('\n');
     var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([t], { type: 'text/csv;charset=utf-8' })); a.download = 'คัดนางฟ้า-' + S.m + '.csv'; document.body.appendChild(a); a.click(); a.remove();
   }
+  /* ---------- ดูคลิปของแคมเปญ ---------- */
+  function clip(tab, i) {
+    var L = window._angelLast; var x = L && L[tab] && L[tab][i]; if (!x) return;
+    var c = x.c, acc = c.acc, tok = (window.FB_TOKENS || {})[acc] || window.FB_TOKEN;
+    var mm = (window.FB_ACCOUNTS_META || []).filter(function (m) { return m.name === acc || m.configKey === 'FB_GID_' + acc; })[0] || {};
+    var ov = document.getElementById('agClip');
+    if (!ov) { ov = document.createElement('div'); ov.id = 'agClip'; ov.onclick = function (e) { if (e.target === ov) closeClip(); }; document.body.appendChild(ov); document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeClip(); }); }
+    ov.style.display = 'flex';
+    ov.innerHTML = '<div class="agc-box" role="dialog" aria-label="คลิปของแคมเปญ"><div class="agc-head"><div><b>' + esc(c.name) + '</b><div class="c2-dim ai2-sm">' + esc(c.prod) + ' · ' + esc(c.page) + ' · ' + esc(c.disp) + '</div></div><button class="agc-x" aria-label="ปิด" onclick="angelV2.closeClip()">✕</button></div><div class="agc-body" id="agcBody"><div class="c2-dim">กำลังดึงโฆษณาจาก Facebook…</div></div></div>';
+    var body = document.getElementById('agcBody');
+    var fail = function (m) { body.innerHTML = '<div class="ai2-banner warn"><b>ดึงคลิปไม่ได้</b><span>' + esc(m) + '</span></div>'; };
+    if (!mm.id) return fail('ไม่พบรหัสบัญชีโฆษณา');
+    var f = encodeURIComponent(JSON.stringify([{ field: 'name', operator: 'EQUAL', value: c.name }]));
+    fetch(window.FB_API + mm.id + '/campaigns?fields=id,name&limit=5&filtering=' + f + '&access_token=' + tok).then(function (r) { return r.json(); }).then(function (j) {
+      if (j.error) return fail(j.error.message);
+      var ids = (j.data || []).map(function (d) { return d.id; }); if (!ids.length) return fail('ไม่พบแคมเปญนี้ในบัญชี (อาจถูกเปลี่ยนชื่อหรือลบ)');
+      return Promise.all(ids.map(function (cid) { return fetch(window.FB_API + cid + '/ads?fields=name,effective_status,creative{video_id,thumbnail_url,image_url,effective_object_story_id}&limit=20&access_token=' + tok).then(function (r) { return r.json(); }); })).then(function (res) {
+        var ads = [], seen = {};
+        res.forEach(function (r) { (r.data || []).forEach(function (a) { var cr = a.creative || {}, k = cr.video_id || cr.effective_object_story_id || a.id; if (seen[k]) return; seen[k] = 1; ads.push(a); }); });
+        if (!ads.length) return fail('แคมเปญนี้ไม่มีโฆษณา');
+        body.innerHTML = ads.map(function (a) {
+          var cr = a.creative || {}, story = cr.effective_object_story_id || '', pg = story.split('_')[0], post = story ? 'https://www.facebook.com/' + story : '';
+          var player = cr.video_id && pg ? '<iframe class="agc-vid" src="https://www.facebook.com/plugins/video.php?href=' + encodeURIComponent('https://www.facebook.com/' + pg + '/videos/' + cr.video_id + '/') + '&show_text=false&width=360" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture" allowfullscreen loading="lazy" title="คลิปโฆษณา"></iframe>'
+            : (cr.image_url || cr.thumbnail_url ? '<img class="agc-img" src="' + esc(cr.image_url || cr.thumbnail_url) + '" alt="ภาพโฆษณา">' : '<div class="c2-dim">ไม่มีตัวอย่าง</div>');
+          return '<div class="agc-ad">' + player + '<div class="agc-meta"><span class="ai2-tag ' + (a.effective_status === 'ACTIVE' ? 'up' : a.effective_status === 'DISAPPROVED' ? 'close' : 'none') + '">' + esc(a.effective_status || '') + '</span> <span class="ai2-sm">' + esc(a.name || '') + '</span>' + (post ? '<a class="c2-link" href="' + post + '" target="_blank" rel="noopener">เปิดโพสต์ใน Facebook ↗</a>' : '') + '</div></div>';
+        }).join('') + '<div class="c2-note">ถ้าคลิปไม่เล่น (โพสต์โฆษณาบางตัวไม่เปิดให้ฝัง) ให้กด "เปิดโพสต์ใน Facebook"</div>';
+      });
+    }).catch(function (e) { fail(e.message); });
+  }
+  function closeClip() { var ov = document.getElementById('agClip'); if (ov) { ov.style.display = 'none'; ov.innerHTML = ''; } }
   var qT;
   window.angelV2 = {
     set: function (k, v) { S[k] = v; render(); if (k !== 'tab') window.scrollTo(0, 0); },
     q: function (v) { S.q = v; clearTimeout(qT); qT = setTimeout(function () { S._f = true; render(); }, 250); },
-    csv: csv, render: render, open: open
+    csv: csv, render: render, open: open, clip: clip, closeClip: closeClip
   };
 
   var ICON = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.4 6.8 19.1l1-5.8L3.5 9.2l5.9-.9z"/></svg>';
@@ -207,6 +237,10 @@
       '#angelView .ag-range{margin-top:6px;font-size:14px;color:#0F172A;background:#EFF6FF;border:1px solid #BFDBFE;border-radius:8px;padding:6px 10px;display:inline-block}',
       '#angelView .ag-switch{display:flex;flex-wrap:wrap;gap:10px;align-items:center}#angelView .ag-switch .ai2-q{margin-left:auto}',
       '#angelView .ag-rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-top:14px}#angelView .ag-rules .c2-t{min-width:0;margin-top:6px}',
+      '#angelView .ag-clip{display:block;max-width:100%;border:0;background:none;padding:0;font:inherit;font-weight:600;color:#1D4ED8;cursor:pointer;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#angelView .ag-clip:hover{text-decoration:underline}',
+      '#agClip{position:fixed;inset:0;background:rgba(15,23,42,.6);z-index:99999;display:none;align-items:center;justify-content:center;padding:16px;font-family:"IBM Plex Sans Thai","Sarabun",system-ui,sans-serif}#agClip .agc-box{background:#fff;border-radius:14px;width:min(820px,100%);max-height:92vh;display:flex;flex-direction:column;overflow:hidden}',
+      '#agClip .agc-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;padding:14px 18px;border-bottom:1px solid #E5E7EB;font-size:14px}#agClip .agc-x{width:34px;height:34px;border:1px solid #E5E7EB;border-radius:8px;background:#fff;cursor:pointer;flex:none}',
+      '#agClip .agc-body{padding:16px 18px;overflow:auto;display:flex;flex-wrap:wrap;gap:16px;font-size:13px}#agClip .agc-ad{width:360px;max-width:100%;display:flex;flex-direction:column;gap:8px}#agClip .agc-vid{width:360px;max-width:100%;height:640px;max-height:70vh;border:0;border-radius:10px;background:#000}#agClip .agc-img{width:100%;border-radius:10px}#agClip .agc-meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center}#agClip .c2-note{width:100%}',
       '#angelView .c2-tabs button{border-radius:99px}#angelView .c2-seg button{border-radius:7px}'
     ].join('\n');
     document.head.appendChild(s);
