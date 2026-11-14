@@ -1,52 +1,24 @@
 {
   "name": "daily-notes.json",
   "path": "daily-notes.json",
-  "sha": "93e7b23f33e818f6b194e42d36b834573ba90b01",
-  "size": 1386702,
+  "sha": "148384f32c6583a7c167ecbcf474b00119485b4b",
+  "size": 3024,
   "url": "https://api.github.com/repos/ads02-ux/ads-dashboard/contents/daily-notes.json?ref=main",
   "html_url": "https://github.com/ads02-ux/ads-dashboard/blob/main/daily-notes.json",
-  "git_url": "https://api.github.com/repos/ads02-ux/ads-dashboard/git/blobs/93e7b23f33e818f6b194e42d36b834573ba90b01",
+  "git_url": "https://api.github.com/repos/ads02-ux/ads-dashboard/git/blobs/148384f32c6583a7c167ecbcf474b00119485b4b",
   "download_url": "https://raw.githubusercontent.com/ads02-ux/ads-dashboard/main/daily-notes.json",
   "type": "file",
-  "content": "",
-  "encoding": "none",
+  "content": "ewogICJuYW1lIjogImRhaWx5LW5vdGVzLmpzb24iLAogICJwYXRoIjogImRh\naWx5LW5vdGVzLmpzb24iLAogICJzaGEiOiAiOTNlN2IyM2YzM2U4MThmNmIx\nOTRlNDJkMzZiODM0NTczYmE5MGIwMSIsCiAgInNpemUiOiAxMzg2NzAyLAog\nICJ1cmwiOiAiaHR0cHM6Ly9hcGkuZ2l0aHViLmNvbS9yZXBvcy9hZHMwMi11\neC9hZHMtZGFzaGJvYXJkL2NvbnRlbnRzL2RhaWx5LW5vdGVzLmpzb24/cmVm\nPW1haW4iLAogICJodG1sX3VybCI6ICJodHRwczovL2dpdGh1Yi5jb20vYWRz\nMDItdXgvYWRzLWRhc2hib2FyZC9ibG9iL21haW4vZGFpbHktbm90ZXMuanNv\nbiIsCiAgImdpdF91cmwiOiAiaHR0cHM6Ly9hcGkuZ2l0aHViLmNvbS9yZXBv\ncy9hZHMwMi11eC9hZHMtZGFzaGJvYXJkL2dpdC9ibG9icy85M2U3YjIzZjMz\nZTgxOGY2YjE5NGU0MmQzNmI4MzQ1NzNiYTkwYjAxIiwKICAiZG93bmxvYWRf\ndXJsIjogImh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9hZHMw\nMi11eC9hZHMtZGFzaGJvYXJkL21haW4vZGFpbHktbm90ZXMuanNvbiIsCiAg\nInR5cGUiOiAiZmlsZSIsCiAgImNvbnRlbnQiOiAiIiwKICAiZW5jb2Rpbmci\nOiAibm9uZSIsCiAgIl9saW5rcyI6IHsKICAgICJzZWxmIjogImh0dHBzOi8v\nYXBpLmdpdGh1Yi5jb20vcmVwb3MvYWRzMDItdXgvYWRzLWRhc2hib2FyZC9j\nb250ZW50cy9kYWlseS1ub3Rlcy5qc29uP3JlZj1tYWluIiwKICAgICJnaXQi\nOiAiaHR0cHM6Ly9hcGkuZ2l0aHViLmNvbS9yZXBvcy9hZHMwMi11eC9hZHMt\nZGFzaGJvYXJkL2dpdC9ibG9icy85M2U3YjIzZjMzZTgxOGY2YjE5NGU0MmQz\nNmI4MzQ1NzNiYTkwYjAxIiwKICAgICJodG1sIjogImh0dHBzOi8vZ2l0aHVi\nLmNvbS9hZHMwMi11eC9hZHMtZGFzaGJvYXJkL2Jsb2IvbWFpbi9kYWlseS1u\nb3Rlcy5qc29uIgogIH0sCiAgIjIwMjYtMTEtMTQiOiB7CiAgICAiMi7guJzg\nuLnguYnguIrguLLguKLguILguLLguKLguJnguYnguLMg4LiC4Li44LiZ4LmB\n4Lic4LiZIE5vZWRpdCDguITguLTguJTguJTguLnguKrguLTguITguKPguLHg\nuJogIDMvMTEvNjkgIHZlcjIgMTIyMTA0NDk3OTI3NTI2NTA3IOC4geC4suC4\no+C4i+C4t+C5ieC4rSAgICjguYDguJfguKrguKrguKfguJnguJXguLHguKcp\nIjogewogICAgICAib2xkIjogIjIwMCIsCiAgICAgICJuZXciOiAiNDAwIgog\nICAgfSwKICAgICIwMDMuKioqIOC4hOC4uOC4k+C4ruC4tOC4oSAxIOC4leC5\nieC4meC4ieC4muC4seC4miDguJzguKHguYDguJXguLfguK3guJnguYDguKXg\nuKLguJnguLDguITguKPguLHguJogMTYvMTIvNjcg4Lil4Li44Lih4Lii4Li0\n4LiHIDA1LzExLzY5IFZlcjYgKOC4quC5iOC4p+C4meC4leC4seC4pykgMTIy\nMTczODAzMjk2MjUzNTYzIOC4geC4suC4o+C4quC4meC4l+C4meC4siAxICjg\nuKLguKgpIjogewogICAgICAib2xkIjogIjExMDAiLAogICAgICAibmV3Ijog\nIjgwMCIKICAgIH0sCiAgICAiKioqKDAxLikg4LiE4Li44LiT4Liu4Li04Lih\nIDEg4LiV4LmJ4LiZ4LiJ4Lia4Lix4LiaIOC4nOC4oeC5gOC4leC4t+C4reC4\nmeC5gOC4peC4ouC4meC4sOC4hOC4o+C4seC4miAxNi8xMi82NyDguKXguLjg\nuKHguKLguLTguIcgMTAvMTEvNjkgVmVyNiAo4Liq4LmI4Lin4LiZ4LiV4Lix\n4LinKSAxMjIxNzM4MDMyOTYyNTM1NjMg4LiB4Liy4Lij4LiL4Li34LmJ4Lit\nIDEgKOC4ouC4qCkiOiB7CiAgICAgICJvbGQiOiAiNTAwIiwKICAgICAgIm5l\ndyI6ICIxMDAwIgogICAgfSwKICAgICIqKiooMDIuKSDguITguLjguJPguK7g\nuLTguKEgMSDguJXguYnguJnguInguJrguLHguJog4Lic4Lih4LmA4LiV4Li3\n4Lit4LiZ4LmA4Lil4Lii4LiZ4Liw4LiE4Lij4Lix4LiaIDE2LzEyLzY3IOC4\npeC4uOC4oeC4ouC4tOC4hyAxMC8xMS82OSBWZXI2ICjguKrguYjguKfguJng\nuJXguLHguKcpIDEyMjE3MzgwMzI5NjI1MzU2MyDguIHguLLguKPguIvguLfg\nuYnguK0gMiAo4Lii4LioKSI6IHsKICAgICAgIm9sZCI6ICIyMDAiLAogICAg\nICAibmV3IjogIjEwMDAiCiAgICB9LAogICAgIioqKigwMy4pIOC4hOC4uOC4\nk+C4ruC4tOC4oSAxIOC4leC5ieC4meC4ieC4muC4seC4miDguJzguKHguYDg\nuJXguLfguK3guJnguYDguKXguKLguJnguLDguITguKPguLHguJogMTYvMTIv\nNjcg4Lil4Li44Lih4Lii4Li04LiHIDEwLzExLzY5IFZlcjYgKOC4quC5iOC4\np+C4meC4leC4seC4pykgMTIyMTczODAzMjk2MjUzNTYzIOC4geC4suC4o+C4\nquC4meC4l+C4meC4siAxICjguKLguKgpIjogewogICAgICAib2xkIjogIjUw\nMCIsCiAgICAgICJuZXciOiAiMjAwIgogICAgfSwKICAgICIqKiooMDQuKSDg\nuITguLjguJPguK7guLTguKEgMSDguJXguYnguJnguInguJrguLHguJog4Lic\n4Lih4LmA4LiV4Li34Lit4LiZ4LmA4Lil4Lii4LiZ4Liw4LiE4Lij4Lix4Lia\nIDE2LzEyLzY3IOC4peC4uOC4oeC4ouC4tOC4hyAxMC8xMS82OSBWZXI2ICjg\nuKrguYjguKfguJnguJXguLHguKcpIDEyMjE3MzgwMzI5NjI1MzU2MyDguIHg\nuLLguKPguKrguJnguJfguJnguLIgMiAo4Lii4LioKSI6IHsKICAgICAgIm9s\nZCI6ICLguJvguLTguJQiLAogICAgICAibmV3IjogIuC4m+C4tOC4lCIKICAg\nIH0sCiAgICAiMS7guKvguKHguK3guKLguLfguJnguJ7guLnguJQgTm9lZGl0\naW5nIOC5gOC4peC4t+C5iOC4reC4meC4nOC5iOC4suC4meC5hOC4lOC5ieC5\ngOC4peC4oiAwNS8xMS82OSBWZXIyMSAo4LmA4LiX4Liq4Liq4LmI4Lin4LiZ\n4LiV4Lix4LinKSDguYLguJ7guKrguKvguKXguLHguIEiOiB7CiAgICAgICJv\nbGQiOiAiMTkwMCIsCiAgICAgICJuZXciOiAiMjQwMCIKICAgIH0sCiAgICAi\nNS7guJzguLnguYnguYDguIrguLXguYjguKLguKfguIrguLLguI3guJPguLHg\nuJDguJTguLIgS1AgVjIgS1AgMSBOb2VkaXQg4LiC4Li44LiZ4LmB4Lic4LiZ\n4LmA4Lij4Liy4LiB4Lil4LmJ4LiyIDQvMTEvNjkgdmVyMSAg4LmC4Lie4Liq\n4Lir4Lil4Lix4LiBICjguYDguJfguKrguKrguKfguJnguJXguLHguKcpIjog\newogICAgICAib2xkIjogIjE4MDAiLAogICAgICAibmV3IjogIjI4MDAiCiAg\nICB9CiAgfQp9\n",
+  "encoding": "base64",
   "_links": {
     "self": "https://api.github.com/repos/ads02-ux/ads-dashboard/contents/daily-notes.json?ref=main",
-    "git": "https://api.github.com/repos/ads02-ux/ads-dashboard/git/blobs/93e7b23f33e818f6b194e42d36b834573ba90b01",
+    "git": "https://api.github.com/repos/ads02-ux/ads-dashboard/git/blobs/148384f32c6583a7c167ecbcf474b00119485b4b",
     "html": "https://github.com/ads02-ux/ads-dashboard/blob/main/daily-notes.json"
   },
   "2026-11-14": {
-    "2.ผู้ชายขายน้ำ ขุนแผน Noedit คิดดูสิครับ  3/11/69  ver2 122104497927526507 การซื้อ   (เทสสวนตัว)": {
-      "old": "200",
-      "new": "400"
-    },
-    "003.*** คุณฮิม 1 ต้นฉบับ ผมเตือนเลยนะครับ 16/12/67 ลุมยิง 05/11/69 Ver6 (ส่วนตัว) 122173803296253563 การสนทนา 1 (ยศ)": {
-      "old": "1100",
-      "new": "800"
-    },
-    "***(01.) คุณฮิม 1 ต้นฉบับ ผมเตือนเลยนะครับ 16/12/67 ลุมยิง 10/11/69 Ver6 (ส่วนตัว) 122173803296253563 การซื้อ 1 (ยศ)": {
-      "old": "500",
-      "new": "1000"
-    },
-    "***(02.) คุณฮิม 1 ต้นฉบับ ผมเตือนเลยนะครับ 16/12/67 ลุมยิง 10/11/69 Ver6 (ส่วนตัว) 122173803296253563 การซื้อ 2 (ยศ)": {
-      "old": "200",
-      "new": "1000"
-    },
-    "***(03.) คุณฮิม 1 ต้นฉบับ ผมเตือนเลยนะครับ 16/12/67 ลุมยิง 10/11/69 Ver6 (ส่วนตัว) 122173803296253563 การสนทนา 1 (ยศ)": {
-      "old": "500",
-      "new": "200"
-    },
-    "***(04.) คุณฮิม 1 ต้นฉบับ ผมเตือนเลยนะครับ 16/12/67 ลุมยิง 10/11/69 Ver6 (ส่วนตัว) 122173803296253563 การสนทนา 2 (ยศ)": {
-      "old": "ปิด",
-      "new": "ปิด"
-    },
-    "1.หมอยืนพูด Noediting เลื่อนผ่านได้เลย 05/11/69 Ver21 (เทสส่วนตัว) โพสหลัก": {
-      "old": "1900",
-      "new": "2400"
-    },
     "5.ผู้เชี่ยวชาญณัฐดา KP V2 KP 1 Noedit ขุนแผนเรากล้า 4/11/69 ver1  โพสหลัก (เทสสวนตัว)": {
       "old": "1800",
-      "new": "2800"
+      "new": "2300"
     }
   }
 }
