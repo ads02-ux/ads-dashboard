@@ -1,24 +1,24 @@
 {
   "name": "daily-notes.json",
   "path": "daily-notes.json",
-  "sha": "5b6d3c50a739d381ae8a184e76cedcb7c4362edc",
-  "size": 4346746,
+  "sha": "bd18f76fb7ba541d9fd4d4fce7196b43c342b05c",
+  "size": 1230,
   "url": "https://api.github.com/repos/ads02-ux/ads-dashboard/contents/daily-notes.json?ref=main",
   "html_url": "https://github.com/ads02-ux/ads-dashboard/blob/main/daily-notes.json",
-  "git_url": "https://api.github.com/repos/ads02-ux/ads-dashboard/git/blobs/5b6d3c50a739d381ae8a184e76cedcb7c4362edc",
+  "git_url": "https://api.github.com/repos/ads02-ux/ads-dashboard/git/blobs/bd18f76fb7ba541d9fd4d4fce7196b43c342b05c",
   "download_url": "https://raw.githubusercontent.com/ads02-ux/ads-dashboard/main/daily-notes.json",
   "type": "file",
-  "content": "",
-  "encoding": "none",
+  "content": "ewogICJuYW1lIjogImRhaWx5LW5vdGVzLmpzb24iLAogICJwYXRoIjogImRh\naWx5LW5vdGVzLmpzb24iLAogICJzaGEiOiAiNWI2ZDNjNTBhNzM5ZDM4MWFl\nOGExODRlNzZjZWRjYjdjNDM2MmVkYyIsCiAgInNpemUiOiA0MzQ2NzQ2LAog\nICJ1cmwiOiAiaHR0cHM6Ly9hcGkuZ2l0aHViLmNvbS9yZXBvcy9hZHMwMi11\neC9hZHMtZGFzaGJvYXJkL2NvbnRlbnRzL2RhaWx5LW5vdGVzLmpzb24/cmVm\nPW1haW4iLAogICJodG1sX3VybCI6ICJodHRwczovL2dpdGh1Yi5jb20vYWRz\nMDItdXgvYWRzLWRhc2hib2FyZC9ibG9iL21haW4vZGFpbHktbm90ZXMuanNv\nbiIsCiAgImdpdF91cmwiOiAiaHR0cHM6Ly9hcGkuZ2l0aHViLmNvbS9yZXBv\ncy9hZHMwMi11eC9hZHMtZGFzaGJvYXJkL2dpdC9ibG9icy81YjZkM2M1MGE3\nMzlkMzgxYWU4YTE4NGU3NmNlZGNiN2M0MzYyZWRjIiwKICAiZG93bmxvYWRf\ndXJsIjogImh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9hZHMw\nMi11eC9hZHMtZGFzaGJvYXJkL21haW4vZGFpbHktbm90ZXMuanNvbiIsCiAg\nInR5cGUiOiAiZmlsZSIsCiAgImNvbnRlbnQiOiAiIiwKICAiZW5jb2Rpbmci\nOiAibm9uZSIsCiAgIl9saW5rcyI6IHsKICAgICJzZWxmIjogImh0dHBzOi8v\nYXBpLmdpdGh1Yi5jb20vcmVwb3MvYWRzMDItdXgvYWRzLWRhc2hib2FyZC9j\nb250ZW50cy9kYWlseS1ub3Rlcy5qc29uP3JlZj1tYWluIiwKICAgICJnaXQi\nOiAiaHR0cHM6Ly9hcGkuZ2l0aHViLmNvbS9yZXBvcy9hZHMwMi11eC9hZHMt\nZGFzaGJvYXJkL2dpdC9ibG9icy81YjZkM2M1MGE3MzlkMzgxYWU4YTE4NGU3\nNmNlZGNiN2M0MzYyZWRjIiwKICAgICJodG1sIjogImh0dHBzOi8vZ2l0aHVi\nLmNvbS9hZHMwMi11eC9hZHMtZGFzaGJvYXJkL2Jsb2IvbWFpbi9kYWlseS1u\nb3Rlcy5qc29uIgogIH0sCiAgIjIwMjYtMTEtMTQiOiB7CiAgICAiMDQuIOC4\nhOC4uOC4k+C5guC4q+C4meC5iOC4hyBLUCAxIE5vZWRpdGluZyDguITguJng\nuYDguJvguYfguJnguITguKfguLLguKHguJTguLHguJnguYDguJrguLLguKvg\nuKfguLLguJkgMTcvMDkvNjkgIOC4o+C4uOC4oeC4ouC4tOC4hyAxOS8xMC82\nOSAgVmVyLjEuMiDguIHguLLguKPguIvguLfguYnguK0gKElEIDogMTIyMTgw\nNzk2MTQ2OTc5MTE4ICkg4LiB4Liy4Lij4LiL4Li34LmJ4LitIDIgKOC4muC4\nuOC5i+C4oSkiOiB7CiAgICAgICJvbGQiOiAiNjAwIiwKICAgICAgIm5ldyI6\nICIiCiAgICB9CiAgfQp9\n",
+  "encoding": "base64",
   "_links": {
     "self": "https://api.github.com/repos/ads02-ux/ads-dashboard/contents/daily-notes.json?ref=main",
-    "git": "https://api.github.com/repos/ads02-ux/ads-dashboard/git/blobs/5b6d3c50a739d381ae8a184e76cedcb7c4362edc",
+    "git": "https://api.github.com/repos/ads02-ux/ads-dashboard/git/blobs/bd18f76fb7ba541d9fd4d4fce7196b43c342b05c",
     "html": "https://github.com/ads02-ux/ads-dashboard/blob/main/daily-notes.json"
   },
   "2026-11-14": {
     "04. คุณโหน่ง KP 1 Noediting คนเป็นความดันเบาหวาน 17/09/69  รุมยิง 19/10/69  Ver.1.2 การซื้อ (ID : 122180796146979118 ) การซื้อ 2 (บุ๋ม)": {
       "old": "600",
-      "new": ""
+      "new": "400"
     }
   }
 }
