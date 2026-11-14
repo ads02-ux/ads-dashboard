@@ -1,22 +1,22 @@
 {
   "name": "daily-notes.json",
   "path": "daily-notes.json",
-  "sha": "92aec5debc527437d0d50f2317fc038c813e4f1f",
-  "size": 1088241,
+  "sha": "a039e595a65eed128355fa64a39a5ae02837d1ac",
+  "size": 1153,
   "url": "https://api.github.com/repos/ads02-ux/ads-dashboard/contents/daily-notes.json?ref=main",
   "html_url": "https://github.com/ads02-ux/ads-dashboard/blob/main/daily-notes.json",
-  "git_url": "https://api.github.com/repos/ads02-ux/ads-dashboard/git/blobs/92aec5debc527437d0d50f2317fc038c813e4f1f",
+  "git_url": "https://api.github.com/repos/ads02-ux/ads-dashboard/git/blobs/a039e595a65eed128355fa64a39a5ae02837d1ac",
   "download_url": "https://raw.githubusercontent.com/ads02-ux/ads-dashboard/main/daily-notes.json",
   "type": "file",
-  "content": "",
-  "encoding": "none",
+  "content": "ewogICJuYW1lIjogImRhaWx5LW5vdGVzLmpzb24iLAogICJwYXRoIjogImRh\naWx5LW5vdGVzLmpzb24iLAogICJzaGEiOiAiOTJhZWM1ZGViYzUyNzQzN2Qw\nZDUwZjIzMTdmYzAzOGM4MTNlNGYxZiIsCiAgInNpemUiOiAxMDg4MjQxLAog\nICJ1cmwiOiAiaHR0cHM6Ly9hcGkuZ2l0aHViLmNvbS9yZXBvcy9hZHMwMi11\neC9hZHMtZGFzaGJvYXJkL2NvbnRlbnRzL2RhaWx5LW5vdGVzLmpzb24/cmVm\nPW1haW4iLAogICJodG1sX3VybCI6ICJodHRwczovL2dpdGh1Yi5jb20vYWRz\nMDItdXgvYWRzLWRhc2hib2FyZC9ibG9iL21haW4vZGFpbHktbm90ZXMuanNv\nbiIsCiAgImdpdF91cmwiOiAiaHR0cHM6Ly9hcGkuZ2l0aHViLmNvbS9yZXBv\ncy9hZHMwMi11eC9hZHMtZGFzaGJvYXJkL2dpdC9ibG9icy85MmFlYzVkZWJj\nNTI3NDM3ZDBkNTBmMjMxN2ZjMDM4YzgxM2U0ZjFmIiwKICAiZG93bmxvYWRf\ndXJsIjogImh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9hZHMw\nMi11eC9hZHMtZGFzaGJvYXJkL21haW4vZGFpbHktbm90ZXMuanNvbiIsCiAg\nInR5cGUiOiAiZmlsZSIsCiAgImNvbnRlbnQiOiAiIiwKICAiZW5jb2Rpbmci\nOiAibm9uZSIsCiAgIl9saW5rcyI6IHsKICAgICJzZWxmIjogImh0dHBzOi8v\nYXBpLmdpdGh1Yi5jb20vcmVwb3MvYWRzMDItdXgvYWRzLWRhc2hib2FyZC9j\nb250ZW50cy9kYWlseS1ub3Rlcy5qc29uP3JlZj1tYWluIiwKICAgICJnaXQi\nOiAiaHR0cHM6Ly9hcGkuZ2l0aHViLmNvbS9yZXBvcy9hZHMwMi11eC9hZHMt\nZGFzaGJvYXJkL2dpdC9ibG9icy85MmFlYzVkZWJjNTI3NDM3ZDBkNTBmMjMx\nN2ZjMDM4YzgxM2U0ZjFmIiwKICAgICJodG1sIjogImh0dHBzOi8vZ2l0aHVi\nLmNvbS9hZHMwMi11eC9hZHMtZGFzaGJvYXJkL2Jsb2IvbWFpbi9kYWlseS1u\nb3Rlcy5qc29uIgogIH0sCiAgIjIwMjYtMTEtMTQiOiB7CiAgICAiMS7guKvg\nuKHguK3guIHguJTguIjguLjguJTguJnguYnguK3guIfguIrguLLguKLguYHg\nuILguYfguIcgS1AgTm9lZGl0aW5nIOC4quC4s+C4q+C4o+C4seC4muC4hOC4\nuOC4k+C4nuC5iOC4reC4muC5ieC4suC4mSAxMS8xMS82OSBWZXIyLjEg4LmC\n4Lie4Liq4Lir4Lil4Lix4LiBIjogewogICAgICAib2xkIjogIjIwMCIsCiAg\nICAgICJuZXciOiAiMjAwIgogICAgfQogIH0KfQ==\n",
+  "encoding": "base64",
   "_links": {
     "self": "https://api.github.com/repos/ads02-ux/ads-dashboard/contents/daily-notes.json?ref=main",
-    "git": "https://api.github.com/repos/ads02-ux/ads-dashboard/git/blobs/92aec5debc527437d0d50f2317fc038c813e4f1f",
+    "git": "https://api.github.com/repos/ads02-ux/ads-dashboard/git/blobs/a039e595a65eed128355fa64a39a5ae02837d1ac",
     "html": "https://github.com/ads02-ux/ads-dashboard/blob/main/daily-notes.json"
   },
   "2026-11-14": {
-    "1.หมอกดจุดน้องชายแข็ง KP Noediting สำหรับคุณพ่อบ้าน 11/11/69 Ver2.1 โพสหลัก": {
+    "2.หมอกดจุดน้องชายแข็ง KP Noediting สำหรับคุณพ่อบ้าน 11/11/69 Ver2.1 ลุมยิงข้อความ": {
       "old": "200",
       "new": "200"
     }
