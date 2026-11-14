@@ -1,24 +1,24 @@
 {
   "name": "daily-notes.json",
   "path": "daily-notes.json",
-  "sha": "4a170a589da372905d56e8b6b71856a2cde04c53",
-  "size": 1091210,
+  "sha": "8cac82dc62bf5dc02fc1fb4ebe697fd9cb69e826",
+  "size": 1131,
   "url": "https://api.github.com/repos/ads02-ux/ads-dashboard/contents/daily-notes.json?ref=main",
   "html_url": "https://github.com/ads02-ux/ads-dashboard/blob/main/daily-notes.json",
-  "git_url": "https://api.github.com/repos/ads02-ux/ads-dashboard/git/blobs/4a170a589da372905d56e8b6b71856a2cde04c53",
+  "git_url": "https://api.github.com/repos/ads02-ux/ads-dashboard/git/blobs/8cac82dc62bf5dc02fc1fb4ebe697fd9cb69e826",
   "download_url": "https://raw.githubusercontent.com/ads02-ux/ads-dashboard/main/daily-notes.json",
   "type": "file",
-  "content": "",
-  "encoding": "none",
+  "content": "ewogICJuYW1lIjogImRhaWx5LW5vdGVzLmpzb24iLAogICJwYXRoIjogImRh\naWx5LW5vdGVzLmpzb24iLAogICJzaGEiOiAiNGExNzBhNTg5ZGEzNzI5MDVk\nNTZlOGI2YjcxODU2YTJjZGUwNGM1MyIsCiAgInNpemUiOiAxMDkxMjEwLAog\nICJ1cmwiOiAiaHR0cHM6Ly9hcGkuZ2l0aHViLmNvbS9yZXBvcy9hZHMwMi11\neC9hZHMtZGFzaGJvYXJkL2NvbnRlbnRzL2RhaWx5LW5vdGVzLmpzb24/cmVm\nPW1haW4iLAogICJodG1sX3VybCI6ICJodHRwczovL2dpdGh1Yi5jb20vYWRz\nMDItdXgvYWRzLWRhc2hib2FyZC9ibG9iL21haW4vZGFpbHktbm90ZXMuanNv\nbiIsCiAgImdpdF91cmwiOiAiaHR0cHM6Ly9hcGkuZ2l0aHViLmNvbS9yZXBv\ncy9hZHMwMi11eC9hZHMtZGFzaGJvYXJkL2dpdC9ibG9icy80YTE3MGE1ODlk\nYTM3MjkwNWQ1NmU4YjZiNzE4NTZhMmNkZTA0YzUzIiwKICAiZG93bmxvYWRf\ndXJsIjogImh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9hZHMw\nMi11eC9hZHMtZGFzaGJvYXJkL21haW4vZGFpbHktbm90ZXMuanNvbiIsCiAg\nInR5cGUiOiAiZmlsZSIsCiAgImNvbnRlbnQiOiAiIiwKICAiZW5jb2Rpbmci\nOiAibm9uZSIsCiAgIl9saW5rcyI6IHsKICAgICJzZWxmIjogImh0dHBzOi8v\nYXBpLmdpdGh1Yi5jb20vcmVwb3MvYWRzMDItdXgvYWRzLWRhc2hib2FyZC9j\nb250ZW50cy9kYWlseS1ub3Rlcy5qc29uP3JlZj1tYWluIiwKICAgICJnaXQi\nOiAiaHR0cHM6Ly9hcGkuZ2l0aHViLmNvbS9yZXBvcy9hZHMwMi11eC9hZHMt\nZGFzaGJvYXJkL2dpdC9ibG9icy80YTE3MGE1ODlkYTM3MjkwNWQ1NmU4YjZi\nNzE4NTZhMmNkZTA0YzUzIiwKICAgICJodG1sIjogImh0dHBzOi8vZ2l0aHVi\nLmNvbS9hZHMwMi11eC9hZHMtZGFzaGJvYXJkL2Jsb2IvbWFpbi9kYWlseS1u\nb3Rlcy5qc29uIgogIH0sCiAgIjIwMjYtMTEtMTQiOiB7CiAgICAiIy0wMS4g\nVGVzdCBWaXJhbCBDb250ZW50IOC4nuC4o+C4sOC5guC4iuC4leC4tOC5gOC4\nq+C4meC4t+C4reC4lOC4p+C4hyA1IFZlcnNpb24gMTEvMDkvNjkg4Lij4Li4\n4Lih4Lii4Li04LiHIDE0LzA5LzY5IOC4geC4suC4o+C4i+C4t+C5ieC4rSI6\nIHsKICAgICAgIm9sZCI6ICIzMjAwIiwKICAgICAgIm5ldyI6ICIiCiAgICB9\nCiAgfQp9\n",
+  "encoding": "base64",
   "_links": {
     "self": "https://api.github.com/repos/ads02-ux/ads-dashboard/contents/daily-notes.json?ref=main",
-    "git": "https://api.github.com/repos/ads02-ux/ads-dashboard/git/blobs/4a170a589da372905d56e8b6b71856a2cde04c53",
+    "git": "https://api.github.com/repos/ads02-ux/ads-dashboard/git/blobs/8cac82dc62bf5dc02fc1fb4ebe697fd9cb69e826",
     "html": "https://github.com/ads02-ux/ads-dashboard/blob/main/daily-notes.json"
   },
   "2026-11-14": {
-    "#-01. Test Viral Content พระโชติเหนือดวง 5 Version 11/09/69 รุมยิง 14/09/69 การซื้อ": {
-      "old": "3200",
-      "new": ""
+    "#001. Test Viral Content พระโชติเหนือดวง 5 Version 11/09/69    ข้อความ  (บุ๋ม)": {
+      "old": "1600",
+      "new": "1600"
     }
   }
 }
