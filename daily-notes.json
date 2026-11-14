@@ -1,24 +1,24 @@
 {
   "name": "daily-notes.json",
   "path": "daily-notes.json",
-  "sha": "9aafcb4d76fe58c30f4a31d727360c5a82d3b05a",
-  "size": 1102085,
+  "sha": "75fe386c1252a835b83252688e955ce6be180415",
+  "size": 1147,
   "url": "https://api.github.com/repos/ads02-ux/ads-dashboard/contents/daily-notes.json?ref=main",
   "html_url": "https://github.com/ads02-ux/ads-dashboard/blob/main/daily-notes.json",
-  "git_url": "https://api.github.com/repos/ads02-ux/ads-dashboard/git/blobs/9aafcb4d76fe58c30f4a31d727360c5a82d3b05a",
+  "git_url": "https://api.github.com/repos/ads02-ux/ads-dashboard/git/blobs/75fe386c1252a835b83252688e955ce6be180415",
   "download_url": "https://raw.githubusercontent.com/ads02-ux/ads-dashboard/main/daily-notes.json",
   "type": "file",
-  "content": "",
-  "encoding": "none",
+  "content": "ewogICJuYW1lIjogImRhaWx5LW5vdGVzLmpzb24iLAogICJwYXRoIjogImRh\naWx5LW5vdGVzLmpzb24iLAogICJzaGEiOiAiOWFhZmNiNGQ3NmZlNThjMzBm\nNGEzMWQ3MjczNjBjNWE4MmQzYjA1YSIsCiAgInNpemUiOiAxMTAyMDg1LAog\nICJ1cmwiOiAiaHR0cHM6Ly9hcGkuZ2l0aHViLmNvbS9yZXBvcy9hZHMwMi11\neC9hZHMtZGFzaGJvYXJkL2NvbnRlbnRzL2RhaWx5LW5vdGVzLmpzb24/cmVm\nPW1haW4iLAogICJodG1sX3VybCI6ICJodHRwczovL2dpdGh1Yi5jb20vYWRz\nMDItdXgvYWRzLWRhc2hib2FyZC9ibG9iL21haW4vZGFpbHktbm90ZXMuanNv\nbiIsCiAgImdpdF91cmwiOiAiaHR0cHM6Ly9hcGkuZ2l0aHViLmNvbS9yZXBv\ncy9hZHMwMi11eC9hZHMtZGFzaGJvYXJkL2dpdC9ibG9icy85YWFmY2I0ZDc2\nZmU1OGMzMGY0YTMxZDcyNzM2MGM1YTgyZDNiMDVhIiwKICAiZG93bmxvYWRf\ndXJsIjogImh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9hZHMw\nMi11eC9hZHMtZGFzaGJvYXJkL21haW4vZGFpbHktbm90ZXMuanNvbiIsCiAg\nInR5cGUiOiAiZmlsZSIsCiAgImNvbnRlbnQiOiAiIiwKICAiZW5jb2Rpbmci\nOiAibm9uZSIsCiAgIl9saW5rcyI6IHsKICAgICJzZWxmIjogImh0dHBzOi8v\nYXBpLmdpdGh1Yi5jb20vcmVwb3MvYWRzMDItdXgvYWRzLWRhc2hib2FyZC9j\nb250ZW50cy9kYWlseS1ub3Rlcy5qc29uP3JlZj1tYWluIiwKICAgICJnaXQi\nOiAiaHR0cHM6Ly9hcGkuZ2l0aHViLmNvbS9yZXBvcy9hZHMwMi11eC9hZHMt\nZGFzaGJvYXJkL2dpdC9ibG9icy85YWFmY2I0ZDc2ZmU1OGMzMGY0YTMxZDcy\nNzM2MGM1YTgyZDNiMDVhIiwKICAgICJodG1sIjogImh0dHBzOi8vZ2l0aHVi\nLmNvbS9hZHMwMi11eC9hZHMtZGFzaGJvYXJkL2Jsb2IvbWFpbi9kYWlseS1u\nb3Rlcy5qc29uIgogIH0sCiAgIjIwMjYtMTEtMTQiOiB7CiAgICAiMy4g4LmE\n4Lil4Lif4LmM4Liq4LiUIOC5geC4l+C5h+C4hCDguILguLjguJnguYHguJzg\nuJkgTm9lZGl0dGluZyDguYDguK3guLLguIfguLXguYnguJzguKXguLTguJXg\nuKDguLHguJPguJHguYwgMy82LzY5IHZlciAyIOC5guC4nuC4quC4leC5jOC4\nq+C4peC4seC4gSI6IHsKICAgICAgIm9sZCI6ICI3MDAwIiwKICAgICAgIm5l\ndyI6ICI4MDAwIgogICAgfQogIH0KfQ==\n",
+  "encoding": "base64",
   "_links": {
     "self": "https://api.github.com/repos/ads02-ux/ads-dashboard/contents/daily-notes.json?ref=main",
-    "git": "https://api.github.com/repos/ads02-ux/ads-dashboard/git/blobs/9aafcb4d76fe58c30f4a31d727360c5a82d3b05a",
+    "git": "https://api.github.com/repos/ads02-ux/ads-dashboard/git/blobs/75fe386c1252a835b83252688e955ce6be180415",
     "html": "https://github.com/ads02-ux/ads-dashboard/blob/main/daily-notes.json"
   },
   "2026-11-14": {
-    "3. ไลฟ์สด แท็ค ขุนแผน Noeditting เอางี้ผลิตภัณฑ์ 3/6/69 ver 2 โพสต์หลัก": {
-      "old": "7000",
-      "new": "8000"
+    "3. ผู้เชี่ยวชาญยัยไหม KP Noeditting ถ้้าเม็ดนี้ทำให้คุณแข็งไม่ได้ 19/9/69 ver 2 โพสต์หลัก": {
+      "old": "4000",
+      "new": ""
     }
   }
 }
