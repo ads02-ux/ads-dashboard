@@ -4,7 +4,22 @@
   'use strict';
   var API = 'https://richbiotech-fb-proxy.ads02.workers.dev/_auth/';
   var TK = 'rb_auth_token';
-  var PAGES = [['fb', 'FB Ads'], ['ai', 'AI แนะนำ'], ['adsai', 'AI วิเคราะห์'], ['track', 'ติดตาม'], ['benchmark', 'Benchmark'], ['chartrank', 'ชาร์ต'], ['hunter', 'Hunter'], ['hr', 'ค่าคอม'], ['leave', 'วันหยุด'], ['dailytask', 'งานรายวัน'], ['videoai', 'วิเคราะห์วีดีโอ'], ['buyerdemo', 'ข้อมูลผู้ซื้อ'], ['chat', 'คนทัก (ทุกซุป)'], ['chat_nook', 'คนทัก-ซุปนุ๊ก'], ['chat_au', 'คนทัก-Au Supad1'], ['chat_honey', 'คนทัก-ซุปน้ำผึ้ง']];
+  var PAGES = [['fb', 'FB Ads'], ['kpi', 'เป้าประจำเดือน'], ['chart', 'กราฟ'], ['alert', 'Alert'], ['fbdisabled', 'FB โดนปิดใช้งาน'], ['track', 'ติดตาม'], ['budgetlog', 'ประวัติการแก้ไข'], ['adsai', 'AI วิเคราะห์'], ['ai', 'AI แนะนำ'], ['videoai', 'วิเคราะห์วีดีโอ'], ['chat', 'คนทัก (ทุกซุป)'], ['chat_nook', 'คนทัก-ซุปนุ๊ก'], ['chat_au', 'คนทัก-Au Supad1'], ['chat_honey', 'คนทัก-ซุปน้ำผึ้ง'], ['buyerdemo', 'ข้อมูลผู้ซื้อ'], ['graphic', 'ทีมกราฟิก'], ['benchmark', 'Benchmark'], ['chartrank', 'ชาร์ต'], ['angel', 'คัดนางฟ้า'], ['target', 'กลุ่มเป้าหมาย'], ['hr', 'ค่าคอม'], ['leave', 'วันหยุด'], ['dailytask', 'งานรายวัน'], ['hunter', 'Hunter (หน้าเดิม)']];
+  // สิทธิ์ → เมนู (id ของ .sb-item ตัด "sb-" ออก) · รวมหน้าใหม่ v2 ที่ระบบเดิมไม่รู้จัก
+  var MENU = { fb: ['fb', 'fbv2'], kpi: ['kpiv2'], chart: ['chartv2'], alert: ['alert'], fbdisabled: ['fbdisabled'], track: ['track'], budgetlog: ['budgetlog'], adsai: ['adsai'], ai: ['ai'], videoai: ['videoai'], chat: ['chatpage'], chat_nook: ['chatpage'], chat_au: ['chatpage'], chat_honey: ['chatpage'], buyerdemo: ['buyerdemo'], graphic: ['mgrcom'], benchmark: ['benchmark'], chartrank: ['chartrank'], angel: ['angel'], target: ['home'], hr: ['comm', 'commission'], leave: ['leave'], dailytask: ['daily', 'dailytask'], hunter: ['home', 'mgrcom'] };
+  try { if (window._viewAccessMap) Object.keys(MENU).forEach(function (k) { var cur = window._viewAccessMap[k] || []; MENU[k].forEach(function (v) { if (cur.indexOf(v) < 0) cur.push(v); }); window._viewAccessMap[k] = cur; }); } catch (e) {}
+  // ผู้ใช้สิทธิ์จำกัด: ซ่อนเมนูที่ไม่มีสิทธิ์ (รวมเมนูที่สร้างทีหลัง เช่น คัดนางฟ้า / ทีมกราฟิก / กลุ่มเป้าหมาย)
+  var NEWKEYS = ['kpi', 'chart', 'alert', 'fbdisabled', 'budgetlog', 'graphic', 'angel', 'target'], opened = false;
+  function enforceMenu() {
+    if (sessionStorage.getItem('rb_auth') !== 'limited') return;
+    var acc = sessionStorage.getItem('rb_access'); try { acc = JSON.parse(acc); } catch (e) {}
+    var keys = Array.isArray(acc) ? acc : [acc], ok = {};
+    keys.forEach(function (k) { (MENU[k] || (window._viewAccessMap || {})[k] || []).forEach(function (v) { ok['sb-' + v] = 1; }); });
+    document.querySelectorAll('.sb-item[id]').forEach(function (it) { var show = !!ok[it.id] && it.id !== 'sb-usermgmt'; if ((it.style.display !== 'none') !== show) it.style.display = show ? '' : 'none'; });
+    document.querySelectorAll('.v2nav-group').forEach(function (g) { var vis = [].some.call(g.querySelectorAll('.sb-item'), function (i) { return i.style.display !== 'none'; }); if ((g.style.display !== 'none') !== vis) g.style.display = vis ? '' : 'none'; });
+    if (!opened && NEWKEYS.indexOf(keys[0]) >= 0) { var el = document.getElementById('sb-' + MENU[keys[0]][0]); if (el) { opened = true; try { el.click(); } catch (e) {} } }
+  }
+  function watchMenu() { var n = 0, iv = setInterval(function () { enforceMenu(); if (++n > 20) clearInterval(iv); }, 1000); var t; new MutationObserver(function () { clearTimeout(t); t = setTimeout(enforceMenu, 300); }).observe(document.body, { childList: true, subtree: true }); }
   var ERR = { bad_login: 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง', locked: 'ใส่รหัสผิดหลายครั้ง ลองใหม่ใน 15 นาที', invalid: 'กรอกอีเมลและรหัสผ่านอย่างน้อย 6 ตัว', already_setup: 'ตั้งค่าผู้ดูแลไปแล้ว ให้เข้าสู่ระบบแทน', short_password: 'รหัสผ่านต้องยาวอย่างน้อย 6 ตัว', duplicate: 'ชื่อหรืออีเมลนี้มีอยู่แล้ว', name_required: 'ใส่ชื่อผู้ใช้', password_required: 'ใส่รหัสผ่าน', need_admin: 'ต้องมีผู้ใช้สิทธิ์ทุกหน้าอย่างน้อย 1 คน', self: 'ลบบัญชีตัวเองไม่ได้', unauthorized: 'หมดเวลาเข้าสู่ระบบ ให้เข้าสู่ระบบใหม่', forbidden: 'เฉพาะผู้ใช้สิทธิ์ทุกหน้าเท่านั้น', bad_old: 'รหัสเดิมไม่ถูกต้อง' };
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
@@ -30,7 +45,7 @@
     var gate = document.getElementById('pw-gate');
     if (u.access === 'all') { sessionStorage.setItem('rb_auth', '1'); if (gate) gate.style.display = 'none'; }
     else if (u.access === 'hr') { sessionStorage.setItem('rb_auth', 'hr'); if (gate) gate.style.display = 'none'; try { switchView('commission', document.getElementById('sb-comm')); enableHrMode(); } catch (e) {} if (u.perm === 'view' && window._applyReadOnly) setTimeout(_applyReadOnly, 800); }
-    else { sessionStorage.setItem('rb_auth', 'limited'); if (gate) gate.style.display = 'none'; try { _applyLimitedAccess(u.access); } catch (e) {} if (u.perm === 'view' && window._applyReadOnly) setTimeout(_applyReadOnly, 800); }
+    else { sessionStorage.setItem('rb_auth', 'limited'); if (gate) gate.style.display = 'none'; try { _applyLimitedAccess(u.access); } catch (e) {} setTimeout(enforceMenu, 300); if (u.perm === 'view' && window._applyReadOnly) setTimeout(_applyReadOnly, 800); }
     var chip = document.querySelector('.v2top-user'); if (chip) { chip.firstChild.textContent = String(u.name).slice(0, 2).toUpperCase(); chip.lastChild.textContent = u.name; }
   }
   window.rbLogout = function () { if (!confirm('ออกจากระบบ?')) return; setTok(''); try { sessionStorage.clear(); } catch (e) {} location.reload(); };
@@ -213,6 +228,6 @@
     chip.setAttribute('data-lo', '1'); chip.style.cursor = 'pointer'; chip.title = 'ออกจากระบบ'; chip.setAttribute('role', 'button'); chip.tabIndex = 0;
     chip.addEventListener('click', function () { window.rbLogout(); });
   }
-  function start() { installLogin(); installUM(); var n = 0; var iv = setInterval(function () { addLogout(); if (++n > 20) clearInterval(iv); }, 1000); }
+  function start() { installLogin(); installUM(); watchMenu(); var n = 0; var iv = setInterval(function () { addLogout(); if (++n > 20) clearInterval(iv); }, 1000); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
 })();
