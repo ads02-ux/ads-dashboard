@@ -187,7 +187,9 @@
     var used = [], frag = document.createDocumentFragment();
     // เมนูที่เอาออกจากแถบซ้าย (ย้ายไปกล่องซ่อน ไม่ลบ เผื่อโค้ดเดิมอ้างถึง)
     var hid = document.createElement('div'); hid.id = 'v2nav-hidden'; hid.style.display = 'none';
-    ['Campaign Log', 'Content Intel', 'KPI Overview', '#sb-chartold', 'Analyst Ranking'].forEach(function (k) { var it = findItem(items, k, used); if (it) { used.push(it); hid.appendChild(it); } });
+    ['Campaign Log', 'Content Intel', 'KPI Overview', '#sb-chartold', 'Analyst Ranking', '#sb-fb'].forEach(function (k) { var it = findItem(items, k, used); if (it) { used.push(it); hid.appendChild(it); } });
+    // ซ่อน Facebook Ads (แบบเดิม) แล้ว → เปิดเว็บมาเจอหน้าเดิม ให้ย้ายไปหน้าใหม่แทน (ครั้งเดียวตอนโหลด)
+    (function goNew(n) { var o = document.getElementById('sb-fb'), v = document.getElementById('sb-fbv2'), act = document.querySelector('.sb-item.active'); if (o && v && o.classList.contains('active')) { v.click(); return; } if (act && act !== o) return; if (n < 40) setTimeout(function () { goNew(n + 1); }, 500); })(0);
     function group(title, list) {
       var g = document.createElement('div'); g.className = 'v2nav-group' + (fold[title] ? ' fold' : '');
       var h = document.createElement('button'); h.type = 'button'; h.className = 'v2nav-head'; h.innerHTML = '<span>' + title + '</span><i aria-hidden="true">▾</i>';
