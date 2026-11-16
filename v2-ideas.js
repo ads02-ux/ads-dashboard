@@ -164,6 +164,9 @@
   function install() {
     var anchor = document.getElementById('sb-issues') || document.getElementById('sb-chatpage'), wrap = document.querySelector('.content-wrap');
     if (!anchor || !wrap) { if (++tries < 60) setTimeout(install, 500); return; }
+    var navOff = false; try { navOff = localStorage.getItem('rb_nav_v2') === 'off'; } catch (e) {}
+    var grouped = anchor.parentNode && anchor.parentNode.classList && anchor.parentNode.classList.contains('v2nav-items') && document.getElementById('sb-issues');
+    if (!grouped && !navOff && ++tries < 40) { setTimeout(install, 500); return; }
     if (document.getElementById('sb-ideas')) return;
     css();
     var it = document.createElement('div'); it.className = 'sb-item'; it.id = 'sb-ideas';
