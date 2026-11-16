@@ -24,7 +24,7 @@
   function accArr() { try { var a = sessionStorage.getItem('rb_access') || '', x; try { x = JSON.parse(a); } catch (e) { x = a; } return Array.isArray(x) ? x : [x]; } catch (e) { return []; } }
   function lockTeam() { if (isAdmin()) return ''; var a = accArr(); for (var i = 0; i < a.length; i++) if (ISS_TEAM[a[i]]) return ISS_TEAM[a[i]]; try { return window._cpLockedSup ? (window._cpLockedSup() || '') : ''; } catch (e) { return ''; } }
   /* SA = บัญชีที่มีสิทธิ์ "แจ้งปัญหา · ทีม…" (iss_nook / iss_au / iss_honey) */
-  function saOnly() { return !isAdmin() && accArr().some(function (k) { return !!ISS_TEAM[k]; }); }
+  function saOnly() { return !isAdmin() && (accArr().some(function (k) { return !!ISS_TEAM[k]; }) || !!lockTeam()); }
   function teams() { return Object.keys(window.CHAT_SUP_MAP || {}); }
   function teamOf(prod) { var M = window.CHAT_SUP_MAP || {}, r = ''; Object.keys(M).forEach(function (k) { if (!r && (M[k] || []).indexOf(prod) >= 0) r = k; }); return r; }
   function curTeam() { return lockTeam() || S.team || ''; }
