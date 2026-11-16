@@ -8,7 +8,7 @@
     sa2ads: ['คอนเทนต์ผิดสินค้า', 'ข้อความตอบกลับ', 'คนทักไม่ใช่คนไทย', 'ข้อความในแอดไม่ตรงกับราคา / โปรโมชั่นจริง', 'อื่น ๆ'],
     ads2sa: ['ทักถูกแต่ปิดไม่ได้', 'ตอบแชทช้า / ไม่ได้ตอบ', 'ขอข้อมูลลูกค้า (คำถามที่เจอบ่อย)', 'อื่น ๆ']
   };
-  var ST = { open: 'รอดำเนินการ', doing: 'กำลังแก้', done: 'แก้แล้ว' };
+  var ST = { open: 'รอดำเนินการ', doing: 'กำลังแก้', done: 'แก้แล้ว', back: 'ตีกลับ' };
   var S = { list: [], loaded: false, loading: false, err: '', team: '', dir: '', st: 'active', prod: '', q: '', sel: null, form: null, pend: [], busy: false, lb: null };
   try { var s0 = JSON.parse(localStorage.getItem('rb_iss_v2') || 'null'); if (s0) { S.dir = s0.dir || ''; S.st = s0.st || 'active'; S.prod = s0.prod || ''; S.team = s0.team || ''; } } catch (e) {}
   var IMG = {}, IMGQ = {};
@@ -231,10 +231,10 @@
     });
     h += '</div>';
     if (!readOnly()) {
-      h += '<label class="iss-fg"><span class="iss-lbl">ตอบกลับ / แนบหลักฐาน</span><textarea id="issReply" rows="3" placeholder="พิมพ์คำตอบ หรือสิ่งที่แก้ไปแล้ว" onpaste="issV2.paste(event)"></textarea></label>' + attachUi();
-      h += '<div class="iss-mf">' + (isAdmin() ? '<button class="iss-btn danger" onclick="issV2.del(' + jsq(x.id) + ')">ลบเรื่อง</button>' : '') + '<span style="flex:1"></span>' +
+      h += '<label class="iss-fg"><span class="iss-lbl">ตอบกลับ / แนบหลักฐาน</span><textarea id="issReply" rows="3" placeholder="' + (x.status === 'done' ? 'ถ้าการแก้ยังไม่โอเค ใส่เหตุผลตรงนี้แล้วกด &quot;ตีกลับ&quot;' : 'พิมพ์คำตอบ หรือสิ่งที่แก้ไปแล้ว') + '" onpaste="issV2.paste(event)"></textarea></label>' + attachUi();
+      h += '<div class="iss-mf">' + (isAdmin() || (x.by && x.by === me()) ? '<button class="iss-btn danger" onclick="issV2.del(' + jsq(x.id) + ')">ลบเรื่อง</button>' : '') + '<span style="flex:1"></span>' +
         (x.status !== 'doing' && x.status !== 'done' ? '<button class="iss-btn" ' + (S.busy ? 'disabled' : '') + ' onclick="issV2.reply(\'doing\')">ส่ง + กำลังแก้</button>' : '') +
-        (x.status !== 'done' ? '<button class="iss-btn ok" ' + (S.busy ? 'disabled' : '') + ' onclick="issV2.reply(\'done\')">ส่ง + แก้แล้ว</button>' : '<button class="iss-btn" ' + (S.busy ? 'disabled' : '') + ' onclick="issV2.reply(\'open\')">เปิดเรื่องใหม่</button>') +
+        (x.status !== 'done' ? '<button class="iss-btn ok" ' + (S.busy ? 'disabled' : '') + ' onclick="issV2.reply(\'done\')">ส่ง + แก้แล้ว</button>' : '<button class="iss-btn back" ' + (S.busy ? 'disabled' : '') + ' onclick="issV2.reply(\'back\')" title="ใส่เหตุผลในช่องตอบกลับก่อนกด">ตีกลับ (ยังไม่โอเค)</button>') +
         '<button class="iss-btn pri" ' + (S.busy ? 'disabled' : '') + ' onclick="issV2.reply(\'\')">' + (S.busy ? 'กำลังส่ง…' : 'ส่ง') + '</button></div>';
     }
     return h + '</div></div>';
@@ -270,7 +270,7 @@
       '#issView .iss-btn{height:36px;padding:0 14px;border-radius:9px;border:1px solid var(--ib);background:#fff;font:inherit;font-size:14px;font-weight:600;cursor:pointer;color:var(--it);display:inline-flex;align-items:center;gap:6px}#issView .iss-btn.pri{background:var(--ip);border-color:var(--ip);color:#fff}#issView .iss-btn.ok{background:#16A34A;border-color:#16A34A;color:#fff}#issView .iss-btn.danger{color:#DC2626;border-color:#FECACA}#issView .iss-btn.sm{height:30px;padding:0 10px;font-size:13px}#issView .iss-btn:disabled{opacity:.6;cursor:wait}',
       '#issView .iss-list{overflow:hidden}#issView .iss-row{display:block;width:100%;text-align:left;border:0;border-bottom:1px solid var(--ib);background:#fff;padding:14px 18px;font:inherit;color:inherit;cursor:pointer}#issView .iss-row:last-child{border-bottom:0}#issView .iss-row:hover{background:#F8FAFC}#issView .iss-row.done{opacity:.72}',
       '#issView .iss-r1{display:flex;flex-wrap:wrap;gap:6px;align-items:center}#issView .iss-title{font-size:15px;margin-left:2px}#issView .iss-r2,#issView .iss-r3{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px;color:var(--im);margin-top:5px}#issView .iss-ell{max-width:520px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
-      '#issView .iss-st{font-size:12px;font-weight:700;padding:2px 9px;border-radius:99px;background:#FEF3C7;color:#92400E}#issView .iss-st.doing{background:#DBEAFE;color:#1E40AF}#issView .iss-st.done{background:#DCFCE7;color:#166534}',
+      '#issView .iss-st{font-size:12px;font-weight:700;padding:2px 9px;border-radius:99px;background:#FEF3C7;color:#92400E}#issView .iss-st.doing{background:#DBEAFE;color:#1E40AF}#issView .iss-st.done{background:#DCFCE7;color:#166534}#issView .iss-st.back{background:#FEE2E2;color:#991B1B}#issView .iss-btn.back{color:#B91C1C;border-color:#FCA5A5;background:#FEF2F2}',
       '#issView .iss-dir{font-size:12px;font-weight:600;padding:2px 9px;border-radius:99px;background:#F1F5F9;color:#334155}#issView .iss-dir.ads2sa{background:#EDE9FE;color:#5B21B6}#issView .iss-team{font-size:12px;font-weight:600;padding:2px 9px;border-radius:99px;background:#ECFEFF;color:#155E75;border:1px solid #A5F3FC}#issView .iss-bar .iss-team{padding:7px 12px;font-size:14px}#issView .iss-route{font-size:13px;background:#ECFEFF;border:1px solid #A5F3FC;color:#155E75;border-radius:8px;padding:7px 10px;margin:-4px 0 12px}#issView .iss-nw{white-space:nowrap}#issView .iss-cat{font-size:12px;color:#475569;border:1px solid var(--ib);padding:1px 8px;border-radius:99px}',
       '#issView .iss-scroll{overflow-x:auto}#issView .iss-t{width:100%;border-collapse:collapse;font-size:14px}#issView .iss-t th{font-size:12px;color:var(--im);font-weight:600;text-align:left;padding:8px;border-bottom:1px solid var(--ib);background:#F8FAFC}#issView .iss-t td{padding:9px 8px;border-bottom:1px solid #F1F5F9;vertical-align:top}#issView .iss-t .r{text-align:right}#issView td.iss-ell{max-width:340px}#issView .iss-bad{color:#DC2626;font-weight:700}#issView .iss-errbox{padding:12px 16px;color:#B91C1C;background:#FEF2F2;border-color:#FECACA;margin-bottom:12px}',
       '#issView .iss-ov{position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:9000;display:flex;align-items:flex-start;justify-content:center;padding:40px 16px;overflow:auto}#issView .iss-modal{background:#fff;border-radius:16px;width:100%;max-width:560px;padding:20px 22px;box-shadow:0 20px 50px rgba(0,0,0,.25)}#issView .iss-modal.wide{max-width:760px}',
@@ -333,6 +333,7 @@
     reply: function (st) {
       var x = S.sel; if (!x) return; var r = document.getElementById('issReply'), txt = r ? r.value.trim() : '';
       if (!txt && !S.pend.length && !st) { toast('พิมพ์ข้อความหรือแนบรูปก่อน', true); return; }
+      if (st === 'back' && !txt) { toast('ใส่เหตุผลที่ตีกลับก่อน ว่าการแก้ยังไม่โอเคเพราะอะไร', true); if (r) r.focus(); return; }
       var item = { id: x.id }; if (st) item.status = st;
       send(item, { txt: txt, st: st || '' });
     },
