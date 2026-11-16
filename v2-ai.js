@@ -174,7 +174,7 @@
     q: function (v) { A.q = v; clearTimeout(qT); qT = setTimeout(function () { A._focus = true; renderAds(); }, 250); },
     content: function (i, btn) { analyze(i, btn); },
     cperiod: function (f) { window.fbFilter = f; renderContent(); },
-    chat: function (k, v) { CH[k] = v; if (k === 'sup') CH.p = ''; try { localStorage.setItem('rb_chat_v2', JSON.stringify(CH)); } catch (e) {} renderChat(); },
+    chat: function (k, v) { if (k === 'hrr') { hrLoad(true); renderChat(); return; } CH[k] = v; if (k === 'sup') CH.p = ''; try { localStorage.setItem('rb_chat_v2', JSON.stringify(CH)); } catch (e) {} renderChat(); },
     bm: function (k, v) { BM[k] = v; if (k === 'mode' || k === 'p' || k === 'per') BM.tier = ''; try { localStorage.setItem('rb_bm_v2', JSON.stringify({ mode: BM.mode, per: BM.per, p: BM.p })); } catch (e) {} renderBench(); },
     bmq: function (v) { BM.q = v; clearTimeout(qT); qT = setTimeout(function () { BM._focus = true; renderBench(); }, 250); },
     al: function (k, v) { AL[k] = v; renderAlert(); },
@@ -263,13 +263,49 @@
   }
 
   /* ================= คนทักรายเพจ ================= */
-  var CH = { sup: '', p: '', sort: 'prod' };
-  try { var cs0 = JSON.parse(localStorage.getItem('rb_chat_v2') || 'null'); if (cs0) { CH.sup = cs0.sup || ''; CH.p = cs0.p || ''; CH.sort = cs0.sort || 'prod'; } } catch (e) {}
+  var CH = { sup: '', p: '', sort: 'prod', hr: '', hm: 'slot' };
+  try { var cs0 = JSON.parse(localStorage.getItem('rb_chat_v2') || 'null'); if (cs0) { CH.sup = cs0.sup || ''; CH.p = cs0.p || ''; CH.sort = cs0.sort || 'prod'; CH.hr = cs0.hr || ''; CH.hm = cs0.hm || 'slot'; } } catch (e) {}
+  /* ---- ตัวกรองช่วงเวลา (รายชั่วโมงจาก FB · เพิ่ม 16 พ.ย. 2569) ---- */
+  var HSLOT = [['', 'ทั้งวัน'], ['0-9', '00.00–09.00'], ['9-12', '09.00–12.00'], ['12-15', '12.00–15.00'], ['15-18', '15.00–18.00'], ['18-21', '18.00–21.00'], ['21-24', '21.00–00.00']];
+  var HRD = {}, HRL = { busy: false, done: 0, total: 0, at: 0, err: 0 }, hrTm = null;
+  function hrLbl() { var x = HSLOT.filter(function (z) { return z[0] === CH.hr; })[0]; if (!x || !CH.hr) return ''; return CH.hm === 'cum' ? 'สะสมถึง ' + x[1].split('–')[1] : 'ช่วง ' + x[1]; }
+  function hrIn(h) { var p = CH.hr.split('-'), a = +p[0], b = +p[1]; return CH.hm === 'cum' ? h < b : (h >= a && h < b); }
+  function hrAccs() { var a = []; prods().forEach(function (p) { (p.pages || []).forEach(function (pg) { (pg.accounts || []).forEach(function (x) { (x.adAccounts || []).forEach(function (k) { if (a.indexOf(k) < 0) a.push(k); }); }); }); }); return a; }
+  function hrAct(list, types) { var v = 0; (list || []).forEach(function (x) { if (types.indexOf(x.action_type) >= 0) v += num(x.value); }); return v; }
+  function hrLoad(force) {
+    if (HRL.busy) return; if (!force && HRL.at && Date.now() - HRL.at < 600000) return;
+    var meta = window.FB_ACCOUNTS_META || [], q = hrAccs(), from = dayShift(8), to = dayShift(0), NEW = {};
+    HRL.busy = true; HRL.done = 0; HRL.err = 0; HRL.total = q.length;
+    function put(acc, r) {
+      var dt = r.date_start, hh = parseInt(String(r.hourly_stats_aggregated_by_advertiser_time_zone || '').slice(0, 2), 10); if (!dt || isNaN(hh)) return;
+      var b = hrAct(r.actions, ['omni_purchase']); if (!b) b = hrAct(r.actions, ['purchase']);
+      var A = NEW[acc] || (NEW[acc] = {}), D = A[dt] || (A[dt] = {}), v = D[hh] || (D[hh] = [0, 0, 0]);
+      v[0] += hrAct(r.actions, ['onsite_conversion.messaging_conversation_started_7d']); v[1] += num(r.spend); v[2] += b;
+    }
+    function one() {
+      var acc = q.shift(); if (!acc) return Promise.resolve();
+      var mm = meta.filter(function (x) { return x.name === acc || x.configKey === 'FB_GID_' + acc; })[0];
+      var tok = (window.FB_TOKENS || {})[acc] || window.FB_TOKEN;
+      if (!mm || !mm.id) { HRL.done++; return one(); }
+      var url = window.FB_API + mm.id + '/insights?level=account&time_increment=1&breakdowns=hourly_stats_aggregated_by_advertiser_time_zone&limit=500&fields=spend,actions&time_range=' + encodeURIComponent(JSON.stringify({ since: from, until: to })) + '&access_token=' + tok;
+      function page(u) {
+        return fetch(u).then(function (x) { return x.json(); }).then(function (j) {
+          if (!j || !j.data) { HRL.err++; return; }
+          j.data.forEach(function (r) { put(acc, r); });
+          if (j.paging && j.paging.next) return page(j.paging.next);
+        });
+      }
+      return page(url).catch(function () { HRL.err++; }).then(function () { HRL.done++; if (NEW[acc]) HRD[acc] = NEW[acc]; clearTimeout(hrTm); hrTm = setTimeout(renderChat, 400); return one(); });
+    }
+    var ws = []; for (var i = 0; i < 6; i++) ws.push(one());
+    Promise.all(ws).then(function () { HRL.busy = false; HRL.at = Date.now(); renderChat(); });
+  }
   function supMap() { return window.CHAT_SUP_MAP || {}; }
   function renderChat() {
     var box = document.getElementById('chatPageInner'); if (!box) return;
     if (!window.FB_HIERARCHY || !window.fbDataMap) { box.innerHTML = '<div class="c2-wrap ai2"><div class="c2-card c2-empty">กำลังโหลดข้อมูล…</div></div>'; return; }
     loadAll();
+    if (CH.hr) hrLoad();
     var lock = ''; try { lock = window._cpLockedSup ? window._cpLockedSup() : ''; } catch (e) {}
     if (lock) CH.sup = lock;
     var SM = supMap(), allowed = CH.sup && SM[CH.sup] ? SM[CH.sup] : null;
@@ -283,13 +319,14 @@
         var r = { prod: p.product, ci: pi, page: pg.name, t: 0, y: 0, y2: 0, w: 0, sw: 0, bw: 0, st: 0, n: 0, d: {} };
         (pg.accounts || []).forEach(function (a) { (a.adAccounts || []).forEach(function (acc) {
           r.n++;
-          ((window.fbDataMap || {})[acc] || []).forEach(function (x) {
-            var c = num(x.conversations), s = num(x.spend), b = num(x.purchases);
-            if (x.date === T) { r.t += c; r.st += s; }
-            if (x.date === Yd) r.y += c;
-            if (x.date === D2) r.y2 += c;
-            if (W.indexOf(x.date) >= 0) { r.w += c; r.sw += s; r.bw += b; r.d[x.date] = (r.d[x.date] || 0) + c; }
-          });
+          function add(dt, c, s, b) {
+            if (dt === T) { r.t += c; r.st += s; }
+            if (dt === Yd) r.y += c;
+            if (dt === D2) r.y2 += c;
+            if (W.indexOf(dt) >= 0) { r.w += c; r.sw += s; r.bw += b; r.d[dt] = (r.d[dt] || 0) + c; }
+          }
+          if (CH.hr && HRD[acc]) { var HA = HRD[acc]; Object.keys(HA).forEach(function (dt) { Object.keys(HA[dt]).forEach(function (hk) { if (hrIn(+hk)) { var v = HA[dt][hk]; add(dt, v[0], v[1], v[2]); } }); }); }
+          else if (!CH.hr) ((window.fbDataMap || {})[acc] || []).forEach(function (x) { add(x.date, num(x.conversations), num(x.spend), num(x.purchases)); });
         }); });
         if (!r.n) return;
         ['t', 'y', 'y2', 'w', 'sw', 'bw', 'st'].forEach(function (k) { tot[k] += r[k]; });
@@ -301,11 +338,14 @@
     var maxW = rows.reduce(function (m, r) { return Math.max(m, r.w); }, 1);
     function dl(cur, prev, lbl) { if (!prev) return '<span class="c2-dim">ไม่มีข้อมูลเทียบ</span>'; var d = (cur - prev) / prev * 100; return '<span class="' + (Math.abs(d) < 1 ? 'c2-dim' : d > 0 ? 'c2-good' : 'c2-bad') + '">' + (d > 0 ? '▲' : d < 0 ? '▼' : '') + ' ' + Math.abs(d).toFixed(0) + '%</span> <span class="c2-dim">' + lbl + '</span>'; }
     var h = '<div class="c2-wrap ai2">';
-    h += '<div class="c2-head"><div><h1>คนทักรายเพจ</h1><div class="c2-subhead">จำนวนคนทัก (การสนทนา) จาก Facebook Ads ของทุกเพจ · วันนี้ถึงเวลาที่โหลดล่าสุด · 7 วัน = ถึงเมื่อวาน</div></div>' +
+    h += '<div class="c2-head"><div><h1>คนทักรายเพจ</h1><div class="c2-subhead">จำนวนคนทัก (การสนทนา) จาก Facebook Ads ของทุกเพจ · วันนี้ถึงเวลาที่โหลดล่าสุด · 7 วัน = ถึงเมื่อวาน' + (CH.hr ? ' · <b>' + hrLbl() + ' น. ทุกวัน</b>' : '') + '</div></div>' +
       '<div class="c2-seg" role="group" aria-label="ทีมซุป">' + [''].concat(Object.keys(SM)).map(function (s) { var dis = lock && s !== lock; return dis ? '' : '<button class="' + (CH.sup === s ? 'on' : '') + '" onclick="aiV2.chat(\'sup\',' + jsq(s) + ')">' + (s ? esc(s) : 'ทุกทีม') + '</button>'; }).join('') + '</div></div>';
     h += '<div class="c2-tabs"><button class="' + (!CH.p ? 'on' : '') + '" onclick="aiV2.chat(\'p\',\'\')">ทุกสินค้า</button>' + P.map(function (p) { var i = prods().indexOf(p), on = CH.p === p.product; return '<button class="' + (on ? 'on' : '') + '" onclick="aiV2.chat(\'p\',' + jsq(p.product) + ')"><i style="background:' + (on ? '#fff' : PAL[i % PAL.length]) + '"></i>' + esc(p.product) + '</button>'; }).join('') + '</div>';
+    h += '<div class="ai2-chips"><span class="c2-dim">ช่วงเวลา:</span>' + HSLOT.map(function (x) { return '<button class="ai2-chip' + (CH.hr === x[0] ? ' on' : '') + '" onclick="aiV2.chat(\'hr\',\'' + x[0] + '\')">' + x[1] + '</button>'; }).join('') +
+      (CH.hr ? '<span class="c2-dim" style="margin-left:8px">นับแบบ:</span><button class="ai2-chip' + (CH.hm !== 'cum' ? ' on' : '') + '" onclick="aiV2.chat(\'hm\',\'slot\')">เฉพาะช่วงนี้</button><button class="ai2-chip' + (CH.hm === 'cum' ? ' on' : '') + '" onclick="aiV2.chat(\'hm\',\'cum\')">สะสมตั้งแต่ 00.00</button>' +
+        '<span class="c2-dim" style="margin-left:8px">' + (HRL.busy ? 'กำลังดึงข้อมูลรายชั่วโมง ' + HRL.done + '/' + HRL.total + ' บัญชี…' : HRL.at ? 'อัปเดต ' + new Date(HRL.at).toTimeString().slice(0, 5) + ' น.' + (HRL.err ? ' · ดึงไม่ได้ ' + HRL.err + ' บัญชี' : '') + ' <button class="ai2-chip" onclick="aiV2.chat(\'hrr\',1)">โหลดใหม่</button>' : '') + '</span>' : '') + '</div>';
     h += '<div class="c2-kpis">' +
-      '<div class="c2-card c2-kpi"><div class="c2-lbl">คนทักวันนี้</div><div class="c2-val">' + I(tot.t) + '</div><div class="c2-sub c2-dim">ต้นทุน ' + (tot.t ? B(tot.st / tot.t) : '–') + '/ทัก · ยังไม่จบวัน</div></div>' +
+      '<div class="c2-card c2-kpi"><div class="c2-lbl">คนทักวันนี้' + (CH.hr ? ' · ' + hrLbl() : '') + '</div><div class="c2-val">' + I(tot.t) + '</div><div class="c2-sub c2-dim">ต้นทุน ' + (tot.t ? B(tot.st / tot.t) : '–') + '/ทัก · ยังไม่จบวัน</div></div>' +
       '<div class="c2-card c2-kpi"><div class="c2-lbl">เมื่อวาน</div><div class="c2-val">' + I(tot.y) + '</div><div class="c2-sub">' + dl(tot.y, tot.y2, 'จากวันก่อน') + '</div></div>' +
       '<div class="c2-card c2-kpi"><div class="c2-lbl">7 วัน</div><div class="c2-val">' + I(tot.w) + '</div><div class="c2-sub c2-dim">เฉลี่ย ' + I(tot.w / 7) + ' คน/วัน</div></div>' +
       '<div class="c2-card c2-kpi"><div class="c2-lbl">ต้นทุนต่อทัก · 7 วัน</div><div class="c2-val">' + (tot.w ? B(tot.sw / tot.w) : '–') + '</div><div class="c2-sub c2-dim">ค่าแอด ' + K(tot.sw) + '</div></div>' +
@@ -325,7 +365,7 @@
         '<td><div class="c2-share"><div><i style="width:' + (r.w / maxW * 100).toFixed(1) + '%;background:' + col + '"></i></div><span>' + I(r.w) + ' <span class="c2-dim">· ' + I(r.w / 7) + '/วัน</span></span></div></td>' +
         '<td class="r">' + (r.w ? B(cpc) : '<span class="c2-dim">–</span>') + '</td><td class="r ' + (r.w && cl >= 25 ? 'c2-good' : r.w && cl < 15 ? 'c2-bad' : '') + '">' + (r.w ? cl.toFixed(1) + '%' : '<span class="c2-dim">–</span>') + '</td><td>' + spark + '</td></tr>';
     });
-    h += '</tbody></table></div><div class="c2-note">ปิดได้ = ซื้อ ÷ คนทัก ตามที่ Facebook นับ (หลังบ้านอาจต่างกัน) · สีเขียว ≥ 25% · สีแดง &lt; 15%' + (lock ? ' · บัญชีนี้ดูได้เฉพาะทีม ' + esc(lock) : '') + '</div></div></div>';
+    h += '</tbody></table></div><div class="c2-note">ปิดได้ = ซื้อ ÷ คนทัก ตามที่ Facebook นับ (หลังบ้านอาจต่างกัน) · สีเขียว ≥ 25% · สีแดง &lt; 15%' + (CH.hr ? ' · ช่วงเวลาใช้เวลาของบัญชีโฆษณา (ตามที่ FB นับให้แอด อาจต่างจากเวลาข้อความเข้าเล็กน้อย)' : '') + (lock ? ' · บัญชีนี้ดูได้เฉพาะทีม ' + esc(lock) : '') + '</div></div></div>';
     box.innerHTML = h;
   }
 
