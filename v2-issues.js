@@ -243,7 +243,7 @@
   /* ---------- เมนู + badge ---------- */
   function badge() {
     var it = document.getElementById('sb-issues'); if (!it) return;
-    var b = it.querySelector('.iss-badge'); if (!b) { b = document.createElement('span'); b.className = 'iss-badge'; it.appendChild(b); }
+    var b = it.querySelector('.iss-badge'), ic = it.querySelector('.sb-icon') || it; if (!b) { b = document.createElement('span'); b.className = 'iss-badge'; ic.appendChild(b); }
     var mine = saOnly() ? 'ads2sa' : '', LT = lockTeam(), n = S.list.filter(function (x) { return x.status !== 'done' && (!mine || x.dir === mine) && (!LT || teamOf(x.prod) === LT); }).length;
     b.textContent = n > 99 ? '99+' : String(n); b.style.display = n ? '' : 'none';
     b.setAttribute('aria-label', n + ' เรื่องค้างอยู่');
@@ -281,7 +281,7 @@
       '#issView .iss-thread{display:flex;flex-direction:column;gap:10px;margin-bottom:14px;max-height:52vh;overflow:auto;padding-right:4px}#issView .iss-msg{background:#F8FAFC;border:1px solid var(--ib);border-radius:12px;padding:10px 12px;max-width:88%}#issView .iss-msg.mine{align-self:flex-end;background:#EFF6FF;border-color:#BFDBFE}#issView .iss-mby{font-size:12px;color:var(--im);margin-bottom:4px}#issView .iss-mtxt{font-size:14px;line-height:1.55;white-space:normal;word-break:break-word}',
       '#issView .iss-imgs{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}#issView .iss-th{border:0;padding:0;background:#E2E8F0;border-radius:8px;cursor:zoom-in;width:110px;height:110px;overflow:hidden}#issView .iss-th img{width:110px;height:110px;object-fit:cover;display:block}#issView .iss-th.gone::after{content:"รูปหมดอายุ";font-size:12px;color:var(--im)}',
       '#issView .iss-lb{align-items:center;z-index:9100;cursor:zoom-out}#issView .iss-lb img{max-width:96vw;max-height:92vh;border-radius:8px;background:#fff}',
-      '.sb-item .iss-badge{margin-left:auto;background:#EF4444;color:#fff;font-size:11px;font-weight:700;min-width:18px;height:18px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;padding:0 5px}',
+      '.sb-item .iss-badge{margin-left:auto;background:#EF4444;color:#fff;font-size:11px;font-weight:700;min-width:18px;height:18px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;padding:0 5px;flex:none}#sb-issues .sb-icon{position:relative;overflow:visible}#sb-issues .sb-icon .iss-badge{position:absolute;top:-8px;right:-10px;margin:0;min-width:17px;height:17px;font-size:10px;padding:0 4px;line-height:1;box-shadow:0 0 0 2px #0B1220}',
       '#issToast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:#0F172A;color:#fff;padding:10px 16px;border-radius:10px;font-size:14px;opacity:0;pointer-events:none;transition:.2s;z-index:9500}#issToast.on{opacity:1;transform:translateX(-50%)}#issToast.bad{background:#B91C1C}',
       '@media (max-width:700px){#issView .iss-wrap{padding:18px 14px 40px}#issView .iss-grid{grid-template-columns:1fr}#issView .iss-msg{max-width:100%}}',
       'html[data-theme="dark"] #issView,body.dark #issView{--ib:#334155;--it:#E2E8F0;--im:#94A3B8;--ic:#1E293B;--ibg:#0F172A}'
