@@ -9,8 +9,8 @@
     ads2sa: ['ทักถูกแต่ปิดไม่ได้', 'ตอบแชทช้า / ไม่ได้ตอบ', 'ขอข้อมูลลูกค้า (คำถามที่เจอบ่อย)', 'อื่น ๆ']
   };
   var ST = { open: 'รอดำเนินการ', doing: 'กำลังแก้', done: 'แก้แล้ว' };
-  var S = { list: [], loaded: false, loading: false, err: '', dir: '', st: 'active', prod: '', q: '', sel: null, form: null, pend: [], busy: false, lb: null };
-  try { var s0 = JSON.parse(localStorage.getItem('rb_iss_v2') || 'null'); if (s0) { S.dir = s0.dir || ''; S.st = s0.st || 'active'; S.prod = s0.prod || ''; } } catch (e) {}
+  var S = { list: [], loaded: false, loading: false, err: '', team: '', dir: '', st: 'active', prod: '', q: '', sel: null, form: null, pend: [], busy: false, lb: null };
+  try { var s0 = JSON.parse(localStorage.getItem('rb_iss_v2') || 'null'); if (s0) { S.dir = s0.dir || ''; S.st = s0.st || 'active'; S.prod = s0.prod || ''; S.team = s0.team || ''; } } catch (e) {}
   var IMG = {}, IMGQ = {};
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
@@ -19,7 +19,15 @@
   function me() { try { return sessionStorage.getItem('rb_username') || ''; } catch (e) { return ''; } }
   function isAdmin() { try { return sessionStorage.getItem('rb_auth') === '1'; } catch (e) { return false; } }
   function readOnly() { try { return sessionStorage.getItem('rb_perm') === 'view'; } catch (e) { return false; } }
-  function saOnly() { try { var a = JSON.parse(sessionStorage.getItem('rb_access') || 'null'); return Array.isArray(a) && a.length === 1 && a[0] === 'issues'; } catch (e) { return false; } }
+  /* ทีม SA (ซุป) ที่รับผิดชอบสินค้า: CHAT_SUP_MAP · สิทธิ์ iss_nook / iss_au / iss_honey (หรือ chat_*) = ล็อกให้เห็นเฉพาะทีมนั้น */
+  var ISS_TEAM = { iss_nook: 'ซุปนุ๊ก', iss_au: 'Au Supad1', iss_honey: 'ซุปน้ำผึ้ง' };
+  function accArr() { try { var a = sessionStorage.getItem('rb_access') || '', x; try { x = JSON.parse(a); } catch (e) { x = a; } return Array.isArray(x) ? x : [x]; } catch (e) { return []; } }
+  function lockTeam() { if (isAdmin()) return ''; var a = accArr(); for (var i = 0; i < a.length; i++) if (ISS_TEAM[a[i]]) return ISS_TEAM[a[i]]; try { return window._cpLockedSup ? (window._cpLockedSup() || '') : ''; } catch (e) { return ''; } }
+  function saOnly() { var a = accArr(); return !isAdmin() && a.length > 0 && a.every(function (k) { return k === 'issues' || !!ISS_TEAM[k] || /^chat_/.test(String(k)); }); }
+  function teams() { return Object.keys(window.CHAT_SUP_MAP || {}); }
+  function teamOf(prod) { var M = window.CHAT_SUP_MAP || {}, r = ''; Object.keys(M).forEach(function (k) { if (!r && (M[k] || []).indexOf(prod) >= 0) r = k; }); return r; }
+  function curTeam() { return lockTeam() || S.team || ''; }
+  function inTeam(prod) { var t = curTeam(); return !t || teamOf(prod) === t; }
   function post(path, body) {
     body = body || {}; body.token = tok();
     return fetch(API + path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
@@ -31,8 +39,9 @@
   function dayShift(n) { var d = new Date(); d.setDate(d.getDate() - n); return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
   function num(v) { var n = parseFloat(String(v == null ? '' : v).replace(/,/g, '')); return isNaN(n) ? 0 : n; }
   function prods() { return (window.FB_HIERARCHY || []).filter(function (p) { return p && p.product; }); }
+  function formProds() { var t = lockTeam(); return prods().filter(function (p) { return !t || teamOf(p.product) === t; }); }
   function pagesOf(prod) { var p = prods().filter(function (x) { return x.product === prod; })[0]; return p ? (p.pages || []).map(function (g) { return g.name; }) : []; }
-  function saveUi() { try { localStorage.setItem('rb_iss_v2', JSON.stringify({ dir: S.dir, st: S.st, prod: S.prod })); } catch (e) {} }
+  function saveUi() { try { localStorage.setItem('rb_iss_v2', JSON.stringify({ dir: S.dir, st: S.st, prod: S.prod, team: S.team })); } catch (e) {} }
   function toast(t, bad) { var el = document.getElementById('issToast'); if (!el) { el = document.createElement('div'); el.id = 'issToast'; document.body.appendChild(el); } el.textContent = t; el.className = bad ? 'bad on' : 'on'; clearTimeout(el._t); el._t = setTimeout(function () { el.className = ''; }, 3500); }
 
   /* ---------- โหลด / บันทึก ---------- */
@@ -129,6 +138,7 @@
       if (S.st === 'active' && x.status === 'done') return false;
       if (S.st === 'done' && x.status !== 'done') return false;
       if (S.prod && x.prod !== S.prod) return false;
+      if (!inTeam(x.prod)) return false;
       if (q) { var t = [x.title, x.prod, x.page, x.camp, x.cat, x.by].concat((x.msgs || []).map(function (m) { return m.txt; })).join(' ').toLowerCase(); if (t.indexOf(q) < 0) return false; }
       return true;
     }).sort(function (a, b) { var oa = a.status === 'done' ? 1 : 0, ob = b.status === 'done' ? 1 : 0; return oa - ob || (b.u || b.t) - (a.u || a.t); });
@@ -141,15 +151,17 @@
     h += '<div class="iss-head"><div><h1>แจ้งปัญหาทีม SA/ADS</h1><div class="iss-sub">ทีม SA แจ้งปัญหาที่เจอให้ทีม ADS · ทีม ADS ตอบกลับพร้อมหลักฐาน หรือถามทีม SA เรื่องคอนเทนต์ที่ทักถูกแต่ปิดไม่ได้ · แนบรูปได้ (ย่อให้อัตโนมัติ · รูปเก็บ 90 วัน)</div></div>' +
       (tok() && !readOnly() ? '<button class="iss-btn pri" onclick="issV2.newForm()">+ แจ้งเรื่องใหม่</button>' : '') + '</div>';
     if (!tok()) { box.innerHTML = h + '<div class="iss-card iss-empty">หน้านี้ใช้ได้เมื่อเข้าสู่ระบบด้วยอีเมล/ชื่อผู้ใช้ + รหัสผ่านแบบใหม่ · ถ้าเข้าด้วยรหัสแบบเดิม ให้ออกจากระบบแล้วเข้าใหม่</div></div>'; return; }
-    var act = S.list.filter(function (x) { return x.status !== 'done'; }), wk = Date.now() - 7 * 86400000;
+    var scope = S.list.filter(function (x) { return inTeam(x.prod); });
+    var act = scope.filter(function (x) { return x.status !== 'done'; }), wk = Date.now() - 7 * 86400000;
     var k1 = act.filter(function (x) { return x.dir === 'sa2ads'; }).length, k2 = act.filter(function (x) { return x.dir === 'ads2sa'; }).length;
-    var k3 = S.list.filter(function (x) { return x.status === 'done' && (x.u || 0) >= wk; }).length;
+    var k3 = scope.filter(function (x) { return x.status === 'done' && (x.u || 0) >= wk; }).length;
     h += '<div class="iss-kpis"><button class="iss-card iss-kpi" onclick="issV2.f(\'dir\',\'sa2ads\')"><div class="iss-lbl">SA แจ้ง ADS · ค้างอยู่</div><div class="iss-val">' + k1 + '</div><div class="iss-dim">ทีม ADS ต้องแก้/ตอบ</div></button>' +
       '<button class="iss-card iss-kpi" onclick="issV2.f(\'dir\',\'ads2sa\')"><div class="iss-lbl">ADS แจ้ง SA · ค้างอยู่</div><div class="iss-val">' + k2 + '</div><div class="iss-dim">ทีม SA ต้องตอบ</div></button>' +
-      '<div class="iss-card iss-kpi"><div class="iss-lbl">แก้แล้ว · 7 วัน</div><div class="iss-val">' + k3 + '</div><div class="iss-dim">ทั้งหมด ' + S.list.length + ' เรื่อง</div></div></div>';
-    h += '<div class="iss-bar"><div class="iss-seg" role="group" aria-label="ทิศทาง">' + [['', 'ทั้งหมด'], ['sa2ads', 'SA แจ้ง ADS'], ['ads2sa', 'ADS แจ้ง SA']].map(function (x) { return '<button class="' + (S.dir === x[0] ? 'on' : '') + '" onclick="issV2.f(\'dir\',\'' + x[0] + '\')">' + x[1] + '</button>'; }).join('') + '</div>' +
+      '<div class="iss-card iss-kpi"><div class="iss-lbl">แก้แล้ว · 7 วัน</div><div class="iss-val">' + k3 + '</div><div class="iss-dim">ทั้งหมด ' + scope.length + ' เรื่อง</div></div></div>';
+    var LT = lockTeam();
+    h += '<div class="iss-bar">' + (LT ? '<span class="iss-team on">ทีม ' + esc(LT) + '</span>' : '<div class="iss-seg" role="group" aria-label="ทีม SA">' + [''].concat(teams()).map(function (t) { return '<button class="' + (S.team === t ? 'on' : '') + '" onclick="issV2.f(\'team\',' + jsq(t) + ')">' + (t ? esc(t) : 'ทุกทีม') + '</button>'; }).join('') + '</div>') + '<div class="iss-seg" role="group" aria-label="ทิศทาง">' + [['', 'ทั้งหมด'], ['sa2ads', 'SA แจ้ง ADS'], ['ads2sa', 'ADS แจ้ง SA']].map(function (x) { return '<button class="' + (S.dir === x[0] ? 'on' : '') + '" onclick="issV2.f(\'dir\',\'' + x[0] + '\')">' + x[1] + '</button>'; }).join('') + '</div>' +
       '<div class="iss-seg" role="group" aria-label="สถานะ">' + [['active', 'ค้างอยู่'], ['done', 'แก้แล้ว'], ['all', 'ทั้งหมด']].map(function (x) { return '<button class="' + (S.st === x[0] ? 'on' : '') + '" onclick="issV2.f(\'st\',\'' + x[0] + '\')">' + x[1] + '</button>'; }).join('') + '</div>' +
-      '<select aria-label="สินค้า" onchange="issV2.f(\'prod\',this.value)"><option value="">ทุกสินค้า</option>' + prods().map(function (p) { return '<option' + (S.prod === p.product ? ' selected' : '') + '>' + esc(p.product) + '</option>'; }).join('') + '</select>' +
+      '<select aria-label="สินค้า" onchange="issV2.f(\'prod\',this.value)"><option value="">ทุกสินค้า</option>' + prods().filter(function (p) { return inTeam(p.product); }).map(function (p) { return '<option' + (S.prod === p.product ? ' selected' : '') + '>' + esc(p.product) + '</option>'; }).join('') + '</select>' +
       '<input type="search" placeholder="ค้นหา หัวข้อ / เพจ / ข้อความ" aria-label="ค้นหา" value="' + esc(S.q) + '" oninput="issV2.q(this.value)">' +
       '<button class="iss-btn" onclick="issV2.reload()">' + (S.loading ? 'กำลังโหลด…' : 'โหลดใหม่') + '</button></div>';
     if (S.err) h += '<div class="iss-card iss-errbox">' + esc(S.err) + '</div>';
@@ -159,20 +171,20 @@
     else if (!L.length) h += '<div class="iss-empty">' + (S.list.length ? 'ไม่มีเรื่องตามตัวกรองนี้' : 'ยังไม่มีเรื่องแจ้ง · กด "+ แจ้งเรื่องใหม่" เพื่อเริ่ม') + '</div>';
     L.forEach(function (x) {
       var last = (x.msgs || [])[(x.msgs || []).length - 1] || {}, nImg = (x.msgs || []).reduce(function (a, m) { return a + (m.imgs || []).length; }, 0);
-      h += '<button class="iss-row' + (x.status === 'done' ? ' done' : '') + '" onclick="issV2.open(' + jsq(x.id) + ')"><div class="iss-r1">' + pill(x.status) + dirTag(x.dir) + (x.cat ? '<span class="iss-cat">' + esc(x.cat) + '</span>' : '') + '<b class="iss-title">' + esc(x.title || '(ไม่มีหัวข้อ)') + '</b></div>' +
+      h += '<button class="iss-row' + (x.status === 'done' ? ' done' : '') + '" onclick="issV2.open(' + jsq(x.id) + ')"><div class="iss-r1">' + pill(x.status) + dirTag(x.dir) + (teamOf(x.prod) ? '<span class="iss-team">ทีม ' + esc(teamOf(x.prod)) + '</span>' : '') + (x.cat ? '<span class="iss-cat">' + esc(x.cat) + '</span>' : '') + '<b class="iss-title">' + esc(x.title || '(ไม่มีหัวข้อ)') + '</b></div>' +
         '<div class="iss-r2"><span>' + esc([x.prod, x.page].filter(Boolean).join(' › ')) + '</span>' + (x.camp ? '<span class="iss-ell">แคมเปญ: ' + esc(x.camp) + '</span>' : '') + '</div>' +
         '<div class="iss-r3"><span>แจ้งโดย <b>' + esc(x.by) + '</b> · ' + when(x.t) + '</span><span>' + (x.msgs || []).length + ' ข้อความ' + (nImg ? ' · ' + nImg + ' รูป' : '') + ' · ล่าสุด ' + esc(last.by || x.ub || '') + ' ' + when(x.u || x.t) + '</span></div></button>';
     });
     h += '</div>';
     if (!saOnly() && (S.dir === '' || S.dir === 'ads2sa') && window.fbDataMap) {
-      var sg = suggest().filter(function (c) { return !S.prod || c.prod === S.prod; }).slice(0, 15);
+      var sg = suggest().filter(function (c) { return (!S.prod || c.prod === S.prod) && inTeam(c.prod); }).slice(0, 15);
       h += '<div class="iss-card iss-pad"><h2>คอนเทนต์ทักถูกแต่ปิดไม่ได้ <span class="iss-dim">· 7 วันถึงเมื่อวาน · ระบบคัดให้</span></h2><div class="iss-dim" style="margin:2px 0 10px">เงื่อนไข: ทัก ≥ 15 · ค่าแอด ≥ ฿500 · ต้นทุนต่อทักไม่เกินค่าเฉลี่ยสินค้า · ปิดได้ (ซื้อ ÷ ทัก ตาม FB) ต่ำกว่า 12% และต่ำกว่า 60% ของค่าเฉลี่ยสินค้า</div>';
       if (!sg.length) h += '<div class="iss-empty">ไม่มีแคมเปญเข้าเงื่อนไข</div>';
       else {
-        h += '<div class="iss-scroll"><table class="iss-t"><thead><tr><th>สินค้า / เพจ</th><th>แคมเปญ</th><th class="r">ทัก</th><th class="r">฿/ทัก</th><th class="r">ปิดได้</th><th class="r">ค่าแอด</th><th></th></tr></thead><tbody>';
+        h += '<div class="iss-scroll"><table class="iss-t"><thead><tr><th>สินค้า / เพจ</th><th>แคมเปญ</th><th class="r">ทัก</th><th class="r">฿/ทัก</th><th class="r">ปิดได้</th><th class="r">ค่าแอด</th><th>ส่งถึง</th><th></th></tr></thead><tbody>';
         sg.forEach(function (c, i) {
           var sent = sentRecently(c.camp);
-          h += '<tr><td><b>' + esc(c.prod) + '</b><div class="iss-dim">' + esc(c.page) + '</div></td><td class="iss-ell" title="' + esc(c.camp) + '">' + esc(c.camp) + '</td><td class="r">' + Math.round(c.chats) + '</td><td class="r">฿' + Math.round(c.cpc) + '<div class="iss-dim">เฉลี่ย ฿' + Math.round(c.avgCpc) + '</div></td><td class="r iss-bad">' + (c.close * 100).toFixed(1) + '%<div class="iss-dim">เฉลี่ย ' + (c.avgClose * 100).toFixed(1) + '%</div></td><td class="r">฿' + Math.round(c.spend).toLocaleString() + '</td><td>' +
+          h += '<tr><td><b>' + esc(c.prod) + '</b><div class="iss-dim">' + esc(c.page) + '</div></td><td class="iss-ell" title="' + esc(c.camp) + '">' + esc(c.camp) + '</td><td class="r">' + Math.round(c.chats) + '</td><td class="r">฿' + Math.round(c.cpc) + '<div class="iss-dim">เฉลี่ย ฿' + Math.round(c.avgCpc) + '</div></td><td class="r iss-bad">' + (c.close * 100).toFixed(1) + '%<div class="iss-dim">เฉลี่ย ' + (c.avgClose * 100).toFixed(1) + '%</div></td><td class="r">฿' + Math.round(c.spend).toLocaleString() + '</td><td class="iss-nw">' + (teamOf(c.prod) ? 'ทีม ' + esc(teamOf(c.prod)) : '<span class="iss-dim">ยังไม่กำหนดทีม</span>') + '</td><td>' +
             (sent ? '<span class="iss-dim">ส่งแล้ว</span>' : readOnly() ? '' : '<button class="iss-btn sm" onclick="issV2.ask(' + i + ')">ส่งถาม SA</button>') + '</td></tr>';
         });
         h += '</tbody></table></div>';
@@ -197,8 +209,9 @@
     var f = S.form, cats = CAT[f.dir] || [];
     var h = '<div class="iss-ov" onclick="if(event.target===this)issV2.close()"><div class="iss-modal" role="dialog" aria-modal="true" aria-label="แจ้งเรื่องใหม่"><div class="iss-mh"><h2>แจ้งเรื่องใหม่</h2><button class="iss-x" aria-label="ปิด" onclick="issV2.close()">×</button></div>';
     h += '<div class="iss-fg"><span class="iss-lbl">ใครแจ้งใคร</span><div class="iss-seg">' + ['sa2ads', 'ads2sa'].map(function (d) { return '<button type="button" class="' + (f.dir === d ? 'on' : '') + '" onclick="issV2.ff(\'dir\',\'' + d + '\')">' + DIR[d] + '</button>'; }).join('') + '</div></div>';
-    h += '<div class="iss-grid"><label class="iss-fg"><span class="iss-lbl">สินค้า</span><select onchange="issV2.ff(\'prod\',this.value)"><option value="">— เลือก —</option>' + prods().map(function (p) { return '<option' + (f.prod === p.product ? ' selected' : '') + '>' + esc(p.product) + '</option>'; }).join('') + '</select></label>' +
+    h += '<div class="iss-grid"><label class="iss-fg"><span class="iss-lbl">สินค้า</span><select onchange="issV2.ff(\'prod\',this.value)"><option value="">— เลือก —</option>' + formProds().map(function (p) { return '<option' + (f.prod === p.product ? ' selected' : '') + '>' + esc(p.product) + '</option>'; }).join('') + '</select></label>' +
       '<label class="iss-fg"><span class="iss-lbl">เพจ (ถ้ามี)</span><select onchange="issV2.ff(\'page\',this.value)"><option value="">— ไม่ระบุ —</option>' + pagesOf(f.prod).map(function (n) { return '<option' + (f.page === n ? ' selected' : '') + '>' + esc(n) + '</option>'; }).join('') + '</select></label></div>';
+    if (f.prod) h += '<div class="iss-route">' + (teamOf(f.prod) ? (f.dir === 'ads2sa' ? 'ส่งถึง' : 'จาก') + ' <b>ทีม ' + esc(teamOf(f.prod)) + '</b> (ทีม SA ที่ดูแล ' + esc(f.prod) + ') · ทีมอื่นจะไม่เห็นเรื่องนี้' : 'สินค้านี้ยังไม่ได้กำหนดทีม SA · ทุกคนที่มีสิทธิ์หน้านี้จะเห็น') + '</div>';
     h += '<label class="iss-fg"><span class="iss-lbl">ประเภทปัญหา</span><select onchange="issV2.ff(\'cat\',this.value)">' + cats.map(function (c) { return '<option' + (f.cat === c ? ' selected' : '') + '>' + esc(c) + '</option>'; }).join('') + '</select></label>';
     h += '<label class="iss-fg"><span class="iss-lbl">หัวข้อ</span><input id="issTitle" maxlength="150" placeholder="สรุปปัญหาสั้น ๆ" value="' + esc(f.title || '') + '" oninput="issV2.ff(\'title\',this.value,1)"></label>';
     if (f.camp) h += '<div class="iss-fg"><span class="iss-lbl">แคมเปญ</span><div class="iss-camp">' + esc(f.camp) + '</div></div>';
@@ -208,7 +221,7 @@
     return h;
   }
   function detailHtml(x) {
-    var h = '<div class="iss-ov" onclick="if(event.target===this)issV2.close()"><div class="iss-modal wide" role="dialog" aria-modal="true" aria-label="รายละเอียดเรื่อง"><div class="iss-mh"><div><div class="iss-r1">' + pill(x.status) + dirTag(x.dir) + (x.cat ? '<span class="iss-cat">' + esc(x.cat) + '</span>' : '') + '</div><h2>' + esc(x.title || '(ไม่มีหัวข้อ)') + '</h2><div class="iss-dim">' + esc([x.prod, x.page].filter(Boolean).join(' › ')) + ' · แจ้งโดย ' + esc(x.by) + ' ' + when(x.t) + '</div></div><button class="iss-x" aria-label="ปิด" onclick="issV2.close()">×</button></div>';
+    var h = '<div class="iss-ov" onclick="if(event.target===this)issV2.close()"><div class="iss-modal wide" role="dialog" aria-modal="true" aria-label="รายละเอียดเรื่อง"><div class="iss-mh"><div><div class="iss-r1">' + pill(x.status) + dirTag(x.dir) + (x.cat ? '<span class="iss-cat">' + esc(x.cat) + '</span>' : '') + '</div><h2>' + esc(x.title || '(ไม่มีหัวข้อ)') + '</h2><div class="iss-dim">' + (teamOf(x.prod) ? 'ทีม ' + esc(teamOf(x.prod)) + ' · ' : '') + esc([x.prod, x.page].filter(Boolean).join(' › ')) + ' · แจ้งโดย ' + esc(x.by) + ' ' + when(x.t) + '</div></div><button class="iss-x" aria-label="ปิด" onclick="issV2.close()">×</button></div>';
     if (x.camp) h += '<div class="iss-camp">แคมเปญ: ' + esc(x.camp) + '</div>';
     if (x.meta && x.meta.chats) { var m = x.meta; h += '<div class="iss-meta">ตัวเลข 7 วัน (ตอนแจ้ง): ทัก <b>' + Math.round(m.chats) + '</b> · ฿/ทัก <b>' + Math.round(m.cpc) + '</b> (เฉลี่ยสินค้า ' + Math.round(m.avgCpc) + ') · ปิดได้ <b>' + (m.close * 100).toFixed(1) + '%</b> (เฉลี่ย ' + (m.avgClose * 100).toFixed(1) + '%) · ค่าแอด ฿' + Math.round(m.spend).toLocaleString() + '</div>'; }
     h += '<div class="iss-thread">';
@@ -231,7 +244,7 @@
   function badge() {
     var it = document.getElementById('sb-issues'); if (!it) return;
     var b = it.querySelector('.iss-badge'); if (!b) { b = document.createElement('span'); b.className = 'iss-badge'; it.appendChild(b); }
-    var mine = saOnly() ? 'ads2sa' : '', n = S.list.filter(function (x) { return x.status !== 'done' && (!mine || x.dir === mine); }).length;
+    var mine = saOnly() ? 'ads2sa' : '', LT = lockTeam(), n = S.list.filter(function (x) { return x.status !== 'done' && (!mine || x.dir === mine) && (!LT || teamOf(x.prod) === LT); }).length;
     b.textContent = n > 99 ? '99+' : String(n); b.style.display = n ? '' : 'none';
     b.setAttribute('aria-label', n + ' เรื่องค้างอยู่');
   }
@@ -258,7 +271,7 @@
       '#issView .iss-list{overflow:hidden}#issView .iss-row{display:block;width:100%;text-align:left;border:0;border-bottom:1px solid var(--ib);background:#fff;padding:14px 18px;font:inherit;color:inherit;cursor:pointer}#issView .iss-row:last-child{border-bottom:0}#issView .iss-row:hover{background:#F8FAFC}#issView .iss-row.done{opacity:.72}',
       '#issView .iss-r1{display:flex;flex-wrap:wrap;gap:6px;align-items:center}#issView .iss-title{font-size:15px;margin-left:2px}#issView .iss-r2,#issView .iss-r3{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px;color:var(--im);margin-top:5px}#issView .iss-ell{max-width:520px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
       '#issView .iss-st{font-size:12px;font-weight:700;padding:2px 9px;border-radius:99px;background:#FEF3C7;color:#92400E}#issView .iss-st.doing{background:#DBEAFE;color:#1E40AF}#issView .iss-st.done{background:#DCFCE7;color:#166534}',
-      '#issView .iss-dir{font-size:12px;font-weight:600;padding:2px 9px;border-radius:99px;background:#F1F5F9;color:#334155}#issView .iss-dir.ads2sa{background:#EDE9FE;color:#5B21B6}#issView .iss-cat{font-size:12px;color:#475569;border:1px solid var(--ib);padding:1px 8px;border-radius:99px}',
+      '#issView .iss-dir{font-size:12px;font-weight:600;padding:2px 9px;border-radius:99px;background:#F1F5F9;color:#334155}#issView .iss-dir.ads2sa{background:#EDE9FE;color:#5B21B6}#issView .iss-team{font-size:12px;font-weight:600;padding:2px 9px;border-radius:99px;background:#ECFEFF;color:#155E75;border:1px solid #A5F3FC}#issView .iss-bar .iss-team{padding:7px 12px;font-size:14px}#issView .iss-route{font-size:13px;background:#ECFEFF;border:1px solid #A5F3FC;color:#155E75;border-radius:8px;padding:7px 10px;margin:-4px 0 12px}#issView .iss-nw{white-space:nowrap}#issView .iss-cat{font-size:12px;color:#475569;border:1px solid var(--ib);padding:1px 8px;border-radius:99px}',
       '#issView .iss-scroll{overflow-x:auto}#issView .iss-t{width:100%;border-collapse:collapse;font-size:14px}#issView .iss-t th{font-size:12px;color:var(--im);font-weight:600;text-align:left;padding:8px;border-bottom:1px solid var(--ib);background:#F8FAFC}#issView .iss-t td{padding:9px 8px;border-bottom:1px solid #F1F5F9;vertical-align:top}#issView .iss-t .r{text-align:right}#issView td.iss-ell{max-width:340px}#issView .iss-bad{color:#DC2626;font-weight:700}#issView .iss-errbox{padding:12px 16px;color:#B91C1C;background:#FEF2F2;border-color:#FECACA;margin-bottom:12px}',
       '#issView .iss-ov{position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:9000;display:flex;align-items:flex-start;justify-content:center;padding:40px 16px;overflow:auto}#issView .iss-modal{background:#fff;border-radius:16px;width:100%;max-width:560px;padding:20px 22px;box-shadow:0 20px 50px rgba(0,0,0,.25)}#issView .iss-modal.wide{max-width:760px}',
       '#issView .iss-mh{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:12px}#issView .iss-mh h2{font-size:19px;margin:6px 0 2px}#issView .iss-x{border:0;background:#F1F5F9;width:34px;height:34px;border-radius:9px;font-size:20px;cursor:pointer;flex:none}',
@@ -303,7 +316,7 @@
     f: function (k, v) { S[k] = v; saveUi(); render(); },
     q: function (v) { S.q = v; clearTimeout(S._qt); S._qt = setTimeout(function () { render(); var i = document.querySelector('#issView .iss-bar input[type=search]'); if (i) { i.focus(); i.setSelectionRange(v.length, v.length); } }, 250); },
     reload: function () { load(); },
-    newForm: function (pre) { var d = (pre && pre.dir) || (saOnly() ? 'sa2ads' : (S.dir || 'sa2ads')); S.form = Object.assign({ dir: d, prod: S.prod || '', page: '', cat: CAT[d][0], title: '', txt: '' }, pre || {}); S.sel = null; S.pend = []; render(); var t = document.getElementById('issTitle'); if (t) t.focus(); },
+    newForm: function (pre) { var d = (pre && pre.dir) || (saOnly() ? 'sa2ads' : (S.dir || 'sa2ads')); S.form = Object.assign({ dir: d, prod: (S.prod && formProds().some(function (p) { return p.product === S.prod; })) ? S.prod : '', page: '', cat: CAT[d][0], title: '', txt: '' }, pre || {}); S.sel = null; S.pend = []; render(); var t = document.getElementById('issTitle'); if (t) t.focus(); },
     ff: function (k, v, quiet) { if (!S.form) return; var t = document.getElementById('issTxt'); if (t) S.form.txt = t.value; S.form[k] = v; if (k === 'dir') S.form.cat = CAT[v][0]; if (k === 'prod') S.form.page = ''; if (!quiet) render(); },
     files: function (fl) { addFiles(fl); },
     paste: function (e) { var it = (e.clipboardData && e.clipboardData.items) || [], fs = []; for (var i = 0; i < it.length; i++) if (it[i].kind === 'file' && /^image\//.test(it[i].type)) fs.push(it[i].getAsFile()); if (fs.length) { e.preventDefault(); addFiles(fs); } },
