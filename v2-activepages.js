@@ -1,11 +1,11 @@
-/* เพจที่ใช้เงินอยู่ — เพิ่มโดย Claude 16 พ.ย. 2569
+/* เพจที่ใช้งานอยู่ — เพิ่มโดย Claude 16 พ.ย. 2569
    ดึงเฉพาะเพจที่ยังมีค่าแอด (FB) ในช่วงล่าสุด จาก FB_HIERARCHY + fbDataMap */
 (function () {
   if (window.apV2) return;
   var WIN = [['1', 'วันนี้ / เมื่อวาน'], ['0', 'วันนี้'], ['3', '3 วัน'], ['7', '7 วัน']];
-  var S = { win: '1', prod: '', mgr: '', q: '', sort: 'today', open: {} };
-  try { var s0 = JSON.parse(localStorage.getItem('rb_ap_v2') || 'null'); if (s0) { S.win = s0.win || '1'; S.prod = s0.prod || ''; S.mgr = s0.mgr || ''; S.sort = s0.sort || 'today'; } } catch (e) {}
-  function save() { try { localStorage.setItem('rb_ap_v2', JSON.stringify({ win: S.win, prod: S.prod, mgr: S.mgr, sort: S.sort })); } catch (e) {} }
+  var S = { win: '1', team: '', prod: '', mgr: '', q: '', sort: 'today', open: {} };
+  try { var s0 = JSON.parse(localStorage.getItem('rb_ap_v2') || 'null'); if (s0) { S.win = s0.win || '1'; S.prod = s0.prod || ''; S.mgr = s0.mgr || ''; S.sort = s0.sort || 'today'; S.team = s0.team || ''; } } catch (e) {}
+  function save() { try { localStorage.setItem('rb_ap_v2', JSON.stringify({ win: S.win, team: S.team, prod: S.prod, mgr: S.mgr, sort: S.sort })); } catch (e) {} }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function jsq(s) { return "'" + String(s).replace(/\\/g, '\\\\').replace(/'/g, "\\'") + "'"; }
   function pad(n) { return (n < 10 ? '0' : '') + n; }
@@ -25,6 +25,9 @@
       return window._cpLockedSup ? (window._cpLockedSup() || '') : '';
     } catch (e) { return ''; }
   }
+  function teams() { return Object.keys(window.CHAT_SUP_MAP || {}); }
+  function teamOf(prod) { var M = window.CHAT_SUP_MAP || {}, r = ''; Object.keys(M).forEach(function (k) { if (!r && (M[k] || []).indexOf(prod) >= 0) r = k; }); return r; }
+  function prodColor(prod) { var i = (window.FB_HIERARCHY || []).map(function (p) { return p.product; }).indexOf(prod); return PAL[(i < 0 ? 0 : i) % PAL.length]; }
   function prods() { var t = lockTeam(), M = (window.CHAT_SUP_MAP || {})[t] || []; return (window.FB_HIERARCHY || []).filter(function (p) { return p && p.product && (!t || M.indexOf(p.product) >= 0); }); }
   function liveCamp(i) { return !!i && i.status === 'ACTIVE' && (!i.stop_time || new Date(i.stop_time).getTime() > Date.now()); }
 
@@ -63,9 +66,13 @@
   function render() {
     var box = document.getElementById('apView'); if (!box) return;
     if (!window.FB_HIERARCHY || !window.fbDataMap) { box.innerHTML = '<div class="ap-wrap"><div class="ap-card ap-empty">กำลังโหลดข้อมูล…</div></div>'; return; }
-    var D = build(), rows = D.rows.slice();
-    var mgrs = {}; rows.forEach(function (r) { if (r.mgr) mgrs[r.mgr] = 1; });
+    var D = build(), LT = lockTeam(), TM = LT || S.team;
+    var scope = D.rows.filter(function (r) { return !TM || teamOf(r.prod) === TM; });
+    if (S.prod && !scope.some(function (r) { return r.prod === S.prod; })) S.prod = '';
+    var rows = scope.slice();
     if (S.prod) rows = rows.filter(function (r) { return r.prod === S.prod; });
+    var mgrs = {}, noMgr = false; rows.forEach(function (r) { if (r.mgr) mgrs[r.mgr] = 1; else noMgr = true; });
+    if (S.mgr && S.mgr !== '-' && !mgrs[S.mgr]) S.mgr = ''; if (S.mgr === '-' && !noMgr) S.mgr = '';
     if (S.mgr) rows = rows.filter(function (r) { return S.mgr === '-' ? !r.mgr : r.mgr === S.mgr; });
     if (S.q) { var q = S.q.toLowerCase(); rows = rows.filter(function (r) { return (r.page + ' ' + r.prod + ' ' + r.mgr + ' ' + r.accs.map(function (a) { return a.name + ' ' + a.acc; }).join(' ')).toLowerCase().indexOf(q) >= 0; }); }
     var SRT = { today: function (a, b) { return b.t - a.t || b.y - a.y; }, y: function (a, b) { return b.y - a.y; }, week: function (a, b) { return b.w - a.w; }, roas: function (a, b) { return (b.w ? b.wr / b.w : 0) - (a.w ? a.wr / a.w : 0); }, prod: function (a, b) { return a.ci - b.ci || b.t - a.t; } };
@@ -74,15 +81,18 @@
     var maxT = rows.reduce(function (m, r) { return Math.max(m, r.t, r.y); }, 1);
     var winLbl = (WIN.filter(function (w) { return w[0] === S.win; })[0] || WIN[0])[1];
     var h = '<div class="ap-wrap">';
-    h += '<div class="ap-head"><div><h1>เพจที่ใช้เงินอยู่' + (lockTeam() ? ' <span class="ap-team">ทีม ' + esc(lockTeam()) + '</span>' : '') + '</h1><div class="ap-sub">' + (lockTeam() ? 'เฉพาะสินค้าที่ทีม ' + esc(lockTeam()) + ' ดูแล · ' : '') + 'แสดงเฉพาะเพจที่มีค่าแอดใน <b>' + esc(winLbl) + '</b> (ตั้งแต่ ' + dm(D.lim) + ') · ค่าแอดจาก Facebook · วันนี้ถึงเวลาที่โหลดล่าสุด</div></div>' +
+    h += '<div class="ap-head"><div><h1>เพจที่ใช้งานอยู่' + (lockTeam() ? ' <span class="ap-team">ทีม ' + esc(lockTeam()) + '</span>' : '') + '</h1><div class="ap-sub">' + (lockTeam() ? 'เฉพาะสินค้าที่ทีม ' + esc(lockTeam()) + ' ดูแล · ' : '') + 'แสดงเฉพาะเพจที่มีค่าแอดใน <b>' + esc(winLbl) + '</b> (ตั้งแต่ ' + dm(D.lim) + ') · ค่าแอดจาก Facebook · วันนี้ถึงเวลาที่โหลดล่าสุด</div></div>' +
       '<div class="ap-seg" role="group" aria-label="ช่วงที่ใช้เงิน">' + WIN.map(function (w) { return '<button class="' + (S.win === w[0] ? 'on' : '') + '" onclick="apV2.f(\'win\',\'' + w[0] + '\')">' + w[1] + '</button>'; }).join('') + '</div></div>';
     h += '<div class="ap-kpis">' +
-      '<div class="ap-card ap-kpi"><div class="ap-lbl">เพจที่ใช้เงินอยู่</div><div class="ap-val">' + D.rows.length + ' <small>/ ' + D.all + ' เพจ</small></div><div class="ap-dim">อีก ' + (D.all - D.rows.length) + ' เพจไม่มีค่าแอดในช่วงนี้</div></div>' +
+      '<div class="ap-card ap-kpi"><div class="ap-lbl">เพจที่ใช้งานอยู่</div><div class="ap-val">' + scope.length + ' <small>' + (TM ? 'เพจ · ทีม ' + esc(TM) : '/ ' + D.all + ' เพจ') + '</small></div><div class="ap-dim">' + (TM ? 'ทั้งบริษัท ' + D.rows.length + ' / ' + D.all + ' เพจ' : 'อีก ' + (D.all - D.rows.length) + ' เพจไม่มีค่าแอดในช่วงนี้') + '</div></div>' +
       '<div class="ap-card ap-kpi"><div class="ap-lbl">ค่าแอดวันนี้' + (rows.length !== D.rows.length ? ' (ตามตัวกรอง)' : '') + '</div><div class="ap-val">' + B(tot.t) + '</div><div class="ap-dim">เมื่อวาน ' + B(tot.y) + '</div></div>' +
       '<div class="ap-card ap-kpi"><div class="ap-lbl">ค่าแอด 7 วัน</div><div class="ap-val">' + B(tot.w) + '</div><div class="ap-dim">ROAS ' + (tot.w ? (tot.wr / tot.w).toFixed(2) : '–') + ' · ทัก ' + I(tot.wc) + ' คน</div></div>' +
       '<div class="ap-card ap-kpi"><div class="ap-lbl">แสดงอยู่</div><div class="ap-val">' + rows.length + ' <small>เพจ</small></div><div class="ap-dim">' + rows.reduce(function (a, r) { return a + r.nAcc; }, 0) + ' บัญชี · ' + rows.reduce(function (a, r) { return a + r.nCamp; }, 0) + ' แคมเปญที่ใช้เงิน</div></div></div>';
-    h += '<div class="ap-bar"><select aria-label="สินค้า" onchange="apV2.f(\'prod\',this.value)"><option value="">ทุกสินค้า</option>' + prods().map(function (p) { var n = D.rows.filter(function (r) { return r.prod === p.product; }).length; return '<option value="' + esc(p.product) + '"' + (S.prod === p.product ? ' selected' : '') + '>' + esc(p.product) + ' (' + n + ')</option>'; }).join('') + '</select>' +
-      '<select aria-label="ผู้ดูแล" onchange="apV2.f(\'mgr\',this.value)"><option value="">ทุกผู้ดูแล</option>' + Object.keys(mgrs).sort().map(function (m) { return '<option' + (S.mgr === m ? ' selected' : '') + '>' + esc(m) + '</option>'; }).join('') + '<option value="-"' + (S.mgr === '-' ? ' selected' : '') + '>ยังไม่ระบุผู้ดูแล</option></select>' +
+    var PC = prods().map(function (p) { return { p: p.product, n: scope.filter(function (r) { return r.prod === p.product; }).length }; }).filter(function (x) { return x.n > 0; });
+    if (!LT) h += '<div class="ap-teams"><span class="ap-dim">ทีม SA:</span><div class="ap-seg" role="group" aria-label="ทีม SA">' + [''].concat(teams()).map(function (t) { var n = D.rows.filter(function (r) { return !t || teamOf(r.prod) === t; }).length; return '<button class="' + (S.team === t ? 'on' : '') + '" onclick="apV2.team(' + jsq(t) + ')">' + (t ? esc(t) : 'ทุกทีม') + ' <span class="ap-n">' + n + '</span></button>'; }).join('') + '</div></div>';
+    h += '<div class="ap-chips" role="group" aria-label="สินค้า"><button class="' + (!S.prod ? 'on' : '') + '" onclick="apV2.f(\'prod\',\'\')">ทุกสินค้า <span class="ap-n">' + scope.length + '</span></button>' + PC.map(function (x) { var on = S.prod === x.p; return '<button class="' + (on ? 'on' : '') + '" onclick="apV2.f(\'prod\',' + jsq(x.p) + ')"><i style="background:' + (on ? '#fff' : prodColor(x.p)) + '"></i>' + esc(x.p) + ' <span class="ap-n">' + x.n + '</span></button>'; }).join('') + '</div>';
+    h += '<div class="ap-bar">' +
+      '<select aria-label="ผู้ดูแล" onchange="apV2.f(\'mgr\',this.value)"><option value="">ทุกผู้ดูแล</option>' + Object.keys(mgrs).sort().map(function (m) { return '<option' + (S.mgr === m ? ' selected' : '') + '>' + esc(m) + '</option>'; }).join('') + (noMgr ? '<option value="-"' + (S.mgr === '-' ? ' selected' : '') + '>ยังไม่ระบุผู้ดูแล</option>' : '') + '</select>' +
       '<input type="search" placeholder="ค้นหาเพจ / บัญชี" aria-label="ค้นหา" value="' + esc(S.q) + '" oninput="apV2.q(this.value)">' +
       '<span class="ap-sort">เรียง: ' + [['today', 'วันนี้'], ['y', 'เมื่อวาน'], ['week', '7 วัน'], ['roas', 'ROAS'], ['prod', 'สินค้า']].map(function (x) { return '<button class="' + (S.sort === x[0] ? 'on' : '') + '" onclick="apV2.f(\'sort\',\'' + x[0] + '\')">' + x[1] + '</button>'; }).join('') + '</span></div>';
     h += '<div class="ap-card"><div class="ap-scroll"><table class="ap-t"><thead><tr><th>สินค้า</th><th>เพจ</th><th>ผู้ดูแล</th><th class="r">วันนี้</th><th class="r">เมื่อวาน</th><th style="min-width:130px"></th><th class="r">7 วัน</th><th class="r">ROAS 7 วัน</th><th class="r">ทัก 7 วัน</th><th class="r">บัญชี / แคมเปญ</th><th class="r">ใช้เงินล่าสุด</th></tr></thead><tbody>';
@@ -118,7 +128,7 @@
       '#apView .ap-sort{font-size:13px;color:#64748B;display:inline-flex;gap:4px;align-items:center;flex-wrap:wrap}#apView .ap-sort button{border:1px solid #E5E7EB;background:#fff;border-radius:99px;padding:4px 10px;font:inherit;font-size:13px;cursor:pointer;color:#334155}#apView .ap-sort button.on{background:#0F172A;color:#fff;border-color:#0F172A}',
       '#apView .ap-scroll{overflow-x:auto}#apView .ap-t{width:100%;border-collapse:collapse;font-size:14px}#apView .ap-t th{font-size:12px;color:#64748B;font-weight:600;text-align:left;padding:10px 10px;border-bottom:1px solid #E5E7EB;background:#F8FAFC;white-space:nowrap}#apView .ap-t td{padding:10px;border-bottom:1px solid #F1F5F9;vertical-align:middle}#apView .ap-t .r{text-align:right;white-space:nowrap}',
       '#apView .ap-row{cursor:pointer}#apView .ap-row:hover td{background:#F8FAFC}#apView .ap-row.op td{background:#F1F5F9}#apView .ap-caret{color:#94A3B8;font-size:11px}#apView .ap-nw{white-space:nowrap}#apView .ap-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:7px;vertical-align:middle}',
-      '#apView .ap-team{font-size:14px;font-weight:700;vertical-align:middle;background:#ECFEFF;color:#155E75;border:1px solid #A5F3FC;padding:3px 10px;border-radius:99px;margin-left:6px}#apView .ap-mgr{font-size:12px;font-weight:700;background:#EEF2FF;color:#3730A3;padding:2px 8px;border-radius:99px}#apView .ap-good{color:#16A34A;font-weight:700}#apView .ap-bad{color:#DC2626;font-weight:700}',
+      '#apView .ap-teams{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}#apView .ap-n{font-size:12px;color:#64748B;font-weight:600;margin-left:2px}#apView .ap-seg button.on .ap-n{color:#2563EB}#apView .ap-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}#apView .ap-chips button{display:inline-flex;align-items:center;gap:6px;border:1px solid #E5E7EB;background:#fff;border-radius:99px;padding:6px 12px;font:inherit;font-size:14px;cursor:pointer;color:#0F172A}#apView .ap-chips button i{width:8px;height:8px;border-radius:50%;display:inline-block}#apView .ap-chips button.on{background:#2563EB;border-color:#2563EB;color:#fff;font-weight:700}#apView .ap-chips button.on .ap-n{color:#DBEAFE}#apView .ap-team{font-size:14px;font-weight:700;vertical-align:middle;background:#ECFEFF;color:#155E75;border:1px solid #A5F3FC;padding:3px 10px;border-radius:99px;margin-left:6px}#apView .ap-mgr{font-size:12px;font-weight:700;background:#EEF2FF;color:#3730A3;padding:2px 8px;border-radius:99px}#apView .ap-good{color:#16A34A;font-weight:700}#apView .ap-bad{color:#DC2626;font-weight:700}',
       '#apView .ap-bars{display:flex;flex-direction:column;gap:3px;width:130px}#apView .ap-bars i{display:block;height:6px;border-radius:3px;min-width:2px}#apView .ap-bars i.y{background:#CBD5E1}',
       '#apView .ap-sub-row td{background:#F8FAFC;padding:8px 10px 12px 36px}#apView .ap-accs{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px}#apView .ap-acc{background:#fff;border:1px solid #E5E7EB;border-radius:10px;padding:8px 10px;display:flex;flex-direction:column;gap:2px;font-size:13px}#apView .ap-acc.off{opacity:.55}',
       '#apView .ap-note{font-size:12px;color:#64748B;padding:10px 14px;border-top:1px solid #F1F5F9}',
@@ -144,7 +154,7 @@
     if (document.getElementById('sb-activepages')) return;
     css();
     var it = document.createElement('div'); it.className = 'sb-item'; it.id = 'sb-activepages';
-    it.innerHTML = '<span class="sb-icon">' + ICON + '</span><span>เพจที่ใช้เงินอยู่</span>';
+    it.innerHTML = '<span class="sb-icon">' + ICON + '</span><span>เพจที่ใช้งานอยู่</span>';
     it.onclick = function () { open(it); };
     anchor.parentNode.insertBefore(it, anchor.nextSibling);
     var v = document.createElement('div'); v.id = 'apView'; v.style.display = 'none';
@@ -154,6 +164,7 @@
   }
   window.apV2 = {
     f: function (k, v) { S[k] = v; save(); render(); },
+    team: function (t) { S.team = t; S.prod = ''; S.mgr = ''; save(); render(); },
     q: function (v) { S.q = v; clearTimeout(S._t); S._t = setTimeout(function () { render(); var i = document.querySelector('#apView .ap-bar input'); if (i) { i.focus(); i.setSelectionRange(v.length, v.length); } }, 250); },
     tog: function (k) { S.open[k] = !S.open[k]; render(); },
     render: render
