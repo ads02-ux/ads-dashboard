@@ -15,7 +15,17 @@
   function I(v) { return Math.round(v).toLocaleString(); }
   function dm(s) { if (!s) return '–'; var p = s.split('-'); return +p[2] + '/' + +p[1]; }
   var PAL = ['#2563EB', '#0EA5E9', '#8B5CF6', '#A855F7', '#F59E0B', '#EF4444', '#10B981', '#EC4899', '#14B8A6', '#6366F1', '#F97316', '#84CC16', '#64748B', '#06B6D4'];
-  function prods() { return (window.FB_HIERARCHY || []).filter(function (p) { return p && p.product; }); }
+  /* SA (สิทธิ์ iss_nook / iss_au / iss_honey หรือ chat_*) เห็นเฉพาะสินค้าที่ทีมตัวเองดูแล (CHAT_SUP_MAP) */
+  var ISS_TEAM = { iss_nook: 'ซุปนุ๊ก', iss_au: 'Au Supad1', iss_honey: 'ซุปน้ำผึ้ง' };
+  function lockTeam() {
+    try {
+      if (sessionStorage.getItem('rb_auth') === '1') return '';
+      var a = sessionStorage.getItem('rb_access') || '', x; try { x = JSON.parse(a); } catch (e) { x = a; } if (!Array.isArray(x)) x = [x];
+      for (var i = 0; i < x.length; i++) if (ISS_TEAM[x[i]]) return ISS_TEAM[x[i]];
+      return window._cpLockedSup ? (window._cpLockedSup() || '') : '';
+    } catch (e) { return ''; }
+  }
+  function prods() { var t = lockTeam(), M = (window.CHAT_SUP_MAP || {})[t] || []; return (window.FB_HIERARCHY || []).filter(function (p) { return p && p.product && (!t || M.indexOf(p.product) >= 0); }); }
   function liveCamp(i) { return !!i && i.status === 'ACTIVE' && (!i.stop_time || new Date(i.stop_time).getTime() > Date.now()); }
 
   function build() {
@@ -64,7 +74,7 @@
     var maxT = rows.reduce(function (m, r) { return Math.max(m, r.t, r.y); }, 1);
     var winLbl = (WIN.filter(function (w) { return w[0] === S.win; })[0] || WIN[0])[1];
     var h = '<div class="ap-wrap">';
-    h += '<div class="ap-head"><div><h1>เพจที่ใช้เงินอยู่</h1><div class="ap-sub">แสดงเฉพาะเพจที่มีค่าแอดใน <b>' + esc(winLbl) + '</b> (ตั้งแต่ ' + dm(D.lim) + ') · ค่าแอดจาก Facebook · วันนี้ถึงเวลาที่โหลดล่าสุด</div></div>' +
+    h += '<div class="ap-head"><div><h1>เพจที่ใช้เงินอยู่' + (lockTeam() ? ' <span class="ap-team">ทีม ' + esc(lockTeam()) + '</span>' : '') + '</h1><div class="ap-sub">' + (lockTeam() ? 'เฉพาะสินค้าที่ทีม ' + esc(lockTeam()) + ' ดูแล · ' : '') + 'แสดงเฉพาะเพจที่มีค่าแอดใน <b>' + esc(winLbl) + '</b> (ตั้งแต่ ' + dm(D.lim) + ') · ค่าแอดจาก Facebook · วันนี้ถึงเวลาที่โหลดล่าสุด</div></div>' +
       '<div class="ap-seg" role="group" aria-label="ช่วงที่ใช้เงิน">' + WIN.map(function (w) { return '<button class="' + (S.win === w[0] ? 'on' : '') + '" onclick="apV2.f(\'win\',\'' + w[0] + '\')">' + w[1] + '</button>'; }).join('') + '</div></div>';
     h += '<div class="ap-kpis">' +
       '<div class="ap-card ap-kpi"><div class="ap-lbl">เพจที่ใช้เงินอยู่</div><div class="ap-val">' + D.rows.length + ' <small>/ ' + D.all + ' เพจ</small></div><div class="ap-dim">อีก ' + (D.all - D.rows.length) + ' เพจไม่มีค่าแอดในช่วงนี้</div></div>' +
@@ -108,7 +118,7 @@
       '#apView .ap-sort{font-size:13px;color:#64748B;display:inline-flex;gap:4px;align-items:center;flex-wrap:wrap}#apView .ap-sort button{border:1px solid #E5E7EB;background:#fff;border-radius:99px;padding:4px 10px;font:inherit;font-size:13px;cursor:pointer;color:#334155}#apView .ap-sort button.on{background:#0F172A;color:#fff;border-color:#0F172A}',
       '#apView .ap-scroll{overflow-x:auto}#apView .ap-t{width:100%;border-collapse:collapse;font-size:14px}#apView .ap-t th{font-size:12px;color:#64748B;font-weight:600;text-align:left;padding:10px 10px;border-bottom:1px solid #E5E7EB;background:#F8FAFC;white-space:nowrap}#apView .ap-t td{padding:10px;border-bottom:1px solid #F1F5F9;vertical-align:middle}#apView .ap-t .r{text-align:right;white-space:nowrap}',
       '#apView .ap-row{cursor:pointer}#apView .ap-row:hover td{background:#F8FAFC}#apView .ap-row.op td{background:#F1F5F9}#apView .ap-caret{color:#94A3B8;font-size:11px}#apView .ap-nw{white-space:nowrap}#apView .ap-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:7px;vertical-align:middle}',
-      '#apView .ap-mgr{font-size:12px;font-weight:700;background:#EEF2FF;color:#3730A3;padding:2px 8px;border-radius:99px}#apView .ap-good{color:#16A34A;font-weight:700}#apView .ap-bad{color:#DC2626;font-weight:700}',
+      '#apView .ap-team{font-size:14px;font-weight:700;vertical-align:middle;background:#ECFEFF;color:#155E75;border:1px solid #A5F3FC;padding:3px 10px;border-radius:99px;margin-left:6px}#apView .ap-mgr{font-size:12px;font-weight:700;background:#EEF2FF;color:#3730A3;padding:2px 8px;border-radius:99px}#apView .ap-good{color:#16A34A;font-weight:700}#apView .ap-bad{color:#DC2626;font-weight:700}',
       '#apView .ap-bars{display:flex;flex-direction:column;gap:3px;width:130px}#apView .ap-bars i{display:block;height:6px;border-radius:3px;min-width:2px}#apView .ap-bars i.y{background:#CBD5E1}',
       '#apView .ap-sub-row td{background:#F8FAFC;padding:8px 10px 12px 36px}#apView .ap-accs{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px}#apView .ap-acc{background:#fff;border:1px solid #E5E7EB;border-radius:10px;padding:8px 10px;display:flex;flex-direction:column;gap:2px;font-size:13px}#apView .ap-acc.off{opacity:.55}',
       '#apView .ap-note{font-size:12px;color:#64748B;padding:10px 14px;border-top:1px solid #F1F5F9}',
