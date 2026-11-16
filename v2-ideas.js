@@ -22,7 +22,8 @@
   var ISS_TEAM = { iss_nook: 'ซุปนุ๊ก', iss_au: 'Au Supad1', iss_honey: 'ซุปน้ำผึ้ง' };
   function accArr() { try { var a = sessionStorage.getItem('rb_access') || '', x; try { x = JSON.parse(a); } catch (e) { x = a; } return Array.isArray(x) ? x : [x]; } catch (e) { return []; } }
   function lockTeam() { if (isAdmin()) return ''; var a = accArr(); for (var i = 0; i < a.length; i++) if (ISS_TEAM[a[i]]) return ISS_TEAM[a[i]]; try { return window._cpLockedSup ? (window._cpLockedSup() || '') : ''; } catch (e) { return ''; } }
-  function saOnly() { var a = accArr(); return !isAdmin() && a.length > 0 && a.every(function (k) { return k === 'issues' || k === 'ideas' || !!ISS_TEAM[k] || /^chat_/.test(String(k)); }); }
+  /* SA = บัญชีที่มีสิทธิ์ "แจ้งปัญหา · ทีม…" (iss_nook / iss_au / iss_honey) */
+  function saOnly() { return !isAdmin() && accArr().some(function (k) { return !!ISS_TEAM[k]; }); }
   function teams() { return Object.keys(window.CHAT_SUP_MAP || {}); }
   function teamOf(prod) { var M = window.CHAT_SUP_MAP || {}, r = ''; Object.keys(M).forEach(function (k) { if (!r && (M[k] || []).indexOf(prod) >= 0) r = k; }); return r; }
   function prods() { var t = lockTeam(); return (window.FB_HIERARCHY || []).filter(function (p) { return p && p.product && (!t || teamOf(p.product) === t); }).map(function (p) { return p.product; }); }
