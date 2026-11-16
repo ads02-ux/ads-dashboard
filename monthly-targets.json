@@ -109,97 +109,103 @@
       "by": "Claude",
       "month": "2026-11",
       "txt": "อัปเดตยอด CasperCall เจ้าขุน ถึง 12 พ.ย."
+    },
+    {
+      "t": "2026-11-16T09:09:31.963Z",
+      "by": "Claude",
+      "month": "2026-11",
+      "txt": "อัปเดตยอด CasperCall 1–15 พ.ย. (11 สินค้า)"
     }
   ],
   "_casper": {
     "2026-11": {
       "เจ้าขุน": {
-        "adsAmt": 299250,
-        "sales": 423650,
-        "orders": 1128,
-        "through": "2026-11-12",
-        "src": "CasperCall กาแฟเจ้าขุน · ซุปนุ๊ก (12 พ.ย. จากภาพผู้ใช้)",
-        "pulledAt": "2026-11-13T04:38:45.096Z"
+        "adsAmt": 385417,
+        "sales": 562650,
+        "orders": 1495,
+        "through": "2026-11-15",
+        "src": "CasperCall กาแฟเจ้าขุน · ซุปนุ๊ก",
+        "pulledAt": "2026-11-16T09:09:31.963Z"
       },
       "Heavenplus+": {
-        "adsAmt": 125400,
-        "sales": 236958,
-        "orders": 442,
-        "through": "2026-11-11",
+        "adsAmt": 169554,
+        "sales": 307653,
+        "orders": 606,
+        "through": "2026-11-15",
         "src": "CasperCall เฮฟเว่นพลัส · ซุปนุ๊ก",
-        "pulledAt": "2026-11-12T10:29:13.752Z"
+        "pulledAt": "2026-11-16T09:09:31.963Z"
       },
       "THE LORD": {
-        "adsAmt": 384072,
-        "sales": 533549,
-        "orders": 1515,
-        "through": "2026-11-11",
+        "adsAmt": 492527,
+        "sales": 700914,
+        "orders": 1926,
+        "through": "2026-11-15",
         "src": "CasperCall เดอะลอร์ด · ซุปนุ๊ก",
-        "pulledAt": "2026-11-12T10:29:13.752Z"
+        "pulledAt": "2026-11-16T09:09:31.963Z"
       },
       "Wolf": {
-        "adsAmt": 427883,
-        "sales": 783089,
-        "orders": 2740,
-        "through": "2026-11-11",
+        "adsAmt": 566675,
+        "sales": 1047427,
+        "orders": 3668,
+        "through": "2026-11-15",
         "src": "CasperCall วูล์ฟ · ซุปนุ๊ก",
-        "pulledAt": "2026-11-12T10:29:13.752Z"
+        "pulledAt": "2026-11-16T09:09:31.963Z"
       },
       "Olymplus": {
-        "adsAmt": 430054,
-        "sales": 947978,
-        "orders": 1813,
-        "through": "2026-11-11",
+        "adsAmt": 607269,
+        "sales": 1239297,
+        "orders": 2433,
+        "through": "2026-11-15",
         "src": "CasperCall โอลิมพลัส · Au Supad1",
-        "pulledAt": "2026-11-12T10:29:13.752Z"
+        "pulledAt": "2026-11-16T09:09:31.963Z"
       },
       "Dragon Blood": {
-        "adsAmt": 252663,
-        "sales": 506258,
-        "orders": 1445,
-        "through": "2026-11-11",
+        "adsAmt": 355099,
+        "sales": 657712,
+        "orders": 1872,
+        "through": "2026-11-15",
         "src": "CasperCall ดราก้อนบลัท · Au Supad1",
-        "pulledAt": "2026-11-12T10:29:13.752Z"
+        "pulledAt": "2026-11-16T09:09:31.963Z"
       },
       "JUDO": {
-        "adsAmt": 324644,
-        "sales": 520056,
-        "orders": 613,
-        "through": "2026-11-11",
+        "adsAmt": 428070,
+        "sales": 678372,
+        "orders": 835,
+        "through": "2026-11-15",
         "src": "CasperCall จูโด้ · Au Supad1",
-        "pulledAt": "2026-11-12T10:29:13.752Z"
+        "pulledAt": "2026-11-16T09:09:31.963Z"
       },
       "ขุนแผน": {
-        "adsAmt": 1737035,
-        "sales": 3164871,
-        "orders": 10664,
-        "through": "2026-11-11",
+        "adsAmt": 2368180,
+        "sales": 4167916,
+        "orders": 14082,
+        "through": "2026-11-15",
         "src": "CasperCall ขุนแผน · Au Supad1",
-        "pulledAt": "2026-11-12T10:29:13.752Z"
+        "pulledAt": "2026-11-16T09:09:31.963Z"
       },
       "OlymplusMax": {
-        "adsAmt": 41060,
-        "sales": 79850,
-        "orders": 126,
-        "through": "2026-11-11",
+        "adsAmt": 47863,
+        "sales": 95633,
+        "orders": 152,
+        "through": "2026-11-15",
         "src": "CasperCall โอลิมพลัสแม็กซ์ · Au Supad1",
-        "pulledAt": "2026-11-12T10:29:13.752Z"
+        "pulledAt": "2026-11-16T09:09:31.963Z"
       },
       "LIV CARE": {
-        "adsAmt": 51871,
-        "sales": 66096,
-        "orders": 69,
-        "through": "2026-11-11",
+        "adsAmt": 61836,
+        "sales": 84081,
+        "orders": 88,
+        "through": "2026-11-15",
         "src": "CasperCall ลีฟแคร์ · ซุปน้ำผึ้ง",
-        "pulledAt": "2026-11-12T10:29:13.752Z"
+        "pulledAt": "2026-11-16T09:09:31.963Z"
       },
       "Sopink": {
-        "adsAmt": 367779,
-        "sales": 710982,
-        "orders": 1817,
-        "through": "2026-11-11",
+        "adsAmt": 469642,
+        "sales": 928388,
+        "orders": 2371,
+        "through": "2026-11-15",
         "src": "CasperCall โซพิงค์ · ซุปน้ำผึ้ง",
-        "pulledAt": "2026-11-12T10:29:13.752Z"
+        "pulledAt": "2026-11-16T09:09:31.963Z"
       }
     }
   }
