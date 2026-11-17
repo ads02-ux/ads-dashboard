@@ -30,7 +30,7 @@
     return FB_API + accMeta.id + '/insights?fields=campaign_name,adset_name,spend,impressions,reach,clicks,actions,action_values'
       + '&level=adset&time_range=' + tr + '&time_increment=1&limit=500&access_token=' + (FB_TOKENS[accName] || FB_TOKEN);
   }
-  function render() { clearTimeout(rTimer); rTimer = setTimeout(function () { try { renderFB(); } catch (e) {} }, 60); }
+  function render() { clearTimeout(rTimer); rTimer = setTimeout(function () { try { window.renderFB(); } catch (e) {} }, 60); }
   function go(accMeta, accName) {
     var c = cache && cache[accName], since90 = daysAgo(89);
     if (c && c.rows && c.rows.length && Date.now() - (c.savedAt || 0) < MAXAGE) {
@@ -46,8 +46,20 @@
       _fetchFBPage(url(accMeta, accName, since90), [], accName);
     }
   }
+  // ระหว่างหลายบัญชีกำลังโหลด รวมการวาดหน้าจอเป็นครั้งเดียว (เดิมวาดใหม่ทุกบัญชีที่โหลดเสร็จ 324 ครั้ง)
+  var wrapped = false, bTimer = null;
+  function wrapRender() {
+    if (wrapped || typeof renderFB !== 'function') return; wrapped = true;
+    var orig = renderFB;
+    window.renderFB = function () {
+      var busy = 0; try { for (var k in _fbLoadingMap) if (_fbLoadingMap[k] && ++busy > 2) break; } catch (e) {}
+      if (busy <= 2) { clearTimeout(bTimer); return orig.apply(this, arguments); }
+      clearTimeout(bTimer); bTimer = setTimeout(function () { orig(); }, 150);
+    };
+  }
   window._fbFastLoad = function (accMeta, accName) {
     if (!accMeta || !accName || typeof _fetchFBPage !== 'function') return false;
+    wrapRender();
     if (!ready) { waiting.push([accMeta, accName]); return true; }
     go(accMeta, accName); return true;
   };
