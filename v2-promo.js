@@ -71,7 +71,7 @@
       if (q && (o.x.n + ' ' + o.x.p.join(' ') + ' ' + o.x.txt).toLowerCase().indexOf(q) < 0) return false;
       return true;
     });
-    var h = '<div class="pr-wrap"><div class="pr-head"><div><h1>โปรโมชั่นแต่ละสินค้า</h1><div class="pr-sub">ราคาโปรที่ใช้ขายอยู่ตอนนี้ · อัปเดต ' + UPD + ' · กด "คัดลอก" เพื่อเอาข้อความโปรไปวางในแชทลูกค้า</div></div>' +
+    var h = '<div class="pr-wrap"><div class="pr-head"><div><h1>ราคาและโปรโมชั่นสินค้า</h1><div class="pr-sub">ราคาโปรที่ใช้ขายอยู่ตอนนี้ · อัปเดต ' + UPD + ' · กด "คัดลอก" เพื่อเอาข้อความโปรไปวางในแชทลูกค้า</div></div>' +
       '<input class="pr-q" type="search" placeholder="ค้นหาสินค้า…" aria-label="ค้นหาสินค้า" value="' + esc(S.q) + '" oninput="promoV2.q(this.value)"></div>' +
       '<div class="pr-bar"><div class="pr-seg" role="group" aria-label="ทีม SA">' + [''].concat(teams).map(function (t) { return '<button class="' + (S.team === t ? 'on' : '') + '" onclick="promoV2.team(' + JSON.stringify(t).replace(/"/g, '&quot;') + ')">' + (t ? esc(t) : 'ทุกทีม') + '</button>'; }).join('') + '</div><span class="pr-dim">' + L.length + ' สินค้า</span></div>';
     h += L.length ? '<div class="pr-grid">' + L.map(function (o) { return card(o.x, o.i); }).join('') + '</div>' : '<div class="pr-card pr-empty">ไม่พบสินค้าที่ค้นหา</div>';
@@ -114,7 +114,7 @@
     if (document.getElementById('sb-promo')) return;
     css();
     var it = document.createElement('div'); it.className = 'sb-item'; it.id = 'sb-promo';
-    it.innerHTML = '<span class="sb-icon">' + ICON + '</span><span>โปรโมชั่นแต่ละสินค้า</span>';
+    it.innerHTML = '<span class="sb-icon">' + ICON + '</span><span>ราคาและโปรโมชั่นสินค้า</span>';
     it.onclick = function () { open(it); };
     anchor.parentNode.insertBefore(it, anchor.nextSibling);
     var v = document.createElement('div'); v.id = 'promoView'; v.style.display = 'none';
