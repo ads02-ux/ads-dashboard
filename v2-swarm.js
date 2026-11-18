@@ -1,4 +1,4 @@
-/* แนะนำตัวรุมยิง — เพิ่มโดย Claude 17 พ.ย. 2569
+/* แนะนำตัวรุมยิง — เพิ่มโดย Claude 17 พ.ย. 2569 · v2 18 พ.ย.: ปุ่มสั่งรุมยิง (สร้างแคมเปญใหม่ใช้โพสต์เดิม เลือกบัญชีในเพจเดียวกันได้)
    คัดแคมเปญที่น่าเอาไปรุมยิงของแต่ละสินค้า วันละ 4–6 ตัว (ตัวใหม่ + ตัวเก่า) จากข้อมูลแอดในแดชบอร์ด (fbDataMap)
    ติ๊ก "รุมแล้ว" เก็บใน Worker /_auth/swarm/* (KV swarm:list) → ไม่แนะนำคลิปเดิมซ้ำ 3 วัน */
 (function () {
@@ -116,7 +116,7 @@
             '<div class="sw-dim">' + esc(c.a) + ' · ' + esc(c.page) + '</div><div class="sw-why">' + esc(x.why.join(' · ')) + '</div></td>' +
             '<td class="num"><span class="' + (x.ry >= g.pr ? 'g' : 'r') + '">' + x.ry.toFixed(2) + '</span> / <b>' + x.r3.toFixed(2) + '</b> / <b>' + x.r7.toFixed(2) + '</b></td>' +
             '<td class="num">' + x.b + '</td><td class="num">฿' + fmt(x.cpa) + '</td><td class="num">฿' + fmt(x.spend) + '</td><td class="num">' + x.dup + ' ตัว</td>' +
-            '<td><label class="sw-chk"><input type="checkbox" ' + (S.busy[id] ? 'disabled ' : '') + 'onchange="swarmV2.mark(' + esc(jsq(p)) + ',' + esc(jsq(c.a)) + ',' + esc(jsq(c.camp)) + ',this)"> รุมแล้ว</label></td></tr>';
+            '<td><button class="sw-go" onclick="swarmV2.dlg(' + esc(jsq(p)) + ',' + esc(jsq(c.a)) + ',' + esc(jsq(c.camp)) + ')">รุมยิง</button><br><label class="sw-chk"><input type="checkbox" ' + (S.busy[id] ? 'disabled ' : '') + 'onchange="swarmV2.mark(' + esc(jsq(p)) + ',' + esc(jsq(c.a)) + ',' + esc(jsq(c.camp)) + ',this)"> รุมแล้ว</label></td></tr>';
         });
         h += '</tbody></table></div>';
       }
@@ -131,6 +131,93 @@
     h += '<div class="sw-foot sw-dim"><b>เกณฑ์:</b> ตัวเก่า = ซื้อ ≥ 5 ครั้งใน 7 วัน · ROAS 7 วัน ≥ 1.6 และ ≥ 1.15 เท่าของค่าเฉลี่ยสินค้า · 3 วันล่าสุดยังดี · ต้นทุน/ซื้อไม่เกิน 1.25 เท่าของค่าเฉลี่ย ' +
       '· ตัวใหม่ (เริ่มไม่เกิน 7 วัน) = ซื้อ ≥ 3 ครั้ง · ROAS ≥ 1.8 และ ≥ 1.25 เท่าของค่าเฉลี่ย · คลิปเดียวกันเลือกแค่ตัวที่ดีที่สุด · ไม่ครบ 4 ตัวจะเติม "ตัวสำรอง" (ROAS ≥ ค่าเฉลี่ยสินค้า) · ROAS = ยอดขายใน FB ÷ ค่าแอด</div></div>';
     box.innerHTML = h;
+  }
+  // ── สั่งรุมยิงจากหน้านี้ (สร้างแคมเปญใหม่ที่ใช้โพสต์เดิม) ──
+  function accsOfPage(page) { var A = accInfo(), out = []; Object.keys(A).forEach(function (a) { if (A[a].page === page) out.push(a); }); return out; }
+  function beDate() { var d = new Date(); return ('0' + d.getDate()).slice(-2) + '/' + ('0' + (d.getMonth() + 1)).slice(-2) + '/' + String(d.getFullYear() + 543).slice(-2); }
+  function baseName(n) {
+    var b = String(n).replace(/^[\s*().\-\d]+/, '').trim(), re = /(ลุมยิง|รุมยิง)\s*\d{1,2}\/\d{1,2}\/\d{2,4}/;
+    return re.test(b) ? b.replace(re, 'ลุมยิง ' + beDate()) : b + ' ลุมยิง ' + beDate();
+  }
+  function names(d) { var out = []; for (var i = 1; i <= d.n; i++) out.push((d.prefix.replace(/\{n\}/g, String(i)) + ' ' + d.base).trim()); return out; }
+  function metaOf(a) { return (window.FB_ACCOUNTS_META || []).filter(function (m) { return m.name === a; })[0]; }
+  function fbErr(j) { var e = j.error; return new Error((e.error_user_title ? e.error_user_title + ': ' : '') + (e.error_user_msg || e.message)); }
+  function fbGet(path, acc) { return fetch(FB_API + path + (path.indexOf('?') >= 0 ? '&' : '?') + 'account=' + encodeURIComponent(FB_TOKENS[acc] || acc)).then(function (r) { return r.json(); }).then(function (j) { if (j.error) throw fbErr(j); return j; }); }
+  function fbPost(path, acc, body) { return fetch(FB_API + path + '?access_token=' + encodeURIComponent(FB_TOKENS[acc] || FB_TOKEN), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }).then(function (j) { if (j.error) throw fbErr(j); return j; }); }
+  function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+  function renderDlg() {
+    var el = document.getElementById('swDlg'), d = S.d;
+    if (!d) { if (el) el.remove(); return; }
+    if (!el) { el = document.createElement('div'); el.id = 'swDlg'; document.body.appendChild(el); }
+    var accs = accsOfPage(d.page), nm = names(d), dis = d.busy || d.done ? ' disabled' : '';
+    if (accs.indexOf(d.acc) < 0) accs.unshift(d.acc);
+    el.innerHTML = '<div class="swd-ov" onclick="if(event.target===this)swarmV2.dclose()"><div class="swd" role="dialog" aria-modal="true" aria-label="สั่งรุมยิง">' +
+      '<div class="swd-h"><div><div class="sw-dim">สั่งรุมยิง · ' + esc(d.prod) + ' · ' + esc(d.page) + '</div><h2>' + esc(d.camp) + '</h2></div><button class="swd-x" aria-label="ปิด" onclick="swarmV2.dclose()">×</button></div>' +
+      '<div class="swd-g"><label>จำนวนตัว<select' + dis + ' onchange="swarmV2.dset(\'n\',+this.value)">' + [2, 3, 4, 5, 6].map(function (k) { return '<option' + (k === d.n ? ' selected' : '') + '>' + k + '</option>'; }).join('') + '</select></label>' +
+      '<label>งบต่อตัว (บาท)<input' + dis + ' type="number" min="100" step="100" value="' + d.budget + '" onchange="swarmV2.dset(\'budget\',+this.value)"></label>' +
+      '<label>ยิงในบัญชี<select' + dis + ' onchange="swarmV2.dset(\'target\',this.value)">' + accs.map(function (a) { return '<option value="' + esc(a) + '"' + (a === d.target ? ' selected' : '') + '>' + esc(a) + (a === d.acc ? ' (บัญชีต้นแบบ)' : '') + '</option>'; }).join('') + '</select></label>' +
+      '<label>หลังสร้างเสร็จ<select' + dis + ' onchange="swarmV2.dset(\'status\',this.value)"><option value="PAUSED"' + (d.status === 'PAUSED' ? ' selected' : '') + '>ปิดไว้ก่อน (ไปกดเปิดเองใน Ads Manager)</option><option value="ACTIVE"' + (d.status === 'ACTIVE' ? ' selected' : '') + '>เปิดวิ่งทันที</option></select></label>' +
+      '<label class="full">เลขนำหน้า ({n} = ลำดับ)<input' + dis + ' value="' + esc(d.prefix) + '" onchange="swarmV2.dset(\'prefix\',this.value)"></label>' +
+      '<label class="full">ชื่อแคมเปญ (ต่อจากเลขนำหน้า)<input' + dis + ' value="' + esc(d.base) + '" onchange="swarmV2.dset(\'base\',this.value)"></label></div>' +
+      '<div class="swd-prev"><div class="sw-dim">จะสร้าง ' + d.n + ' แคมเปญในบัญชี ' + esc(d.target) + ' · งบตลอดชีพตัวละ ฿' + fmt(d.budget) + ' จบวันนี้ 23:59 · ใช้โพสต์เดิม กลุ่มเป้าหมายเดิม' + (d.status === 'ACTIVE' ? ' · <b class="r">เริ่มใช้เงินทันที</b>' : '') + '</div>' + nm.map(function (x) { return '<div>• ' + esc(x) + '</div>'; }).join('') + '</div>' +
+      (d.log.length ? '<div class="swd-log">' + d.log.map(function (l) { return '<div class="' + (l.bad ? 'r' : l.ok ? 'g' : '') + '">' + esc(l.t) + '</div>'; }).join('') + '</div>' : '') +
+      '<div class="swd-f">' + (d.done ? '<button class="sw-btn pri" onclick="swarmV2.dclose()">เสร็จแล้ว</button>' : '<button class="sw-btn" onclick="swarmV2.dclose()"' + (d.busy ? ' disabled' : '') + '>ยกเลิก</button><button class="sw-btn pri" onclick="swarmV2.run()"' + (d.busy ? ' disabled' : '') + '>' + (d.busy ? 'กำลังสร้าง…' : 'สร้าง ' + d.n + ' แคมเปญ') + '</button>') + '</div></div></div>';
+  }
+  function runSwarm() {
+    var d = S.d; if (!d || d.busy || d.done) return;
+    if (!(d.budget >= 100)) { toast('งบต่อตัวต้องอย่างน้อย 100', true); return; }
+    var src = ((window.fbCampaignsMap || {})[d.acc] || {})[d.camp], tm = metaOf(d.target);
+    if (!src || !src.id) { toast('หา ID แคมเปญต้นแบบไม่เจอ ลองกดโหลดหน้าใหม่', true); return; }
+    if (!tm) { toast('ไม่พบบัญชีปลายทางในแดชบอร์ด', true); return; }
+    d.busy = true; d.log = []; renderDlg();
+    var nm = names(d), created = [];
+    function log(t, ok, bad) { d.log.push({ t: t, ok: ok, bad: bad }); renderDlg(); }
+    (async function () {
+      try {
+        log('อ่านแคมเปญต้นแบบ…');
+        var c = await fbGet(src.id + '?fields=objective,special_ad_categories,buying_type', d.acc);
+        var ss = await fbGet(src.id + '/adsets?fields=optimization_goal,billing_event,bid_strategy,bid_amount,destination_type,promoted_object,targeting,attribution_spec&limit=5', d.acc);
+        var aa = await fbGet(src.id + '/ads?fields=creative{object_story_id,effective_object_story_id}&limit=5', d.acc);
+        var s = ss.data && ss.data[0], ad = aa.data && aa.data[0], story = ad && ad.creative && (ad.creative.object_story_id || ad.creative.effective_object_story_id);
+        if (!s || !story) throw new Error('แคมเปญต้นแบบไม่มีชุดโฆษณาหรือโพสต์ที่ใช้ซ้ำได้');
+        log('ใช้โพสต์ ' + story.split('_').pop() + ' · ' + (s.optimization_goal || ''));
+        var end = new Date(); end.setHours(23, 59, 0, 0);
+        for (var i = 0; i < nm.length; i++) {
+          var name = nm[i], cid = null;
+          try {
+            var cc = await fbPost(tm.id + '/campaigns', d.target, { name: name, objective: c.objective, special_ad_categories: c.special_ad_categories || [], buying_type: c.buying_type || 'AUCTION', status: d.status });
+            cid = cc.id;
+            var body = { name: name, campaign_id: cid, optimization_goal: s.optimization_goal, billing_event: s.billing_event, bid_strategy: s.bid_strategy || 'LOWEST_COST_WITHOUT_CAP', destination_type: s.destination_type, promoted_object: s.promoted_object, targeting: s.targeting, lifetime_budget: Math.round(d.budget * 100), end_time: Math.floor(end.getTime() / 1000), status: d.status };
+            if (s.bid_amount) body.bid_amount = s.bid_amount;
+            if (s.attribution_spec) body.attribution_spec = s.attribution_spec;
+            var as = await fbPost(tm.id + '/adsets', d.target, body);
+            var cr = await fbPost(tm.id + '/adcreatives', d.target, { name: name, object_story_id: story });
+            await fbPost(tm.id + '/ads', d.target, { name: name, adset_id: as.id, creative: { creative_id: cr.id }, status: d.status });
+            created.push(name); log('✓ ' + name, true);
+          } catch (e) {
+            log('✗ ' + name + ' — ' + e.message, false, true);
+            if (cid) { try { await fbPost(cid, d.target, { status: 'DELETED' }); log('  ลบแคมเปญที่สร้างไม่ครบทิ้งแล้ว'); } catch (e2) { log('  ⚠️ ลบแคมเปญที่สร้างไม่ครบไม่ได้ ให้ลบเองใน Ads Manager', false, true); } }
+          }
+          await sleep(800);
+        }
+      } catch (e) { log('✗ ' + e.message, false, true); }
+      if (created.length) {
+        var prev = window.fbAccount, prevChk = window._fbNotesSkipCheck;
+        try {
+          window._fbNotesSkipCheck = true; window.fbAccount = d.target;
+          for (var k = 0; k < created.length; k++) { await _fbNotesSave(ago(0), created[k], 'old', String(d.budget)); await sleep(400); await _fbNotesSave(ago(0), created[k], 'new', String(d.budget)); await sleep(400); }
+          log('กรอกยอดเก่า/ยอดใหม่ ' + d.budget + ' ให้ ' + created.length + ' ตัวแล้ว', true);
+        } catch (e) { log('กรอกยอดเก่า/ยอดใหม่ไม่สำเร็จ ให้กรอกเอง', false, true); }
+        finally { window._fbNotesSkipCheck = prevChk; window.fbAccount = prev; }
+        try { fetch('https://richbiotech-fb-proxy.ads02.workers.dev/_camplog', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ actor: me() || 'Unknown', campaignId: d.target, campaignName: d.camp + ' → ' + created.join(' ; '), action: 'swarm:' + d.status, oldValue: d.acc, newValue: String(created.length) }) }); } catch (e) {}
+        var already = marked(d.prod).some(function (m) { return m.meta && m.meta.k === clipKey(d.camp); });
+        if (!already) {
+          try { var j = await post('save', { item: { dir: 'swarm', title: clipKey(d.camp), prod: d.prod, page: d.page, camp: d.camp, status: 'done', meta: { k: clipKey(d.camp), acc: d.acc, date: ago(0), target: d.target, n: created.length, created: true } } }); S.marks.unshift(j.item); } catch (e) {}
+        }
+        log(d.status === 'PAUSED' ? 'สร้างแบบปิดไว้ ' + created.length + ' ตัว — ไปตรวจแล้วกดเปิดใน Ads Manager' : 'เปิดวิ่งแล้ว ' + created.length + ' ตัว', true);
+      }
+      d.busy = false; d.done = true; renderDlg(); render();
+    })();
   }
   function open(el) {
     document.querySelectorAll('[id$="View"]').forEach(function (v) { v.style.display = 'none'; });
@@ -158,6 +245,13 @@
       '#swarmView .sw-done{margin-top:10px;padding-top:8px;border-top:1px dashed #E5E7EB;display:flex;flex-direction:column;gap:4px;font-size:13px}#swarmView .sw-undo{border:0;background:none;color:#B91C1C;cursor:pointer;font:inherit;font-size:12px;text-decoration:underline}',
       '#swarmView .sw-foot{margin-top:8px;line-height:1.6}',
       '#swToast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#0F172A;color:#fff;padding:10px 16px;border-radius:10px;font-size:14px;opacity:0;pointer-events:none;transition:.2s;z-index:9500}#swToast.on{opacity:1}#swToast.bad{background:#B91C1C}',
+      '#swarmView .sw-go{border:1px solid #2563EB;background:#2563EB;color:#fff;border-radius:8px;padding:4px 10px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:6px}#swarmView .sw-go:hover{background:#1D4ED8}',
+      '#swDlg .swd-ov{position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:9000;display:flex;align-items:flex-start;justify-content:center;padding:40px 16px;overflow:auto}#swDlg .swd{background:#fff;color:#0F172A;border-radius:16px;width:100%;max-width:680px;padding:20px 22px;box-shadow:0 20px 50px rgba(0,0,0,.25)}',
+      '#swDlg .swd-h{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:12px}#swDlg h2{font-size:16px;margin:4px 0 0;font-weight:700;word-break:break-word}#swDlg .sw-dim{color:#64748B;font-size:13px}#swDlg .swd-x{border:0;background:#F1F5F9;width:34px;height:34px;border-radius:9px;font-size:20px;cursor:pointer;flex:none}',
+      '#swDlg .swd-g{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}#swDlg .swd-g label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:#334155}#swDlg .swd-g .full{grid-column:1/-1}#swDlg .swd-g select,#swDlg .swd-g input{border:1px solid #CBD5E1;border-radius:9px;padding:8px 10px;font:inherit;font-size:14px;background:#fff}',
+      '#swDlg .swd-prev{background:#F8FAFC;border:1px solid #E5E7EB;border-radius:10px;padding:10px 12px;font-size:13px;display:flex;flex-direction:column;gap:3px;word-break:break-word}#swDlg .swd-log{margin-top:10px;font-size:13px;display:flex;flex-direction:column;gap:3px;max-height:200px;overflow:auto}#swDlg .g{color:#15803D}#swDlg .r{color:#B91C1C}',
+      '#swDlg .swd-f{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}#swDlg .sw-btn{border:1px solid #CBD5E1;background:#fff;border-radius:9px;padding:8px 14px;font:inherit;font-size:14px;cursor:pointer}#swDlg .sw-btn.pri{background:#2563EB;border-color:#2563EB;color:#fff;font-weight:700}#swDlg .sw-btn:disabled{opacity:.6;cursor:default}',
+      '@media (max-width:600px){#swDlg .swd-g{grid-template-columns:1fr}}',
       '@media (max-width:700px){#swarmView .sw-wrap{padding:18px 14px 40px}}'
     ].join('\n');
     document.head.appendChild(s);
@@ -194,6 +288,15 @@
     undo: function (mid) {
       post('delete', { id: mid }).then(function () { S.marks = S.marks.filter(function (m) { return m.id !== mid; }); toast('ยกเลิกแล้ว'); render(); }).catch(function (e) { toast(errMsg(e), true); });
     },
+    dlg: function (prod, acc, camp) {
+      if (!tok()) { toast('ต้องเข้าสู่ระบบก่อน', true); return; }
+      var A = accInfo()[acc] || {};
+      S.d = { prod: prod, acc: acc, camp: camp, page: A.page || '', target: acc, n: 4, budget: 200, status: 'PAUSED', prefix: '(0{n}.)', base: baseName(camp), log: [], busy: false, done: false };
+      renderDlg();
+    },
+    dset: function (k, v) { if (!S.d || S.d.busy || S.d.done) return; S.d[k] = v; renderDlg(); },
+    dclose: function () { if (S.d && S.d.busy) return; S.d = null; renderDlg(); },
+    run: function () { runSwarm(); },
     _S: S, _pick: function () { return pick(campaigns()); }
   };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install); else install();
