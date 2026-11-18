@@ -196,6 +196,9 @@
         log('ใช้โพสต์ ' + story.split('_').pop() + ' · ' + (s.optimization_goal || ''));
         var off = d.when === 'tomorrow' ? 1 : 0, end = new Date(), start = null; end.setDate(end.getDate() + off); end.setHours(23, 59, 0, 0);
         if (off) { start = new Date(); start.setDate(start.getDate() + 1); start.setHours(0, 0, 0, 0); }
+        var cr0;
+        try { cr0 = await fbPost(tm.id + '/adcreatives', d.target, { name: nm[0], object_story_id: story }); }
+        catch (e) { var pe = /page permission|permission to run ads|access to create ads/i.test(e.message); throw new Error(pe ? 'บัญชี ' + d.target + ' ไม่มีสิทธิ์ลงโฆษณาในเพจนี้ (ผู้ใช้ token: ' + (FB_TOKENS[d.target] || '-') + ') — ให้คนดูแลเพจเพิ่มสิทธิ์ "สร้างโฆษณา" ให้ หรือเลือกบัญชีอื่น · ยังไม่ได้สร้างแคมเปญใด ๆ' : 'สร้างโฆษณาจากโพสต์เดิมไม่ได้: ' + e.message + ' · ยังไม่ได้สร้างแคมเปญใด ๆ'); }
         for (var i = 0; i < nm.length; i++) {
           var name = nm[i], cid = null;
           try {
@@ -206,12 +209,12 @@
             if (s.bid_amount) body.bid_amount = s.bid_amount;
             if (s.attribution_spec) body.attribution_spec = s.attribution_spec;
             var as = await fbPost(tm.id + '/adsets', d.target, body);
-            var cr = await fbPost(tm.id + '/adcreatives', d.target, { name: name, object_story_id: story });
-            await fbPost(tm.id + '/ads', d.target, { name: name, adset_id: as.id, creative: { creative_id: cr.id }, status: d.status });
+            await fbPost(tm.id + '/ads', d.target, { name: name, adset_id: as.id, creative: { creative_id: cr0.id }, status: d.status });
             created.push(name); log('✓ ' + name, true);
           } catch (e) {
             log('✗ ' + name + ' — ' + e.message, false, true);
             if (cid) { try { await fbPost(cid, d.target, { status: 'DELETED' }); log('  ลบแคมเปญที่สร้างไม่ครบทิ้งแล้ว'); } catch (e2) { log('  ⚠️ ลบแคมเปญที่สร้างไม่ครบไม่ได้ ให้ลบเองใน Ads Manager', false, true); } }
+            if (/permission|สิทธิ์/i.test(e.message)) { log('หยุด — ตัวที่เหลือจะติดสิทธิ์เหมือนกัน', false, true); break; }
           }
           await sleep(800);
         }
