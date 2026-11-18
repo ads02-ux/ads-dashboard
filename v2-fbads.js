@@ -125,14 +125,16 @@
     h += topCampaigns(accs, null);
     h += '<h2 class="v2-h2">บัญชีโฆษณาในเพจนี้</h2><div class="v2-list">';
     pg.accounts.forEach(function (holder, hi) {
+      if (typeof _fbAcctStatus !== 'undefined' && _fbAcctStatus[_fbAcctKey(S.p.product, pg.name, holder.displayName)]) return;
+      var acts = '<span class="v2-acct-acts"><span role="button" class="v2-mini" onclick="event.stopPropagation();fbV2.move(' + hi + ')">⇄ ย้ายไปเพจอื่น</span><span role="button" class="v2-mini v2-mini-red" onclick="event.stopPropagation();fbV2.status(' + hi + ')">⚠ โดนปิด / ติดยืนยัน</span></span>';
       (holder.adAccounts || []).forEach(function (acc) {
         var x = agg(rowsOfAccs([acc]));
         var cm = (window.fbCampaignsMap && fbCampaignsMap[acc]) || {};
         var nActive = Object.keys(cm).filter(function (k) { return live(cm[k]); }).length;
         var initials = String(holder.displayName || acc).replace(/[^A-Za-z\u0E00-\u0E7F ]/g, '').split(' ').filter(Boolean).map(function (w) { return w[0]; }).join('').slice(0, 2).toUpperCase();
-        h += '<button class="v2-card v2-acct" onclick="fbV2.acct(' + hi + ',\'' + jsq(acc) + '\')"><span class="v2-av">' + esc(initials || 'AC') + '</span><span class="v2-acct-name"><b>' + esc(holder.displayName) + '</b><small>' + (x.spend ? 'ใช้เงินอยู่' : 'ช่วงนี้ยังไม่ใช้เงิน') + ' · แคมเปญเปิด ' + nActive + '</small></span><span class="v2-acct-nums"><span><small>ค่าแอด</small>' + baht(x.spend) + '</span><span><small>ทัก</small>' + int(x.chat) + '</span><span><small>ซื้อ</small>' + int(x.buy) + '</span></span>' + roasBox(x) + '<span class="v2-chev" aria-hidden="true">›</span></button>';
+        h += '<button class="v2-card v2-acct" onclick="fbV2.acct(' + hi + ',\'' + jsq(acc) + '\')"><span class="v2-av">' + esc(initials || 'AC') + '</span><span class="v2-acct-name"><b>' + esc(holder.displayName) + '</b><small>' + (x.spend ? 'ใช้เงินอยู่' : 'ช่วงนี้ยังไม่ใช้เงิน') + ' · แคมเปญเปิด ' + nActive + '</small>' + acts + '</span><span class="v2-acct-nums"><span><small>ค่าแอด</small>' + baht(x.spend) + '</span><span><small>ทัก</small>' + int(x.chat) + '</span><span><small>ซื้อ</small>' + int(x.buy) + '</span></span>' + roasBox(x) + '<span class="v2-chev" aria-hidden="true">›</span></button>';
       });
-      if (!(holder.adAccounts || []).length) h += '<div class="v2-card v2-acct v2-empty">' + esc(holder.displayName) + ' — ยังไม่ได้ผูกบัญชีโฆษณา</div>';
+      if (!(holder.adAccounts || []).length) h += '<div class="v2-card v2-acct v2-empty"><span class="v2-acct-name">' + esc(holder.displayName) + ' — ยังไม่ได้ผูกบัญชีโฆษณา' + acts + '</span></div>';
     });
     return h + '</div>';
   }
@@ -284,6 +286,7 @@
       else if (cur['new'] === 'ปิด' || !cur['new']) { _fbNotesSave(T, name, 'old', 'ปิด'); _fbNotesSave(T, name, 'new', prev || ''); }
     } finally { window._fbNotesSkipCheck = sk; }
   }
+  function afterModal(id) { var t = setInterval(function () { if (!document.getElementById(id)) { clearInterval(t); setTimeout(render, 600); } }, 300); }
   window.fbV2 = {
     open: open, render: render,
     go: function (l) { if (l === 'root') { S.p = S.pg = S.h = S.acc = null; } if (l === 'product') { S.pg = S.h = S.acc = null; } if (l === 'page') { S.h = S.acc = null; } S.lvl = l; render(); window.scrollTo(0, 0); },
@@ -303,6 +306,8 @@
     oldDetail: function () { fbV2.dclose(); try { fbAccount = S.acc; fbOpenCampDetail(D.name, D.id); } catch (e) { alert(e.message); } },
     budget: function (name, id) { try { fbAccount = S.acc; fbUpdateBudget(name, id); } catch (e) { alert(e.message); } },
     toggle: function (name, id, on) { try { fbAccount = S.acc; var acc0 = S.acc; Promise.resolve(fbToggleStatus(name, id, on)).then(function () { try { noteToggle(acc0, name, on); } catch (e) {} setTimeout(function () { render(); if (document.getElementById('fbV2Drawer') && document.getElementById('fbV2Drawer').style.display !== 'none') renderDrawer(); }, 1500); }); } catch (e) { alert(e.message); } },
+    move: function (hi) { try { fbNavProduct = S.p; fbNavPage = S.pg; _fbOpenMoveAcctModal(hi); afterModal('fbAcctMoveModal'); } catch (e) { alert(e.message); } },
+    status: function (hi) { try { fbNavProduct = S.p; fbNavPage = S.pg; _fbOpenStatusModal(hi); afterModal('fbStatusModal'); } catch (e) { alert(e.message); } },
     old: function () {
       var sb = document.getElementById('sb-fb');
       try { switchView('fb', sb); fbNavProduct = S.p; fbNavPage = S.pg; fbNavHolder = S.h; fbAccount = S.acc; renderFB(); } catch (e) { alert(e.message); }
@@ -343,7 +348,7 @@
       '.v2-head2{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;margin:8px 0 12px}.v2-chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.v2-chips button{height:34px;padding:0 14px;border-radius:99px;border:1px solid #D7DBE3;background:#fff;font:inherit;font-size:13px;font-weight:600;cursor:pointer;color:var(--ink)}.v2-chips button.on{background:var(--blue);border-color:var(--blue);color:#fff}',
       '.v2-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}.v2-pagecard{display:flex;flex-direction:column;gap:12px;padding:16px;text-align:left;font:inherit;color:var(--ink);cursor:pointer}.v2-pagecard:hover{border-color:#93C5FD}.v2-pc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}.v2-rbox{flex:none;display:inline-flex;flex-direction:column;align-items:flex-end;padding:6px 10px;border-radius:10px;line-height:1.1}.v2-rbox small{font-size:10px;font-weight:600;letter-spacing:.04em}.v2-rbox b{font-size:22px;font-weight:700}.v2-rb-good{background:#F0FDF4;color:#15803D}.v2-rb-warn{background:#FFFBEB;color:#B45309}.v2-rb-bad{background:#FEF2F2;color:#B91C1C}.v2-rb-mute{background:#F8FAFC;color:#475569}.v2-pc-nums{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;font-weight:600;font-size:14px}.v2-pc-nums small,.v2-acct-nums small{display:block;font-size:11px;color:var(--mute);font-weight:400}.v2-more{font-size:13px;font-weight:600;color:#1D4ED8}',
       '.v2-h2{margin:8px 0 12px!important}.v2-list{display:flex;flex-direction:column;gap:10px}.v2-acct{display:flex;flex-wrap:wrap;align-items:center;gap:14px;padding:14px 18px;text-align:left;font:inherit;color:var(--ink);cursor:pointer;width:100%}.v2-acct:hover{border-color:#93C5FD}.v2-av{width:42px;height:42px;border-radius:50%;background:#EFF4FF;color:#1D4ED8;display:flex;align-items:center;justify-content:center;font-weight:700;flex:none}',
-      '.v2-acct-name{flex:1 1 200px;display:flex;flex-direction:column}.v2-acct-name small{font-size:12px;color:var(--mute)}.v2-acct-nums{display:flex;gap:22px;font-weight:600}.v2-empty{color:var(--mute);cursor:default}',
+      '.v2-acct-name{flex:1 1 200px;display:flex;flex-direction:column}.v2-acct-name small{font-size:12px;color:var(--mute)}.v2-acct-nums{display:flex;gap:22px;font-weight:600}.v2-empty{color:var(--mute);cursor:default}.v2-acct-acts{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.v2-mini{font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;border:1px dashed #F59E0B;color:#B45309;background:#FFFBEB;cursor:pointer;line-height:1.4}.v2-mini:hover{filter:brightness(.96)}.v2-mini-red{border-color:#FCA5A5;color:#B91C1C;background:#FEF2F2}',
       '.v2-banner{padding:12px 16px;border-radius:12px;font-size:14px;margin-bottom:14px}.v2-b-bad{background:#FEF2F2;border:1px solid #FECACA;color:#7F1D1D}.v2-b-mute{background:#fff;border:1px dashed #CBD5E1;color:#334155}',
       '.v2-actions{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}.v2-actions button{height:40px;padding:0 14px;border-radius:10px;border:1px solid #D7DBE3;background:#fff;font:inherit;font-size:13px;cursor:pointer;color:var(--ink)}',
       '.v2-camp .v2-cname{max-width:320px;overflow:hidden}.v2-camp .v2-cname .v2-ell{max-width:300px}.v2-plan{background:#FFFBEB!important}.v2-plan input{width:66px;height:34px;border:1px solid #FCD34D;border-radius:6px;text-align:center;font:inherit;font-size:13px;font-weight:600;background:#fff;color:var(--ink)}',
