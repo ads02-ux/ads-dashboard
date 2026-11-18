@@ -134,6 +134,17 @@
   }
   // ── สั่งรุมยิงจากหน้านี้ (สร้างแคมเปญใหม่ที่ใช้โพสต์เดิม) ──
   function accsOfPage(page) { var A = accInfo(), out = []; Object.keys(A).forEach(function (a) { if (A[a].page === page) out.push(a); }); return out; }
+  function spendOf(a) { var rows = (window.fbDataMap || {})[a], Y = ago(1), T = ago(0), s = 0; if (Array.isArray(rows)) rows.forEach(function (r) { if (r.date === Y || r.date === T) s += r.spend || 0; }); return s; }
+  function spendAccs(page, src) { return accsOfPage(page).filter(function (a) { return a === src || spendOf(a) > 0; }); }
+  function markFb() {
+    var rows = document.querySelectorAll('table.v2-camp tbody tr[data-camp]'); if (!rows.length) return;
+    rows.forEach(function (tr) {
+      var td = tr.querySelector('td.v2-btns'); if (!td || td.querySelector('.sw-fbb')) return;
+      var b = document.createElement('button'); b.className = 'sw-fbb'; b.textContent = 'รุม'; b.title = 'สั่งรุมยิงแคมเปญนี้ (ใช้โพสต์เดิม เลือกบัญชีในเพจเดียวกันได้)';
+      b.onclick = function (e) { e.stopPropagation(); var acc = window.fbAccount, A = accInfo()[acc] || {}; swarmV2.dlg(A.prod || '', acc, tr.getAttribute('data-camp')); };
+      td.appendChild(b);
+    });
+  }
   function beDate() { var d = new Date(); return ('0' + d.getDate()).slice(-2) + '/' + ('0' + (d.getMonth() + 1)).slice(-2) + '/' + String(d.getFullYear() + 543).slice(-2); }
   function baseName(n) {
     var b = String(n).replace(/^[\s*().\-\d]+/, '').trim(), re = /(ลุมยิง|รุมยิง)\s*\d{1,2}\/\d{1,2}\/\d{2,4}/;
@@ -149,13 +160,13 @@
     var el = document.getElementById('swDlg'), d = S.d;
     if (!d) { if (el) el.remove(); return; }
     if (!el) { el = document.createElement('div'); el.id = 'swDlg'; document.body.appendChild(el); }
-    var accs = accsOfPage(d.page), nm = names(d), dis = d.busy || d.done ? ' disabled' : '';
+    var accs = spendAccs(d.page, d.acc), nm = names(d), dis = d.busy || d.done ? ' disabled' : '';
     if (accs.indexOf(d.acc) < 0) accs.unshift(d.acc);
     el.innerHTML = '<div class="swd-ov" onclick="if(event.target===this)swarmV2.dclose()"><div class="swd" role="dialog" aria-modal="true" aria-label="สั่งรุมยิง">' +
       '<div class="swd-h"><div><div class="sw-dim">สั่งรุมยิง · ' + esc(d.prod) + ' · ' + esc(d.page) + '</div><h2>' + esc(d.camp) + '</h2></div><button class="swd-x" aria-label="ปิด" onclick="swarmV2.dclose()">×</button></div>' +
       '<div class="swd-g"><label>จำนวนตัว<select' + dis + ' onchange="swarmV2.dset(\'n\',+this.value)">' + [2, 3, 4, 5, 6].map(function (k) { return '<option' + (k === d.n ? ' selected' : '') + '>' + k + '</option>'; }).join('') + '</select></label>' +
       '<label>งบต่อตัว (บาท)<input' + dis + ' type="number" min="100" step="100" value="' + d.budget + '" onchange="swarmV2.dset(\'budget\',+this.value)"></label>' +
-      '<label>ยิงในบัญชี<select' + dis + ' onchange="swarmV2.dset(\'target\',this.value)">' + accs.map(function (a) { return '<option value="' + esc(a) + '"' + (a === d.target ? ' selected' : '') + '>' + esc(a) + (a === d.acc ? ' (บัญชีต้นแบบ)' : '') + '</option>'; }).join('') + '</select></label>' +
+      '<label>ยิงในบัญชี (เพจเดียวกัน ที่ใช้เงินอยู่)<select' + dis + ' onchange="swarmV2.dset(\'target\',this.value)">' + accs.map(function (a) { return '<option value="' + esc(a) + '"' + (a === d.target ? ' selected' : '') + '>' + esc(a) + (a === d.acc ? ' (บัญชีต้นแบบ)' : '') + ' · ใช้ ฿' + fmt(spendOf(a)) + ' เมื่อวาน–วันนี้</option>'; }).join('') + '</select></label>' +
       '<label>หลังสร้างเสร็จ<select' + dis + ' onchange="swarmV2.dset(\'status\',this.value)"><option value="PAUSED"' + (d.status === 'PAUSED' ? ' selected' : '') + '>ปิดไว้ก่อน (ไปกดเปิดเองใน Ads Manager)</option><option value="ACTIVE"' + (d.status === 'ACTIVE' ? ' selected' : '') + '>เปิดวิ่งทันที</option></select></label>' +
       '<label class="full">เลขนำหน้า ({n} = ลำดับ)<input' + dis + ' value="' + esc(d.prefix) + '" onchange="swarmV2.dset(\'prefix\',this.value)"></label>' +
       '<label class="full">ชื่อแคมเปญ (ต่อจากเลขนำหน้า)<input' + dis + ' value="' + esc(d.base) + '" onchange="swarmV2.dset(\'base\',this.value)"></label></div>' +
@@ -252,6 +263,7 @@
       '#swDlg .swd-prev{background:#F8FAFC;border:1px solid #E5E7EB;border-radius:10px;padding:10px 12px;font-size:13px;display:flex;flex-direction:column;gap:3px;word-break:break-word}#swDlg .swd-log{margin-top:10px;font-size:13px;display:flex;flex-direction:column;gap:3px;max-height:200px;overflow:auto}#swDlg .g{color:#15803D}#swDlg .r{color:#B91C1C}',
       '#swDlg .swd-f{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}#swDlg .sw-btn{border:1px solid #CBD5E1;background:#fff;border-radius:9px;padding:8px 14px;font:inherit;font-size:14px;cursor:pointer}#swDlg .sw-btn.pri{background:#2563EB;border-color:#2563EB;color:#fff;font-weight:700}#swDlg .sw-btn:disabled{opacity:.6;cursor:default}',
       '@media (max-width:600px){#swDlg .swd-g{grid-template-columns:1fr}}',
+      '.sw-fbb{color:#1D4ED8!important;border-color:#BFDBFE!important;font-weight:700}',
       '@media (max-width:700px){#swarmView .sw-wrap{padding:18px 14px 40px}}'
     ].join('\n');
     document.head.appendChild(s);
@@ -272,6 +284,8 @@
     anchor.parentNode.insertBefore(it, anchor.nextSibling);
     var v = document.createElement('div'); v.id = 'swarmView'; v.style.display = 'none';
     wrap.appendChild(v);
+    if (!S.mv) fetch('https://richbiotech-fb-proxy.ads02.workers.dev/_acctmove').then(function (r) { return r.json(); }).then(function (j) { S.mv = j.map || {}; }).catch(function () {});
+    var mo = new MutationObserver(function () { clearTimeout(mo._t); mo._t = setTimeout(markFb, 150); }); mo.observe(document.body, { childList: true, subtree: true });
     document.addEventListener('click', function (e) { var t = e.target.closest && e.target.closest('.sb-item'); if (t && t.id !== 'sb-swarm') { var sv = document.getElementById('swarmView'); if (sv) sv.style.display = 'none'; it.classList.remove('active'); } }, true);
   }
   window.swarmV2 = {
