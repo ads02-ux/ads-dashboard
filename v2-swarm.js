@@ -145,7 +145,7 @@
       td.appendChild(b);
     });
   }
-  function beDate() { var d = new Date(); return ('0' + d.getDate()).slice(-2) + '/' + ('0' + (d.getMonth() + 1)).slice(-2) + '/' + String(d.getFullYear() + 543).slice(-2); }
+  function beDate(off) { var d = new Date(); d.setDate(d.getDate() + (off || 0)); return ('0' + d.getDate()).slice(-2) + '/' + ('0' + (d.getMonth() + 1)).slice(-2) + '/' + String(d.getFullYear() + 543).slice(-2); }
   function baseName(n) {
     var b = String(n).replace(/^[\s*().\-\d]+/, '').trim().replace(/\s*\([^()]*\)\s*$/, ''), re = /(ลุมยิง|รุมยิง)\s*\d{1,2}\/\d{1,2}\/\d{2,4}/;
     b = re.test(b) ? b.replace(re, 'ลุมยิง ' + beDate()) : b + ' ลุมยิง ' + beDate();
@@ -169,9 +169,10 @@
       '<label>งบต่อตัว (บาท)<input' + dis + ' type="number" min="100" step="100" value="' + d.budget + '" onchange="swarmV2.dset(\'budget\',+this.value)"></label>' +
       '<label>ยิงในบัญชี (เพจเดียวกัน ที่ใช้เงินอยู่)<select' + dis + ' onchange="swarmV2.dset(\'target\',this.value)">' + accs.map(function (a) { return '<option value="' + esc(a) + '"' + (a === d.target ? ' selected' : '') + '>' + esc(a) + (a === d.acc ? ' (บัญชีต้นแบบ)' : '') + ' · ใช้ ฿' + fmt(spendOf(a)) + ' เมื่อวาน–วันนี้</option>'; }).join('') + '</select></label>' +
       '<label>หลังสร้างเสร็จ<select' + dis + ' onchange="swarmV2.dset(\'status\',this.value)"><option value="PAUSED"' + (d.status === 'PAUSED' ? ' selected' : '') + '>ปิดไว้ก่อน (ไปกดเปิดเองใน Ads Manager)</option><option value="ACTIVE"' + (d.status === 'ACTIVE' ? ' selected' : '') + '>เปิดวิ่งทันที</option></select></label>' +
+      '<label class="full">เวลายิง<select' + dis + ' onchange="swarmV2.dset(\'when\',this.value)"><option value="now"' + (d.when === 'now' ? ' selected' : '') + '>เริ่มทันที · จบเที่ยงคืนวันนี้ (23:59)</option><option value="tomorrow"' + (d.when === 'tomorrow' ? ' selected' : '') + '>เริ่มเที่ยงคืนนี้ (00:00 พรุ่งนี้) · จบ 23:59 พรุ่งนี้</option></select></label>' +
       '<label class="full">เลขนำหน้า ({n} = ลำดับ)<input' + dis + ' value="' + esc(d.prefix) + '" onchange="swarmV2.dset(\'prefix\',this.value)"></label>' +
       '<label class="full">ชื่อแคมเปญ (ต่อจากเลขนำหน้า)<input' + dis + ' value="' + esc(d.base) + '" onchange="swarmV2.dset(\'base\',this.value)"></label></div>' +
-      '<div class="swd-prev"><div class="sw-dim">จะสร้าง ' + d.n + ' แคมเปญในบัญชี ' + esc(d.target) + ' · งบตลอดชีพตัวละ ฿' + fmt(d.budget) + ' จบวันนี้ 23:59 · ใช้โพสต์เดิม กลุ่มเป้าหมายเดิม' + (d.status === 'ACTIVE' ? ' · <b class="r">เริ่มใช้เงินทันที</b>' : '') + '</div>' + nm.map(function (x) { return '<div>• ' + esc(x) + '</div>'; }).join('') + '</div>' +
+      '<div class="swd-prev"><div class="sw-dim">จะสร้าง ' + d.n + ' แคมเปญในบัญชี ' + esc(d.target) + ' · งบตลอดชีพตัวละ ฿' + fmt(d.budget) + (d.when === 'tomorrow' ? ' · เริ่ม 00:00 พรุ่งนี้ จบ 23:59 พรุ่งนี้' : ' · เริ่มทันที จบวันนี้ 23:59') + ' · ใช้โพสต์เดิม กลุ่มเป้าหมายเดิม' + (d.status === 'ACTIVE' ? ' · <b class="r">เริ่มใช้เงินทันที</b>' : '') + '</div>' + nm.map(function (x) { return '<div>• ' + esc(x) + '</div>'; }).join('') + '</div>' +
       (d.log.length ? '<div class="swd-log">' + d.log.map(function (l) { return '<div class="' + (l.bad ? 'r' : l.ok ? 'g' : '') + '">' + esc(l.t) + '</div>'; }).join('') + '</div>' : '') +
       '<div class="swd-f">' + (d.done ? '<button class="sw-btn pri" onclick="swarmV2.dclose()">เสร็จแล้ว</button>' : '<button class="sw-btn" onclick="swarmV2.dclose()"' + (d.busy ? ' disabled' : '') + '>ยกเลิก</button><button class="sw-btn pri" onclick="swarmV2.run()"' + (d.busy ? ' disabled' : '') + '>' + (d.busy ? 'กำลังสร้าง…' : 'สร้าง ' + d.n + ' แคมเปญ') + '</button>') + '</div></div></div>';
   }
@@ -193,13 +194,15 @@
         var s = ss.data && ss.data[0], ad = aa.data && aa.data[0], story = ad && ad.creative && (ad.creative.object_story_id || ad.creative.effective_object_story_id);
         if (!s || !story) throw new Error('แคมเปญต้นแบบไม่มีชุดโฆษณาหรือโพสต์ที่ใช้ซ้ำได้');
         log('ใช้โพสต์ ' + story.split('_').pop() + ' · ' + (s.optimization_goal || ''));
-        var end = new Date(); end.setHours(23, 59, 0, 0);
+        var off = d.when === 'tomorrow' ? 1 : 0, end = new Date(), start = null; end.setDate(end.getDate() + off); end.setHours(23, 59, 0, 0);
+        if (off) { start = new Date(); start.setDate(start.getDate() + 1); start.setHours(0, 0, 0, 0); }
         for (var i = 0; i < nm.length; i++) {
           var name = nm[i], cid = null;
           try {
             var cc = await fbPost(tm.id + '/campaigns', d.target, { name: name, objective: c.objective, special_ad_categories: c.special_ad_categories || [], buying_type: c.buying_type || 'AUCTION', status: d.status });
             cid = cc.id;
             var body = { name: name, campaign_id: cid, optimization_goal: s.optimization_goal, billing_event: s.billing_event, bid_strategy: s.bid_strategy || 'LOWEST_COST_WITHOUT_CAP', destination_type: s.destination_type, promoted_object: s.promoted_object, targeting: s.targeting, lifetime_budget: Math.round(d.budget * 100), end_time: Math.floor(end.getTime() / 1000), status: d.status };
+            if (start) body.start_time = Math.floor(start.getTime() / 1000);
             if (s.bid_amount) body.bid_amount = s.bid_amount;
             if (s.attribution_spec) body.attribution_spec = s.attribution_spec;
             var as = await fbPost(tm.id + '/adsets', d.target, body);
@@ -217,7 +220,7 @@
         var prev = window.fbAccount, prevChk = window._fbNotesSkipCheck;
         try {
           window._fbNotesSkipCheck = true; window.fbAccount = d.target;
-          for (var k = 0; k < created.length; k++) { await _fbNotesSave(ago(0), created[k], 'old', String(d.budget)); await sleep(400); await _fbNotesSave(ago(0), created[k], 'new', String(d.budget)); await sleep(400); }
+          for (var k = 0; k < created.length; k++) { await _fbNotesSave(ago(d.when === 'tomorrow' ? -1 : 0), created[k], 'old', String(d.budget)); await sleep(400); await _fbNotesSave(ago(d.when === 'tomorrow' ? -1 : 0), created[k], 'new', String(d.budget)); await sleep(400); }
           log('กรอกยอดเก่า/ยอดใหม่ ' + d.budget + ' ให้ ' + created.length + ' ตัวแล้ว', true);
         } catch (e) { log('กรอกยอดเก่า/ยอดใหม่ไม่สำเร็จ ให้กรอกเอง', false, true); }
         finally { window._fbNotesSkipCheck = prevChk; window.fbAccount = prev; }
@@ -306,10 +309,10 @@
     dlg: function (prod, acc, camp) {
       if (!tok()) { toast('ต้องเข้าสู่ระบบก่อน', true); return; }
       var A = accInfo()[acc] || {};
-      S.d = { prod: prod, acc: acc, camp: camp, page: A.page || '', target: acc, n: 4, budget: 200, status: 'PAUSED', prefix: '(0{n}.)', base: baseName(camp), log: [], busy: false, done: false };
+      S.d = { prod: prod, acc: acc, camp: camp, page: A.page || '', target: acc, n: 4, budget: 200, status: 'PAUSED', when: 'now', prefix: '(0{n}.)', base: baseName(camp), log: [], busy: false, done: false };
       renderDlg();
     },
-    dset: function (k, v) { if (!S.d || S.d.busy || S.d.done) return; S.d[k] = v; renderDlg(); },
+    dset: function (k, v) { if (!S.d || S.d.busy || S.d.done) return; S.d[k] = v; if (k === 'when') S.d.base = S.d.base.replace(/ลุมยิง \d{1,2}\/\d{1,2}\/\d{2,4}/, 'ลุมยิง ' + beDate(v === 'tomorrow' ? 1 : 0)); renderDlg(); },
     dclose: function () { if (S.d && S.d.busy) return; S.d = null; renderDlg(); },
     run: function () { runSwarm(); },
     _S: S, _pick: function () { return pick(campaigns()); }
