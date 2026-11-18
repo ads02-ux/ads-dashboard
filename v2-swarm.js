@@ -199,7 +199,7 @@
         for (var i = 0; i < nm.length; i++) {
           var name = nm[i], cid = null;
           try {
-            var cc = await fbPost(tm.id + '/campaigns', d.target, { name: name, objective: c.objective, special_ad_categories: c.special_ad_categories || [], buying_type: c.buying_type || 'AUCTION', status: d.status });
+            var cc = await fbPost(tm.id + '/campaigns', d.target, { name: name, objective: c.objective, special_ad_categories: c.special_ad_categories || [], buying_type: c.buying_type || 'AUCTION', is_adset_budget_sharing_enabled: false, status: d.status });
             cid = cc.id;
             var body = { name: name, campaign_id: cid, optimization_goal: s.optimization_goal, billing_event: s.billing_event, bid_strategy: s.bid_strategy || 'LOWEST_COST_WITHOUT_CAP', destination_type: s.destination_type, promoted_object: s.promoted_object, targeting: s.targeting, lifetime_budget: Math.round(d.budget * 100), end_time: Math.floor(end.getTime() / 1000), status: d.status };
             if (start) body.start_time = Math.floor(start.getTime() / 1000);
