@@ -147,8 +147,9 @@
   }
   function beDate() { var d = new Date(); return ('0' + d.getDate()).slice(-2) + '/' + ('0' + (d.getMonth() + 1)).slice(-2) + '/' + String(d.getFullYear() + 543).slice(-2); }
   function baseName(n) {
-    var b = String(n).replace(/^[\s*().\-\d]+/, '').trim(), re = /(ลุมยิง|รุมยิง)\s*\d{1,2}\/\d{1,2}\/\d{2,4}/;
-    return re.test(b) ? b.replace(re, 'ลุมยิง ' + beDate()) : b + ' ลุมยิง ' + beDate();
+    var b = String(n).replace(/^[\s*().\-\d]+/, '').trim().replace(/\s*\([^()]*\)\s*$/, ''), re = /(ลุมยิง|รุมยิง)\s*\d{1,2}\/\d{1,2}\/\d{2,4}/;
+    b = re.test(b) ? b.replace(re, 'ลุมยิง ' + beDate()) : b + ' ลุมยิง ' + beDate();
+    return b + ' (ระบบ)'; // ชื่อคนยิงท้ายชื่อ → (ระบบ) เสมอ (ผู้ใช้ 18 พ.ย.)
   }
   function names(d) { var out = []; for (var i = 1; i <= d.n; i++) out.push((d.prefix.replace(/\{n\}/g, String(i)) + ' ' + d.base).trim()); return out; }
   function metaOf(a) { return (window.FB_ACCOUNTS_META || []).filter(function (m) { return m.name === a; })[0]; }
