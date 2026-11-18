@@ -3225,7 +3225,7 @@ function _fbNotesSave(dt,name,field,val){
 function _fbNotesMergeLog(){return fetch('https://richbiotech-fb-proxy.ads02.workers.dev/_camplog').then(function(r){return r.json();}).then(function(j){var a=Array.isArray(j)?j:(j.log||j.entries||[]);var seen={};var ch=false;a.forEach(function(x){if(x&&x.actor==='AUTO-MIDNIGHT'&&x.action==='budget:auto'){var _pd=/\|\s*(\d{4}-\d\d-\d\d)\s*->/.exec(String(x.campaignName||''));var _nm=String(x.campaignName||'').split(' | ')[0];var _am=Math.round((+x.newValue)-(+x.oldValue));if(_pd&&_nm&&_am>0){var _k=_pd[1]+'|'+_nm;if(!seen[_k]){seen[_k]=1;if(!_fbNotes[_pd[1]])_fbNotes[_pd[1]]={};var _c=_fbNotes[_pd[1]][_nm];if(!(_c&&(_c.new||_c.old))){_fbNotes[_pd[1]][_nm]={old:'',new:String(_am)};ch=true;}}}return;}var m=/^plannote:(\d{4}-\d\d-\d\d)$/.exec(String(x.action||''));if(!m||!x.campaignName)return;var k=m[1]+'|'+x.campaignName;if(seen[k])return;seen[k]=1;var nv=String(x.newValue==null?'':x.newValue);if(!/\d/.test(nv))return;if(!_fbNotes[m[1]])_fbNotes[m[1]]={};var cur=_fbNotes[m[1]][x.campaignName];if(cur&&(cur.new||cur.old))return;_fbNotes[m[1]][x.campaignName]={old:String(x.oldValue==null?'':x.oldValue),new:nv};ch=true;});if(ch){try{localStorage.setItem('_fbNotes',JSON.stringify(_fbNotes));}catch(e){}}}).catch(function(){});}
 function _fbNotesLoad(){
   try{var s=localStorage.getItem('_fbNotes');if(s)_fbNotes=JSON.parse(s);}catch(e){}
-  fetch('https://raw.githubusercontent.com/ads02-ux/ads-dashboard/main/daily-notes.json?t='+Date.now())
+  fetch('https://raw.githubusercontent.com/office-htee/ads-dashboard/main/daily-notes.json?t='+Date.now())
     .then(function(r){return r.json();})
     .then(function(remote){
       if(remote&&typeof remote==='object'&&!Array.isArray(remote)){
@@ -3242,7 +3242,7 @@ function _fbNotesLoad(){
 var _nw=['ghp_Rpo9','hIKu81w6','8RK1aeu3Q','zZyd72VBu1Bevko'];
 function _fbNotesPush(){
   var pat=localStorage.getItem('_ghPAT')||_nw.join('');
-  var apiUrl='https://api.github.com/repos/ads02-ux/ads-dashboard/contents/daily-notes.json';
+  var apiUrl='https://api.github.com/repos/office-htee/ads-dashboard/contents/daily-notes.json';
   var dirty=window._fbNotesDirty||{};var keys=Object.keys(dirty);if(!keys.length)return;
   function attempt(n){
     return Promise.all([
@@ -3281,7 +3281,7 @@ function _fbAcctStatusRestore(key){
 }
 function _fbAcctStatusLoad(){
   try{var s=localStorage.getItem('_fbAcctStatus');if(s)_fbAcctStatus=JSON.parse(s);}catch(e){}
-  fetch('https://raw.githubusercontent.com/ads02-ux/ads-dashboard/main/account-status.json?t='+Date.now())
+  fetch('https://raw.githubusercontent.com/office-htee/ads-dashboard/main/account-status.json?t='+Date.now())
     .then(function(r){return r.json();})
     .then(function(remote){
       if(remote&&typeof remote==='object'&&!Array.isArray(remote)){
@@ -3295,7 +3295,7 @@ _fbAcctStatusLoad();
 function _fbAcctStatusPush(){
   var pat=localStorage.getItem('_ghPAT')||_nw.join('');
   var content=btoa(unescape(encodeURIComponent(JSON.stringify(_fbAcctStatus,null,2))));
-  var apiUrl='https://api.github.com/repos/ads02-ux/ads-dashboard/contents/account-status.json';
+  var apiUrl='https://api.github.com/repos/office-htee/ads-dashboard/contents/account-status.json';
   fetch(apiUrl,{headers:{Authorization:'token '+pat,'Accept':'application/vnd.github.v3+json'}})
     .then(function(r){return r.ok?r.json():null;})
     .then(function(meta){
