@@ -6,7 +6,7 @@
 (function () {
   'use strict';
   var FILE = 'ad-tests.json';
-  var API = 'https://api.github.com/repos/ads02-ux/ads-dashboard/contents/' + FILE;
+  var API = 'https://api.github.com/repos/office-htee/ads-dashboard/contents/' + FILE;
   var ANALYSTS = ['มอส', 'ปาย', 'บุ๋มบิ๋ม', 'พิมพ์'];
   var ACOL = { 'มอส': '#2563EB', 'ปาย': '#0D9488', 'บุ๋มบิ๋ม': '#DB2777', 'พิมพ์': '#7C3AED' };
   var TYPES = ['กลุ่มเป้าหมาย (Interest)', 'Lookalike', 'Broad / Advantage+', 'อายุ / เพศ / พื้นที่', 'รูปแบบแอด', 'Objective / การประมูล', 'Placement', 'คอนเทนต์ / Hook', 'อื่น ๆ'];
