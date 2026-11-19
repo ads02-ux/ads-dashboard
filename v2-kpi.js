@@ -5,7 +5,7 @@
 (function () {
   'use strict';
   var FILE = 'monthly-targets.json';
-  var API = 'https://api.github.com/repos/office-htee/ads-dashboard/contents/' + FILE;
+  var API = 'https://api.github.com/repos/richbiotech-app/ads-dashboard/contents/' + FILE;
   var PAL = ['#2563EB', '#0EA5E9', '#6366F1', '#14B8A6', '#8B5CF6', '#0891B2', '#64748B'];
   var THM = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
   var THF = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
