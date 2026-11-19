@@ -73,7 +73,8 @@
     return { list: out, marked: marked };
   }
   function meta(a) { return (window.FB_ACCOUNTS_META || []).filter(function (m) { return m.name === a; })[0]; }
-  function tok(a) { return (window.FB_TOKENS && FB_TOKENS[a]) || ''; }
+  function tok(a) { return (window.FB_TOKENS && FB_TOKENS[a]) || (typeof FB_TOKEN !== 'undefined' ? FB_TOKEN : '') || ''; }
+  function tokLabel(a) { return (window.FB_TOKENS && FB_TOKENS[a]) || 'ค่าเริ่มต้น (FB_TOKEN)'; }
   function where(a) { var r = null; accounts().list.forEach(function (x) { if (x.acc === a) r = x; }); return r; }
 
   function scan() {
@@ -124,12 +125,12 @@
     var x = r.x;
     return '<tr><td><b>' + esc(x.holder) + '</b><div class="tk-dim">' + esc(x.acc) + '</div></td>' +
       '<td>' + esc(x.prod) + '<div class="tk-dim">' + esc(x.page) + '</div></td>' +
-      '<td><code>' + esc(tok(x.acc) || '-') + '</code></td>' +
-      '<td><span class="tk-pill tk-' + r.r.k + '">' + esc(r.r.t) + '</span></td>' +
-      '<td>' + esc(r.r.w) + '</td><td>' + esc(r.r.f) + '</td></tr>';
+      '<td><code>' + esc(tokLabel(x.acc)) + '</code></td>' +
+      '<td><span class="tk-pill tk-' + r.r.k + '">' + esc(r.r.t) + '</span><div class="tk-why">' + esc(r.r.w) + '</div></td>' +
+      '<td class="tk-fix">' + esc(r.r.f) + '</td></tr>';
   }
   function table(list) {
-    return '<div class="tk-card"><table class="tk-tb"><thead><tr><th>บัญชี</th><th>สินค้า / เพจ</th><th>token</th><th>ปัญหา</th><th>สาเหตุ</th><th>วิธีแก้</th></tr></thead><tbody>' + list.map(row).join('') + '</tbody></table></div>';
+    return '<div class="tk-card"><table class="tk-tb"><thead><tr><th>บัญชี</th><th>สินค้า / เพจ</th><th>token</th><th>ปัญหา · สาเหตุ</th><th>วิธีแก้</th></tr></thead><tbody>' + list.map(row).join('') + '</tbody></table></div>';
   }
   function render() {
     var box = document.getElementById('tokView'); if (!box || !visible()) return;
@@ -144,7 +145,7 @@
     if (!SCAN && !SCANNING && !tokI.length) h += '<div class="tk-card tk-empty">กด "ตรวจทุกบัญชีอีกครั้ง" เพื่อเช็กสิทธิ์ token ของทุกบัญชี</div>';
     if (tokI.length) h += '<h2>token ใช้กับบัญชีเหล่านี้ไม่ได้</h2>' + table(tokI);
     else if (SCAN) h += '<div class="tk-card tk-empty tk-ok">✓ ทุกบัญชีที่ตรวจ token ใช้งานได้ปกติ</div>';
-    if (acct.length) h += '<h2>บัญชีโฆษณามีปัญหา (ไม่ใช่ token)</h2>' + table(acct);
+    if (acct.length) h += '<details class="tk-det"><summary>บัญชีโฆษณาถูกปิด / ค้างชำระ (ไม่ใช่ปัญหา token) · ' + acct.length + ' บัญชี — กดเพื่อดู</summary>' + table(acct) + '</details>';
     h += '<div class="tk-foot tk-dim">ตรวจโดยเรียกข้อมูลบัญชีด้วย token ของบัญชีนั้น 1 ครั้งต่อบัญชี · ไม่แก้ไขอะไรใน Facebook · ผลล่าสุดจำไว้ในเครื่อง 24 ชม.</div></div>';
     box.innerHTML = h;
   }
@@ -167,7 +168,7 @@
       '#tokView .tk-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}#tokView .tk-kpi{background:#fff;border:1px solid #E5E7EB;border-radius:14px;padding:14px 16px}#tokView .tk-kpi small{display:block;font-size:12px;color:#64748B}#tokView .tk-kpi b{font-size:26px;font-weight:800;margin-right:6px}#tokView .tk-kpi span{font-size:12px;color:#64748B}',
       '#tokView b.bad{color:#B91C1C}#tokView b.warn{color:#B45309}#tokView b.good{color:#15803D}',
       '#tokView .tk-card{background:#fff;border:1px solid #E5E7EB;border-radius:14px;overflow:auto}#tokView .tk-empty{padding:28px;text-align:center;color:#64748B;margin-top:16px}#tokView .tk-ok{color:#15803D;font-weight:600}',
-      '#tokView .tk-tb{width:100%;border-collapse:collapse;font-size:13.5px;min-width:900px}#tokView .tk-tb th{font-size:12px;color:#64748B;font-weight:600;text-align:left;padding:10px 12px;border-bottom:1px solid #E5E7EB;background:#F8FAFC}#tokView .tk-tb td{padding:10px 12px;border-bottom:1px solid #F1F5F9;vertical-align:top;line-height:1.45}#tokView .tk-tb tr:last-child td{border-bottom:0}',
+      '#tokView .tk-tb{width:100%;border-collapse:collapse;font-size:13.5px;min-width:760px;table-layout:fixed}#tokView .tk-tb th:nth-child(1){width:16%}#tokView .tk-tb th:nth-child(2){width:18%}#tokView .tk-tb th:nth-child(3){width:13%}#tokView .tk-tb th:nth-child(4){width:28%}#tokView .tk-why{margin-top:5px;color:#334155;font-size:12.5px}#tokView .tk-fix{font-size:12.5px;color:#334155}#tokView code{word-break:break-all}#tokView .tk-det{margin-top:22px}#tokView .tk-det summary{cursor:pointer;font-size:15px;font-weight:700;margin-bottom:10px}#tokView .tk-tb th{font-size:12px;color:#64748B;font-weight:600;text-align:left;padding:10px 12px;border-bottom:1px solid #E5E7EB;background:#F8FAFC}#tokView .tk-tb td{padding:10px 12px;border-bottom:1px solid #F1F5F9;vertical-align:top;line-height:1.45}#tokView .tk-tb tr:last-child td{border-bottom:0}',
       '#tokView code{font-size:12px;background:#F1F5F9;border-radius:6px;padding:1px 6px}',
       '#tokView .tk-pill{display:inline-block;font-size:12px;font-weight:700;border-radius:99px;padding:2px 9px;white-space:nowrap}#tokView .tk-perm,#tokView .tk-exp,#tokView .tk-none{background:#FEF2F2;color:#B91C1C}#tokView .tk-ro{background:#FFFBEB;color:#B45309}#tokView .tk-acct{background:#F1F5F9;color:#475569}#tokView .tk-rate,#tokView .tk-other{background:#EFF6FF;color:#1D4ED8}',
       '#tokView .tk-foot{margin-top:16px}',
