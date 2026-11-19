@@ -15,7 +15,7 @@
     var acc = sessionStorage.getItem('rb_access'); try { acc = JSON.parse(acc); } catch (e) {}
     var keys = Array.isArray(acc) ? acc : [acc], ok = {};
     keys.forEach(function (k) { (MENU[k] || (window._viewAccessMap || {})[k] || []).forEach(function (v) { ok['sb-' + v] = 1; }); });
-    document.querySelectorAll('.sb-item[id]').forEach(function (it) { var show = (!!ok[it.id] || it.id === 'sb-promo') && it.id !== 'sb-usermgmt'; if ((it.style.display !== 'none') !== show) it.style.display = show ? '' : 'none'; });
+    document.querySelectorAll('.sb-item[id]').forEach(function (it) { var show = (!!ok[it.id] || it.id === 'sb-promo' || (it.id === 'sb-tokens' && !!ok['sb-fb'])) && it.id !== 'sb-usermgmt'; if ((it.style.display !== 'none') !== show) it.style.display = show ? '' : 'none'; });
     document.querySelectorAll('.v2nav-group').forEach(function (g) { var vis = [].some.call(g.querySelectorAll('.sb-item'), function (i) { return i.style.display !== 'none'; }); if ((g.style.display !== 'none') !== vis) g.style.display = vis ? '' : 'none'; });
     if (!opened && NEWKEYS.indexOf(keys[0]) >= 0) { var el = document.getElementById('sb-' + MENU[keys[0]][0]); if (el) { opened = true; try { el.click(); } catch (e) {} } }
   }
